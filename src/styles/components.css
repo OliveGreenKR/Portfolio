@@ -1,0 +1,218 @@
+/* JCH Portfolio — components.css
+   Single source of visual style for shared UI primitives.
+   Imported by both preview cards and the real UI kit. */
+
+/* ─── Tag ─────────────────────────────────────────── */
+.t-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 14px 7px 12px;
+  border-radius: 999px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  line-height: 1;
+  color: var(--ink);
+  transition: transform var(--t-fast) var(--ease-out), filter var(--t-fast) var(--ease-out);
+}
+.t-tag:hover { transform: translateY(-1px); filter: brightness(0.97); }
+.t-tag .t-tag__dot {
+  width: 7px; height: 7px; border-radius: 999px;
+  box-shadow: inset 0 0 0 1px rgba(0,0,0,0.08);
+}
+.t-tag--arch  { background: #e6efdf; } .t-tag--arch  .t-tag__dot { background: #7ea571; }
+.t-tag--algo  { background: #f6ecd2; } .t-tag--algo  .t-tag__dot { background: #c19a4a; }
+.t-tag--perf  { background: #f5dcd2; } .t-tag--perf  .t-tag__dot { background: #c8674f; }
+.t-tag--debug { background: #dee8ee; } .t-tag--debug .t-tag__dot { background: #6b8a9e; }
+.t-tag--tool  { background: #e6dded; } .t-tag--tool  .t-tag__dot { background: #8b73a3; }
+
+/* ─── Button ──────────────────────────────────────── */
+.t-btn {
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  padding: 9px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  cursor: pointer;
+  transition: filter var(--t-fast) var(--ease-out), background var(--t-fast) var(--ease-out);
+}
+.t-btn:hover { filter: brightness(1.1); }
+.t-btn--secondary { background: transparent; color: var(--ink); }
+.t-btn--secondary:hover { background: var(--paper-2); filter: none; }
+.t-btn--ghost { background: transparent; color: var(--ink-2); border-color: var(--rule); }
+.t-btn--ghost:hover { background: var(--paper-2); color: var(--ink); }
+.t-btn--terra { background: var(--terra-300); border-color: var(--terra-300); color: var(--terra-900); }
+.t-btn--sage  { background: var(--sage-300);  border-color: var(--sage-300);  color: var(--sage-900); }
+
+/* ─── Callout ─────────────────────────────────────── */
+.t-callout {
+  display: grid;
+  grid-template-columns: 24px 1fr;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  border: 1px dashed var(--rule-2);
+  background: var(--paper-2);
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.55;
+  color: var(--ink-2);
+}
+.t-callout b { color: var(--ink); font-weight: 600; }
+.t-callout__glyph { font-family: var(--font-mono); font-weight: 600; text-align: center; }
+.t-callout--warn { border-color: var(--terra-200); border-style: dashed; background: var(--terra-50); }
+.t-callout--warn .t-callout__glyph { color: var(--terra-500); }
+.t-callout--ok   { border-color: var(--sage-200);  border-style: solid; background: var(--sage-50); }
+.t-callout--ok   .t-callout__glyph { color: var(--sage-700); }
+
+/* ─── Code reveal ─────────────────────────────────── */
+details.t-code {
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--paper-2);
+  overflow: hidden;
+}
+details.t-code summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 11px 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  user-select: none;
+}
+details.t-code summary::-webkit-details-marker { display: none; }
+details.t-code summary::before {
+  content: "+";
+  font-size: 14px;
+  color: var(--ink);
+  width: 12px;
+  text-align: center;
+  transition: transform var(--t-med) var(--ease-out);
+}
+details.t-code[open] summary::before { transform: rotate(45deg); }
+details.t-code summary .t-code__file { color: var(--ink); margin-left: auto; }
+details.t-code pre {
+  margin: 0;
+  padding: 16px 18px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--font-mono);
+  font-size: 13px;
+  line-height: 1.65;
+  color: var(--ink-2);
+  background: var(--paper);
+  overflow-x: auto;
+}
+details.t-code .k { color: var(--terra-500); }
+details.t-code .s { color: var(--sage-700); }
+details.t-code .c { color: var(--ink-3); font-style: italic; }
+
+/* ─── Notebook frame (friendly diagram boxes) ─── */
+.t-frame {
+  border: 1.5px solid var(--rule-2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  background: var(--paper-2);
+}
+.t-frame--dashed { border-style: dashed; }
+.t-frame--sage   { border-color: var(--sage-400); background: var(--sage-50); }
+.t-frame--terra  { border-color: var(--terra-300); background: var(--terra-50); }
+.t-frame__label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 8px;
+}
+
+/* ─── Project card ───────────────────────────────── */
+.t-project-card {
+  display: grid;
+  grid-template-columns: 60px 1fr auto;
+  gap: 28px;
+  align-items: start;
+  padding: 22px 22px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--paper-2);
+  cursor: pointer;
+  transition: background var(--t-med) var(--ease-out), border-color var(--t-med) var(--ease-out);
+}
+.t-project-card:hover { background: var(--paper-3); border-color: var(--rule-2); }
+.t-project-card__num {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+  padding-top: 4px;
+}
+.t-project-card__title {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.014em;
+  margin: 0 0 6px;
+  color: var(--ink);
+}
+.t-project-card__meta {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  font-size: 13.5px;
+  color: var(--ink-3);
+  margin-bottom: 10px;
+}
+.t-project-card__desc {
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--ink-2);
+  margin: 0 0 12px;
+  max-width: 640px;
+  text-wrap: pretty;
+}
+.t-project-card__tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.t-project-card__side {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 8px;
+  white-space: nowrap;
+  align-self: center;
+}
+.t-project-card__side .arrow {
+  display: inline-block;
+  margin-left: 6px;
+  transition: transform var(--t-med) var(--ease-out);
+}
+.t-project-card:hover .t-project-card__side .arrow {
+  transform: translateX(4px);
+  color: var(--terra-500);
+}
+
+/* Row variant — used when many cards stack as a list (e.g. portfolio index).
+   Strips card chrome, leaves a hairline rule on top so adjacent rows form a
+   continuous ledger. The card class still owns the grid + hover behaviour. */
+.t-project-card--row {
+  border: 0;
+  border-top: 1px solid var(--rule);
+  border-radius: 0;
+  background: transparent;
+  padding: 28px 0;
+  gap: 32px;
+}
+.t-project-card--row:last-child { border-bottom: 1px solid var(--rule); }
+.t-project-card--row:hover { background: var(--paper-2); border-color: var(--rule); }

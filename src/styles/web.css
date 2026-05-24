@@ -1,0 +1,45 @@
+/* JCH Portfolio — web.css
+   Web-only effects: hover, transitions, sticky positioning, backdrop blur,
+   smooth scroll, scrollbar styling, animations. Anything that does not
+   make sense — or actively misbehaves — in print belongs here.
+
+   Layer order (kits import in this sequence):
+     1. tokens.css      — CSS variables + base typography
+     2. components.css  — .t-tag / .t-btn / .t-callout / .t-code / .t-project-card
+     3. web.css         — THIS FILE (web-only effects)
+     4. kit.css         — kit-specific layout chrome
+
+   NOTE: many existing kits inline equivalent rules in their own kit.css.
+   New kits should @import this file instead of redefining hover/sticky/etc. */
+
+/* ─── Sticky / fixed positioning ──────────────────── */
+.web-sticky { position: sticky; top: 0; z-index: 10; }
+
+/* ─── Backdrop blur (used by sticky page headers) ── */
+.web-blur-paper {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  background: rgba(251, 249, 245, 0.88);
+}
+
+/* ─── Hover transitions on tags + links ──────────── */
+.t-tag      { transition: transform var(--t-fast) var(--ease-out), filter var(--t-fast) var(--ease-out); }
+.t-tag:hover { transform: translateY(-1px); filter: brightness(0.97); }
+
+/* ─── Smooth scrolling ────────────────────────────── */
+html { scroll-behavior: smooth; }
+
+/* ─── Scrollbar polish (Webkit) ───────────────────── */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb { background: var(--rule-2); border-radius: 999px; border: 2px solid var(--paper); }
+::-webkit-scrollbar-track { background: transparent; }
+
+/* ─── Animations ──────────────────────────────────── */
+@keyframes fadeIn { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.fade-in { animation: fadeIn 280ms var(--ease-out); }
+
+/* ─── Reduced-motion respect ──────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition: none !important; animation: none !important; }
+  html { scroll-behavior: auto; }
+}

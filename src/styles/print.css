@@ -1,0 +1,98 @@
+/* JCH Portfolio — print.css
+   Print-only rules. Loaded with media="print" so it never affects screen.
+   Goal: render the same React components in a paginated, ink-friendly form.
+
+   Pairs with src/views/PrintPortfolio.jsx — that view chooses static, single
+   column layouts; this stylesheet enforces page geometry and strips web
+   chrome that would not print.
+
+   Usage:
+     <link rel="stylesheet" href="src/styles/print.css" media="print">  */
+
+@page {
+  size: A4 portrait;
+  margin: 16mm 14mm 18mm 14mm;
+}
+
+@media print {
+  /* ─── Surface ───────────────────────────────────── */
+  html, body {
+    background: #ffffff !important;
+    color: #000000;
+  }
+
+  /* Sticky / fixed / blurred chrome must not paginate */
+  .site-header,
+  .web-sticky,
+  .nav,
+  .pd-back,
+  .footer { display: none !important; }
+
+  /* ─── Typography rebalancing for print ──────────── */
+  body { font-size: 10.5pt; line-height: 1.55; }
+  .hero__title  { font-size: 32pt; }
+  .pd-title     { font-size: 24pt; }
+  .section__title { font-size: 18pt; }
+  .h-display, .h1, .h2, .h3, .h4 { color: #000; }
+
+  /* ─── Layout ────────────────────────────────────── */
+  .container, .container--narrow { max-width: none; padding: 0; margin: 0; }
+  .section { padding: 18pt 0; border-bottom: 0.5pt solid #999; break-inside: avoid; }
+  .hero    { padding: 0 0 18pt; border-bottom: 0.5pt solid #999; }
+
+  /* Project list: rows should not split across pages */
+  .t-project-card, .t-project-card--row {
+    break-inside: avoid;
+    background: transparent !important;
+    border: 0 !important;
+    border-top: 0.5pt solid #999 !important;
+    padding: 10pt 0 !important;
+  }
+
+  /* ─── Code reveal: always expanded in print ─────── */
+  details.t-code { border-color: #999 !important; background: transparent !important; }
+  details.t-code[open] summary,
+  details.t-code summary { color: #555; }
+  details.t-code summary::before { display: none !important; }
+  details.t-code pre {
+    display: block !important;
+    background: transparent !important;
+    border-top: 0.5pt solid #ccc !important;
+    color: #000 !important;
+    overflow: visible !important;
+    white-space: pre-wrap !important;
+  }
+  details.t-code { open: open; } /* opening hint */
+
+  /* ─── Callouts ──────────────────────────────────── */
+  .t-callout {
+    background: transparent !important;
+    border: 0.5pt solid #888 !important;
+    color: #000;
+    break-inside: avoid;
+  }
+
+  /* ─── Tags ──────────────────────────────────────── */
+  .t-tag { background: transparent !important; border: 0.5pt solid #888; color: #000; }
+  .t-tag__dot { box-shadow: none !important; }
+
+  /* ─── Highlighter still readable but flatter ────── */
+  mark.hl, .hl, mark.hl--terra, .hl--terra {
+    background-image: none !important;
+    background: #f0f0f0 !important;
+    color: #000 !important;
+  }
+
+  /* ─── Anchors: show URL inline ──────────────────── */
+  a[href]:not(.no-print-url)::after {
+    content: " ⟨" attr(href) "⟩";
+    font-family: var(--font-mono);
+    font-size: 8pt;
+    color: #555;
+  }
+
+  /* ─── Page breaks ──────────────────────────────── */
+  .pd-head      { break-after: avoid; }
+  .rail-row     { break-inside: avoid; }
+  h1, h2, h3    { break-after: avoid; }
+}
