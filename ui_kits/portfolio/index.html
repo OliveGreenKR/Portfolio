@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=1280">
+<title>JCH — Portfolio</title>
+
+<!-- Design tokens (CSS variables, base typography, highlighter) -->
+<link rel="stylesheet" href="../../src/styles/tokens.css">
+<!-- Shared component styles (.t-tag, .t-btn, .t-callout, .t-code, .t-project-card) -->
+<link rel="stylesheet" href="../../src/styles/components.css">
+<!-- Web-only effects layer (hover, sticky, transitions) -->
+<link rel="stylesheet" href="../../src/styles/web.css">
+<!-- Print rules (only active when printing) -->
+<link rel="stylesheet" href="../../src/styles/print.css" media="print">
+<!-- This kit's layout chrome (hero, header, section, rail, about, footer) -->
+<link rel="stylesheet" href="kit.css">
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<!-- Canonical React components (single source of meaning). Each exports to window.* -->
+<script type="text/babel" src="../../src/components/Tag.jsx"></script>
+<script type="text/babel" src="../../src/components/Button.jsx"></script>
+<script type="text/babel" src="../../src/components/Callout.jsx"></script>
+<script type="text/babel" src="../../src/components/CodeReveal.jsx"></script>
+<script type="text/babel" src="../../src/components/ProjectCard.jsx"></script>
+
+<!-- Shared data (window.PROJECTS) -->
+<script src="../../src/data/projects.js"></script>
+
+<!-- Views (window.WebPortfolio, window.PrintPortfolio) -->
+<script type="text/babel" src="../../src/views/WebPortfolio.jsx"></script>
+<script type="text/babel" src="../../src/views/PrintPortfolio.jsx"></script>
+
+<!-- Kit-specific shell — mounts a view -->
+<script type="text/babel" src="App.jsx"></script>
+</body>
+</html>

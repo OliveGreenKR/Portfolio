@@ -1,0 +1,250 @@
+/* JCH Portfolio Design System — Colors & Type
+   "사용성의 진짜 의미는 변경에 강한 구조에서 나온다"
+   Flat, readable, document-first portfolio aesthetic. */
+
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+
+/* Pretendard — 9 static weights (preferred, explicit per-weight files)
+   + variable fallback for browsers/contexts that benefit from a single axis.
+   Paths resolve relative to THIS file (src/styles/tokens.css → /fonts/…). */
+@font-face { font-family:'Pretendard'; font-weight:100; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Thin.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:200; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-ExtraLight.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:300; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Light.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:400; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Regular.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:500; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Medium.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:600; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-SemiBold.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:700; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Bold.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:800; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-ExtraBold.otf') format('opentype'); }
+@font-face { font-family:'Pretendard'; font-weight:900; font-style:normal; font-display:swap;
+  src:url('../../fonts/Pretendard-Black.otf') format('opentype'); }
+@font-face { font-family:'Pretendard Variable'; font-weight:100 900; font-style:normal; font-display:swap;
+  src:url('../../fonts/PretendardVariable.ttf') format('truetype-variations'),
+      url('../../fonts/PretendardVariable.ttf') format('truetype'); }
+
+:root {
+  /* ─── Brand colors ─── */
+  --sage-50:  #f4f8f1;
+  --sage-100: #e6efdf;
+  --sage-200: #d4e3c9;
+  --sage-300: #b9d1b0;   /* PRIMARY — sage green */
+  --sage-400: #9bbc8e;
+  --sage-500: #7ea571;
+  --sage-700: #4f6a45;
+  --sage-900: #283825;
+
+  --terra-50:  #fbf2ee;
+  --terra-100: #f5dcd2;
+  --terra-200: #ecc0b0;
+  --terra-300: #e08a75;  /* PRIMARY — terracotta */
+  --terra-400: #c8674f;
+  --terra-500: #a84e38;
+  --terra-700: #6f3022;
+  --terra-900: #3a1810;
+
+  /* ─── Neutrals (warm paper) ─── */
+  --paper:    #fbf9f5;   /* page background */
+  --paper-2:  #f4f1ea;   /* card / surface  */
+  --paper-3:  #ebe6da;   /* hover surface   */
+  --ink:      #1f1d1a;   /* primary text    */
+  --ink-2:    #4a463f;   /* secondary text  */
+  --ink-3:    #807a6e;   /* tertiary / meta */
+  --rule:     #d9d3c4;   /* hairline border */
+  --rule-2:   #c4bdaa;
+
+  /* ─── Semantic foreground/background ─── */
+  --fg-1: var(--ink);
+  --fg-2: var(--ink-2);
+  --fg-3: var(--ink-3);
+  --bg-1: var(--paper);
+  --bg-2: var(--paper-2);
+  --bg-3: var(--paper-3);
+  --accent: var(--terra-300);
+  --accent-strong: var(--terra-500);
+  --leaf: var(--sage-300);
+  --leaf-strong: var(--sage-500);
+
+  /* ─── Tag/role colors (architecture/algorithm/etc) ─── */
+  --tag-arch: var(--sage-300);
+  --tag-algo: #d4b87a;       /* warm wheat */
+  --tag-perf: var(--terra-300);
+  --tag-debug: #8fa8b8;      /* dusty blue */
+  --tag-tool: #b9a3c7;       /* muted plum */
+
+  /* ─── Type ─── */
+  /* Pretendard is the single base typeface for both Korean and Latin.
+     It covers Latin glyphs natively, so we do NOT fall back to system Latin fonts.
+     Mono stays JetBrains Mono — used only for code, eyebrows, and stat figures. */
+  --font-sans: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
+  --font-display: "Pretendard", "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+  /* Scale — flat, document-leaning */
+  --text-xs:   12px;
+  --text-sm:   13.5px;
+  --text-base: 15.5px;
+  --text-md:   17px;
+  --text-lg:   20px;
+  --text-xl:   24px;
+  --text-2xl:  32px;
+  --text-3xl:  44px;
+  --text-4xl:  60px;
+
+  /* Line heights */
+  --lh-tight: 1.18;
+  --lh-snug:  1.35;
+  --lh-body:  1.65;
+  --lh-loose: 1.8;
+
+  /* ─── Spacing (4px base) ─── */
+  --s-1: 4px;
+  --s-2: 8px;
+  --s-3: 12px;
+  --s-4: 16px;
+  --s-5: 24px;
+  --s-6: 32px;
+  --s-7: 48px;
+  --s-8: 64px;
+  --s-9: 96px;
+
+  /* ─── Radii (subtle, document-like) ─── */
+  --r-1: 2px;
+  --r-2: 4px;
+  --r-3: 8px;
+  --r-4: 12px;
+  --r-pill: 999px;
+
+  /* ─── Shadows (very restrained) ─── */
+  --shadow-1: 0 1px 0 rgba(31,29,26,0.04);
+  --shadow-2: 0 1px 2px rgba(31,29,26,0.06), 0 0 0 1px rgba(31,29,26,0.04);
+  --shadow-3: 0 6px 24px -10px rgba(31,29,26,0.18);
+
+  /* ─── Motion ─── */
+  --ease-out: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --t-fast: 120ms;
+  --t-med:  200ms;
+  --t-slow: 320ms;
+}
+
+/* ─── Semantic typography classes ─── */
+.h-display {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  line-height: var(--lh-tight);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg-1);
+}
+.h1 {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  line-height: var(--lh-tight);
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  color: var(--fg-1);
+}
+.h2 {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  line-height: var(--lh-snug);
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--fg-1);
+}
+.h3 {
+  font-family: var(--font-sans);
+  font-size: var(--text-xl);
+  line-height: var(--lh-snug);
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  color: var(--fg-1);
+}
+.h4 {
+  font-family: var(--font-sans);
+  font-size: var(--text-lg);
+  line-height: var(--lh-snug);
+  font-weight: 600;
+  color: var(--fg-1);
+}
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--fg-3);
+  font-weight: 500;
+}
+.body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+  text-wrap: pretty;
+}
+.body-lg {
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--lh-body);
+  color: var(--fg-1);
+  text-wrap: pretty;
+}
+.meta {
+  font-family: var(--font-sans);
+  font-size: var(--text-sm);
+  line-height: var(--lh-snug);
+  color: var(--fg-3);
+}
+.code {
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+  color: var(--fg-2);
+  background: var(--bg-2);
+  padding: 1px 6px;
+  border-radius: var(--r-2);
+  border: 1px solid var(--rule);
+}
+
+body { background: var(--bg-1); color: var(--fg-1); font-family: var(--font-sans); }
+* { box-sizing: border-box; }
+
+/* ─── Highlighter (형광펜) ─────────────────────────────
+   Marker-style emphasis. Only the two brand colors are allowed.
+   Use <mark class="hl"> or <mark class="hl hl--terra"> on inline text.
+   The band is layered behind the type with a slight rotation so it reads
+   like a real marker stroke, not a flat background fill. */
+
+mark.hl,
+.hl {
+  background: transparent;
+  color: inherit;
+  padding: 0 0.18em;
+  margin: 0 -0.06em;
+  font-weight: 600;
+  background-image: linear-gradient(180deg, transparent 55%, var(--sage-300) 55%, var(--sage-300) 92%, transparent 92%);
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+mark.hl--terra,
+.hl--terra {
+  background-image: linear-gradient(180deg, transparent 55%, var(--terra-300) 55%, var(--terra-300) 92%, transparent 92%);
+}
+/* Slightly thicker variant for headlines / pull quotes */
+mark.hl--thick,
+.hl--thick {
+  background-image: linear-gradient(180deg, transparent 35%, var(--sage-300) 35%, var(--sage-300) 95%, transparent 95%);
+}
+mark.hl--thick.hl--terra,
+.hl--thick.hl--terra {
+  background-image: linear-gradient(180deg, transparent 35%, var(--terra-300) 35%, var(--terra-300) 95%, transparent 95%);
+}
+* { box-sizing: border-box; }

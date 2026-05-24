@@ -1,0 +1,7 @@
+/* JCH Portfolio Design System — root entry point (compatibility shim)
+   ──────────────────────────────────────────────────────────────────
+   The real tokens + base typography live in src/styles/tokens.css.
+   This file exists only so that legacy <link href="colors_and_type.css">
+   references keep working. Do NOT add new rules here — edit tokens.css. */
+
+@import url('src/styles/tokens.css');
