@@ -4,6 +4,7 @@
 // classDef 팔레트는 Notebook 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.UE5_ACTION_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 01 ─ PoC / 실험',
     code: 'LAB · 01',

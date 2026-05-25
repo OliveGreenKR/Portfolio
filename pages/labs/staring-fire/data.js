@@ -4,6 +4,7 @@
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.STARING_FIRE_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 05 ─ PoC / GPU Fluid + 발광',
     code: 'LAB · 05',

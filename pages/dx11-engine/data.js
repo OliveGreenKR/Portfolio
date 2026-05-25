@@ -4,6 +4,7 @@
 // Mermaid classDef 는 Notebook 토큰 팔레트 안에서 5 swatch (sage / terra / wheat / dusty / plum) 로만.
 
 window.DX11_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     code: 'MAIN · 03',
     title: 'DX11 Custom Engine',

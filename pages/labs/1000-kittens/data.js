@@ -4,6 +4,7 @@
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.KITTENS_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 06 ─ 게임잼 / 분기 시스템',
     code: 'LAB · 06',
