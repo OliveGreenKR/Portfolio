@@ -9,8 +9,8 @@ window.LANDING_DATA = {
     headline: ['사용은 단순하게,', '구조는 확장에 유연하게.'],
     headlineMarkSecondLine: '확장에 유연하게', // 두 번째 줄의 형광펜 부분
     lede:
-      '게임 개발자 1인 · 정철. **시스템 아키텍처 결정 사례**, ' +
-      '**장기 프로젝트 + 출시 운영**, **PoC 사고 사이클** — 세 결이 같이 있는 포트폴리오.',
+      '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, ' +
+      '장기 프로젝트 + 출시 운영, PoC 사고 사이클 — 세 결이 같이 있는 포트폴리오.',
     stats: [
       { n: '10', label: 'projects',       sub: '메인 3 · Labs 7' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
@@ -89,7 +89,7 @@ window.LANDING_DATA = {
       tag: 'System / Package',
       duration: '재사용 패키지 · async 개선',
       date: '2026-05-20',
-      line: '키 기반 사운드 god-class 에서 *취득 책임* 만 인터페이스로 분리 · `LoadMode` 직교 데이터화로 BGM async 로드/해제.',
+      line: '키 기반 사운드 god-class 에서 취득 책임 만 인터페이스로 분리 · `LoadMode` 직교 데이터화로 BGM async 로드/해제.',
     },
     {
       idx: 'L.01',
@@ -109,7 +109,7 @@ window.LANDING_DATA = {
       tag: 'Design / Variant',
       duration: '6일 · 3 디자인 테스트',
       date: '2026-05-12',
-      line: 'dash 메커닉의 핵심 경험을 3안으로 분기 — *변형 워크플로우* 자체가 산출물.',
+      line: 'dash 메커닉의 핵심 경험을 3안으로 분기 — 변형 워크플로우 자체가 산출물.',
     },
     {
       idx: 'L.03',
@@ -129,7 +129,7 @@ window.LANDING_DATA = {
       tag: 'Voxel Sim',
       duration: '3일',
       date: '2026-05-02',
-      line: '32³ 볼류메트릭 시뮬레이션. *내부 상태* 를 외부 시각으로 가시화하는 PoC.',
+      line: '32³ 볼류메트릭 시뮬레이션. 내부 상태 를 외부 시각으로 가시화하는 PoC.',
     },
     {
       idx: 'L.05',
@@ -139,7 +139,7 @@ window.LANDING_DATA = {
       tag: 'GPU / Shader',
       duration: '3일',
       date: '2026-04-29',
-      line: 'GPU Stable Fluids + Blackbody. *불멍* 인터랙션을 위한 셰이더 PoC.',
+      line: 'GPU Stable Fluids + Blackbody. 불멍 인터랙션을 위한 셰이더 PoC.',
     },
     {
       idx: 'L.06',

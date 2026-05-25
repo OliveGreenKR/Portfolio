@@ -88,6 +88,8 @@ The portfolio is a **responsive web** surface that must also produce a **print P
 
 This mirrors the user's own research format and is the load-bearing structure of the whole system. Headings, cards, and slides should reuse these five labels verbatim where a project deep-dive is shown.
 
+**Evidence placement (`data.evidenceFirst`).** By default the deep-dive renders Hero → Context (§01) → Action/Systems (§02) → Evidence (§03). A page `data.js` may set `evidenceFirst: true` to surface the **Evidence (metrics) block immediately after Context** — Evidence becomes §02 and Action/Systems shifts to §03 (the on-page rail reorders to match). This is **enabled on every NotebookPage-based page** (3 main + all labs) so quantitative outcomes read above the fold. `landing` / `about` are excluded — they are not NotebookPage surfaces and have no Evidence section. Default (flag unset) keeps Evidence last.
+
 **Specificity over rhetoric.** Numbers carry the weight: *147 files*, *16 weeks*, *98% positive on Steam*, *5-week release*, *14 languages*, *84 tests*, *O(n²)→O(n log n)*. Avoid superlatives ("amazing," "innovative") — let the figure speak. When a number is missing, **say so** ("측정값 없음" / "no measured value"); never invent.
 
 **Honesty about role.** If a piece of work was a teammate's (e.g. Cartapli's paper-folding math), the portfolio explicitly attributes it. The user's research uses ⚠️ flags for this — preserve that pattern.
@@ -103,6 +105,8 @@ This mirrors the user's own research format and is the load-bearing structure of
 **Emoji.** Effectively none. The source materials use exactly two glyphs purposefully — ⚠️ for flags/caveats and ✓ for confirmed facts. That is the entire emoji vocabulary. Decorative emoji is forbidden.
 
 **Length.** Short paragraphs. 2–4 sentence chunks. Lists are bulleted with leading nouns/verbs, never bullet-soup. Code is quoted inline as `monospace` and never dumped as long blocks on overview screens.
+
+**Inline markup in `data.js`.** Page content strings are **plain text**. Do **not** use markdown emphasis (`*italic*`, `**bold**`) inside `data.js` — it is not part of the authoring convention and surfaces as literal asterisks when scripts load over `file://`. The **only** permitted inline markup is backtick `` `code` `` (rendered as `<code>` for identifiers / API names). Word-level emphasis is a **visual** concern handled at the component level via the `<mark class="hl">` (sage) / `hl--terra` (terracotta) highlighter — never via markdown characters in the data layer. Mermaid/`heroMermaid` and `ascii.code` template literals are exempt (they are diagram / code source, not prose).
 
 ---
 

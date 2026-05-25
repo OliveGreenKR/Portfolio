@@ -51,8 +51,8 @@ window.CARTAPLI_DATA = {
       kind: 'ARCHITECTURE',
       title: '배틀씬 3계층 아키텍처',
       lede: '11개 싱글톤 · 10+ 시스템 · 15+ 이벤트가 동시 동작하지만 시스템 간 직접 참조 0.',
-      problem: '로그라이크 배틀씬은 매 런마다 시스템 다수가 동시에 살아 움직여야 한다. 시스템 간 직접 참조로 묶이면 새 시스템 하나 추가가 *기존 코드 전부를 건드리는* 변경으로 번진다.',
-      decision: 'Data / Entity / System 세 계층으로 분리. Data Layer 는 SO 중앙 레지스트리. Entity Layer 는 BattleSceneSingleton 오케스트레이터 + Character 컴포넌트 컨테이너 + UI. System Layer 는 BattleSceneSingleton 이벤트만 구독하고 Character 컴포넌트를 참조해 동작. Character 자체는 시스템이 아니라 *컴포넌트 컨테이너* — TurnActor / Health / StatMediator / PaperSyncTarget / AIBrain 등의 조합.',
+      problem: '로그라이크 배틀씬은 매 런마다 시스템 다수가 동시에 살아 움직여야 한다. 시스템 간 직접 참조로 묶이면 새 시스템 하나 추가가 기존 코드 전부를 건드리는 변경으로 번진다.',
+      decision: 'Data / Entity / System 세 계층으로 분리. Data Layer 는 SO 중앙 레지스트리. Entity Layer 는 BattleSceneSingleton 오케스트레이터 + Character 컴포넌트 컨테이너 + UI. System Layer 는 BattleSceneSingleton 이벤트만 구독하고 Character 컴포넌트를 참조해 동작. Character 자체는 시스템이 아니라 컴포넌트 컨테이너 — TurnActor / Health / StatMediator / PaperSyncTarget / AIBrain 등의 조합.',
       results: [
         '개발 중반 이후 스킬 시스템 · 업적 시스템 추가 시 기존 코드 변경 0줄로 통합',
         'Steamworks 업적 시스템을 OnBattleEnd 단일 이벤트 구독으로 통합 (전투 코드 수정 0)',
@@ -120,8 +120,8 @@ window.CARTAPLI_DATA = {
       kind: 'SYSTEM',
       title: '스킬 시스템 — 확장성 + 쉬운 사용성',
       lede: '관리와 구현을 분리하고, 구현 자체를 프리팹으로 데이터화.',
-      problem: '플레이어 직접 사용 + 유물로 인한 자동 사용. 같은 기능이지만 스킬별 동작에 *약간씩 다른 차이* 가 필요하다. 한 클래스에 다 박으면 새 스킬마다 분기가 늘고, 분리하면 인스턴스별 차이를 데이터로 표현할 수단이 필요.',
-      decision: '**관리와 구현의 분리** — 관리 데이터(쿨다운 · 사용 정책)와 구현 데이터(런타임 동작 · 프리팹)를 다른 계층에 둔다. 구현체는 *프리팹으로 데이터화* 하여 인스턴스별 차이를 표현. SkillExecutionContext 는 불변 구조체 + Fluent API — 새 인스턴스 반환으로 부작용 방지.',
+      problem: '플레이어 직접 사용 + 유물로 인한 자동 사용. 같은 기능이지만 스킬별 동작에 약간씩 다른 차이 가 필요하다. 한 클래스에 다 박으면 새 스킬마다 분기가 늘고, 분리하면 인스턴스별 차이를 데이터로 표현할 수단이 필요.',
+      decision: '관리와 구현의 분리 — 관리 데이터(쿨다운 · 사용 정책)와 구현 데이터(런타임 동작 · 프리팹)를 다른 계층에 둔다. 구현체는 프리팹으로 데이터화 하여 인스턴스별 차이를 표현. SkillExecutionContext 는 불변 구조체 + Fluent API — 새 인스턴스 반환으로 부작용 방지.',
       results: [
         '분신 스킬(MirrorImageExecutor) 추가 = OnExecute 오버라이드 1개 + 프리팹 조립 / 기존 시스템 수정 0',
         '6종 스킬 실행기 상호 영향 0',
@@ -158,7 +158,7 @@ window.CARTAPLI_DATA = {
       title: '데이터 생명주기 — 같은 루프, 매번 다른 경험',
       lede: 'Permanent / Session / Scene 3계층. 하향 주입 + 상향 저장.',
       problem: '로그라이크의 데이터는 세 종류 — 런마다 초기화(적·난이도·보상) / 런을 넘어 누적(업적·통계·글로벌 스킬) / 씬 전환 시 유지(런 진행·세이브). 한 곳에 섞이면 씬 전환 한 번에 데이터 유실 또는 영구 오염.',
-      decision: '**Permanent / Session / Scene** 3계층 분리. Permanent = DontDestroyOnLoad. Session = 한 런 = 시작~게임오버. Scene = 씬 로드~언로드. 하향 주입(Permanent → Session → Scene) + 상향 저장(Scene → Session → Permanent) 의 양방향 흐름 구축.',
+      decision: 'Permanent / Session / Scene 3계층 분리. Permanent = DontDestroyOnLoad. Session = 한 런 = 시작~게임오버. Scene = 씬 로드~언로드. 하향 주입(Permanent → Session → Scene) + 상향 저장(Scene → Session → Permanent) 의 양방향 흐름 구축.',
       results: [
         '씬 전환 데이터 유실 0건',
         'Steamworks 업적 · 통계를 Permanent 에 배치해 전투 씬 코드 수정 없이 통합',
@@ -181,13 +181,13 @@ window.CARTAPLI_DATA = {
       no: '3.4',
       kind: 'EVENT',
       title: 'Pre / On 2단계 이벤트 패턴',
-      lede: '같은 프레임 충돌을 *1프레임 간격* 으로 풀어낸다.',
-      problem: '같은 프레임에 다수 구독자가 *초기화* 와 *실행* 을 동시에 시도해 순서 충돌. 어느 구독자가 먼저 도느냐에 따라 결과가 달라짐.',
-      decision: '이벤트를 **Pre / On 2단계** 로 분리 + `yield return null` 로 1프레임 간격 보장. Pre 단계 = 준비 (UI 갱신 · 상태 초기화) / On 단계 = 실제 실행 (액터 행동 시작 · 턴 완료 처리).',
+      lede: '같은 프레임 충돌을 1프레임 간격 으로 풀어낸다.',
+      problem: '같은 프레임에 다수 구독자가 초기화 와 실행 을 동시에 시도해 순서 충돌. 어느 구독자가 먼저 도느냐에 따라 결과가 달라짐.',
+      decision: '이벤트를 Pre / On 2단계 로 분리 + `yield return null` 로 1프레임 간격 보장. Pre 단계 = 준비 (UI 갱신 · 상태 초기화) / On 단계 = 실제 실행 (액터 행동 시작 · 턴 완료 처리).',
       results: [
         '같은 프레임 충돌 해소',
         '업적 시스템을 OnBattleEnd 단일 이벤트로 통합 (전투 코드 수정 0)',
-        '새 시스템 추가 시 *어느 이벤트의 Pre/On 어느 단계 구독* 즉시 결정 가능',
+        '새 시스템 추가 시 어느 이벤트의 Pre/On 어느 단계 구독 즉시 결정 가능',
       ],
     },
 
@@ -211,7 +211,7 @@ window.CARTAPLI_DATA = {
       title: '7단계 배틀 FSM + 페이즈 분리',
       lede: 'Preparing → RoundStart → PlayerActionPhase → CharacterTurnPhase → RoundEnd → RewardPhase → BattleEnded.',
       problem: '한 배틀 안에 입력 처리 · 턴 스케줄링 · 보상 계산이 섞이면 각 단계의 책임 경계가 흐려진다. 페이즈 추가 / 변경 시 다른 페이즈 코드를 건드리는 변경이 발생.',
-      decision: '**7단계 FSM** + 각 페이즈 단일 책임. PlayerActionPhase 는 FoldInputController 만 활성, CharacterTurnPhase 는 BattleTimeSingleton 턴 스케줄러만 동작. 페이즈 전환은 코루틴 기반(`DelayedBattleStartCoroutine`). 외부 시스템이 페이즈 종료를 알려주는 Command-Response 패턴 (`EndPlayerAction`, `EndCharacterPhase`).',
+      decision: '7단계 FSM + 각 페이즈 단일 책임. PlayerActionPhase 는 FoldInputController 만 활성, CharacterTurnPhase 는 BattleTimeSingleton 턴 스케줄러만 동작. 페이즈 전환은 코루틴 기반(`DelayedBattleStartCoroutine`). 외부 시스템이 페이즈 종료를 알려주는 Command-Response 패턴 (`EndPlayerAction`, `EndCharacterPhase`).',
       results: [
         '분신 스킬(MirrorImage) 을 CharacterTurnPhase 에 액터 등록만으로 구현 / PlayerActionPhase 영향 0',
         '몬스터 패턴(CoordinateAttack) 추가 시 CharacterPhase 내 AIDecision/AIAction 만 추가 / 접기 입력 로직과 완전 독립',
