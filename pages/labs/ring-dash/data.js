@@ -7,6 +7,7 @@ window.RING_DASH_DATA = {
   meta: {
     eyebrow: 'LAB · 02 ─ PoC / 디자인 분기',
     code: 'LAB · 02',
+    date: '2026.05',
     title: 'Ring Dash — 한 메커닉 → 3 디자인 테스트',
     oneLine: '원형 링 안에서 dash · 반사 · 휩쓸기 한 메커닉을 두고 어떤 경험이 핵심인가 를 3 디자인 테스트로 직접 굴려본 6일 PoC.',
     period: '2026.05.07 – 2026.05.12',

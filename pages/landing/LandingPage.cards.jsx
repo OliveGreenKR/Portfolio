@@ -228,7 +228,7 @@ function MainRowCard({ p, isLast }) {
         {p.thumb
           ? <img src={p.thumb} alt="" style={cardStyles.thumbImg} />
           : <div style={{width:'100%',height:'100%',backgroundImage:'repeating-linear-gradient(135deg, transparent 0 10px, rgba(31,29,26,0.05) 10px 11px)'}} />}
-        <span style={cardStyles.thumbCode}>{p.code}</span>
+        <span style={cardStyles.thumbCode}>{p.date || p.code}</span>
       </div>
       <div style={cardStyles.rowBody}>
         <h3 style={cardStyles.rowTitle}>{p.title}</h3>
@@ -254,6 +254,11 @@ function MainRowCard({ p, isLast }) {
   );
 }
 
+// ISO 'YYYY-MM-DD' → 'YYYY.MM'. 미상(빈 문자열)이면 빈 값.
+function fmtCardDate(iso) {
+  return iso ? iso.slice(0, 7).replace('-', '.') : '';
+}
+
 function LabsCard({ l }) {
   const [hover, setHover] = React.useState(false);
   const hasHref = !!l.href;
@@ -272,7 +277,7 @@ function LabsCard({ l }) {
       onMouseLeave={() => setHover(false)}
     >
       <div style={cardStyles.labEyebrow}>
-        <span>{l.idx}</span>
+        <span>{fmtCardDate(l.date)}</span>
         <span style={cardStyles.labTag}>{l.tag}</span>
       </div>
       <h4 style={cardStyles.labTitle}>{l.title}</h4>

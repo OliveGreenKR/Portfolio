@@ -8,6 +8,7 @@ window.STARING_FIRE_DATA = {
   meta: {
     eyebrow: 'LAB · 05 ─ PoC / GPU Fluid + 발광',
     code: 'LAB · 05',
+    date: '2026.04',
     title: 'Staring Fire — 반응하는 불의 불멍 PoC',
     oneLine: '마우스로 불을 피우고 장작을 태우는 불멍 경험을 GPU fluid sim + blackbody 발광 + 게임 인터랙션 레이어로 3일에 구현한 PoC.',
     period: '2026.04.27 – 2026.04.29 (3 일)',

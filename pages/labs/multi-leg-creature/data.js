@@ -8,6 +8,7 @@ window.MULTI_LEG_DATA = {
   meta: {
     eyebrow: 'LAB · 03 ─ PoC / 물리 합벡터',
     code: 'LAB · 03',
+    date: '2026.05',
     title: 'Multi-Leg Creature — 협동형 다족류의 힘 합벡터',
     oneLine: '다리 1개당 1명이 조작하는 협동/방해 다족류의 핵심 — 각 다리의 힘이 몸통에 합벡터로 모이는 구조 를 단일 사용자로 먼저 검증한 1일 PoC.',
     period: '2026.05.04 (1 일)',

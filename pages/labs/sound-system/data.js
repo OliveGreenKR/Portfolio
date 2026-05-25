@@ -11,6 +11,7 @@ window.SOUND_SYSTEM_DATA = {
   meta: {
     eyebrow: 'LAB · 07 ─ System / Reusable Package',
     code: 'LAB · 07',
+    date: '2026.05',
     title: 'Sound System — 취득 책임만 떼어낸 재사용 사운드 패키지',
     oneLine:
       '키 기반 사운드 god-class에서 클립 취득(load/release) 책임만 인터페이스로 분리하고, ' +

@@ -6,6 +6,7 @@ window.CARTAPLI_DATA = {
   evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     code: 'MAIN · 01',
+    date: '2026.02',
     title: 'Cartapli: Fold Quest',
     oneLine: '종이를 접어 싸우는 로그라이크',
     period: '2025.11 – 2026.02',
