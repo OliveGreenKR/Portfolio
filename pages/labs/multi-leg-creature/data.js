@@ -4,6 +4,7 @@
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만 사용.
 
 window.MULTI_LEG_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 03 ─ PoC / 물리 합벡터',
     code: 'LAB · 03',

@@ -4,6 +4,7 @@
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.BBQ_MASTER_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 04 ─ PoC / 볼류메트릭 시뮬',
     code: 'LAB · 04',

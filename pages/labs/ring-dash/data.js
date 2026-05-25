@@ -3,6 +3,7 @@
 // Source: uploads/ring-dash.md. Schema 는 UE5 Action 과 동일. classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.RING_DASH_DATA = {
+  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     eyebrow: 'LAB · 02 ─ PoC / 디자인 분기',
     code: 'LAB · 02',
