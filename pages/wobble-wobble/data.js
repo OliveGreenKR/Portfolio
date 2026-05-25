@@ -54,8 +54,8 @@ window.WOBBLE_DATA = {
       kind: 'TIMELINE',
       title: '5주 압축 출시 — 다중 워크스트림 동시 운영',
       lede: '명확한 외부 마감(Steam 출시일)에 맞춰 5인 팀의 4개 이상 워크스트림을 동시 진행.',
-      problem: '게임랩 종료 직후, 출시 준비 4주 + 출시 1주만 남은 일정에서 개발 · 모델링 · UI · 홍보가 *동시* 에 진행되어야 한다. 워크스트림이 서로 막히면 외부 마감이 그대로 깨진다.',
-      decision: '본인이 PM 역할로 일정/태스크/이벤트 운영을 총괄. 게임랩 다주차의 PM 경험을 출시 운영 PM 으로 직접 연결. 본인은 동시에 **개발(스테이지 4종 + 사운드 + Log) + 자동화 인프라 + 홍보 운영** 다역 수행. 워크스트림 간 의존성은 사전 동기화 시점만 잡고 나머지는 병렬.',
+      problem: '게임랩 종료 직후, 출시 준비 4주 + 출시 1주만 남은 일정에서 개발 · 모델링 · UI · 홍보가 동시 에 진행되어야 한다. 워크스트림이 서로 막히면 외부 마감이 그대로 깨진다.',
+      decision: '본인이 PM 역할로 일정/태스크/이벤트 운영을 총괄. 게임랩 다주차의 PM 경험을 출시 운영 PM 으로 직접 연결. 본인은 동시에 개발(스테이지 4종 + 사운드 + Log) + 자동화 인프라 + 홍보 운영 다역 수행. 워크스트림 간 의존성은 사전 동기화 시점만 잡고 나머지는 병렬.',
       results: [
         '목표 출시일 정확히 출시 · Day 7 업데이트까지 5주 안에 완료',
         '4개 이상 워크스트림 (개발/모델링/UI/홍보) 동시 운영',
@@ -85,8 +85,8 @@ window.WOBBLE_DATA = {
       kind: 'PRODUCT',
       title: '게임 재제작 — 스테이지 4종 + 핵심 재미 기준 폐기',
       lede: '게임랩 빌드(badulbadul2)에서 핵심 메카닉만 유지, 모델링·UI·UX 전면 개편으로 사실상 재제작.',
-      problem: '게임랩 빌드의 모든 스테이지를 그대로 가져가면 *핵심 재미 경험* 이 옅어진다. 게임랩에서 도출한 원칙 — *"핵심 재미 경험을 유지하지 못하는 확장은 게임을 악화시킨다"* — 을 출시 빌드에도 적용해야 한다.',
-      decision: '핵심 재미 경험을 **"조작을 통해 스스로 유발한 긴장감 속에서 폭탄 제거"** 로 정의. 이 기준 미달 스테이지는 폐기. 본인 직접 개발 스테이지 5종: **툴박스 · 경복궁 · 키보드 · 남산타워 · 자유의 여신상**.',
+      problem: '게임랩 빌드의 모든 스테이지를 그대로 가져가면 핵심 재미 경험 이 옅어진다. 게임랩에서 도출한 원칙 — "핵심 재미 경험을 유지하지 못하는 확장은 게임을 악화시킨다" — 을 출시 빌드에도 적용해야 한다.',
+      decision: '핵심 재미 경험을 "조작을 통해 스스로 유발한 긴장감 속에서 폭탄 제거" 로 정의. 이 기준 미달 스테이지는 폐기. 본인 직접 개발 스테이지 5종: 툴박스 · 경복궁 · 키보드 · 남산타워 · 자유의 여신상.',
       results: [
         '본인 개발 스테이지 5종 출시 빌드 포함',
         '모델링 / UI / UX 전면 개편',
@@ -101,13 +101,13 @@ window.WOBBLE_DATA = {
       kind: 'SYSTEM',
       title: '사운드 시스템 — 사용성 · 확장성 · 성능 3차원 동시 달성',
       lede: '본 프로젝트에서 가장 깊이 작업한 단일 시스템. 네임스페이스 `BadeulBadeul.SoundSystem`. 디자이너가 코드 0줄로 운영.',
-      problem: '호출부가 `AudioSource` 를 직접 다루면 결합도가 오르고 GameObject 생성·파괴 비용이 든다. 버튼/BGM/충돌 등 *트리거 패턴이 다양* 해 일관 추상화가 필요. 동시 발음 제어 부재 시 충돌음·발소리가 폭주하고, 첫 재생에는 Instantiate 레이턴시가 보인다. 게다가 볼륨 저장 책임을 사운드 시스템 안에 두면 저장 방식 변경(PlayerPrefs → JSON → 서버) 시 사운드 코드 전체가 흔들린다.',
-      decision: '**3+1 레이어** 로 책임을 분리. Data Layer (ScriptableObject 컨테이너 — SoundLibrarySO · SoundEntry · SoundClip) + Runtime Core (SoundManager 싱글톤 + Dictionary O(1) 캐시 + ObjectPool + BGM A/B 크로스페이드 + 정책 게이트) + Trigger Layer (디자이너용 SoundTrigger 4 종) + Unity AudioMixer/AudioSource. 정책(cooldown · maxConcurrent · MaxCountPolicy)을 **데이터로** 표현해 디자이너가 인스펙터에서 튜닝. 볼륨 저장/로드는 외부 `SettingsManager` 책임으로 분리.',
+      problem: '호출부가 `AudioSource` 를 직접 다루면 결합도가 오르고 GameObject 생성·파괴 비용이 든다. 버튼/BGM/충돌 등 트리거 패턴이 다양 해 일관 추상화가 필요. 동시 발음 제어 부재 시 충돌음·발소리가 폭주하고, 첫 재생에는 Instantiate 레이턴시가 보인다. 게다가 볼륨 저장 책임을 사운드 시스템 안에 두면 저장 방식 변경(PlayerPrefs → JSON → 서버) 시 사운드 코드 전체가 흔들린다.',
+      decision: '3+1 레이어 로 책임을 분리. Data Layer (ScriptableObject 컨테이너 — SoundLibrarySO · SoundEntry · SoundClip) + Runtime Core (SoundManager 싱글톤 + Dictionary O(1) 캐시 + ObjectPool + BGM A/B 크로스페이드 + 정책 게이트) + Trigger Layer (디자이너용 SoundTrigger 4 종) + Unity AudioMixer/AudioSource. 정책(cooldown · maxConcurrent · MaxCountPolicy)을 데이터로 표현해 디자이너가 인스펙터에서 튜닝. 볼륨 저장/로드는 외부 `SettingsManager` 책임으로 분리.',
       results: [
         '디자이너 코드 0줄로 운영 — SoundLibrarySO 등록 + SoundTrigger 부착',
         '호출자가 AudioSource 직접 안 다룸. `Play("key")` 한 줄로 끝',
         'AudioSource Pre-warm 으로 첫 재생 Instantiate 부하 0',
-        '풀 재사용으로 GameObject 생성·파괴 0. 풀 크기는 SoundLibrary 개수 무관, **동시 재생 수만큼만**',
+        '풀 재사용으로 GameObject 생성·파괴 0. 풀 크기는 SoundLibrary 개수 무관, 동시 재생 수만큼만',
         '키 조회 O(1) · cooldown + maxConcurrent + MaxCountPolicy 로 발음 폭주 차단',
         '테스트 84개 — 데이터 무결성 13 + 런타임 동작 29 + 구조적 요구사항 42',
       ],
@@ -175,7 +175,7 @@ window.WOBBLE_DATA = {
       },
       ascii: {
         title: '보조 — 볼륨 아키텍처',
-        intro: '책임 분리: SoundManager 는 볼륨 *적용* 만. 저장/로드는 외부 SettingsManager 책임. 저장 방식 변경 시 SoundManager 무수정.',
+        intro: '책임 분리: SoundManager 는 볼륨 적용 만. 저장/로드는 외부 SettingsManager 책임. 저장 방식 변경 시 SoundManager 무수정.',
         code: `// linear 0~1 → dB
 db = Log10(volume) * 20;
 AudioMixer.SetFloat("Master_dB", db);
@@ -199,8 +199,8 @@ finalVolume
       kind: 'OBSERVABILITY',
       title: 'LogSystem — 인터페이스 기반 출력 채널 추상화',
       lede: '출력 채널(파일/콘솔/원격)을 인터페이스 뒤로 숨겨 운영 중 채널 교체 무영향.',
-      problem: '출시 후 운영 중에는 *디버깅 채널이 바뀐다* — 로컬 파일 → 콘솔 → 원격 서버. 호출 코드가 채널을 직접 알면 매번 교체할 때마다 전체 호출부가 변경된다.',
-      decision: '**인터페이스 기반** 으로 출력 채널 추상화 (`ILogChannel`). 호출자는 채널 종류를 모름. 단위 테스트 6종으로 동작 보장.',
+      problem: '출시 후 운영 중에는 디버깅 채널이 바뀐다 — 로컬 파일 → 콘솔 → 원격 서버. 호출 코드가 채널을 직접 알면 매번 교체할 때마다 전체 호출부가 변경된다.',
+      decision: '인터페이스 기반 으로 출력 채널 추상화 (`ILogChannel`). 호출자는 채널 종류를 모름. 단위 테스트 6종으로 동작 보장.',
       results: [
         '운영 중 채널 교체 시 호출 코드 무수정',
         '단위 테스트 6종 — 출시 후 디버깅·이슈 추적 신뢰도 확보',
@@ -213,8 +213,8 @@ finalVolume
       kind: 'AUTOMATION',
       title: '자동화 인프라 — Claude Code + MCP 자율 도입',
       lede: '학습 자료 의존 없이 설계 단계부터 운영까지 혼자 끌고 감. 게임 코드 외 영역(번역·홍보·운영)에 적용.',
-      problem: '5인 팀에 *비기술 자동화 전담 인력이 없다*. 5주 안에 14언어 번역 · 약 200곳 컨택 · 발송 트래킹 · 캠페인 운영을 수동으로 끌고 가는 건 불가능.',
-      decision: '**Claude Code + MCP 자율 도입** — 학습 자료 없이 본인이 처음 도입. 번역 / 홍보 SOP / 발송 인프라 / 캠페인 운영 4영역에 적용. 홍보 메일 5단계 SOP 를 **Claude Code Skill 4종으로 코드화**. 발송은 Google Apps Script + Google Sheets 트래커. 출시 후, 만들어진 인프라를 **`IndieGameAd` 별도 프로젝트로 분리** — 재사용 가능한 인디게임 출시 인프라 자산화.',
+      problem: '5인 팀에 비기술 자동화 전담 인력이 없다. 5주 안에 14언어 번역 · 약 200곳 컨택 · 발송 트래킹 · 캠페인 운영을 수동으로 끌고 가는 건 불가능.',
+      decision: 'Claude Code + MCP 자율 도입 — 학습 자료 없이 본인이 처음 도입. 번역 / 홍보 SOP / 발송 인프라 / 캠페인 운영 4영역에 적용. 홍보 메일 5단계 SOP 를 Claude Code Skill 4종으로 코드화. 발송은 Google Apps Script + Google Sheets 트래커. 출시 후, 만들어진 인프라를 `IndieGameAd` 별도 프로젝트로 분리 — 재사용 가능한 인디게임 출시 인프라 자산화.',
       results: [
         '비기술 자동화 전담 없이 자동화 인프라 4영역 구축',
         '5주 압축 일정 내 글로벌 첫 노출 확보',

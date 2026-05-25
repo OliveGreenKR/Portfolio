@@ -41,7 +41,7 @@ window.ABOUT_DATA = {
       lede: '게임랩 빌드 → Steam 글로벌 출시. 다중 워크스트림 + 자동화 인프라 자율 도입.',
       examples: [
         { tag: 'Wobble Wobble', line: '5주 · 5인 · Steam + STOVE · 사운드 테스트 84개 · 14개 언어 자동 번역.', href: '../pages/wobble-wobble.html' },
-        { tag: 'Cartapli',      line: '13주 · 4인 · Steam **매우 긍정 98%** (155/157) · 26,269 lifetime users.', href: '../pages/cartapli.html' },
+        { tag: 'Cartapli',      line: '13주 · 4인 · Steam 매우 긍정 98% (155/157) · 26,269 lifetime users.', href: '../pages/cartapli.html' },
       ],
     },
     {
@@ -131,12 +131,12 @@ window.ABOUT_DATA = {
   background: {
     note: '학력 · 외부 활동 · 자격. 게임랩 메타 서사 포함.',
     rows: [
-      { y: '2017.03 ─ 2024.08', t: '**서울시립대학교** 기계정보공학 (졸업). 컴퓨터 시스템 구조론 · 시스템 소프트웨어 · 그래픽스 · 운영체제 · 자료구조 및 알고리즘 · 임베디드 시스템 등.' },
-      { y: '2025.09',          t: '**크래프톤 게임랩 4기** — 트랙 종료 → Steam 무료 게임 *Cartapli: Fold Quest* 출시 (EPIC 으로 연결).' },
-      { y: '게임랩 다주차',     t: '주차 단위 **PM 운영 경험** → Wobble Wobble **출시 PM + 자동화 엔지니어** 로 직결.' },
-      { y: '2024.05',          t: '토익 **860**.' },
-      { y: '2023.06',          t: '서울시립대 **C++ 소모임 강의** 진행 (Accelerated C++ 기반).' },
-      { y: '2023.02',          t: '**백준 플래티넘** 달성 (C++).' },
+      { y: '2017.03 ─ 2024.08', t: '서울시립대학교 기계정보공학 (졸업). 컴퓨터 시스템 구조론 · 시스템 소프트웨어 · 그래픽스 · 운영체제 · 자료구조 및 알고리즘 · 임베디드 시스템 등.' },
+      { y: '2025.09',          t: '크래프톤 게임랩 4기 — 트랙 종료 → Steam 무료 게임 Cartapli: Fold Quest 출시 (EPIC 으로 연결).' },
+      { y: '게임랩 다주차',     t: '주차 단위 PM 운영 경험 → Wobble Wobble 출시 PM + 자동화 엔지니어 로 직결.' },
+      { y: '2024.05',          t: '토익 860.' },
+      { y: '2023.06',          t: '서울시립대 C++ 소모임 강의 진행 (Accelerated C++ 기반).' },
+      { y: '2023.02',          t: '백준 플래티넘 달성 (C++).' },
       { y: '2021 ─ 2024',      t: 'inflearn 온라인 강의 수료 — C++ 입문 · 자료구조 · 게임서버 · Unity 입문 · Unreal 5.' },
     ],
   },
