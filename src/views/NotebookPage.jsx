@@ -35,7 +35,7 @@ function shortenNB(t) {
   return i > 0 ? t.slice(0, i) : t;
 }
 
-function NotebookRail({ systems }) {
+function NotebookRail({ systems, evidenceFirst }) {
   const [active, setActive] = useStateNB('hero');
   useEffectNB(() => {
     const ids = ['hero', 'facts', 'systems', 'evidence', ...systems.map(s => `sys-${s.no.replace('.', '-')}`)];
@@ -63,12 +63,38 @@ function NotebookRail({ systems }) {
       <span className="nb-rail-section">page</span>
       {link('hero', 'Overview')}
       {link('facts', 'Context')}
+      {evidenceFirst && link('evidence', 'Evidence')}
       {link('systems', 'Action')}
       <span className="nb-rail-section">systems</span>
       {systems.map(s => link(`sys-${s.no.replace('.', '-')}`, `${s.no} · ${shortenNB(s.title)}`))}
-      <span className="nb-rail-section">evidence</span>
-      {link('evidence', 'Metrics + media')}
+      {!evidenceFirst && <span className="nb-rail-section">evidence</span>}
+      {!evidenceFirst && link('evidence', 'Metrics + media')}
     </aside>
+  );
+}
+
+function NotebookHeroDiagram({ source }) {
+  const hostRef = React.useRef(null);
+  const [err, setErr] = useStateNB('');
+  useEffectNB(() => {
+    let cancelled = false;
+    (async () => {
+      const m = window.mermaid;
+      if (!m) return;
+      try {
+        const { svg } = await m.render('hero-mm-svg', source);
+        if (!cancelled && hostRef.current) hostRef.current.innerHTML = svg;
+      } catch (e) {
+        if (!cancelled) setErr((e && e.message) || String(e));
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [source]);
+  return (
+    <figure className="nb-hero-media filled">
+      <div className="mermaid-host" ref={hostRef} style={{ width: '100%' }}></div>
+      {err && <pre style={{ whiteSpace: 'pre-wrap', fontFamily: 'var(--font-mono)', fontSize: 12, color: 'var(--terra-500)' }}>mermaid error\n{err}</pre>}
+    </figure>
   );
 }
 
@@ -91,6 +117,8 @@ function NotebookHero({ data }) {
         <figure className="nb-hero-media filled">
           <img src={data.heroImage} alt={`${m.title} — key art`} />
         </figure>
+      ) : data.heroMermaid ? (
+        <NotebookHeroDiagram source={data.heroMermaid} />
       ) : (
         <div className="nb-hero-media">
           <div className="nb-hero-media-label">
@@ -174,12 +202,12 @@ function NotebookFacts({ data }) {
   );
 }
 
-function NotebookSystems({ data, kindLabel }) {
+function NotebookSystems({ data, kindLabel, no = '02' }) {
   const { SystemBlock } = window;
   return (
     <section id="systems" className="nb-section">
       <div className="nb-section-head">
-        <span className="nb-section-no">§ 02</span>
+        <span className="nb-section-no">§ {no}</span>
         <h2 className="nb-section-title">Action — 본인이 작업한 시스템</h2>
         <span className="nb-section-kind">{kindLabel || `${data.systems.length} SYSTEMS`}</span>
       </div>
@@ -188,12 +216,12 @@ function NotebookSystems({ data, kindLabel }) {
   );
 }
 
-function NotebookEvidence({ data }) {
+function NotebookEvidence({ data, no = '03' }) {
   const { DataTable } = window;
   return (
     <section id="evidence" className="nb-section">
       <div className="nb-section-head">
-        <span className="nb-section-no">§ 03</span>
+        <span className="nb-section-no">§ {no}</span>
         <h2 className="nb-section-title">Evidence — 정량 결과</h2>
         <span className="nb-section-kind">METRICS</span>
       </div>
@@ -219,16 +247,26 @@ function NotebookFooter({ crumb }) {
 }
 
 function NotebookPage({ data, crumb, indexHref = 'landing.html', systemsKind }) {
+  const evidenceFirst = !!data.evidenceFirst;
   return (
     <div className="nb-page">
       <NotebookHeader crumb={crumb} indexHref={indexHref} />
       <div className="nb-body">
-        <NotebookRail systems={data.systems} />
+        <NotebookRail systems={data.systems} evidenceFirst={evidenceFirst} />
         <main>
           <NotebookHero data={data} />
           <NotebookFacts data={data} />
-          <NotebookSystems data={data} kindLabel={systemsKind} />
-          <NotebookEvidence data={data} />
+          {evidenceFirst ? (
+            <>
+              <NotebookEvidence data={data} no="02" />
+              <NotebookSystems data={data} kindLabel={systemsKind} no="03" />
+            </>
+          ) : (
+            <>
+              <NotebookSystems data={data} kindLabel={systemsKind} no="02" />
+              <NotebookEvidence data={data} no="03" />
+            </>
+          )}
           <NotebookFooter crumb={crumb} />
         </main>
         <div></div>

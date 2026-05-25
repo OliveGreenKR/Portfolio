@@ -12,10 +12,10 @@ window.LANDING_DATA = {
       '게임 개발자 1인 · 정철. **시스템 아키텍처 결정 사례**, ' +
       '**장기 프로젝트 + 출시 운영**, **PoC 사고 사이클** — 세 결이 같이 있는 포트폴리오.',
     stats: [
-      { n: '09', label: 'projects',       sub: '메인 3 · Labs 6' },
+      { n: '10', label: 'projects',       sub: '메인 3 · Labs 7' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
       { n: '16w', label: 'solo engine',    sub: 'DX11 · 7 모듈 · 147 파일' },
-      { n: '06', label: 'PoC labs',        sub: '1–8 주 단위 실험' },
+      { n: '07', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
     ],
   },
 
@@ -77,10 +77,20 @@ window.LANDING_DATA = {
     },
   ],
 
-  // ─── Labs 그리드 — 카드 6 ────────────────────────────────
-  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection). 데이터 순서는 idx (L.01..L.06) 기준 그대로 둔다.
+  // ─── Labs 그리드 — 카드 7 ────────────────────────────────
+  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection). 데이터 순서는 idx (L.01..L.07) 기준 그대로 둔다.
   // date: 정렬 키 (ISO `YYYY-MM-DD`). 기간 있는 경우 종료일. 미상은 빈 문자열 — 가장 뒤로 밀림.
   labs: [
+    {
+      idx: 'L.07',
+      title: 'Sound System',
+      slug: 'sound-system',
+      href: 'labs/sound-system.html',
+      tag: 'System / Package',
+      duration: '재사용 패키지 · async 개선',
+      date: '2026-05-20',
+      line: '키 기반 사운드 god-class 에서 *취득 책임* 만 인터페이스로 분리 · `LoadMode` 직교 데이터화로 BGM async 로드/해제.',
+    },
     {
       idx: 'L.01',
       title: 'UE5 Action',
