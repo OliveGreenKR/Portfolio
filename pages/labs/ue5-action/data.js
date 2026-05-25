@@ -8,6 +8,7 @@ window.UE5_ACTION_DATA = {
   meta: {
     eyebrow: 'LAB · 01 ─ PoC / 실험',
     code: 'LAB · 01',
+    date: '2024.11',
     title: 'UE5 Action — 데이터 기반 스킬 · 콤보',
     oneLine: 'UE5 + Unreal C++ 로 데이터 기반 스킬 시스템과 콤보 시스템을 직접 설계·구현한 8주 1인 개인 프로젝트.',
     period: '2024.09 – 2024.11',

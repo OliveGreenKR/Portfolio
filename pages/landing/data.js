@@ -24,6 +24,7 @@ window.LANDING_DATA = {
     {
       idx: '01',
       code: 'MAIN · 01',
+      date: '2026.02',
       slug: 'cartapli',
       href: '../pages/cartapli.html',
       title: 'Cartapli: Fold Quest',
@@ -42,6 +43,7 @@ window.LANDING_DATA = {
     {
       idx: '02',
       code: 'MAIN · 02',
+      date: '2026.04',
       slug: 'wobble-wobble',
       href: '../pages/wobble-wobble.html',
       title: 'Wobble Wobble',
@@ -60,6 +62,7 @@ window.LANDING_DATA = {
     {
       idx: '03',
       code: 'MAIN · 03',
+      date: '2025.07',
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
       title: 'DX11 Custom Engine',

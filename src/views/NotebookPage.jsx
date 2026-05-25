@@ -162,6 +162,12 @@ function NotebookFacts({ data }) {
       )}
 
       <dl className="nb-facts">
+        {data.meta.date && (
+          <React.Fragment key="__date">
+            <dt>날짜</dt>
+            <dd>{data.meta.date}</dd>
+          </React.Fragment>
+        )}
         {data.facts.map(([k, v]) => (
           <React.Fragment key={k}>
             <dt>{k}</dt>

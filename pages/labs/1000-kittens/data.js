@@ -8,6 +8,7 @@ window.KITTENS_DATA = {
   meta: {
     eyebrow: 'LAB · 06 ─ 게임잼 / 분기 시스템',
     code: 'LAB · 06',
+    date: '2026.04',
     title: '1000마리의 고양이 — 데이터 기반 이벤트 분기',
     oneLine: '임기 종료 전까지 고양이 백성 1000마리를 모으는 왕국 경영 게임잼. 이벤트 분기 시스템 과 Odin Inspector 검증 도구 로 잘못 쓰기 어려운 제약 을 처음으로 구체화.',
     period: '게임랩 기간 중 게임잼',

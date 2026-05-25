@@ -8,6 +8,7 @@ window.BBQ_MASTER_DATA = {
   meta: {
     eyebrow: 'LAB · 04 ─ PoC / 볼류메트릭 시뮬',
     code: 'LAB · 04',
+    date: '2026.05',
     title: 'BBQ Master — 볼류메트릭 고기 굽기',
     oneLine: '3D Mesh 외형과 분리된 32³ Internal Field 로 고기 내부 온도·익힘을 누적 시뮬레이션하고, 표면 vertex color + 단면 텍스처로 내부 상태를 외부로 가시화한 3일 PoC.',
     period: '2026.04.30 – 2026.05.02 (3 일)',
