@@ -2,6 +2,7 @@
 // LAB · 07 — Sound System (Chul.SoundSystem). 키 기반 사운드 god-class에서 취득 책임만
 // 인터페이스로 분리하고 로드 방식을 직교 데이터 축(LoadMode)으로 빼낸 재사용 패키지.
 // Wobble Wobble(BadeulBadeul.SoundSystem) → CursorBlade 이식·async 개선.
+// 이후 증분: 라이브러리 단위 그룹 Preload + 재생 경로 풀 단일화(PlayOnSource 폐기→PlayAttached).
 // 시각 자산 없음 — HERO 는 저수준 모듈 아키텍처 다이어그램(heroMermaid). Schema 는 다른 Lab 과 동일.
 
 window.SOUND_SYSTEM_DATA = {
@@ -25,37 +26,44 @@ window.SOUND_SYSTEM_DATA = {
 
   // HERO — 저수준 모듈 아키텍처 (클래스/파일 단위 의존)
   heroMermaid: `graph LR
-    subgraph CONTENT["컨텐츠 트리거 (불변)"]
-        ST["SoundTrigger"]
+    subgraph CONTENT["컨텐츠 (자체 소스 없음)"]
+        ST["SoundTrigger<br/>_followOwner"]
         STB["SoundTriggerForBGM"]
         STN["SoundTriggerForButton"]
         SCT["SoundCollisionTriggerAdvanced"]
+        SLL["SoundLibraryLoader<br/>OnEnable/OnDisable"]
     end
     subgraph CORE["SoundManager (싱글턴)"]
         SM["SoundManager"]
         GATE["CanPlay<br/>cooldown · maxConcurrent"]
         POOL["ObjectPool&lt;AudioSource&gt;"]
         BGM["BGM Source A / B<br/>크로스페이드"]
+        ATT["부착 추종<br/>_attachedSources · LateUpdate"]
+        GRP["그룹 Preload<br/>Release · ForceUnload"]
     end
     subgraph RES["취득 seam (신규)"]
-        IF["ISoundResourceManager<br/>TryGetClip · LoadAsync · Release"]
-        IMPL["AddressablesSoundResourceManager"]
+        IF["ISoundResourceManager<br/>TryGetClip · LoadAsync<br/>Release · ForceUnload"]
+        IMPL["AddressablesSoundResourceManager<br/>_inFlightByClip 합류"]
         HD["Handle<br/>Op · Clip · RefCount · IdleCts"]
     end
     subgraph DATA["데이터 (SO / 직렬화)"]
-        LIB["SoundLibrarySO"]
+        LIB["SoundLibrarySO<br/>그룹 Preload 단위"]
         ENT["SoundEntry<br/>key · category · 정책"]
         CLIP["SoundClip<br/>loadMode · directClip · assetRef"]
         ENUM["enums<br/>LoadMode · SoundMode · SoundCategory"]
     end
-    ST --> SM
+    ST -->|Play / PlayAttached| SM
     STB --> SM
     STN --> SM
     SCT --> SM
+    SLL -->|Preload / Release| SM
     SM --> GATE
     SM --> POOL
     SM --> BGM
+    SM --> ATT
+    SM --> GRP
     SM -->|위임| IF
+    GRP -->|클립 일괄 ref| IF
     IF -. implements .- IMPL
     IMPL --> HD
     SM --> LIB
@@ -67,16 +75,16 @@ window.SOUND_SYSTEM_DATA = {
     classDef core fill:#e6efdf,stroke:#7ea571,color:#1f3a18
     classDef res fill:#f5dcd2,stroke:#c8674f,color:#3a1810
     classDef data fill:#f6ddd2,stroke:#c97a5f,color:#3a1f15
-    class ST,STB,STN,SCT content
-    class SM,GATE,POOL,BGM core
+    class ST,STB,STN,SCT,SLL content
+    class SM,GATE,POOL,BGM,ATT,GRP core
     class IF,IMPL,HD res
     class LIB,ENT,CLIP,ENUM data`,
 
   heroMetrics: [
     { n: '1',     label: '신규 인터페이스 seam',      sub: 'ISoundResourceManager — sync/async 은닉' },
     { n: '2',     label: '직교 LoadMode',             sub: 'Direct 동기 상주 · Addressable async' },
-    { n: '30 s',  label: 'idle 지연 해제',            sub: 'ref==0 후 재요청 시 재로드 회피' },
-    { n: '84 +3', label: '테스트 (구 84 + Addr 3)',   sub: '구조 계약 + async 로드 경로' },
+    { n: 'SO',    label: '라이브러리 단위 Preload',    sub: '구간 뱅크 일괄 ref · refCount 일임' },
+    { n: '1',     label: '재생 경로 (풀 단일화)',      sub: 'PlayOnSource 폐기 → PlayAttached' },
   ],
 
   facts: [
@@ -86,8 +94,8 @@ window.SOUND_SYSTEM_DATA = {
     ['의존',     'UniTask · Unity.Addressables 2.9.1 · UniTask.Addressables (엔진 비종속 독립 패키지)'],
     ['팀 구성',   '1 인 — 프로젝트 간 재사용 패키지'],
     ['본인 역할', '전 영역 (설계 + 구현 + 테스트)'],
-    ['기술 태그', 'Interface Seam · Async Loading · Ref-Count Lifetime · Data-Oriented · Migration-Safe'],
-    ['산출물',   '신규 인터페이스 1 + 구현체 1 + `LoadMode` 데이터 축 + Addressable PlayMode 테스트 3'],
+    ['기술 태그', 'Interface Seam · Async Loading · Ref-Count Lifetime · Group Preload · Pool-Only · Data-Oriented · Migration-Safe'],
+    ['산출물',   '신규 인터페이스 1 + 구현체 1 + `LoadMode` 데이터 축 + 라이브러리 단위 그룹 Preload + `PlayAttached` 풀 단일화 + Addressable PlayMode 테스트 3'],
   ],
 
   roles: {
@@ -98,6 +106,8 @@ window.SOUND_SYSTEM_DATA = {
       'BGM 경로 async 화 (코루틴 → UniTask, 최신 요청 우선) · ' +
       'SFX 동기 응답성 보존 (TryGetClip 동프레임 / 미로드 Addressable 만 폴백) · ' +
       '무손실 마이그레이션 (`[FormerlySerializedAs("clip")]`) · ' +
+      '라이브러리(SoundLibrarySO) 단위 그룹 Preload/Release/ForceUnload (refCount 일임 · _inFlightByClip 동시로드 합류 · SoundLibraryLoader) · ' +
+      '재생 경로 풀 단일화 (PlayOnSource 폐기 → PlayAttached, LateUpdate owner 추종 + owner死 회수) · ' +
       'Addressable PlayMode 테스트 3 신규.',
     others:
       '외부 라이브러리 — UniTask (Cysharp, MIT) · Unity Addressables / ResourceManager (Unity). ' +
@@ -251,6 +261,69 @@ async UniTaskVoid StartIdleRelease(SoundClip clip, Handle h) {
         'AddressableSoundTests: 로드+재생 / Addr→Direct 전환 / LoadAsync→캐시hit',
       ],
     },
+
+    /* ─── 3.5 라이브러리 단위 그룹 Preload ─────────────────── */
+    {
+      no: '3.5',
+      kind: 'SYSTEM',
+      title: '라이브러리 단위 그룹 Preload — 수명 단위를 데이터(SO)에 맞춘다',
+      lede:
+        '클립 하나씩 로드/해제하면 구간(보스방) 진입마다 수작업 호출이 흩어진다. ' +
+        '로드/해제 단위를 SoundLibrarySO(뱅크)로 올려 refCount 에 일임한다.',
+      problem:
+        '보스전 전용 대용량 Addressable 뱅크를 첫 재생 시 로드하면 load hitch. ' +
+        '클립 단위로 일일이 Preload/Release 를 부르면 호출처가 흩어지고, ' +
+        '여러 구간이 같은 클립을 공유할 때 누가 마지막인지 추적하기 어렵다.',
+      decision:
+        '`Preload/Release/ForceUnload(SoundLibrarySO)` — 라이브러리의 Addressable 클립을 일괄 ref++/ref--. ' +
+        '실제 로드/언로드 타이밍은 resMgr refCount 가 결정해 공유 클립은 마지막 사용처까지 유지. ' +
+        '동일 클립 동시 로드는 `_inFlightByClip` 진행 task 에 합류(핸들 1개). ' +
+        '`SoundLibraryLoader`(구간 GameObject, OnEnable Preload / OnDisable Release) 로 코드 없이 구간 로딩. ' +
+        '`ForceUnload` 는 refCount 무시 강제 해제 — 누수 복구 최후수단.',
+      results: [
+        '구간 진입 시 뱅크 일괄 선로딩 — 첫 재생 hitch 제거',
+        '공유 클립은 refCount 가 마지막 사용처까지 보장 — 조기 해제 0',
+        '동시 Preload 중복 로드 0 (`_inFlightByClip` 합류, 핸들 1개)',
+        'SoundLibraryLoader 로 구간 단위 로딩을 코드 없이 데이터화',
+      ],
+      stack: [
+        'SoundManager.Preload/Release/ForceUnload(SoundLibrarySO)',
+        'resMgr: _inFlightByClip 동시로드 합류 + ForceUnload(clip)',
+        'SoundLibraryLoader: OnEnable Preload / OnDisable Release',
+        '로드/해제 타이밍 = refCount (SoundManager 는 정책만 호출)',
+      ],
+    },
+
+    /* ─── 3.6 재생 경로 풀 단일화 (SourcePool Only) ─────────── */
+    {
+      no: '3.6',
+      kind: 'ARCHITECTURE',
+      title: '재생 경로 풀 단일화 — PlayOnSource 폐기, PlayAttached 로 흡수',
+      lede:
+        '외부 AudioSource 를 받는 경로는 resMgr ref 추적이 안 돼 그룹 unload 신뢰성을 깨뜨렸다. ' +
+        '모든 재생을 풀 단일 경로로 모은다.',
+      problem:
+        '구 `PlayOnSource(key, AudioSource)` 는 호출자가 넘긴 외부 소스라 resMgr 가 수명을 추적하지 못한다. ' +
+        '→ 그룹 Release 시 그 소스가 잡고 있는 클립을 알 수 없어 누수/조기 해제 위험. ' +
+        '추종 사운드(움직이는 객체의 3D 루프)는 여전히 필요하다.',
+      decision:
+        '`PlayOnSource` 폐기. 추종은 `PlayAttached(key, owner, offset)` — 풀에서 Get + SoundEntry 적용 후 ' +
+        '`_attachedSources` 에 등록, LateUpdate 에서 owner 위치 추종, owner 파괴(가짜 null)/자연종료 시 자동 회수 + resMgr Release. ' +
+        'SoundTrigger 도 자체 AudioSource 제거 — spatial 은 SoundEntry 가 소유하고 `_followOwner` 로 추종 여부만 선택. ' +
+        '취득·수명·추종이 한 경로로 모여 ref 누수 가능성 제거.',
+      results: [
+        '재생 경로 1개로 단일화 — ref 추적 사각지대 제거',
+        '추종 사운드는 PlayAttached 로 흡수 (owner死 자동 회수)',
+        'SoundTrigger 자체 소스 제거 — spatial 일원화(SoundEntry)',
+        '그룹 unload 신뢰성 확보 — 모든 클립 수명을 resMgr 가 관장',
+      ],
+      stack: [
+        'PlayAttached(key, owner, offset) → 풀 Get + _attachedSources 등록',
+        'LateUpdate: owner.position + offset 추종 / owner死·종료 회수',
+        'SoundTrigger: 자체 AudioSource 제거, _followOwner 토글',
+        'PlayOnSource 폐기 — 추종은 PlayAttached 로 일원화',
+      ],
+    },
   ],
 
   metrics: {
@@ -261,6 +334,9 @@ async UniTaskVoid StartIdleRelease(SoundClip clip, Handle h) {
       ['로드 방식',        '전부 메모리 상주 (Direct only)',               '`LoadMode` 직교 축 — Direct / Addressable 클립 단위 선택'],
       ['BGM',             '코루틴 크로스페이드',                          'UniTask async 로드 + 크로스페이드 (최신 요청 우선)'],
       ['수명 관리',        '없음 (전부 상주)',                            'ref-count + idle 30s 지연 해제 + 캐시 재사용'],
+      ['그룹 로딩',        '없음 (전부 상주)',                            '라이브러리(SO) 단위 Preload/Release/ForceUnload + SoundLibraryLoader'],
+      ['재생 경로',        'Play + PlayOnSource(외부 소스)',              '풀 단일화 — PlayOnSource 폐기 → PlayAttached(추종)'],
+      ['트리거 컴포넌트',   '자체 AudioSource 보유',                       '자체 소스 제거 (spatial=SoundEntry · _followOwner)'],
       ['SFX 응답성',       '동프레임 (상주)',                             '동프레임 보존 (TryGetClip 캐시, 첫 로드만 폴백)'],
       ['에셋 마이그레이션', '-',                                          '`[FormerlySerializedAs]` 무손실 승계'],
       ['패키지 경계',      '게임 종속',                                   'UniTask/Addressables 참조, 엔진 비종속'],
