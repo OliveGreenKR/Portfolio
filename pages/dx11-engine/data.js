@@ -6,7 +6,7 @@
 window.DX11_DATA = {
   evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
-    code: 'MAIN · 03',
+    code: 'MAIN · 05',
     date: '2025.07',
     title: 'DX11 Custom Engine',
     oneLine: 'C++17 + DirectX 11 로 1인 풀스택 게임 엔진을 16주 동안 직접 구현한 학습 프로젝트.',
