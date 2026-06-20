@@ -24,7 +24,7 @@ function LandingRail({ active }) {
   const s = window.landingStyles;
   const items = [
     { id: 'identity', label: 'Identity' },
-    { id: 'featured', label: 'Featured · 03' },
+    { id: 'featured', label: 'Featured · 05' },
     { id: 'labs',     label: 'Labs · 06' },
     { id: 'footer',   label: 'Footer' },
   ];
@@ -86,7 +86,7 @@ function FeaturedSection({ items }) {
     <section id="featured" style={s.section} data-screen-label="Landing · Featured">
       <div style={s.sectionHead}>
         <h2 style={s.sectionTitle}>메인 프로젝트</h2>
-        <div style={s.sectionMeta}>FEATURED · 03 · 시스템 아키텍처</div>
+        <div style={s.sectionMeta}>FEATURED · 05 · 시스템 아키텍처</div>
       </div>
       <div className="l-featured-list">
         {items.map((p, i) => (

@@ -6,7 +6,7 @@
 window.WOBBLE_DATA = {
   evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
-    code: 'MAIN · 02',
+    code: 'MAIN · 04',
     date: '2026.04',
     title: 'Wobble Wobble',
     oneLine: '게임랩 빌드를 5주 안에 Steam 글로벌 출시까지 가져간 3D 물리 조작 퍼즐.',

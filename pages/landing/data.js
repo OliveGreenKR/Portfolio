@@ -12,18 +12,56 @@ window.LANDING_DATA = {
       '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, ' +
       '장기 프로젝트 + 출시 운영, PoC 사고 사이클 — 세 결이 같이 있는 포트폴리오.',
     stats: [
-      { n: '10', label: 'projects',       sub: '메인 3 · Labs 7' },
+      { n: '12', label: 'projects',       sub: '메인 5 · Labs 7' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
       { n: '16w', label: 'solo engine',    sub: 'DX11 · 7 모듈 · 147 파일' },
       { n: '07', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
     ],
   },
 
-  // ─── 메인 그리드 — 카드 3 ─────────────────────────────────
+  // ─── 메인 그리드 — 카드 5 (순서: Motelet · 외주 · Cartapli · Wobble · DX11) ───
   main: [
     {
       idx: '01',
       code: 'MAIN · 01',
+      date: '2026.06',
+      slug: 'motelet',
+      href: '../pages/motelet.html',
+      title: 'Motelet',
+      oneLine: '청소 로봇이 먼지 몬스터를 쓸어담는 인크레멘탈(개발 중). 스킬 성장을 골드 수급량으로 정량화해 시뮬레이터로 밸런싱 · 수백 이펙트를 비동기 풀로.',
+      meta: [
+        { kind: 'accent', text: '개발 중 · 3인 · Steam 예정' },
+        { kind: 'role',   text: 'PM + 배틀씬 프로그래머' },
+      ],
+      thumb: '../pages/motelet/assets/title.png',
+      metrics: [
+        { n: '5종',   label: '공격원 → 처치율 분해로 골드 수급 모델링' },
+        { n: '0',     label: '물리 엔진 의존 (자체 2D 기하 결정론 판정)' },
+        { n: 'ΔGold', label: '폭등 지점 분석으로 초기 과성장 밸런싱' },
+      ],
+    },
+    {
+      idx: '02',
+      code: 'MAIN · 02',
+      date: '2026.06',
+      slug: 'edu-gamification',
+      href: '../pages/edu-gamification.html',
+      title: '교육용 게이미피케이션 (외주)',
+      oneLine: '일(日) 단위로 바뀌는 요구사항을 스키마리스 NoSQL · 서버리스로 흡수. 비개발자 운영자용 원터치 배포 콘솔까지 직접 구축.',
+      meta: [
+        { kind: 'accent', text: '외주 · 프리랜서 · 진행 중' },
+        { kind: 'role',   text: '게임 설계 + 웹 주개발' },
+      ],
+      thumb: null,
+      metrics: [
+        { n: '3,000',   label: '대상 규모 · 서버리스 자동 확장 (동시 ~50)' },
+        { n: '1-click', label: '비개발자 배포 콘솔 (격리 부트스트랩 → Electron)' },
+        { n: 'NoSQL',   label: '미확정 요구 흡수 · 마이그레이션 0' },
+      ],
+    },
+    {
+      idx: '03',
+      code: 'MAIN · 03',
       date: '2026.02',
       slug: 'cartapli',
       href: '../pages/cartapli.html',
@@ -41,8 +79,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '02',
-      code: 'MAIN · 02',
+      idx: '04',
+      code: 'MAIN · 04',
       date: '2026.04',
       slug: 'wobble-wobble',
       href: '../pages/wobble-wobble.html',
@@ -60,8 +98,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '03',
-      code: 'MAIN · 03',
+      idx: '05',
+      code: 'MAIN · 05',
       date: '2025.07',
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
