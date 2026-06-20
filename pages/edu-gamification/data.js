@@ -1,8 +1,7 @@
 // pages/edu-gamification/data.js
 // 교육용 게이미피케이션 (외주) — 게임 client + 웹 서비스. 본인 프리랜서.
-// ⚠️ 외주 기밀: 클라이언트명 · 제품명 · 코드네임(Pioneer/Kway) · 시크릿 노출 금지. 코드는 전부 익명화.
+// ⚠️ 외주 기밀: 클라이언트명 · 제품명 · 코드네임 · 시크릿 노출 금지. 코드는 전부 익명화.
 // Schema mirrors DX11_DATA. hero = mermaid(전체 구조). 자산 없음.
-// 코드 근거: knowledge_base/projects/pioneer/code_analysis/{game_narrative,web_service}.md
 
 window.EDU_GAMIFICATION_DATA = {
   meta: {
