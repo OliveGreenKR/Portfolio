@@ -43,20 +43,20 @@ window.LANDING_DATA = {
     {
       idx: '02',
       code: 'MAIN · 02',
-      date: '2026.06',
+      date: '2026.07',
       slug: 'edu-gamification',
       href: '../pages/edu-gamification.html',
       title: '교육용 게이미피케이션 (외주)',
-      oneLine: '일(日) 단위로 바뀌는 요구사항을 스키마리스 NoSQL · 서버리스로 흡수. 비개발자 운영자용 원터치 배포 콘솔까지 직접 구축.',
+      oneLine: '일(日) 단위로 바뀌는 요구사항을 스키마리스 NoSQL · 서버리스로 흡수. 비개발자용 원터치 배포 콘솔과, 우회가 물리적으로 불가능한 단일 인가 게이트까지 직접 구축.',
       meta: [
-        { kind: 'accent', text: '외주 · 프리랜서 · 진행 중' },
-        { kind: 'role',   text: '게임 설계 + 웹 주개발' },
+        { kind: 'accent', text: '외주 · 프리랜서 · 납품 완료' },
+        { kind: 'role',   text: '웹 주개발 (+ 게임 초기 설계)' },
       ],
       thumb: null,
       metrics: [
         { n: '3,000',   label: '대상 규모 · 서버리스 자동 확장 (동시 ~50)' },
         { n: '1-click', label: '비개발자 배포 콘솔 (격리 부트스트랩 → Electron)' },
-        { n: 'NoSQL',   label: '미확정 요구 흡수 · 마이그레이션 0' },
+        { n: '3-layer', label: '감사 · 추적 — 앱을 우회한 직접 쓰기까지 포착' },
       ],
     },
     {

@@ -1,21 +1,21 @@
 // pages/edu-gamification/data.js
 // 교육용 게이미피케이션 (외주) — 게임 client + 웹 서비스. 본인 프리랜서.
-// ⚠️ 외주 기밀: 클라이언트명 · 제품명 · 코드네임 · 시크릿 노출 금지. 코드는 전부 익명화.
+// ⚠️ 외주 · 정보보호 서약 대상. 서술은 "요구 → 설계 → 구조"로만. 코드는 전부 익명화.
 // Schema mirrors DX11_DATA. hero = mermaid(전체 구조). 자산 없음.
 
 window.EDU_GAMIFICATION_DATA = {
   meta: {
     code: 'MAIN · 02',
-    eyebrow: 'MAIN · 02 ─ 외주 · 진행 중',
-    date: '2026.05 – 진행 중',
+    eyebrow: 'MAIN · 02 ─ 외주 · 납품 완료',
+    date: '2026.05 – 2026.07 (납품 완료)',
     title: '교육용 게이미피케이션 — 게임 + 웹 서비스 (외주)',
     oneLine:
       '미확정 · **일(日) 단위로 바뀌는 요구사항**을 스키마리스 NoSQL과 서버리스로 흡수. ' +
-      '비개발자 운영자를 위한 **원터치 배포 콘솔**까지 직접 구축.',
-    period: '2026.05 – 진행 중',
-    weeks: '웹 ≈3주 · 진행 중',
+      '비개발자 운영자를 위한 **원터치 배포 콘솔**, 그리고 우회가 물리적으로 불가능한 **단일 인가 게이트**까지 직접 구축.',
+    period: '2026.05 – 2026.07 (납품 완료)',
+    weeks: '웹 ≈6주 · 계약 마감 8일 전 납품',
     team: '외주 · 프리랜서',
-    role: '게임 설계 · 웹 주개발',
+    role: '웹 주개발 (+ 게임 초기 구조 설계)',
     platform: 'Unity 6.1 · React · AWS Serverless',
     stack: ['Unity 6.1', 'UniTask', 'React 19', 'TypeScript', 'Python (Lambda)', 'DynamoDB', 'Terraform', 'Electron'],
   },
@@ -28,9 +28,12 @@ window.EDU_GAMIFICATION_DATA = {
     end
     subgraph CLOUD["서버리스 백엔드 (AWS)"]
         GW["API Gateway"]
+        GATE["단일 인가 게이트<br/>오리진→신원→등급→감사"]
         FN["Lambda (Python)"]
-        DB["DynamoDB<br/>스키마리스 9 테이블"]
-        GW --> FN --> DB
+        DB["DynamoDB<br/>스키마리스 10 테이블"]
+        AUD["감사 백스톱<br/>DB Stream"]
+        GW --> GATE --> FN --> DB
+        DB -.Stream.-> AUD
     end
     subgraph OPS["운영 콘솔 (Electron)"]
         BOOT["격리 부트스트랩<br/>Node · Python · Terraform"]
@@ -45,33 +48,36 @@ window.EDU_GAMIFICATION_DATA = {
     classDef s fill:#f5dcd2,stroke:#c8674f,color:#3a1810
     classDef o fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
     class SEG,LINK c
-    class GW,FN,DB s
+    class GW,GATE,FN,DB,AUD s
     class BOOT,DEPLOY o`,
 
   heroMetrics: [
     { n: '3,000', label: '대상 사용자 규모',   sub: '동시 ~50 · 서버리스 자동 확장' },
-    { n: '日',    label: '단위로 바뀌는 요구',  sub: '주 75+ 본인 커밋 · 중간 대규모 rebuild 흡수' },
+    { n: '日',    label: '단위로 바뀌는 요구',  sub: '주 90+ 본인 커밋 · 대규모 rebuild · 재구조화 3회 흡수' },
     { n: '1-click', label: '비개발자 배포 콘솔', sub: 'Node/Python/Terraform sha256 격리 설치 → Electron' },
-    { n: '101',   label: 'API 라우트',         sub: '단일 라우트 테이블 · 16 모듈 · 9 NoSQL 테이블' },
+    { n: '117',   label: 'API 라우트',         sub: '단일 라우트 테이블 · 등급 default-deny · 19 모듈' },
   ],
 
   facts: [
     ['한 줄 정의',  '교육용 게이미피케이션 — 스토리 분기 게임 + 운영 / 데이터 웹 서비스 (외주)'],
-    ['기간',       '2026.05 – 진행 중 (웹 ≈3주)'],
+    ['기간',       '2026.05 – 2026.07 · 납품 완료 (웹 ≈6주 · 계약 마감 8일 전)'],
     ['형태',       '외주 · 본인 프리랜서'],
-    ['본인 역할',   '게임: 내러티브 시스템 · 웹 연동 계층 설계(팀) / 웹: 주 개발(백엔드 · 배포 · 인프라)'],
+    ['본인 역할',   '웹: 주 개발(백엔드 · 인가/감사 · 배포 · 인프라) / 게임: 초기 구조 설계(팀)'],
     ['게임 스택',   'Unity 6.1 · C# 10 · UniTask · UnityWebRequest + JSON'],
     ['웹 스택',    'React 19 · TS · Vite / Python Lambda · DynamoDB · Terraform · Electron'],
-    ['규모',       '프론트 ~10.8K LOC · 백엔드 ~8.7K LOC · 9 NoSQL 테이블 · 101 API 라우트'],
+    ['규모',       '프론트 14.5K LOC · 백엔드 13.3K LOC(+테스트 4.7K) · IaC 2.2K · 10 NoSQL 테이블 · 117 API 라우트'],
+    ['기여',       '전체 520 커밋 중 본인 338 (65%)'],
+    ['납품',       '원 계약 후 2주 연장 — 운영 배포 요건(인가 · 감사 · 비밀 관리 · 응답 헤더 · 요청 제한) 반영 후 마감 8일 전 납품. 남은 한계는 인수 문서에 그대로 기재'],
   ],
 
   roles: {
     mine:
-      '게임 client — 내러티브를 자유 구성하는 `ISegment` 3단계 생명주기 시스템 + 데이터 그래프, ' +
-      '웹 서버 연동 계층(인터페이스 분리 · 토큰 자동 갱신 · 체크포인트 큐) 설계. ' +
-      '웹 서비스 — 스키마리스 NoSQL 데이터 레이어, 서버리스 인프라(IaC), 비개발자용 원터치 배포 콘솔, Lambda 라우팅 주 개발.',
+      '웹 서비스 주 개발 — 스키마리스 NoSQL 데이터 레이어, 서버리스 인프라(IaC), Lambda 라우팅, ' +
+      '인증 · 인가 단일 게이트와 감사 · 추적 계층, 비개발자용 원터치 배포 콘솔. ' +
+      '게임 client — 초기 구조 설계 단계에서 내러티브 자유 구성 `ISegment` 시스템 + 데이터 그래프, ' +
+      '웹 서버 연동 계층(인터페이스 분리 · 토큰 자동 갱신 · 체크포인트 큐)을 설계.',
     others:
-      '게임 client 는 팀 프로젝트로 리드 · 다수 기여자 별도 — 본인은 내러티브 / 연동 계층 설계에 기여. ' +
+      '게임 client 는 팀 프로젝트로 리드 · 다수 기여자 별도 — 본인은 **초기 구조 설계에 기여**했고 이후 웹 서비스에 집중했다. ' +
       '웹 서비스도 팀원 보조가 있으나 본인이 주도(최다 기여).',
   },
 
@@ -202,10 +208,10 @@ while (reader.TryRead(out var item))
         '용량 가드 `transact_write_items`로 다중 테이블 원자성(NoSQL에서 일관성) 확보.',
       results: [
         '요구사항 변화를 마이그레이션 0으로 흡수 (alias 키 투영으로 스키마 드리프트 허용)',
-        '단일 테이블 복합 SK + GSI 5개 (유저별 세션 역인덱스 · 크기 무관 글로벌 피드)',
+        '단일 테이블 복합 SK + GSI 8개 (유저별 세션 역인덱스 · 크기 무관 글로벌 피드 · sparse GSI)',
         'pay-per-request + PITR — 규모(3,000명) 대비 운영 부담 최소',
       ],
-      stack: ['DynamoDB (스키마리스 · 9 테이블)', '동적 UpdateExpression 빌더', '단일 테이블 + 복합 SK', 'GSI 5개', 'transact_write_items (원자성)'],
+      stack: ['DynamoDB (스키마리스 · 10 테이블)', '동적 UpdateExpression 빌더', '단일 테이블 + 복합 SK', 'GSI 8개', 'transact_write_items (원자성)'],
       tableTitle: '단일 테이블 설계 — SK / GSI 역할',
       table: {
         headers: ['요소', '패턴', '용도'],
@@ -242,14 +248,18 @@ while (reader.TryRead(out var item))
       problem:
         '직접 CI/CD를 구축할 수 없었고(클라이언트 내부 배포 스펙 비공개) 운영을 비개발자가 해야 했다. npm·python·terraform·시크릿을 비개발자가 직접 다루는 건 불가능에 가깝다.',
       decision:
-        '`설치 실행` 더블클릭 → 부트스트랩이 **Node·Python·Terraform을 sha256 검증 후 로컬에 격리 설치**(시스템 PATH/레지스트리 무변경), **마커로 완료 단계 스킵**(재개 가능) → **Electron 콘솔** 기동. ' +
-        '운영자는 AWS 키만 입력(gitignored), 상태 게이트 해제 후 Deploy 클릭 → `terraform apply → 프론트 빌드 → S3 sync → CloudFront 무효화` 파이프라인이 라이브 로그로.',
+        '`설치 실행` 더블클릭 → 부트스트랩이 **Node·Python·Terraform을 sha256 검증 후 로컬에 격리 설치**(시스템 PATH/레지스트리 무변경), **마커로 완료 단계 스킵**(재개 가능) → **Electron 콘솔** 기동. Windows · macOS(arm64) 양쪽. ' +
+        '운영자는 AWS 키만 입력(gitignored), 상태 게이트 해제 후 Deploy 클릭 → `terraform apply → 프론트 빌드 → S3 sync → CDN 무효화` 파이프라인이 라이브 로그로. ' +
+        '납품 후반에는 **env-first 단일원천**으로 하드닝 — `(AWS 키 × env)` 조합만으로 **어느 머신에서든** 완전 격리 환경이 원클릭 재현되도록, ' +
+        '중단된 이전 배포가 남긴 유령 리소스를 apply 직전에 자동 화해(import 흡수 / 안전 삭제)한다.',
       results: [
         '운영자가 npm/python/terraform/시크릿을 직접 만지지 않고 더블클릭 → 탭 클릭으로 배포',
         '시스템 오염 0 — 폴더 삭제 = 완전 제거 (격리 툴체인 + 캐시 리다이렉트)',
         '멱등 state 버킷 자동 생성 + 배포 모드(full/infra/frontend/plan) — 인프라~UX 풀스택 소유',
+        '클론 직후 새 머신에서도 원클릭 재배포 성립 (state 버킷명·서명키를 env에서 파생 · 유령 리소스 자동 화해)',
+        '콘솔 「의존성 · 보안」 탭 — npm audit + pip-audit 상시 스캔, high 이상이면 운영 배포 자체를 차단',
       ],
-      stack: ['bootstrap.ps1 (sha256 격리 설치 · 재개)', 'Electron 콘솔 (24 ipcMain · 스트리밍 로그)', 'ops/deploy.py (terraform→build→S3→CloudFront)', 'tools.json (버전 핀)'],
+      stack: ['bootstrap.ps1 / bootstrap.sh (sha256 격리 설치 · 재개)', 'Electron 콘솔 (24 ipcMain · 스트리밍 로그)', 'ops/deploy.py (terraform→build→S3→CDN)', 'tools.json (버전 핀)', '의존성 스캔 배포 게이트'],
       mermaid: `graph LR
     BAT["설치 실행<br/>(더블클릭)"]
     BOOT["부트스트랩<br/>Node·Python·Terraform 격리 설치(sha256)"]
@@ -287,32 +297,201 @@ $env:Path = (Join-Path $ToolsDir 'node') + ';' + $env:Path`,
     {
       no: '5.5',
       kind: 'ARCHITECTURE',
-      title: 'Lambda 라우팅 — 단일 라우트 테이블 + arity 디스패치',
-      lede: '101개 라우트를 한 테이블에 선언하고, regex named-group으로 콜드스타트 1회 컴파일. 핸들러는 필요한 인자만 받는 arity 디스패치.',
+      title: 'Lambda 라우팅 — 단일 라우트 테이블 + 부팅 시 fail-closed',
+      lede: '117개 라우트를 한 테이블에 선언하고, regex named-group으로 콜드스타트 1회 컴파일. 접근 등급을 빠뜨린 라우트는 부팅 예외로 배포 자체를 막는다.',
       problem:
-        '60+(실측 101)개 엔드포인트를 프레임워크 없이 Lambda 핸들러 하나에서 깔끔히 분기해야 했다.',
+        '117개 엔드포인트를 프레임워크 없이 Lambda 핸들러 하나에서 분기해야 했다. 더 큰 문제는 **새 라우트가 접근 등급 선언을 빠뜨렸을 때 조용히 열리는 것**이었다.',
       decision:
-        '`(method, path, handler, require_auth)` **튜플 테이블**로 전 라우트 선언. `{param}`을 regex named group으로 변환해 **콜드스타트 1회 컴파일**, 첫 매치 디스패치. ' +
-        '핸들러 시그니처(2/3/4 파라미터)를 검사해 `(event, [path_params], [user], context)`를 **arity 기반 주입** → 핸들러가 필요한 것만 받는다.',
+        '`(method, path, handler, access)` **튜플 테이블**로 전 라우트 선언. `{param}`을 regex named group으로 변환해 **콜드스타트 1회 컴파일**, 첫 매치 디스패치. ' +
+        '4번째 필드는 불리언 `require_auth`가 아니라 **접근 등급**(`PUBLIC < GUEST < LEARNER < ADMIN`) — "인증했나"가 아니라 "어느 등급까지 허용인가"가 라우트별 단일소스. ' +
+        '컴파일 단계에서 **등급 누락 · 오타를 예외로 던져 부팅을 실패**시킨다(default-deny · fail-closed). ' +
+        '핸들러 시그니처(2/3/4 파라미터)를 검사해 필요한 인자만 **arity 기반 주입**.',
       results: [
-        '101 라우트(GET 43 / POST 29 / DELETE 12 / PUT 11 / PATCH 6) · 16 모듈',
-        '콜드스타트 1회 컴파일 — 요청마다 regex 재컴파일 없음',
-        '명시 라우트(overview)를 파라미터 라우트보다 먼저 — 매칭 우선순위 제어',
+        '117 라우트(GET 53 / POST 33 / PUT 12 / DELETE 11 / PATCH 8) · 19 모듈',
+        '분류되지 않은 라우트는 배포 불가 — "실수로 열림"이 런타임이 아니라 부팅에서 잡힌다',
+        '콜드스타트 1회 컴파일 · 명시 라우트를 파라미터 라우트보다 먼저 — 매칭 우선순위 제어',
       ],
-      stack: ['ROUTES 튜플 테이블', 'regex named-group 컴파일', 'arity 기반 핸들러 주입', '16 라우트 모듈'],
+      stack: ['ROUTES 튜플 테이블 (method, path, handler, access)', '부팅 시 등급 검증 (fail-closed)', 'regex named-group 컴파일', 'arity 기반 핸들러 주입'],
       ascii: {
-        title: '라우트 테이블 + 컴파일 (익명화)',
-        intro: '선언적 라우트 + 콜드스타트 1회 컴파일.',
+        title: '라우트 테이블 + 부팅 검증 (익명화)',
+        intro: '선언적 라우트 + 콜드스타트 1회 컴파일 + 등급 누락 시 배포 차단.',
         code: `ROUTES = [
-    ("POST",  "/api/auth/login",        auth.login,        False),
-    ("GET",   "/api/users",              users.list_users,  True),
-    ("PATCH", "/api/users/{userId}",     users.update_user, True),
-    ("GET",   "/api/sessions/overview",  sessions.overview, True),  # {id}보다 먼저
-    # ... 101개
+    ("POST",  "/api/auth/login",         auth.login,       PUBLIC),
+    ("GET",   "/api/auth/me",            auth.me,          GUEST),
+    ("GET",   "/api/admin/users",        users.list_users, ADMIN),
+    ("GET",   "/api/admin/users/{id}",   users.get_user,   ADMIN),   # 리터럴 라우트 뒤
+    # ... 117개
 ]
-# {param} → 정규식 named group, 콜드스타트 1회 컴파일
-regex = re.sub(r"\\{(\\w+)\\}", r"(?P<\\1>[^/]+)", pattern) + "$"`,
-        result: '프레임워크 없이 101 라우트를 선언적으로 — arity로 핸들러 결합 최소화.',
+
+def _compile_routes(routes):
+    for entry in routes:
+        if len(entry) != 4:                 raise ValueError(...)  # 등급 누락 = 배포 차단
+        method, pattern, handler, access = entry
+        if access not in _ACCESS_LEVELS:    raise ValueError(...)  # 오타   = 배포 차단
+        regex = re.sub(r"\\{(\\w+)\\}", r"(?P<\\1>[^/]+)", pattern) + "$"`,
+        result: '프레임워크 없이 117 라우트를 선언적으로 — 잘못 분류된 라우트는 서비스가 뜨지 않는다.',
+      },
+    },
+
+    /* ─── 5.6 인증·인가 단일 게이트 ─────────────────────── */
+    {
+      no: '5.6',
+      kind: 'ARCHITECTURE',
+      title: '인증 · 인가 단일 게이트 — 우회가 물리적으로 불가능한 구조',
+      lede: '관리자 · 개인정보를 다루는 서비스. 정책을 "잘 지키자"가 아니라 "안 지키면 동작하지 않는다"로 만들었다.',
+      problem:
+        '진입점이 셋(관리자 API · 추출 워커 · 게임 API)이었고, 각자 인증 · 인가 검사를 **인라인으로 손코딩**하고 있었다. ' +
+        '같은 정책을 세 곳에서 재서술하면 언젠가 어긋난다. 새 라우트가 검사 한 줄을 빠뜨려도 아무도 막지 못한다 — 개별 라우트를 고치는 건 증상 치료다.',
+      decision:
+        '전 진입점이 공유하는 **단일 게이트 함수 하나**로 수렴. 정책의 *순서* 와 *강제* 를 게이트가 소유하고, 진입점은 **스펙만 선언**한다.' +
+        '`T0 오리진(전송 경로 검증) → T1 신원(자격증명 종류별 해석) → T2 인가(접근 등급) → T3 부수효과(출처 스탬프 · 감사)`. ' +
+        '게이트를 안 거치면 **인증이 아예 일어나지 않아** 물리적으로 건너뛸 수 없다.' +
+        '두 가지 판정이 핵심이다. **관리자 판정은 토큰의 표시값이 아니라 DB의 실제 권한을 권위**로 삼는다(토큰은 발급 시점의 박제라, 권한이 회수돼도 만료 전까지 낡은 값을 들고 있다). ' +
+        '반대로 **학습자 등급 판정은 서명된 토큰 클레임만으로** 끝낸다 — 응답 바디를 고쳐도 무력하면서, 학습자 핫패스에는 DB 조회가 0으로 유지된다.',
+      results: [
+        '인가 정책의 단일소스 — 신규 진입점 · 신규 라우트가 정책을 우회할 경로 없음',
+        '권한 회수가 재로그인 없이 즉시 반영 (DB 권위 판정)',
+        '보안 강화의 성능 비용을 관리자 라우트에만 국한 — 학습자 정상 경로 DB 조회 0',
+        '동시접속 단일세션(토큰 sid ↔ 서버 활성 sid 대조) · 세션 타임아웃 · 자동 로그아웃까지 같은 게이트에서',
+      ],
+      stack: ['run_gate (T0~T3 강제 순서)', 'access 등급 (PUBLIC/GUEST/LEARNER/ADMIN)', 'DB 권위 관리자 판정', '서명 클레임 기반 학습자 판정', '단일세션 · 세션 타임아웃'],
+      mermaid: `graph LR
+    REQ["요청"]
+    T0["T0 오리진<br/>전송 경로 검증"]
+    T1["T1 신원<br/>세션쿠키 / 게임토큰"]
+    T2["T2 인가<br/>등급 (DB 권위)"]
+    T3["T3 부수효과<br/>출처 스탬프 · 감사"]
+    H["핸들러"]
+    X["403 / 401"]
+
+    REQ --> T0 --> T1 --> T2 --> T3 --> H
+    T0 -.차단.-> X
+    T2 -.차단.-> X
+
+    classDef a fill:#f5dcd2,stroke:#c8674f,color:#3a1810
+    classDef b fill:#e6efdf,stroke:#7ea571,color:#283825
+    classDef c fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
+    class T0,T1,T2 a
+    class T3,H b
+    class X c`,
+      ascii: {
+        title: '등급 판정 — 어디에 비용을 쓸지 고르기 (익명화)',
+        intro: '관리자만 DB 권위 재조회. 학습자 등급은 서명 클레임으로 — 핫패스 DB 조회 0.',
+        code: `# ADMIN — 토큰의 표시값이 아니라 DB의 실제 권한이 단일진실.
+#          (토큰은 발급 시점 박제 → 권한 회수 후에도 만료 전까지 낡은 값)
+if access == ADMIN:
+    is_admin = bool(user and resolve_is_admin(user))   # ★ DB 권위
+    if not is_admin:
+        return forbidden()
+
+# LEARNER — 서명된 클레임만으로 판정. 응답 바디 변조 무력 + DB 조회 0.
+if access == LEARNER and user.get("guest"):
+    return forbidden()
+
+# 인증 요청은 토큰 sid 가 서버 활성 세션과 일치해야 통과(단일세션).
+if access in _AUTH_REQUIRED and not enforce_single_session(event, user):
+    return unauthorized()`,
+        result: '정책 1곳 · 강제는 구조로. 성능 비용은 필요한 등급에만.',
+      },
+    },
+
+    /* ─── 5.7 감사 · 추적 3계층 ─────────────────────────── */
+    {
+      no: '5.7',
+      kind: 'SYSTEM',
+      title: '감사 · 추적 3계층 — 앱을 거치지 않은 쓰기까지 본다',
+      lede: '요청 게이트는 앱을 거친 동작만 본다. 운영자 콘솔 · SDK 직접 호출은 감사 로그에 아무 흔적도 남기지 않는다. 그 사각을 스스로 찾아 덮었다.',
+      problem:
+        '"누가 무엇을 바꿨나"를 게이트에서 기록해도, **DB에 직접 쓰는 경로**(운영자 콘솔 · SDK · 침입)는 게이트를 통과하지 않으므로 기록되지 않는다. ' +
+        '더 고약한 건, 아이템에 출처를 스탬프해두면 **직접 쓰기가 일부 필드만 고쳐 과거 앱 쓰기의 스탬프를 그대로 물려받아 정상으로 위장**한다는 점이다.',
+      decision:
+        '**L1 게이트 감사** — 관리자 쓰기 · 개인정보 조회를 요청당 1행으로. 실행 전 before-image 캡처(일괄은 배치 조회), 실행 후 diff. ' +
+        '기록은 핸들러 · 트랜잭션 **바깥**에서(본 작업 무중단), 큰 payload는 오브젝트 스토리지로 오프로드. 감사 실패가 서비스를 죽이지 않도록 best-effort.' +
+        '**L2 스탬프 + 스트림 백스톱** — 모든 쓰기 헬퍼가 `수행자 · 출처 · 요청ID`를 아이템에 주입. DB 스트림 소비자가 그 필드로 귀속한다. ' +
+        '스탬프 없는 변경 = 앱 우회 직접 쓰기로 판정. 위장을 막기 위해 **쓰기마다 갱신되는 1회용 토큰**을 함께 심는다 — 토큰이 그대로면 "이번 쓰기는 앱을 안 거쳤다". ' +
+        '삭제는 **삭제자를 먼저 행에 기록한 뒤 지우는 2단계**(fail-closed)라, 삭제 이벤트의 이전 이미지에서 삭제자를 읽는다.' +
+        '**L3 짝 검증** — *"출처=api 면 대응하는 게이트 감사행이 반드시 존재한다"* 는 불변식을 세우고, 스트림 행과 게이트 행을 **요청ID로 페어링**. 짝이 없으면 위조 의심 배지.',
+      results: [
+        '관리 채널을 우회한 변경 · 삭제도 기록 — "누가 무엇을"이 채널과 무관하게 완결',
+        '스탬프 무임승차 위장 차단 (쓰기 1회용 토큰의 미갱신 = 우회 신호)',
+        '짝 판정을 쓰기 시점이 아니라 **조회 시점 파생**으로 — 두 행의 도착 순서가 비보장이라 쓰기 시점 판정은 정상 짝을 위조로 영구 박제한다',
+        '삭제 아카이브 기반 **항목 단위 핀포인트 복구** 스크립트 (전체 시점 복원과 별개 · 관리자 화면 노출 0)',
+        '감사 로그 **다운로드에도 사유 강제** — 감사 로그 자체의 반출을 추적',
+      ],
+      stack: ['게이트 감사 (before-image → diff → 오프로드)', '출처 스탬프 (수행자 · 출처 · 요청ID · 1회용 토큰)', 'DB Stream 백스톱', '짝 검증 (조회 시점 파생)', '삭제 2단계 fail-closed', 'sparse GSI (권한 이력)'],
+      mermaid: `graph TB
+    API["관리자 요청"] --> GATE["게이트"] --> DB[("DB")]
+    DIRECT["콘솔 · SDK 직접 쓰기"] --> DB
+    GATE -->|L1 감사행<br/>요청ID| LOG[("감사 로그")]
+    DB -.->|L2 Stream<br/>스탬프 귀속| SA["스트림 소비자"] --> LOG
+    LOG --> PAIR["L3 짝 검증<br/>요청ID 페어링"]
+    PAIR --> OK["API 대응"]
+    PAIR --> BAD["위조 의심"]
+
+    classDef a fill:#e6efdf,stroke:#7ea571,color:#283825
+    classDef b fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
+    classDef c fill:#f5dcd2,stroke:#c8674f,color:#3a1810
+    class API,GATE a
+    class DIRECT,BAD c
+    class SA,LOG,PAIR,OK b`,
+      ascii: {
+        title: '스탬프 무임승차 차단 + 짝 검증 (익명화)',
+        intro: '스탬프는 행의 영속 속성 — 그래서 1회용 토큰이 필요하다.',
+        code: `# 쓰기마다 새로 발급되는 신선도 토큰. 스탬프는 행에 남아있으므로,
+# 직접 쓰기가 일부 필드만 고치면 과거 앱 쓰기의 출처를 물려받아 정상으로 위장한다.
+# 토큰이 갱신되지 않은 MODIFY = 이번 쓰기는 앱을 거치지 않았다.
+WSEQ_FIELD = "_wseq"
+
+# 짝 판정은 조회 시점 파생. 쓰기 시점 판정은 도착 순서 비보장 탓에
+# 정상 짝을 "위조"로 영구 박제해버린다.
+if origin == "api":
+    status = "api_paired" if gate_ref in found else "api_orphan"
+elif origin == "learner": status = "learner"   # 짝 검증 비대상
+else:                     status = "system"`,
+        result: '앱을 거친 쓰기 · 거치지 않은 쓰기 · 위장한 쓰기를 셋으로 갈라낸다.',
+      },
+    },
+
+    /* ─── 5.8 대량 작업 파이프라인 ──────────────────────── */
+    {
+      no: '5.8',
+      kind: 'SYSTEM',
+      title: '대량 작업 파이프라인 — 결함을 코드가 아니라 규칙으로 막기',
+      lede: '수천 건 일괄 처리에서 같은 부류의 결함이 반복됐다. 개별 수정 대신 3원칙을 프로젝트 규칙으로 승격시키고, 공용 드라이버 하나로 수렴시켰다.',
+      problem:
+        '체크리스트로 N개를 선택해 같은 작업을 거는 기능이 늘어날수록 같은 결함이 반복됐다 — 프론트가 N번 개별 호출하고, 백엔드는 항목마다 조회+수정을 순차로 돌고(N+1), ' +
+        '진행 상황은 끝나야 알 수 있고, 수천 건에서 서버리스 실행 시간 제한에 걸려 터진다. 하나씩 고치면 다음 기능에서 또 나온다.',
+      decision:
+        '개별 수정 대신 **프로젝트 규칙 문서에 STRICT 3원칙으로 못박고**, 위반을 코드리뷰 차단 사유로 만들었다.' +
+        '① **배치** — 프론트 N콜 금지, 백엔드도 항목당 순차 조회 금지(배치 조회 · 배치 쓰기 · 트랜잭션으로 묶는다).' +
+        '② **진행률** — 완료 메시지 한 번이 아니라, 전역 백그라운드 작업 센터에 진행 중 상시 노출.' +
+        '③ **청킹** — 수백~수천 건 대비 청크 분할로 외부 API 한계 · 실행 시간 제한 회피.' +
+        '그리고 세 경로(학습자 · 차수 · 알림 발송)가 제각기 쓰던 반복문을 `step(cursor) → {부분결과, 다음커서, 전체}` 추상화 **하나**로 수렴시켰다.',
+      results: [
+        '통합 CSV 추출의 N+1을 배치 조회로 제거 — API 게이트웨이 30초 컷(504) 해소',
+        '중단은 **청크 경계에서만** — 진행 중인 청크는 완료 후 정지(부분 적용이 멱등하게 안전)',
+        '커서가 전진하지 않는 버그를 무한루프 가드로 즉시 노출',
+        '드라이버는 React 훅이 아니라 순수 async 함수 — 진행률은 콜백으로 호출측(모달 · 작업센터)에 위임',
+        '이후 추가된 일괄 기능은 3원칙 누락 시 리뷰에서 차단 — 같은 결함 재발 0',
+      ],
+      stack: ['runChunkedJob (공용 청킹 드라이버)', '전역 백그라운드 작업 센터', 'batch_get / batch_write / TransactWrite', 'AbortSignal (청크 경계 중단)', 'opaque cursor 페이지네이션'],
+      ascii: {
+        title: '공용 청킹 드라이버 (익명화)',
+        intro: '세 경로가 같은 추상화 하나를 공유 — 중단 · 전진 · 가드는 드라이버가 소유.',
+        code: `export async function runChunkedJob({ step, accumulate, initial, onProgress, signal }) {
+  let cursor = 0, total = Infinity, acc = initial;
+  for (let guard = 0; cursor < total; guard += 1) {
+    if (signal?.aborted) break;                 // 청크 경계 중단 — 보낸 청크는 유지
+    if (guard >= MAX_CHUNKS) throw new Error("chunk limit (cursor not advancing)");
+    const { partial, nextCursor, total: t } = await step(cursor);
+    total = t; acc = accumulate(acc, partial);
+    if (nextCursor <= cursor) break;            // 전진 없음 = 종료
+    cursor = nextCursor;
+    onProgress?.(Math.min(cursor, total), total);
+  }
+  return acc;
+}`,
+        result: '규칙을 문서에 새기고, 구현은 단일 드라이버로. 다음 기능이 같은 실수를 반복할 여지를 없앤다.',
       },
     },
   ],
@@ -326,7 +505,10 @@ regex = re.sub(r"\\{(\\w+)\\}", r"(?P<\\1>[^/]+)", pattern) + "$"`,
       ['3,000명 규모',               '정적 CDN + DynamoDB 자동 확장',         '규모 대비 안정 응답'],
       ['비개발 운영 + 배포스펙 비공개', '격리 부트스트랩 + Electron 콘솔',       '더블클릭 → 탭 클릭 배포 · 무오염'],
       ['복원 시 점수 중복',           '버퍼 → 체크포인트 경계 flush → 순서 큐', '무중복 (저장=전송 경계)'],
-      ['일 단위 변경 / 첫 풀스택',     '빠른 학습 + AI 활용 + 외부 지정 스택',   '주 75+ 커밋으로 흡수'],
+      ['개인정보 · 관리자 권한 취급',  '단일 인가 게이트 (DB 권위 · 부팅 fail-closed)', '정책 우회 경로 물리적 제거'],
+      ['앱을 우회한 직접 DB 쓰기',     '스탬프 + Stream 백스톱 + 짝 검증',      '채널 무관 감사 · 위장 탐지'],
+      ['일괄 작업 결함 반복',         '3원칙 STRICT 승격 + 공용 청킹 드라이버',  'N+1 · 504 해소 · 재발 0'],
+      ['일 단위 변경 / 첫 풀스택',     '빠른 학습 + AI 활용 + 외부 지정 스택',   '주 90+ 커밋 · 재구조화 3회 흡수'],
     ],
   },
 };
