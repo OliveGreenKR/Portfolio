@@ -43,20 +43,20 @@ window.LANDING_DATA = {
     {
       idx: '02',
       code: 'MAIN · 02',
-      date: '2026.06',
+      date: '2026.07',
       slug: 'internal-web-service',
       href: '../pages/internal-web-service.html',
       title: '사내 학습 웹 서비스 (외주)',
       oneLine: '하루 단위로 바뀌는 요구사항에 대응하기 위해 변경에 유연한 저장 기술과 서버리스 서비스를 직접 선택했다. 비개발 담당자를 위한 데스크톱 운영 콘솔 개발을 주도했다.',
       meta: [
-        { kind: 'accent', text: '외주 · 프리랜서 · 진행 중' },
-        { kind: 'role',   text: '게임 설계 + 웹 주개발' },
+        { kind: 'accent', text: '외주 · 프리랜서 · 납품 완료' },
+        { kind: 'role',   text: '웹 서비스 개발 주도' },
       ],
       thumb: null,
       metrics: [
         { n: '65%',     label: '저장소 커밋 비중 · 작성자별 338/520건' },
         { n: '약 6주',  label: '웹 개발 기간 · 2026.05 – 2026.07' },
-        { n: 'NoSQL',   label: '미확정 요구 흡수 · 마이그레이션 0' },
+        { n: '8일',     label: '추가 계약 마감 전 납품' },
       ],
     },
     {
