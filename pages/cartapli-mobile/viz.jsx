@@ -47,8 +47,7 @@ function CMWaterfall({ steps, unit }) {
         })}
       </svg>
       <figcaption className="cm-figcap">
-        {`막대 바로 위 = 그 시점에 남아 있는 비용 (${unit}). 그 위 큰 글씨 = 직전 대비 감소율. `}
-        뒤로 갈수록 막대가 작은 것은 <b>남은 비용 자체가 이미 작아졌기 때문</b>이고, 감소율은 그와 별개로 계속 크다.
+        {`막대 바로 위 = 남은 비용 (${unit}) · 그 위 큰 글씨 = 직전 대비 감소율`}
       </figcaption>
     </figure>
   );
