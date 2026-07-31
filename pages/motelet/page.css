@@ -146,6 +146,13 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
 .mt-svg-num  { font-family: var(--font-mono); font-size: 22px; font-weight: 700; fill: var(--ink); }
 .mt-svg-num.strong { fill: var(--sage-900); font-size: 24px; }
 .mt-svg-op   { font-family: var(--font-mono); font-size: 18px; font-weight: 700; fill: var(--ink-3); }
+.mt-svg-op.sm { font-size: 13px; fill: var(--sage-700); }
+.mt-svg-lbl.root { font-size: 14px; fill: var(--sage-900); font-weight: 700; }
+
+/* 항 풀이 — 그림의 잎 이름과 같은 말을 쓴다 */
+.mt-terms { display: grid; grid-template-columns: 150px minmax(0, 1fr); margin: 22px 0 0; border-top: 1px solid var(--rule); }
+.mt-terms dt { padding: 12px 0; font-size: 14.5px; font-weight: 700; color: var(--ink); border-bottom: 1px solid var(--rule); }
+.mt-terms dd { padding: 12px 0; margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--ink-2); border-bottom: 1px solid var(--rule); text-wrap: pretty; }
 
 /* 밀집 질의 그림의 점 — 검사 대상 여부를 색으로 가른다 */
 .mt-dot-seed { fill: var(--terra-400); stroke: var(--terra-700); }
@@ -210,6 +217,8 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
   .mt-step-title { font-size: 21px; }
   .mt-handoff { grid-template-columns: 1fr; }
   .mt-limit { grid-template-columns: 1fr; gap: 6px; }
+  .mt-terms { grid-template-columns: 1fr; }
+  .mt-terms dt { padding-bottom: 2px; border-bottom: none; }
   .mt-figure { padding: 12px 12px 10px; }
   /* viewBox 가 화면 폭으로 축소되면 SVG 안 10.5px 글자가 4~5px 로 떨어진다.
      설명 문장과 범례는 figcaption 이 대신 지므로 여기서는 숨긴다. */

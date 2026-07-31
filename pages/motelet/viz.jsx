@@ -12,6 +12,57 @@
 // 규칙 4: SVG 안의 긴 설명 문장에는 mt-svg-note 를 붙인다 — 720px 이하에서 숨겨진다
 //         (viewBox 가 축소되면 실제 픽셀이 4~5px 로 떨어져 읽을 수 없다).
 
+/* ─── 한 판의 골드를 무엇으로 쪼갰나 ─────────────────── */
+/* 이 페이지의 첫 그림이자 제일 중요한 그림. 개념 뼈대를 3초에 보이게 한다.
+   숫자 없음 — 구조만 말한다. */
+function MTDecompViz() {
+  const W = 760, H = 232;
+  // 총폭: 손자 열이 480 + 230 = 710 < 760 ✓
+  const box = (x, y, w, h, t, s, tone) => (
+    <g key={t}>
+      <rect x={x} y={y} width={w} height={h} rx="3"
+            fill={tone === 'root' ? 'var(--sage-100)' : tone === 'mid' ? 'var(--paper-2)' : 'var(--paper)'}
+            stroke={tone === 'root' ? 'var(--sage-500)' : 'var(--rule-2)'}
+            strokeWidth={tone === 'root' ? 1.8 : 1} />
+      <text x={x + w / 2} y={y + (s ? 20 : h / 2 + 5)} textAnchor="middle"
+            className={tone === 'root' ? 'mt-svg-lbl root' : 'mt-svg-lbl'}>{t}</text>
+      {s && <text x={x + w / 2} y={y + 36} textAnchor="middle" className="mt-svg-sub">{s}</text>}
+    </g>
+  );
+  const elbow = (x1, y1, x2, y2, mid) => (
+    <polyline points={`${x1},${y1} ${mid},${y1} ${mid},${y2} ${x2},${y2}`}
+              fill="none" stroke="var(--rule-2)" />
+  );
+
+  return (
+    <figure className="mt-figure">
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
+           aria-label="한 판의 골드는 단위시간당 골드와 세션 시간의 곱이다">
+        {elbow(190, 113, 240, 55, 215)}
+        {elbow(190, 113, 240, 175, 215)}
+        {elbow(430, 55, 480, 30, 455)}
+        {elbow(430, 55, 480, 82, 455)}
+        <line x1={430} x2={480} y1={175} y2={175} stroke="var(--rule-2)" />
+
+        <circle cx={215} cy={113} r="10" fill="var(--paper)" stroke="var(--sage-500)" />
+        <text x={215} y={118} textAnchor="middle" className="mt-svg-op sm">×</text>
+
+        {box(20, 88, 170, 50, '한 판의 골드', null, 'root')}
+        {box(240, 33, 190, 44, '단위시간당 골드', null, 'mid')}
+        {box(240, 153, 190, 44, '세션 시간', null, 'mid')}
+        {box(480, 8, 230, 44, '처치 속도', '공격원 5종의 합', 'leaf')}
+        {box(480, 60, 230, 44, '처치당 골드', '적 분포의 기대값', 'leaf')}
+        {box(480, 153, 230, 44, '스태미나 ÷ 초당 소모', null, 'leaf')}
+      </svg>
+      <figcaption className="mt-figcap">
+        스킬이 무엇을 올리든 <b>이 세 잎 중 하나를 움직인다.</b>
+        그래서 노드 하나의 값을 같은 단위로 비교할 수 있다.
+      </figcaption>
+    </figure>
+  );
+}
+window.MTDecompViz = MTDecompViz;
+
 /* ─── 밀집 지점 질의 — 셀 크기 R 이면 3×3 이 필요충분 ── */
 function MTDensityViz() {
   const W = 760, H = 322;
@@ -151,7 +202,8 @@ window.MTOccupancyViz = MTOccupancyViz;
 /* 원리도다. 막대에 눈금도 값도 없다 — 이 페이지에는 노드별 실측 표가 없고,
    있는 것처럼 보이게 만들지 않는다. 보여줄 것은 "빼서 재는 방식" 하나뿐이다. */
 function MTNodeValueViz() {
-  const W = 760, H = 244;
+  // 세로: 마지막 주석 baseline = rowY[1]+barH+66 = 244. 글자 하강부까지 잡아 H 를 256 으로 둔다.
+  const W = 760, H = 256;
   const cw = 30, cgap = 8, cx0 = 24, nChips = 8, removed = 4;
   // 칩 줄 총폭: 24 + 8*30 + 7*8 = 320. 막대는 380 에서 시작해 최대 660 → 760 안 ✓
   const rowY = [58, 148];
