@@ -83,7 +83,8 @@
 .cm-trail-note { margin-top: 14px; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); text-wrap: pretty; }
 
 /* ─── SVG figure 공통 ────────────────────────────────── */
-.cm-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; }
+/* overflow:hidden — SVG 라벨이 viewBox 밖으로 삐져나가면 페이지 가로 스크롤이 생긴다 */
+.cm-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; overflow: hidden; }
 .cm-svg { width: 100%; height: auto; display: block; overflow: visible; }
 .cm-figcap {
   margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule);
@@ -207,25 +208,89 @@
 .cm-rend-metric.ok b { color: var(--sage-700); }
 .cm-rend-arrow { display: flex; align-items: center; padding: 0 16px; background: var(--paper); color: var(--terra-400); font-family: var(--font-mono); font-size: 18px; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
 
-/* ─── 단계 카드 ──────────────────────────────────────── */
-.cm-stage { border-top: 1px solid var(--rule); padding: 44px 0 8px; scroll-margin-top: 88px; }
-.cm-stage-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin-bottom: 12px; }
-.cm-stage-no { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--paper); background: var(--ink); padding: 4px 9px; border-radius: 3px; }
-.cm-stage-title { font-family: var(--font-display); font-size: 25px; font-weight: 600; letter-spacing: -0.012em; color: var(--ink); margin: 0; line-height: 1.25; }
+/* ─── 측정 환경 — 고정한 것 3가지 ────────────────────── */
+.cm-fixed { display: grid; gap: 0; margin-top: 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); }
+.cm-fixed-item { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 12px; padding: 14px 18px; border-bottom: 1px solid var(--rule); }
+.cm-fixed-item:last-child { border-bottom: none; }
+.cm-fixed-n { font-family: var(--font-mono); font-size: 11px; font-weight: 700; color: var(--terra-400); padding-top: 3px; }
+.cm-fixed-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.cm-fixed-v { font-size: 14px; line-height: 1.65; color: var(--ink-2); text-wrap: pretty; }
+.cm-fixed-v strong { color: var(--ink); font-weight: 600; }
+.cm-fixed-v code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 3px; padding: 0 4px; }
+
+/* ─── 사이클 사슬 표 ─────────────────────────────────── */
+.cm-figure.chain { padding: 0; overflow: hidden; }
+.cm-chain { display: block; }
+.cm-chain-head,
+.cm-chain-row { display: grid; grid-template-columns: 62px minmax(0, 1.15fr) minmax(0, 1fr) 150px; gap: 0; }
+.cm-chain-head > span {
+  padding: 10px 14px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--ink-3); font-weight: 700;
+  background: var(--paper-2); border-bottom: 1px solid var(--rule-2);
+}
+.cm-chain-row > span { padding: 13px 14px; border-bottom: 1px solid var(--rule); font-size: 13.5px; line-height: 1.5; }
+.cm-chain-row:last-child > span { border-bottom: none; }
+.cm-chain-k { font-family: var(--font-mono); font-size: 11.5px; font-weight: 700; color: var(--ink); background: var(--paper-2); }
+.cm-chain-o { color: var(--ink); border-left: 3px solid var(--terra-300); }
+.cm-chain-f { color: var(--ink-2); border-left: 3px solid var(--sage-300); }
+.cm-chain-r { font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: var(--sage-700); background: var(--sage-50); }
+.cm-chain-row.base .cm-chain-f { color: var(--ink-3); font-style: italic; }
+.cm-chain-row.base .cm-chain-r { color: var(--ink-3); background: var(--paper-2); }
+.cm-chain-o strong, .cm-chain-f strong { font-weight: 700; }
+
+/* ─── 사이클 카드 ────────────────────────────────────── */
+.cm-cycle { border-top: 2px solid var(--rule-2); padding: 40px 0 8px; scroll-margin-top: 88px; }
+.cm-cycle-head { display: grid; grid-template-columns: auto auto 1fr auto; align-items: center; gap: 12px; margin-bottom: 20px; }
+.cm-cycle-badge {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 700; color: var(--terra-500); border: 1px solid var(--terra-200);
+  background: var(--terra-50); border-radius: 999px; padding: 4px 10px; white-space: nowrap;
+}
+.cm-cycle-no { font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.1em; color: var(--paper); background: var(--ink); padding: 4px 9px; border-radius: 3px; }
+.cm-cycle-title { font-family: var(--font-display); font-size: 25px; font-weight: 600; letter-spacing: -0.012em; color: var(--ink); margin: 0; line-height: 1.25; }
 .cm-stage-tag { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; padding: 4px 9px; border-radius: 999px; font-weight: 700; white-space: nowrap; }
 .cm-stage-tag.struct { background: var(--sage-100); color: var(--sage-700); border: 1px solid var(--sage-300); }
 .cm-stage-tag.dots   { background: var(--terra-100); color: var(--terra-700); border: 1px solid var(--terra-300); }
-.cm-stage-gist { margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: var(--ink); max-width: 800px; text-wrap: pretty; padding-left: 14px; border-left: 3px solid var(--terra-300); }
-.cm-stage-gist strong { font-weight: 700; }
-.cm-stage-delta { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin: 0 0 22px; padding: 10px 16px; background: var(--paper-2); border-radius: 3px; }
-.cm-stage-delta-n { font-family: var(--font-display); font-size: 26px; font-weight: 700; letter-spacing: -0.02em; color: var(--ink); font-variant-numeric: tabular-nums; line-height: 1; }
-.cm-stage-delta-s { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-3); }
+.cm-stage-tag.base   { background: var(--paper-2); color: var(--ink-3); border: 1px solid var(--rule-2); }
+
+/* 결과 블록 */
+.cm-result { margin: 22px 0 0; padding: 16px 20px; border: 1px solid var(--sage-300); border-left-width: 4px; border-radius: 0 4px 4px 0; background: var(--sage-50); }
+.cm-result-n { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.cm-result-delta { font-family: var(--font-display); font-size: 30px; font-weight: 700; letter-spacing: -0.02em; color: var(--sage-900); font-variant-numeric: tabular-nums; line-height: 1; }
+.cm-result-sub { font-family: var(--font-mono); font-size: 11.5px; color: var(--sage-700); }
+.cm-result ul { margin: 0; padding-left: 18px; }
+.cm-result li { font-size: 14.5px; line-height: 1.7; color: var(--ink); margin-bottom: 6px; }
+.cm-result li:last-child { margin-bottom: 0; }
+.cm-result li strong { font-weight: 700; }
+.cm-result code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper); border: 1px solid var(--sage-200); border-radius: 3px; padding: 0 4px; }
+
+/* 다음 문제 — 다음 카드의 관측으로 이어지는 고리 */
+.cm-handoff {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start;
+  margin: 24px 0 4px; padding: 16px 20px;
+  background: var(--ink); color: var(--paper); border-radius: 4px;
+}
+.cm-handoff-k {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5);
+  border-radius: 3px; padding: 4px 8px; white-space: nowrap;
+}
+.cm-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
+.cm-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
+.cm-handoff-a strong { color: var(--sage-300); font-weight: 700; }
+.cm-handoff-a code, .cm-handoff-q code { font-family: var(--font-mono); font-size: 12.5px; background: rgba(251,249,245,0.12); border-radius: 3px; padding: 0 4px; }
+.cm-handoff.standalone {
+  display: block; margin-top: 32px; font-size: 16px; line-height: 1.6; padding: 18px 22px;
+}
+.cm-handoff.standalone strong { color: var(--sage-300); }
 
 /* 라벨 + 본문 행 */
 .cm-row { display: grid; grid-template-columns: 78px minmax(0, 1fr); gap: 18px; padding: 14px 0; border-top: 1px solid var(--rule); align-items: start; }
+.cm-row:first-of-type { border-top: none; }
 .cm-row-lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; padding-top: 3px; }
-.cm-row.what .cm-row-lbl { color: var(--terra-500); }
-.cm-row.why  .cm-row-lbl { color: var(--sage-700); }
+.cm-row.observe .cm-row-lbl { color: var(--terra-500); }
+.cm-row.cause   .cm-row-lbl { color: var(--terra-700); }
+.cm-row.fix     .cm-row-lbl { color: var(--sage-700); }
 .cm-row-body { font-size: 15px; line-height: 1.75; color: var(--ink); text-wrap: pretty; }
 .cm-row-body strong { font-weight: 600; }
 .cm-row-body ul { margin: 0; padding-left: 18px; }
@@ -305,9 +370,14 @@
   .cm-row, .cm-limit { grid-template-columns: 1fr; gap: 6px; }
   .cm-flip { grid-template-columns: 1fr; }
   .cm-flip-arrow { padding: 6px 20px; }
-  .cm-stage-head { grid-template-columns: auto 1fr; }
+  .cm-cycle-head { grid-template-columns: auto auto; }
+  .cm-cycle-title { grid-column: 1 / -1; font-size: 21px; }
   .cm-stage-tag { grid-column: 1 / -1; justify-self: start; }
-  .cm-stage-title { font-size: 21px; }
+  .cm-handoff { grid-template-columns: 1fr; }
+  .cm-chain-head { display: none; }
+  .cm-chain-row { grid-template-columns: 56px minmax(0, 1fr); }
+  .cm-chain-row > span:nth-child(3), .cm-chain-row > span:nth-child(4) { grid-column: 2; padding-top: 0; border-bottom: none; }
+  .cm-chain-row > span:nth-child(4) { border-bottom: 1px solid var(--rule); }
   .cm-gist { flex-direction: column; gap: 8px; font-size: 15px; }
   .cm-figure { padding: 12px 12px 10px; }
 }

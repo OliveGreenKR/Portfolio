@@ -313,7 +313,9 @@ function CMFrameViz() {
           );
         })}
         <text x={padL} y={18} className="cm-svg-lbl">선이 종이에 닿기 전 (전량 통과) — S1-1 이 사실상 공짜로 만든 구간</text>
-        <text x={padL + bw * 5 + 4} y={y(80.96) - 24} className="cm-svg-tag">뷰 풀 4,186 → 6,461 (2,275세트 신규 생성)</text>
+        <text x={W - padR} y={y(80.96) - 24} textAnchor="end" className="cm-svg-tag">
+          뷰 풀 4,186 → 6,461 (2,275세트 신규 생성)
+        </text>
       </svg>
       <figcaption className="cm-figcap">
         <b>가장 비싼 프레임은 최종이 아니라 중간(f6)이다.</b> 잠정 레이어 6,461장이 최종 5,041장보다 28% 많다.
@@ -383,6 +385,30 @@ function CMJobViz() {
   );
 }
 window.CMJobViz = CMJobViz;
+
+/* ─── 사이클 사슬 — 결과가 다음 관측을 만든다 ────────── */
+function CMChainViz({ rows, caption }) {
+  const ri = window.renderInline;
+  return (
+    <figure className="cm-figure chain">
+      <div className="cm-chain">
+        <div className="cm-chain-head">
+          <span></span><span>관측 — 무엇이 보였나</span><span>처방 — 무엇을 했나</span><span>결과</span>
+        </div>
+        {rows.map((r, i) => (
+          <div className={`cm-chain-row ${i === 0 ? 'base' : ''}`} key={r.k}>
+            <span className="cm-chain-k">{r.k}</span>
+            <span className="cm-chain-o">{ri(r.observe)}</span>
+            <span className="cm-chain-f">{ri(r.fix)}</span>
+            <span className="cm-chain-r">{ri(r.out)}</span>
+          </div>
+        ))}
+      </div>
+      <figcaption className="cm-figcap">{caption}</figcaption>
+    </figure>
+  );
+}
+window.CMChainViz = CMChainViz;
 
 /* ─── 큰 숫자 대비 ───────────────────────────────────── */
 function CMBigDelta({ items }) {
