@@ -119,7 +119,7 @@ function CMCompare({ rows }) {
 }
 window.CMCompare = CMCompare;
 
-/* ─── 가려진 겹을 찾는 방법 ──────────────────────────── */
+/* ─── 가려진 레이어를 찾는 방법 ──────────────────────── */
 /* "어떻게 적게 만드는가" 를 그림 하나로 — 위에서 훑고, 아래에서 훑고, 둘 다 0이면 지운다 */
 function CMBuriedViz() {
   const W = 720, H = 268;
@@ -138,8 +138,8 @@ function CMBuriedViz() {
   return (
     <figure className="cm-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
-           aria-label="가려진 겹을 찾아 지우는 방법">
-        <text x={ox} y="20" className="cm-svg-lbl">종이 단면 (아래에서 위로 쌓인 겹)</text>
+           aria-label="가려진 레이어를 찾아 지우는 방법">
+        <text x={ox} y="20" className="cm-svg-lbl">종이 단면 (아래에서 위로 쌓인 레이어)</text>
         <text x={colTop} y="20" className="cm-svg-sub">위에서 본</text>
         <text x={colBot} y="20" className="cm-svg-sub">아래에서 본</text>
         <text x={colTop} y="36" className="cm-svg-sub">안 덮인 넓이</text>
@@ -170,7 +170,7 @@ function CMBuriedViz() {
         ))}
       </svg>
       <figcaption className="cm-figcap">
-        위·아래 <b>양쪽</b>에서 모두 안 보이는 겹만 지운다. 한쪽만 보면 접었을 때 드러날 겹까지 지우게 된다.
+        위·아래 <b>양쪽</b>에서 모두 안 보이는 레이어만 지운다. 한쪽만 보면 접었을 때 드러날 레이어까지 지우게 된다.
       </figcaption>
     </figure>
   );
@@ -184,25 +184,25 @@ function CMRendererViz() {
     <figure className="cm-figure plain">
       <div className="cm-rend">
         <div className="cm-rend-side">
-          <div className="cm-rend-h">이전 — 겹 1장마다 화면 객체 1개</div>
+          <div className="cm-rend-h">이전 — 레이어 1장마다 렌더러 1개</div>
           <div className="cm-rend-grid">
             {cells.map((_, i) => <span key={i} className="cm-rend-dot"></span>)}
             <span className="cm-rend-more">… 총 77개</span>
           </div>
-          <div className="cm-rend-metric">그리기 호출 <b>+71</b></div>
+          <div className="cm-rend-metric">드로우콜 <b>+71</b></div>
         </div>
         <div className="cm-rend-arrow">→</div>
         <div className="cm-rend-side to">
-          <div className="cm-rend-h">현재 — 앞뒤 두 덩어리로 고정</div>
+          <div className="cm-rend-h">현재 — 앞/뒤 메시 2개로 고정</div>
           <div className="cm-rend-two">
-            <span className="cm-rend-mesh front">앞면</span>
-            <span className="cm-rend-mesh back">뒷면</span>
+            <span className="cm-rend-mesh front">앞면 메시</span>
+            <span className="cm-rend-mesh back">뒷면 메시</span>
           </div>
-          <div className="cm-rend-metric ok">그리기 호출 <b>+1</b></div>
+          <div className="cm-rend-metric ok">드로우콜 <b>+1</b></div>
         </div>
       </div>
       <figcaption className="cm-figcap">
-        그리는 도형의 양은 그대로다. <b>바뀐 것은 그것을 몇 덩어리로 나눠 보내느냐뿐이다.</b>
+        그리는 폴리곤 양은 그대로다. <b>바뀐 것은 몇 개의 렌더러로 나눠 보내느냐뿐이다.</b>
       </figcaption>
     </figure>
   );
@@ -229,11 +229,11 @@ function CMJobViz() {
     <figure className="cm-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
            aria-label="레이어별 출력 자리를 미리 배정해 스레드끼리 겹치지 않게 한다">
-        <text x={x0} y="18" className="cm-svg-lbl">겹마다 따로 계산 — 여러 코어가 동시에, 끝나는 순서는 제각각</text>
+        <text x={x0} y="18" className="cm-svg-lbl">레이어별 독립 계산 — 병렬 실행, 완료 순서 보장 없음</text>
         {segs.map((s, i) => (
           <g key={s.n}>
             <rect x={s.xf} y="28" width={s.wf + s.wl} height="24" rx="3" fill="var(--paper-2)" stroke="var(--rule-2)" />
-            <text x={s.xf + (s.wf + s.wl) / 2} y="44" textAnchor="middle" className="cm-svg-ax">겹 {s.n}</text>
+            <text x={s.xf + (s.wf + s.wl) / 2} y="44" textAnchor="middle" className="cm-svg-ax">레이어 {s.n}</text>
             <line x1={s.xf + (s.wf + s.wl) / 2} x2={s.xf + (s.wf + s.wl) / 2} y1="54" y2={yBuf - 8}
                   stroke={colors[i]} strokeWidth="2" />
             <polygon points={`${s.xf + (s.wf + s.wl) / 2 - 4},${yBuf - 8} ${s.xf + (s.wf + s.wl) / 2 + 4},${yBuf - 8} ${s.xf + (s.wf + s.wl) / 2},${yBuf - 1}`} fill={colors[i]} />
@@ -248,11 +248,11 @@ function CMJobViz() {
           </g>
         ))}
         <rect x={x0} y={yBuf} width={cursor - x0} height={hBuf} fill="none" stroke="var(--ink)" strokeWidth="1.5" />
-        <text x={x0} y={yBuf + hBuf + 22} className="cm-svg-lbl">미리 잡아둔 메모리 — 겹마다 자기 칸이 정해져 있다</text>
+        <text x={x0} y={yBuf + hBuf + 22} className="cm-svg-lbl">NativeArray 출력 버퍼 — 레이어마다 슬롯이 사전 배정돼 있다</text>
       </svg>
       <figcaption className="cm-figcap">
-        칸 너비가 겹마다 다른 것은 겹의 꼭짓점 수가 다르기 때문이다.
-        <b> 어느 겹이 어디에 쓸지는 계산이 시작되기 전에 이미 정해져 있다.</b>
+        슬롯 폭이 레이어마다 다른 것은 정점 수가 다르기 때문이다.
+        <b> 어느 레이어가 어디에 쓸지는 잡이 시작되기 전에 이미 정해져 있다.</b>
       </figcaption>
     </figure>
   );
