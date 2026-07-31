@@ -257,7 +257,7 @@ function MTTool({ data }) {
       <p className="mt-body">{ri(t.loopBody)}</p>
 
       <MTPoints points={t.read} title={t.readTitle} />
-      <window.MTSpikeViz spike={t.spike} />
+      <window.MTNodeValueViz />
 
       <div className="mt-callout">
         <div className="mt-callout-h"><span className="glyph">◆</span> 실제 작업 방식</div>
