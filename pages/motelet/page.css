@@ -41,12 +41,20 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
 .mt-shot img { display: block; width: 100%; height: auto; }
 .mt-shot figcaption { padding: 11px 16px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.6; color: var(--ink-3); background: var(--paper-2); text-wrap: pretty; }
 
-.mt-bigs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
-.mt-big { padding: 22px 24px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
-.mt-big:last-child { border-right: none; }
-.mt-big-n { font-family: var(--font-display); font-size: 38px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
-.mt-big-l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra-500); font-weight: 600; }
-.mt-big-s { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); line-height: 1.5; }
+/* 만든 것 3칸. 큰 숫자 밴드가 아니라 활동 밴드 —
+   성과 수치가 없는 페이지에서 숫자 자리를 억지로 채우지 않기 위한 형태다.
+   kind 라벨이 아래 섹션(MODEL §03 / TOOL §04 / RUNTIME §02)을 예고한다. */
+.mt-built { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
+.mt-built-cell { padding: 20px 22px 22px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 9px; }
+.mt-built-cell:last-child { border-right: none; }
+.mt-built-kind {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--terra-500); font-weight: 700;
+  display: flex; align-items: center; gap: 8px;
+}
+.mt-built-kind::after { content: ''; height: 1px; flex: 1; background: var(--rule); }
+.mt-built-t { font-size: 17.5px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.32; }
+.mt-built-s { font-size: 13.5px; color: var(--ink-2); line-height: 1.62; text-wrap: pretty; }
 
 /* ─── 역할 ───────────────────────────────────────────── */
 .mt-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
@@ -180,9 +188,9 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
 @media (max-width: 720px) {
   .mt-hero { padding: 36px 0 32px; }
   .mt-hook { font-size: 17px; }
-  .mt-bigs { grid-template-columns: 1fr; }
-  .mt-big { border-right: none; border-bottom: 1px solid var(--rule); }
-  .mt-big:last-child { border-bottom: none; }
+  .mt-built { grid-template-columns: 1fr; }
+  .mt-built-cell { border-right: none; border-bottom: 1px solid var(--rule); }
+  .mt-built-cell:last-child { border-bottom: none; }
   .mt-step-head { flex-wrap: wrap; }
   .mt-step-title { font-size: 21px; }
   .mt-handoff { grid-template-columns: 1fr; }

@@ -233,21 +233,24 @@ function MTSearchCostViz() {
 }
 window.MTSearchCostViz = MTSearchCostViz;
 
-/* ─── 큰 숫자 3칸 ────────────────────────────────────── */
-function MTBigs({ items }) {
+/* ─── 만든 것 3칸 ────────────────────────────────────── */
+/* 큰 숫자 밴드가 아니다. 이 페이지에는 개선 전후를 비교할 계측본이 없어
+   히어로에 올릴 성과 수치가 없다. 규모·설정값을 숫자처럼 세우면 훅과 무관한
+   장식이 되므로, 세 칸에 만든 것을 적고 kind 로 아래 섹션을 예고한다. */
+function MTBuilt({ items }) {
   return (
-    <div className="mt-bigs">
+    <div className="mt-built">
       {items.map(it => (
-        <div className="mt-big" key={it.label}>
-          <div className="mt-big-n">{it.n}</div>
-          <div className="mt-big-l">{it.label}</div>
-          <div className="mt-big-s">{window.renderInline(it.sub)}</div>
+        <div className="mt-built-cell" key={it.title}>
+          <div className="mt-built-kind">{it.kind}</div>
+          <div className="mt-built-t">{window.renderInline(it.title)}</div>
+          <div className="mt-built-s">{window.renderInline(it.sub)}</div>
         </div>
       ))}
     </div>
   );
 }
-window.MTBigs = MTBigs;
+window.MTBuilt = MTBuilt;
 
 /* ─── 사정거리 — 읽는 것 / 안 읽는 것 ────────────────── */
 function MTScope({ scope }) {
