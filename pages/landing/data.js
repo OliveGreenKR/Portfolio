@@ -14,7 +14,7 @@ window.LANDING_DATA = {
     stats: [
       { n: '13', label: 'projects',       sub: '메인 6 · Labs 7' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
-      { n: '16w', label: 'solo engine',    sub: 'DX11 · 7 모듈 · 147 파일' },
+      { n: '137', label: 'solo engine',    sub: 'DX11 · C++17 · 커밋 586' },
       { n: '07', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
     ],
   },
@@ -120,20 +120,22 @@ window.LANDING_DATA = {
     {
       idx: '06',
       code: 'MAIN · 06',
-      date: '2025.07',
+      date: '2025.08',
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
+      // metrics 는 성과 수치가 아니라 만든 것이다 — 이 프로젝트에는 계측본이 없다.
+      // 버린 것: '15 → 60 fps'(영상 기억) · '60↔30fps 결정론'(검증 코드 없음) · '147 파일'(실제 137).
       title: 'DX11 Custom Engine',
-      oneLine: 'C++17 + DirectX 11 로 1인 풀스택 게임 엔진을 16주 동안 직접 구현한 학습 프로젝트.',
+      oneLine: 'C++17 + DirectX 11 로 1인 엔진을 직접 구현. 물리 데이터 소유권을 게임 객체에서 떼어내 중앙 배열로 옮겼다.',
       meta: [
-        { kind: 'accent', text: '16주 · 1인 · Windows / D3D11' },
+        { kind: 'accent', text: '2025.01 – 2025.08 · 1인 · D3D11' },
         { kind: 'role',   text: '엔진 프로그래머 (전 영역)' },
       ],
       thumb: '../pages/dx11-engine/assets/hero.png',
       metrics: [
-        { n: '147 / 7', label: '소스 파일 / 모듈 (물리 · 충돌 · 렌더 · 코어 · 메모리 · 리소스 · 입력)' },
-        { n: '15 → 60', label: 'fps (좁은 공간 다수 충돌체)' },
-        { n: 'O(n²) → O(n log n)', label: '충돌 감지 · 60↔30fps 결정론' },
+        { n: '게임 ↔ 물리', label: '통로 넷 — 입력 동기화 · Job 큐 · 결과 · 충돌 이벤트' },
+        { n: '슬롯 ID', label: '컴포넌트를 보지 않는 충돌 파이프라인' },
+        { n: '137', label: '소스 파일 (헤더 86 · 구현 46 · HLSL 5) · 커밋 586' },
       ],
     },
   ],
