@@ -285,7 +285,6 @@ function CMRigor({ data }) {
           </div>
         ))}
       </div>
-      <p className="cm-lesson">{ri(r.lesson)}</p>
     </section>
   );
 }
