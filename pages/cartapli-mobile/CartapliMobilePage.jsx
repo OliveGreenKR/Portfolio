@@ -107,7 +107,6 @@ function CMHero({ data }) {
       </div>
 
       <CMBigDelta items={data.bigs} />
-      <p className="cm-defnote">{ri(data.hookNote)}</p>
       <CMWaterfall steps={data.waterfall} unit="ms" />
       <p className="cm-note">{ri(data.waterfallNote)}</p>
     </section>
@@ -162,8 +161,7 @@ function CMSummary({ data }) {
       <SectionHead no="02" title="무엇을 바꿨나 — 이전 ↔ 현재" kind="SUMMARY" />
       <Gist>{data.summary.gist}</Gist>
       <CMCompare rows={data.summary.rows} />
-      <p className="cm-defnote">{ri(data.summary.defNote)}</p>
-      <CMLineChart series={lc.series} yMax={lc.yMax} xLabel="접기 회차" yLabel="겹 수" caption={lc.caption} />
+      <CMLineChart series={lc.series} yMax={lc.yMax} xLabel="접기 회차" yLabel="레이어 수" caption={lc.caption} />
     </section>
   );
 }
@@ -261,7 +259,6 @@ function CMVerify({ data }) {
       </div>
       <div className="cm-sub">
         <h3 className="cm-sub-title">{v.tests.title}</h3>
-        <p className="cm-defnote">{ri(v.tests.note0)}</p>
         <div className="cm-scroll">
           <DataTable headers={['검사', '대조 대상', '케이스']} rows={v.tests.rows} />
         </div>
