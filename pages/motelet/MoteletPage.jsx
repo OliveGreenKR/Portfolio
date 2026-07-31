@@ -173,8 +173,6 @@ function MTContext({ data }) {
           <p>{ri(c.roles.others)}</p>
         </div>
       </div>
-
-      <MTHandoff h={c.handoff} />
     </section>
   );
 }
@@ -188,10 +186,12 @@ function MTStep({ s, idx }) {
         <span className="mt-step-no">{s.no}</span>
         <h3 className="mt-step-title">{s.title}</h3>
       </div>
-      <p className="mt-body">{ri(s.body)}</p>
-      {/* §02 의 목록만 헤더가 없다 — 바로 위 mt-step-title 과 본문이 목록의 주제를
-          이미 세우고 있어, 헤더를 붙이면 같은 말이 두 줄 연속으로 놓인다.
-          §04·§05 는 상위 제목이 섹션 제목뿐이라 박스 안 헤더를 쓴다. */}
+      {/* 문제 한 줄 → 한 것 한 줄. 두 줄을 넘기지 않는다. */}
+      <div className="mt-pd">
+        <div className="mt-pd-row problem"><span>문제</span><p>{ri(s.problem)}</p></div>
+        <div className="mt-pd-row did"><span>한 것</span><p>{ri(s.did)}</p></div>
+      </div>
+      {/* §02 의 목록만 헤더가 없다 — 바로 위 제목과 두 줄이 주제를 이미 세운다. */}
       <MTPoints points={s.points} />
       {s.link && (
         <p className="mt-xlink">
@@ -213,7 +213,6 @@ function MTRuntime({ data }) {
       <MTSectionHead no="02" title="화면 — 엔진이 정해 주지 않는 것 넷" kind="RUNTIME" />
       <MTGist>{r.gist}</MTGist>
       {r.steps.map((s, i) => <MTStep key={s.key} s={s} idx={i} />)}
-      <MTHandoff h={r.handoff} />
     </section>
   );
 }
@@ -229,11 +228,6 @@ function MTModel({ data }) {
       <p className="mt-body">{ri(m.body)}</p>
 
       <window.AsciiBlock title={m.formula.title} intro={m.formula.intro} code={m.formula.code} result={m.formula.result} />
-
-      <div className="mt-sub">
-        <h4 className="mt-sub-title">{m.ceiling.title}</h4>
-        <p className="mt-body">{ri(m.ceiling.body)}</p>
-      </div>
 
       <div className="mt-sub">
         <h4 className="mt-sub-title">{m.mirror.title}</h4>
