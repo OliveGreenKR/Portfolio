@@ -147,51 +147,62 @@ function MTOccupancyViz() {
 }
 window.MTOccupancyViz = MTOccupancyViz;
 
-/* ─── 실측 폭등 — 에디터 화면에서 그대로 읽은 두 값 ──── */
-/* 이 페이지에서 유일한 실측 대비다. 값을 여기서 만들지 않고 data.js 의 tool.spike 에서 받는다. */
-function MTSpikeViz({ spike }) {
-  const W = 760, H = 236;
-  // ⚠️ padT 는 헤드룸이다. 큰 막대는 항상 ih 를 꽉 채우므로 그 값 라벨이 y = base-ih-10 에 뜬다.
-  //    padT 가 작으면 그 라벨이 y=24 의 도형 제목과 겹친다 — 입력값과 무관한 구조적 충돌이다.
-  //    padT 62 → 라벨 y = 52, 제목과 28px 간격.
-  const padT = 62, padB = 52, ih = H - padT - padB;   // 122
-  const base = padT + ih;                              // 184
-  const bw = 130, x1 = 140, x2 = 330;
-  // 총폭: 오른쪽 요약 박스 520 + 200 = 720 < 760 ✓
-  const h2 = ih;
-  const h1 = Math.round(ih * (spike.from / spike.to));
-  const fmt = n => n.toLocaleString('en-US');
+/* ─── 노드 영향력을 재는 법 — 빼 보고 차이를 본다 ────── */
+/* 원리도다. 막대에 눈금도 값도 없다 — 이 페이지에는 노드별 실측 표가 없고,
+   있는 것처럼 보이게 만들지 않는다. 보여줄 것은 "빼서 재는 방식" 하나뿐이다. */
+function MTNodeValueViz() {
+  const W = 760, H = 244;
+  const cw = 30, cgap = 8, cx0 = 24, nChips = 8, removed = 4;
+  // 칩 줄 총폭: 24 + 8*30 + 7*8 = 320. 막대는 380 에서 시작해 최대 660 → 760 안 ✓
+  const rowY = [58, 148];
+  const barX = 380, barFull = 280, barCut = 196, barH = 30;
+  const chipY = r => rowY[r] + 2;
+
+  const chips = (r) => Array.from({ length: nChips }).map((_, i) => {
+    const gone = r === 1 && i === removed;
+    return (
+      <g key={i}>
+        <rect x={cx0 + i * (cw + cgap)} y={chipY(r)} width={cw} height={26} rx="3"
+              fill={gone ? 'var(--paper)' : 'var(--sage-200)'}
+              stroke={gone ? 'var(--terra-400)' : 'var(--sage-500)'}
+              strokeDasharray={gone ? '4 3' : ''} />
+        {gone && <text x={cx0 + i * (cw + cgap) + cw / 2} y={chipY(r) + 18} textAnchor="middle" className="mt-svg-tag">0</text>}
+      </g>
+    );
+  });
 
   return (
     <figure className="mt-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
-           aria-label={`한 구간의 구매가 다음 판의 기대 골드를 ${spike.ratio} 로 올렸다`}>
-        <text x="20" y="24" className="mt-svg-lbl">한 구간의 구매가 다음 판에 만든 차이 — 에디터 화면 실측</text>
-        <line x1="20" x2="500" y1={base} y2={base} stroke="var(--rule-2)" />
+           aria-label="전 노드 만렙에서 노드 하나만 0으로 내려 잃는 기대 골드가 그 노드의 값이다">
+        <text x={cx0} y="34" className="mt-svg-lbl">전 노드 만렙</text>
+        {chips(0)}
+        <rect x={barX} y={rowY[0]} width={barFull} height={barH} rx="2" fill="var(--sage-200)" stroke="var(--sage-500)" />
+        <text x={barX + 10} y={rowY[0] + 20} className="mt-svg-sub">한 판의 기대 골드</text>
 
-        <rect x={x1} y={base - h1} width={bw} height={h1} rx="2"
-              fill="var(--terra-100)" stroke="var(--terra-400)" />
-        <text x={x1 + bw / 2} y={base - h1 - 10} textAnchor="middle" className="mt-svg-num sm">{fmt(spike.from)}</text>
-        <text x={x1 + bw / 2} y={base + 20} textAnchor="middle" className="mt-svg-sub">구간 진입 시</text>
+        <text x={cx0} y="124" className="mt-svg-lbl">그 노드만 0 으로</text>
+        {chips(1)}
+        <rect x={barX} y={rowY[1]} width={barCut} height={barH} rx="2" fill="var(--paper-2)" stroke="var(--rule-2)" />
+        <rect x={barX + barCut} y={rowY[1]} width={barFull - barCut} height={barH} rx="2"
+              fill="var(--terra-100)" stroke="var(--terra-400)" strokeDasharray="4 3" />
 
-        <rect x={x2} y={base - h2} width={bw} height={h2} rx="2"
-              fill="var(--sage-200)" stroke="var(--sage-500)" />
-        <text x={x2 + bw / 2} y={base - h2 - 10} textAnchor="middle" className="mt-svg-num sm">{fmt(spike.to)}</text>
-        <text x={x2 + bw / 2} y={base + 20} textAnchor="middle" className="mt-svg-sub">58번째 판</text>
+        {/* 차이 구간 표시 */}
+        <line x1={barX + barCut} x2={barX + barCut} y1={rowY[1] + barH} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
+        <line x1={barX + barFull} x2={barX + barFull} y1={rowY[1] + barH} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
+        <line x1={barX + barCut} x2={barX + barFull} y1={rowY[1] + barH + 22} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
+        <text x={cx0} y={rowY[1] + barH + 26} className="mt-svg-lbl">잃은 만큼 ÷ 그 노드의 총비용 = 그 노드의 값</text>
 
-        <line x1={x1 + bw + 12} x2={x2 - 12} y1={base - h1 - 34} y2={base - h1 - 34} stroke="var(--ink-3)" />
-        <polygon points={`${x2 - 12},${base - h1 - 38} ${x2 - 12},${base - h1 - 30} ${x2 - 4},${base - h1 - 34}`} fill="var(--ink-3)" />
-        <text x={(x1 + bw + x2) / 2} y={base - h1 - 42} textAnchor="middle" className="mt-svg-tag">51~57판 구매</text>
-
-        <rect x="520" y={padT + 4} width="200" height="96" rx="3" fill="var(--sage-50)" stroke="var(--sage-500)" strokeWidth="1.6" />
-        <text x="620" y={padT + 48} textAnchor="middle" className="mt-svg-num strong">{spike.ratio}</text>
-        <text x="620" y={padT + 74} textAnchor="middle" className="mt-svg-sub">기대 골드 · 한 구간 만에</text>
+        <line x1={cx0} x2={W - 24} y1={rowY[1] + barH + 44} y2={rowY[1] + barH + 44} stroke="var(--rule)" />
+        <text x={cx0} y={rowY[1] + barH + 66} className="mt-svg-sub mt-svg-note">해금 노드를 0 으로 내리면 그 능력 채널이 통째로 닫힌다 — 능력이 벌던 몫 전부가 차이로 잡힌다</text>
       </svg>
-      <figcaption className="mt-figcap">{window.renderInline(spike.caption)}</figcaption>
+      <figcaption className="mt-figcap">
+        더해서 재지 않고 <b>빼서 잰다.</b> 해금 노드는 내리는 순간 그 능력이 통째로 꺼지므로,
+        해금의 값을 계산하는 규칙을 따로 만들 필요가 없다.
+      </figcaption>
     </figure>
   );
 }
-window.MTSpikeViz = MTSpikeViz;
+window.MTNodeValueViz = MTNodeValueViz;
 
 /* ─── 탐색 비용 — 실측 설정값의 산술 ─────────────────── */
 function MTSearchCostViz() {
