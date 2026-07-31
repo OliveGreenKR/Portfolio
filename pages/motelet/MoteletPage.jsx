@@ -142,7 +142,7 @@ function MTHero({ data }) {
         <figcaption>{ri(data.hero.caption)}</figcaption>
       </figure>
 
-      <window.MTBigs items={data.bigs} />
+      <window.MTBuilt items={data.built} />
     </section>
   );
 }
