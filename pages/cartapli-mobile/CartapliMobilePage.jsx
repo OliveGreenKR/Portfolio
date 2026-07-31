@@ -10,13 +10,13 @@ const { useEffect: useEffectCM, useState: useStateCM } = React;
 
 const CM_NAV = [
   { id: 'hero',    label: '전체 성과' },
-  { id: 'context', label: '01 · 배경 · 측정' },
+  { id: 'context', label: '01 · 배경 · 측정 조건' },
   { id: 'summary', label: '02 · 이전 ↔ 현재' },
 ];
 const CM_NAV2 = [
   { id: 'verify', label: '04 · 검증' },
   { id: 'rigor',  label: '05 · 측정 신뢰' },
-  { id: 'limits', label: '06 · 다음' },
+  { id: 'limits', label: '06 · 남은 것' },
 ];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
@@ -80,7 +80,7 @@ function CMRail({ cycles }) {
     <aside className="nb-rail" aria-label="On-page navigation">
       <span className="nb-rail-section">page</span>
       {CM_NAV.map(s => link(s.id, s.label))}
-      <span className="nb-rail-section">03 · 어떻게</span>
+      <span className="nb-rail-section">03 · 왜 이 순서</span>
       {cycles.map((c, i) => link(`cy-${i}`, `${c.no} · ${c.title}`))}
       <span className="nb-rail-section">wrap-up</span>
       {CM_NAV2.map(s => link(s.id, s.label))}
@@ -106,9 +106,8 @@ function CMHero({ data }) {
         ))}
       </div>
 
-      <p className="cm-defnote">{ri(data.hookNote)}</p>
-
       <CMBigDelta items={data.bigs} />
+      <p className="cm-defnote">{ri(data.hookNote)}</p>
       <CMWaterfall steps={data.waterfall} unit="ms" />
       <p className="cm-note">{ri(data.waterfallNote)}</p>
     </section>
@@ -124,8 +123,6 @@ function CMContext({ data }) {
   return (
     <section id="context" className="nb-section">
       <SectionHead no="01" title="배경 · 측정 조건" kind="CONTEXT" />
-      <Gist>{c.gist}</Gist>
-
       <dl className="nb-facts">
         {c.facts.map(([k, v]) => (
           <React.Fragment key={k}><dt>{k}</dt><dd>{ri(v)}</dd></React.Fragment>
@@ -149,6 +146,7 @@ function CMContext({ data }) {
         <div className="cm-scroll">
           <DataTable headers={me.metrics.headers} rows={me.metrics.rows} />
         </div>
+        <p className="cm-note">{ri(me.metrics.note)}</p>
       </div>
     </section>
   );
@@ -156,12 +154,15 @@ function CMContext({ data }) {
 
 /* ─── §02 이전 ↔ 현재 ────────────────────────────────── */
 function CMSummary({ data }) {
+  const ri = window.renderInline;
   const { CMCompare, CMLineChart } = window;
   const lc = data.layerCurve;
   return (
     <section id="summary" className="nb-section">
       <SectionHead no="02" title="무엇을 바꿨나 — 이전 ↔ 현재" kind="SUMMARY" />
+      <Gist>{data.summary.gist}</Gist>
       <CMCompare rows={data.summary.rows} />
+      <p className="cm-defnote">{ri(data.summary.defNote)}</p>
       <CMLineChart series={lc.series} yMax={lc.yMax} xLabel="접기 회차" yLabel="겹 수" caption={lc.caption} />
     </section>
   );
@@ -278,7 +279,6 @@ function CMRigor({ data }) {
     <section id="rigor" className="nb-section">
       <SectionHead no="05" title="측정 신뢰 — 내가 틀린 것들" kind="RIGOR" />
       <Gist>{r.gist}</Gist>
-      <p className="cm-body">{ri(r.lede)}</p>
       <div className="cm-rigor">
         {r.cards.map(c => (
           <div key={c.badge} className={`cm-rigor-card ${c.kind}`}>
@@ -299,7 +299,6 @@ function CMLimits({ data }) {
   return (
     <section id="limits" className="nb-section">
       <SectionHead no="06" title="남은 것 — 다음 대상과 아직 못 잰 것" kind="OPEN" />
-      <Gist>{data.limitsGist}</Gist>
       <div className="cm-limits">
         {data.limits.map(([k, v]) => (
           <div className="cm-limit" key={k}>
