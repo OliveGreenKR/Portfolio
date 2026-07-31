@@ -252,8 +252,6 @@ function MTSearch({ data }) {
       <MTSectionHead no="04" title="자동 탐색 — 만든 것과 쓴 것" kind="OPTIMIZER" />
       <MTGist>{s.gist}</MTGist>
       <MTPoints points={s.built} title={s.builtTitle} />
-      <p className="mt-body">{ri(s.costBody)}</p>
-      <window.MTSearchCostViz />
       <MTCallout kind="warn" title={s.notUsed.title} body={s.notUsed.body} />
     </section>
   );
