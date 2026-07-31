@@ -1,292 +1,324 @@
 // pages/motelet/data.js
-// Motelet (개발 코드명 CursorBlade) — 개발 중 · 미출시 인크레멘탈 게임. 본인 = PM 겸 배틀씬 프로그래머.
-// Schema mirrors DX11_DATA. hero = 타이틀 아트, gallery = 게임/에디터 스크린샷.
-// 스크린샷: pages/motelet/assets/ (title.png · gameplay.png · skill-tree-editor.png · balance-sim.png)
-// 코드 근거: knowledge_base/projects/cursorblade/code_analysis/battle_runtime.md + labs/sound-system
+// Motelet (개발 코드명 CursorBlade) — 개발 중. 본인 = PM 겸 배틀씬 프로그래머.
+//
+// 구성: 배경 → 화면(런타임) → 모델 → 도구 → 자동 탐색 → 남은 것
+//   §02 의 마지막 항(스폰 점유 상한)이 §03 의 min(killRate, spawnSupply) 항으로 회수된다.
+//   ⚠️ 다만 그 항은 점유율 계산을 옮긴 것이 아니라 스칼라 근사다. §03 ceiling 이 그 사실을 밝힌다 —
+//      "회수된다" 를 "그대로 들어간다" 로 격상시키지 마라.
+//   §04 는 §03 의 기울기를, §05 는 §04 의 "사람이 읽는다" 를 받는다.
+//
+// ⚠️ 주장 규칙 — 어기면 페이지 전체 신뢰가 무너진다
+//   1. **성능 주장 금지.** 프로파일러 측정본이 없다. "안 끊긴다 / 수백 개 동시 / 빨라졌다 /
+//      오버헤드 / 프레임 이득 / 할당 0 으로 개선" 류를 쓰지 않는다. 남길 수 있는 것은 코드로
+//      판정되는 주장뿐이다 (물리 엔진 참조 0 · 질의가 리스트를 새로 만들지 않음 ·
+//      격자 3×3 이 전수 비교와 같은 답 · 취득 책임 분리).
+//   2. 시뮬 수치의 성격을 흐리지 않는다. eGold 는 모델 출력이지 계측값이 아니다.
+//      본문이 스스로 "절대값은 읽지 않았다" 고 선언하므로 절대 크기를 성과로 쓰지 않는다.
+//   3. 인용 가능한 수치는 출처가 하나뿐인 것만.
+//      · 프리셋 실측 — 노드 94 / 엣지 95 / 구매 스텝 155 / 효과량 95
+//      · 코드 직렬화 기본값 — 점유율 임계 1.5 · 상한 2.5 (EnemySpawner 필드, 단일 출처)
+//      · 에디터 화면 실측 — 51~57판 구매 → 58판 eGold 50,167 → 164,782 (3.28배),
+//        탐색 설정 판 90 · 세대 64 · 후보 128
+//      ❌ reachCap · w_spawn 류는 SO 자산과 편집 버퍼가 서로 다른 값이다 → 인용 금지.
+//   4. 기간은 "진행 중" 으로만. 주 수 · 커밋 비율은 쓰지 않는다(분모가 팀 공용이라 귀속 불가).
+//
+// 문장 규칙
+//   - 독자는 이 프로젝트를 모를 뿐 기술은 아는 사람이다. seam · ref-count · 브로드페이즈 ·
+//     RMSE · 균일 격자는 그대로 쓴다. 풀어쓸 것은 이 프로젝트 고유 개념(eGold · 점유율 ·
+//     구매 스텝 · 프리셋)뿐이고, 처음 나오는 자리에서 한 번만 푼다.
+//   - 건조하게. "~라는 뜻이다 / ~인 셈이다" 류 부연 금지. 같은 사실 반복 금지.
+//   - **굵게**는 한 덩이 3~8자 핵심 구에만. 절이나 문장을 통째로 감싸지 않는다 —
+//     전부 굵으면 아무것도 안 굵다. 한 문단에 굵게는 하나까지.
+//   - renderInline 이 아는 마크업은 **굵게** / `코드` / *기울임* 뿐. 중첩 금지.
+//     AsciiBlock 의 intro·result 는 마크업을 안 태우므로 백틱을 쓰지 않는다.
 
 window.MOTELET_DATA = {
   meta: {
-    code: 'MAIN · 01',
-    eyebrow: 'MAIN · 01 ─ 개발 중 · 미출시 (팀 3인)',
-    date: '2026.05 – 진행 중',
-    title: 'Motelet — 인크레멘탈 배틀 + 밸런싱 시뮬레이터',
-    oneLine:
-      '청소 로봇이 먼지 몬스터를 쓸어담는 **인크레멘탈** (Steam 출시 준비 중). ' +
-      '수백 이펙트를 async 풀로, 물리 엔진 없이 자체 2D 기하로 결정론 판정. ' +
-      '스킬 성장을 **골드 수급량**으로 정량화해 시뮬레이터로 밸런싱.',
-    period: '2026.05 – 진행 중',
-    weeks: '진행 중 · 5주+',
-    team: '3 인',
-    role: 'PM · 배틀씬 프로그래머',
-    platform: 'Unity 6.0 · PC (Steam 예정)',
-    stack: ['Unity 6.0 LTS', 'C# 10', 'Addressables', 'UniTask', 'UIElements / GraphView', 'IMGUI', 'Odin Inspector', 'Evolution Strategy(자체)'],
+    eyebrow: 'MAIN · 02 ─ 개발 중 · 팀 3인',
+    subtitle: 'Motelet',
+    title: '성장 체감을 계산으로 짚기',
+    pills: [
+      { kind: 'accent', text: '진행 중 · 미출시' },
+      { kind: 'plain',  text: 'Unity 6.0 LTS · C# 10' },
+      { kind: 'plain',  text: 'Addressables · UniTask · GraphView' },
+      { kind: 'accent', text: '역할 — PM · 배틀 런타임 · 밸런싱 모델' },
+    ],
   },
 
-  heroImage: 'motelet/assets/title.png',
+  hook:
+    '성장이 잘 느껴지는지는 플레이해서 판단했다. 그 판단이 못 짚는 "어느 구간이 왜 과한가" 를, ' +
+    '런타임 공식을 그대로 옮겨 적은 계산 모델로 짚었다. ' +
+    '모델은 게임이 아니다 — 그래서 절대 수치는 읽지 않고 **상대 효율**과 **기울기**만 읽었다. ' +
+    '그 판을 굴리는 판정 · 발동 위치 · 스폰 상한도 엔진에 맡기지 않고 직접 짰다 (§02).',
 
-  heroMetrics: [
-    { n: '수백', label: '동시 이펙트',     sub: 'async 풀 + ref-count seam · 핫패스 할당 0 · 풀 cap 32 · idle 30s' },
-    { n: '0',    label: '물리 엔진 의존',   sub: '자체 2D 원 기하 · 제곱거리 + AABB 브로드페이즈 · 결정론' },
-    { n: '5종',  label: '공격원 모델',     sub: '평타 · 대시 · 블랙홀 · 직선청소 · 연쇄번개 → 처치율 분해' },
-    { n: '≈375', label: '본인 커밋 / 585', sub: 'skillTreePreset 브랜치 주도' },
-  ],
-
-  screenshots: [
-    { src: 'motelet/assets/gameplay.png',          tag: 'BATTLE', caption: '배틀씬 — 블랙홀 · 연쇄번개 · 직선청소 등 수십 이펙트 동시 · 자체 2D 기하 피격 판정' },
-    { src: 'motelet/assets/skill-tree-editor.png', tag: 'TOOL',   caption: '스킬트리 노드 에디터 — 그래프 편집 + 밸런싱 수치(Config · RewardCatalog) 역직렬화 + 시뮬 통합 + 연결 검증' },
-    { src: 'motelet/assets/balance-sim.png',       tag: 'SIM',    caption: '밸런싱 시뮬레이터 — eGold 성장률(Δln) 곡선 · ΔGold 폭등 지점 분석 · ES 자동 수치 탐색(runs 90 · λ128)' },
-  ],
-
-  facts: [
-    ['한 줄 정의',  '청소 로봇이 먼지 몬스터를 쓸어담는 인크레멘탈 게임의 배틀씬 + 스킬 밸런싱 도구'],
-    ['개발 상태',   'Motelet (개발 중 · 미출시, Steam 출시 준비)'],
-    ['기간',       '2026.05 – 진행 중 (~5주)'],
-    ['팀 구성',     '3 인 (본인 = PM 겸 배틀씬 프로그래머)'],
-    ['본인 역할',   '배틀 런타임(VFX · 사운드 · 판정) + 밸런싱 시뮬레이터 / 에디터'],
-    ['스택',       'Unity 6.0 · C# 10 · Addressables · UniTask · GraphView · Odin Inspector · ES'],
-    ['규모',       '에디터 확장 모듈 39 파일(에디터 24 + 시뮬 8 + 프록시 7) · 전체 285'],
-    ['외부 협업',   '스킬 시스템 · DB · 그래프 에디터 *기반* 은 팀원 작업 — 그 위에 개선 · 시뮬 추가'],
-  ],
-
-  roles: {
-    mine:
-      '배틀 런타임 전반 — VFX(`Chul.VFXSystem`) · 사운드(`Chul.SoundSystem`)를 Addressables async 풀 + 취득 seam(ref-count·idle release)으로, ' +
-      '물리 엔진 없는 자체 2D 원 기하(`CursorBlade.Geo`) 결정론 피격 판정. ' +
-      '밸런싱 — 골드 수급량 수학 모델(`BalanceSimCore`) + 런 단위 시뮬레이터 + ΔGold 폭등 분석 + ES 자동 수치 탐색. ' +
-      '그래프 에디터 개선 — 사용성 + 밸런싱 수치 역직렬화 + 시뮬레이션 통합 + write-back.',
-    others:
-      '스킬 데이터 · DB · 런타임 적용 프레임워크와 그래프 에디터의 *기반(base)* 은 팀원(LBC) 작업. ' +
-      '본인은 그 위에 기능을 추가 · 개선했다. 게임 코어 일부도 팀 분담.',
+  hero: {
+    img: 'motelet/assets/gameplay.png',
+    caption: '배틀 화면 — 광역 능력 두 개가 각각 적이 몰린 지점에서 열린다. 그 지점을 고르는 계산이 §02 에 있다.',
   },
 
-  systems: [
-    /* ─── 4.1 VFX ───────────────────────────────────────── */
-    {
-      no: '4.1',
-      kind: 'SYSTEM',
-      title: 'VFX 시스템 — 대량 이펙트 async 풀 + 취득 seam',
-      lede: '화면에 수백 이펙트가 동시에 터진다. 프리팹 취득(load/release)만 인터페이스로 분리(ref-count + idle release)하고, id별 풀로 핫패스 할당을 0으로.',
-      problem:
-        '인크레멘탈은 한 화면에 수백 개의 이펙트가 동시에 생멸한다. 동기 로드·매번 `Instantiate`는 끊김과 메모리 스파이크를 만들고, ' +
-        '메모리에 전부 상주시키면 메모리가 터진다.',
-      decision:
-        '취득+수명을 `IVFXResourceManager` seam으로 분리(sync/async 은닉) — 구현 `AddressablesVFXResourceManager`가 **async 로드 + ref-count + idle release(30s) + in-flight 합류**. ' +
-        '`VFXManager`는 **id별 `ObjectPool<VFXInstance>`** + 재생 게이트(cooldown/maxConcurrent)만 담당. ' +
-        '풀 미준비 시 **pre-issued 핸들**을 즉시 발급하고 async 로드 → 게임플레이가 블록되지 않는다. ' +
-        '이 seam 패턴을 **사운드(§4.2)에도 동일 적용**.',
-      results: [
-        '핫패스 `Instantiate` 0 — resident prewarm + 프레임 분산 prewarm(2/프레임)',
-        '대량 이펙트 동시 사용에도 끊김 없음 (async off-thread 로드 + per-id 동시수 캡)',
-        '구간 단위 그룹 Preload/Release(ref-count) — 같은 클립 동시 요청도 핸들 1개(in-flight 합류)',
-      ],
-      stack: ['VFXManager (per-id ObjectPool)', 'IVFXResourceManager (취득 seam)', 'AddressablesVFXResourceManager (ref-count + idle 30s)', 'VFXInstance (자기 반환)', 'VFXHandle (id-only)'],
-      mermaid: `graph LR
-    HIT["피격<br/>Health.OnDamaged"]
-    MGR["VFXManager<br/>CanPlay 게이트"]
-    POOL["per-id ObjectPool"]
-    INST["VFXInstance<br/>입자 종료→자기 반환"]
-    RES["IVFXResourceManager"]
-    ADDR["Addressables<br/>async · ref-count · idle 30s"]
+  bigs: [
+    { n: '94 / 155', label: '스킬 노드 / 구매 스텝', sub: '노드 하나의 레벨 하나가 스텝 하나 · 사는 순서가 곧 다른 빌드' },
+    { n: '0',        label: '물리 엔진 의존',        sub: '자체 2D 기하 · 결정론 · 질의가 리스트를 새로 만들지 않음' },
+    { n: '8,192',    label: '탐색 1회가 도는 성장 곡선', sub: '세대 64 × 후보 128 · 곡선 1개 = 판 90회' },
+  ],
 
-    HIT -->|PlayOneShot| MGR
-    MGR -->|pool.Get| POOL --> INST
-    MGR -.TryGet / LoadAsync.-> RES --> ADDR
-    INST -->|종료| POOL
-
-    classDef a fill:#e6efdf,stroke:#7ea571,color:#283825
-    classDef b fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef c fill:#f5dcd2,stroke:#c8674f,color:#3a1810
-    class HIT,INST a
-    class MGR,POOL b
-    class RES,ADDR c`,
-      ascii: {
-        title: 'async 로드 — 캐시/in-flight 합류',
-        intro: '재로드 회피 + 중복 로드 방지. 풀 미준비 시에도 게임플레이는 블록되지 않음.',
-        code: `// 캐시 hit → idle 취소 + ref++ (재로드 회피)
-if (_handleByEntry.TryGetValue(entry, out var cached) && cached.Prefab != null) {
-    CancelIdle(cached); cached.RefCount++; return cached.Prefab;
-}
-// 진행 중 로드가 있으면 합류 (중복 op 방지, 핸들 1개)
-if (!_inFlightByEntry.TryGetValue(entry, out var loadTask)) {
-    loadTask = LoadAndStore(entry, ct).Preserve();
-    _inFlightByEntry[entry] = loadTask;
-}
-GameObject loaded = await loadTask;`,
-        result: '풀 cap 32 · idle release 30s · poolWarmup 4 · prewarm 2/프레임.',
-      },
+  // ─── §01 배경 ───────────────────────────────────────────
+  context: {
+    facts: [
+      ['프로젝트',    'Motelet — 청소 로봇이 먼지 정령을 쓸어담는 인크레멘탈 (개발 중 · Steam 준비)'],
+      ['기간',        '2026.05 – 진행 중'],
+      ['팀',          '3인 — 본인 = PM 겸 배틀씬 프로그래머'],
+      ['환경',        'Unity 6.0 LTS · C# 10 · Addressables · UniTask · UIElements / GraphView · Odin Inspector'],
+      ['이 문서 범위', '배틀 런타임(판정 · 밀집 질의 · 에셋 수명 · 스폰 상한) + 스킬 밸런싱 모델 · 시뮬레이터 · 에디터 통합'],
+    ],
+    roles: {
+      mine:
+        '배틀 런타임 — 자체 2D 기하 판정, 밀집 지점 질의, 스폰 상한, VFX·사운드 취득 seam. ' +
+        '밸런싱 — 골드 수급 모델, 성장 시뮬레이터, 노드 가치 계산, 자동 탐색. ' +
+        '팀원의 그래프 에디터 위에 밸런싱 수치 역직렬화 · 시뮬 통합 · 되쓰기를 얹었다.',
+      others:
+        '스킬 데이터 · DB · 런타임 적용 프레임워크와 그래프 에디터의 **기반**은 팀원(Lee Byeong Chan) 작업이다. ' +
+        '게임 콘텐츠도 팀 분담이다.',
     },
-
-    /* ─── 4.2 Sound ─────────────────────────────────────── */
-    {
-      no: '4.2',
-      kind: 'SYSTEM',
-      title: '사운드 시스템 — VFX와 동일 seam (취득 책임 분리)',
-      lede: '키 기반 사운드 god-class에서 취득 책임만 인터페이스로 분리하고, 로드 방식을 카테고리와 직교하는 LoadMode 데이터 축으로. SFX 동기 응답성 보존 + BGM async.',
-      problem:
-        '구버전은 모든 클립을 메모리 상주(Direct only)하는 god-class였다. BGM까지 상주하면 메모리 낭비, ' +
-        '그렇다고 전부 async로 바꾸면 SFX의 동프레임 응답성이 깨진다.',
-      decision:
-        '취득(load/release) 책임만 `ISoundResourceManager`로 분리하고, 로드 방식을 카테고리와 **직교**하는 `LoadMode{Direct, Addressable}` 축으로 데이터화. ' +
-        'Direct=동기 메모리 상주(SFX), Addressable=async 로드+해제(BGM, ref-count + idle 30s). ' +
-        'SoundManager는 sync/async 여부를 모른 채 인터페이스에 위임 — VFX와 같은 설계 원칙.',
-      results: [
-        'SFX 동프레임 응답성 보존(TryGetClip 캐시 hit) + BGM async 로드/해제로 메모리 절약',
-        '`[FormerlySerializedAs]`로 기존 SO 직렬화 무손실 마이그레이션 + 신규 PlayMode 테스트',
-        '엔진 비종속 독립 패키지(asmdef) — 미래 엔진 리소스매니저 교체 seam 확보',
-      ],
-      stack: ['ISoundResourceManager (취득 seam)', 'LoadMode{Direct, Addressable} (직교 축)', 'UniTask BGM 크로스페이드(취소 가능)', 'ref-count + idle 30s'],
-      ascii: {
-        title: 'ISoundResourceManager — 취득 + 수명 seam',
-        intro: 'SoundManager는 sync/async를 모르고 인터페이스에 위임. (VFX의 IVFXResourceManager와 동형)',
-        code: `public interface ISoundResourceManager {
-    bool TryGetClip(SoundClip c, out AudioClip clip);          // Direct/캐시 → 동기 true
-    UniTask<AudioClip> LoadAsync(SoundClip c, CancellationToken ct); // Addressable → async(ref++)
-    void Release(SoundClip c);      // ref-- → 0이면 idle 30s 후 해제
-    void ForceUnload(SoundClip c);  // 누수 복구 최후수단
-    void ReleaseAll();
-}`,
-        result: '"변하는 이유가 다른 책임은 가른다" — 재생 정책 vs 클립 취득. VFX·Sound에 일관 적용.',
-      },
+    body:
+      '인크레멘탈에서 플레이어가 하는 일은 하나로 줄어든다 — 한 판 돌고, 번 것으로 업그레이드를 사고, 다시 돈다. ' +
+      '그래서 업그레이드 하나가 다음 판을 얼마나 밀어 올리는가가 **게임 그 자체**다.',
+    body2:
+      '이 게임의 스킬 트리는 노드 94개다. 노드마다 올릴 수 있는 레벨을 전부 합치면 살 수 있는 칸이 155개 — ' +
+      '이 칸 하나를 **구매 스텝**이라고 부르겠다. 어떤 순서로 사느냐가 곧 다른 빌드다.',
+    handoff: {
+      q: '고칠 곳을 찾으려면 한 판이 무엇으로 이루어져 있는지부터 알아야 한다.',
+      a: '먼저 그 한 판이 화면에서 어떻게 도는지.',
     },
+  },
 
-    /* ─── 4.3 Geometry ──────────────────────────────────── */
-    {
-      no: '4.3',
-      kind: 'SYSTEM',
-      title: '자체 2D 기하 판정 — 물리 엔진 0, 결정론',
-      lede: '정밀 판정이 불필요한 게임 특성을 trade-off 판단. Unity 물리 엔진을 버리고 원/캡슐 기하 + 제곱거리 + I-Frame으로 결정론적 무중복 판정.',
-      problem:
-        'Unity 물리 엔진은 다수 객체 시나리오에서 오버헤드가 크고, 내부 상태에 의존해 프레임률이 흔들리면 결과가 달라진다(비결정성). ' +
-        '하지만 이 게임은 정밀 충돌이 중요치 않다.',
-      decision:
-        '물리 엔진을 쓰지 않고 **2D 원(circle) 기하 월드**(`GeoWorldRegistry`)를 직접 구성. 적은 `OnEnable/OnDisable`에 자기 등록. ' +
-        '매프레임 블레이드 원은 `OverlapCircle`, 대시는 시작→끝 **캡슐 1회 스윕**(같은 적 무중복), 능력은 광역 원. ' +
-        '판정은 `Geo2D` 순수 수학(제곱거리, sqrt 없음), 무중복은 `Health`의 **I-Frame self-throttle**로 — resolver별 부기 없이 보장.',
-      results: [
-        '물리 엔진 의존 0 — 다수 객체 동시 이동에도 결정론적 · GC-free(버퍼 preallocated)',
-        '대시 캡슐 스윕 1회로 같은 적 무중복, I-Frame으로 프레임 간 무중복',
-        '⚠️ 현재는 평면 선형 스캔 O(n) + 제곱거리 + (스윕 한정) AABB 브로드페이즈 — 그리드/쿼드트리 아님(향후 과제)',
-      ],
-      stack: ['Geo2D (원-원 / 원-캡슐 / 점-선분, 제곱거리)', 'GeoWorldRegistry (HashSet, GC-free)', 'OverlapCircle / OverlapCapsuleBundle(+AABB)', 'Health I-Frame (결정론 무중복)'],
-      mermaid: `graph TB
-    BODY["GeoBodyMB<br/>OnEnable/Disable 자기 등록"]
-    WORLD["GeoWorldRegistry<br/>선형 스캔 + 제곱거리 + AABB 브로드페이즈"]
-    GEO["Geo2D (순수 수학)"]
-    BLADE["BodyContact<br/>매프레임 원"]
-    DASH["DashSweep<br/>대시 캡슐 1회"]
-    BH["BlackHole<br/>광역 원"]
-    HP["Health<br/>I-Frame 무중복"]
-
-    BODY -->|등록| WORLD
-    BLADE -->|OverlapCircle| WORLD
-    DASH -->|OverlapCapsuleBundle| WORLD
-    BH -->|OverlapCircle| WORLD
-    WORLD --> GEO
-    WORLD -->|hits| HP
-    HP -.I-Frame 게이트.-> BLADE
-
-    classDef a fill:#e6efdf,stroke:#7ea571,color:#283825
-    classDef b fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef c fill:#f5dcd2,stroke:#c8674f,color:#3a1810
-    class BODY,WORLD b
-    class BLADE,DASH,BH a
-    class GEO,HP c`,
-      ascii: {
-        title: '제곱거리 판정 + I-Frame 결정론',
-        intro: 'sqrt 없는 원-원 판정, 부기 없는 무중복.',
-        code: `// 원-원 — 제곱거리(sqrt 없음)
+  // ─── §02 화면 ───────────────────────────────────────────
+  runtime: {
+    gist:
+      '한 판이 도는 동안 엔진이 대신 정해 주지 않는 것이 넷 있었다 — ' +
+      '무엇이 맞았나 · 어디에 터뜨리나 · 무엇을 메모리에 두나 · 몇 마리까지 띄우나.',
+    steps: [
+      {
+        key: 'hit',
+        no: 'a',
+        title: '무엇이 맞았는가',
+        body:
+          'Unity 물리 엔진은 접촉점 · 반발 · 마찰 · 연속 충돌까지 푼다. 이 게임에 필요한 판정은 ' +
+          '원 두 개가 겹쳤는지 하나였다. 물리 엔진을 쓰지 않기로 하고, 순수 수학 커널(`Geo2D`)과 ' +
+          '등록 · 질의만 하는 월드(`GeoWorldRegistry`)를 직접 뒀다.',
+        points: [
+          ['모양을 두 축으로 갈랐다', '바디는 자기 모양(원 / 캡슐)을 소유하고, 질의는 모양(원 / 캡슐 / 회전 사각)을 인자로 받는다. 판정식은 두 모양의 조합으로 디스패치한다.'],
+          ['무중복은 한 곳에서만',   '같은 적을 두 번 때리지 않는 것을 resolver 마다 장부로 관리하지 않는다. `Health` 의 I-Frame self-throttle 하나가 막는다 — 어느 경로에서 들어와도 같은 규칙이다.'],
+          ['질의 버퍼는 호출자 것',  '결과를 담을 리스트를 호출자가 넘긴다. 질의가 리스트를 새로 만들지 않는다.'],
+          ['포기한 것',             '반발 · 마찰 · 연속 충돌 판정은 전부 없다. 물리 엔진을 이기려 한 게 아니라 쓰지 않아도 되는 범위였다.'],
+        ],
+        code: {
+          title: 'Geo2D · Health — 제곱거리 판정과 무중복 보장',
+          intro: '판정에는 sqrt 가 없고, 무중복에는 방문 기록이 없다.',
+          code: `// 원 - 원 — 제곱거리 비교로 끝난다
 public static bool CircleOverlap(Vector2 c1, float r1, Vector2 c2, float r2) {
     float dx = c1.x - c2.x, dy = c1.y - c2.y, rs = r1 + r2;
     return (dx*dx + dy*dy) <= (rs*rs);
 }
-// I-Frame — resolver별 부기 없이 무중복
+
+// I-Frame — 누가 때렸는지 기록하지 않고 맞는 쪽이 막는다
 if (_iFrameRemaining > 0f) return false;
 _iFrameRemaining = _iFrameDuration;`,
-        result: 'hitRadius 0.5 · 버퍼 64/128 preallocated(GC-free) · DefaultExecutionOrder(20).',
+          result: '판정 결과가 프레임률이나 물리 엔진 내부 상태에 의존하지 않는다.',
+        },
       },
+      {
+        key: 'density',
+        no: 'b',
+        title: '어디에 터뜨릴 것인가',
+        body:
+          '광역 능력을 적이 가장 많이 몰린 곳에서 열고 싶었다. 이건 ' +
+          '"반지름 R 원 하나로 가장 많은 바디를 덮는 지점" 을 찾는 기하 문제다.',
+        points: [
+          ['후보를 격자가 아니라 바디 위치로', '격자 칸을 훑으면 답이 근사가 된다. 최적 원은 거의 항상 어떤 바디에 걸치므로, 후보를 **바디 위치 자체**로 잡으면 답이 더 낫고 계산도 단순하다.'],
+          ['셀 크기를 R 로',                 '후보마다 전수 비교하면 제곱이다. 셀 크기를 R 로 잡으면 반경 R 안의 바디는 반드시 자기 셀의 3×3 이웃 안에 들어온다 — 3×3 만 훑어도 전수 비교와 *같은 답*이 나온다. **근사가 아니다.**'],
+          ['격자를 상주시키지 않는다',        '대상이 매 프레임 움직인다. 유지하는 비용보다 질의 시점에 새로 채우는 비용(위치당 나눗셈 한 번)이 싸다.'],
+          ['위치를 먼저 배열로 편다',        '알고리즘이 각 위치를 수천 번 읽는다. 매번 인터페이스 호출과 transform 을 타면 그게 비용의 전부가 된다. 한 번 펴 두면 이후는 연속 메모리 접근이고, 질의 도중 바디가 죽어도 순회가 깨지지 않는다.'],
+        ],
+        viz: 'density',
+      },
+      {
+        key: 'res',
+        no: 'c',
+        title: '무엇을 메모리에 두는가',
+        body:
+          '앞의 둘이 프레임마다 도는 계산이라면, 이건 그 계산이 쓸 에셋의 **수명**이다. ' +
+          '이펙트와 사운드를 전부 올려 두지 않으려고 취득(load / release) 책임만 인터페이스 뒤로 뺐다. ' +
+          '구현체가 비동기 로드 · 참조 카운트 · 0 도달 후 지연 해제를 맡고, 매니저는 재생 정책만 본다. ' +
+          '같은 에셋을 동시에 요청하면 진행 중인 로드에 합류해 핸들은 하나만 뜬다.',
+        points: [
+          ['같은 seam 을 두 번',   '사운드에서 먼저 만들고 VFX 에 다시 적용했다. 두 매니저 모두 sync / async 여부를 모른 채 인터페이스에 위임한다.'],
+          ['수명을 데이터에 맞춘다', '개별 에셋이 아니라 라이브러리 단위로 참조 카운트를 올리고 내린다. 구간 진입 · 이탈이 곧 수명 경계다.'],
+          ['재지 않은 것',         '이 구조가 프레임 시간에 얼마나 이득인지는 **측정하지 않았다.** 목적은 상주 메모리를 줄이고 취득 방식을 교체 가능하게 두는 것이었다.'],
+        ],
+        link: { text: '설계 전체는 따로 정리해 뒀으므로 여기서는 결정만 적는다.', label: 'Labs · Sound System →', href: 'labs/sound-system.html' },
+      },
+      {
+        key: 'spawn',
+        no: 'd',
+        title: '몇 마리까지 띄울 것인가',
+        body:
+          '동시 생존 상한을 마릿수로만 잡으면, 큰 적이 몰릴 때 마릿수는 여유인데 화면이 먼저 꽉 찬다. ' +
+          '그래서 축을 하나 더 뒀다 — **화면 점유율**, 적 면적의 합을 화면 면적으로 나눈 값이다. ' +
+          '1.5 를 넘으면 스폰 확률이 줄기 시작하고 2.5 에서 0이 된다. 겹침을 허용하므로 상한이 1을 넘는다.',
+        points: [
+          ['두 축을 겹친다',           '개수 축과 면적 축이 각각 켜지고, 둘 중 먼저 걸리는 쪽이 막는다. 한쪽을 끄면 다른 쪽이 백스톱으로 남는다.'],
+          ['화면 면적은 한 번만 잰다',   '매 프레임 읽으면 연출 줌이 분모를 줄여 점유율이 급등한다. 연출이 스폰을 멈추는 결합이 생긴다 — 첫 사용 때 한 번 재고 캐시한다.'],
+          ['판정체가 없으면 점유도 없다', '점유 면적은 실제 피격 원의 반지름으로 잰다. 그림만 크고 판정이 없는 대상은 화면을 차지하는 것으로 치지 않는다.'],
+        ],
+        viz: 'occupancy',
+      },
+    ],
+    handoff: {
+      q: '점유율에 상한이 있으면 공격력에도 천장이 생긴다.',
+      a: '적이 더 안 나오는 구간에서는 데미지를 올려도 처치 속도가 늘지 않는다. 어느 레벨부터 그런지는 **플레이로 안 보인다.**',
     },
+  },
 
-    /* ─── 4.4 밸런싱 수학 모델 ──────────────────────────── */
-    {
-      no: '4.4',
-      kind: 'SIMULATION',
-      title: '밸런싱 수학 모델 — 골드 수급량의 단계적 추상화',
-      lede: '"성장"과 "성장 체감"을 골드 수급량으로 정량화. 처치율 × 처치당 골드로 분해해, 노드 수치 변경이 성장 곡선에 즉시 환원되도록.',
-      problem:
-        '데모 밸런싱은 "감"으로 수치를 넣고 플레이로 확인 — 반복 비용이 크고 근거가 약하다. "성장이 잘 느껴지는가"는 주관적이라 측정 지표가 없었다.',
-      decision:
-        '**성장 = 런당 골드 수급량**, **성장 체감 = 스킬 투자 1회당 골드 증가분(ΔGold)** 으로 정량화. ' +
-        '런타임 공식을 에디터에서 미러링한 시뮬레이터(`BalanceSimCore`)로 분해.',
-      results: [
-        '스킬 노드가 바꾸는 스탯 → 분해식 → 골드 수급량 / 성장 곡선으로 환원 (플레이 없이 검증)',
-        '5종 공격원별 골드 기여 분리 · 레벨 진행(levelCap 20) · 적 동시 상한(reachCap 500) 미러링',
-      ],
-      stack: ['BalanceSimCore (런타임 공식 미러링)', 'GrowthSimulator (런 단위 곡선)', 'ROI / 최저가 구매 정책'],
-      ascii: {
-        title: '골드 수급량 분해식',
-        intro: '노드가 바꾸는 스탯이 아래 식을 타고 골드 수급량 → 성장 곡선으로 환원.',
-        code: `런당 기대 골드
-  E = Σ_level  killRate(level) × kills(level) × goldPerKill(level)
+  // ─── §03 모델 ───────────────────────────────────────────
+  model: {
+    gist: '성장 = 한 판에서 버는 골드. 성장 체감 = 그 골드가 판마다 몇 배씩 늘어나는가. 앞 절의 천장도 이 식이 받는다.',
+    body:
+      '밸런싱 지표를 하나로 모았다. **eGold** — 한 판에서 기대되는 골드 총량이다. ' +
+      '스킬이 무엇을 올리든 마지막에는 이 하나로 환원된다. ' +
+      '그리고 성장 *체감*은 eGold 의 크기가 아니라 판과 판 사이의 **증가율**로 봤다.',
+    formula: {
+      title: '골드 수급 분해 — 스태미나가 예산이다',
+      intro: '한 판에서 쓸 수 있는 스태미나가 정해져 있고, 그 예산이 몇 레벨까지 갈지를 정한다.',
+      code: `한 판의 기대 골드 — 도달한 레벨만큼만 쌓인다
+  eGold = Σ_level  killN × goldPerKill(level)
+          단 스태미나가 남아 있는 레벨까지만
 
-처치율 (kills/sec)
-  killRate(h) = Σ_source  freq × reach × min(1, dmg / h)
-  reach       = max(1, range^exp × hitWeight)   // 화면 내 적 수로 상한
+레벨 하나를 넘기는 데 드는 스태미나
+  costLv = drain(level) × ( killN / kr )
+           → kr 이 작을수록 한 레벨이 비싸지고, 도달 레벨이 줄어든다
+
+처치율 kr — 공급이 수요를 못 따라가면 거기서 잘린다
+  kr = min( killRate(H), spawnSupply )
+  killRate(H) = Σ_source  freq × reach × min(1, dmg / H)
+  reach = max(1, range^exp × weight)       // 한 번에 몇을 때리나
+          단 연쇄번개만 범위와 무관 — 연쇄 횟수가 곧 reach
   source ∈ { 평타, 대시, 블랙홀, 직선청소, 연쇄번개 }
 
-스탯 해석 (런타임 미러링)
-  stat = (base + Σ add×level) × (1 + Σ mul×level)`,
-        result: '"골드 = 골드 리소스 × 리소스 획득량" 직관을 처치율 × 처치당 골드로 구체화.',
-      },
+성장 체감 (판 i 의 기울기)
+  slope(i) = ln gold(i) - ln gold(i-1)`,
+      result: '공격력은 골드에 직접 곱해지지 않는다. 레벨 하나의 값을 깎아 더 멀리 가게 할 뿐이다.',
     },
-
-    /* ─── 4.5 스킬트리 에디터 + ES ──────────────────────── */
-    {
-      no: '4.5',
-      kind: 'TOOL',
-      title: '스킬트리 에디터 — 시뮬 통합 + ΔGold 분석 + 자동 탐색',
-      lede: '팀원의 그래프 에디터 위에 사용성 · 수치 역직렬화 · 시뮬레이션을 추가. ΔGold 폭등 분석으로 초기 과성장을 잡고, ES로 목표 곡선을 자동 추종.',
-      problem:
-        '편집 도구(그래프 에디터)는 있었지만 밸런싱 수치를 불러오거나 결과를 시뮬레이션할 수단이 없었다. 초기 빌드는 성장이 과했는데 어느 구간이 과한지 짚을 방법이 없었다.',
-      decision:
-        '팀원 그래프 에디터에 **사용성 개선**(복사/삭제 단축키) + **밸런싱 수치 역직렬화**(`BaseConfig`·`RewardCatalog`를 시뮬 입력으로) + ' +
-        '**시뮬 통합**(성장 곡선 · 노드 기여 히트맵 · write-back). **ΔGold 폭등 지점 분석**(런별 골드 증가량 · Δln)으로 과성장 식별. ' +
-        '목표 곡선을 주면 노드 파라미터를 **진화 전략(μ+λ ES, runs 90 · iterations 64 · λ128)** 으로 자동 튜닝.',
-      results: [
-        '성장 곡선을 *부드럽게* 가 아니라 **급등 포인트 몇 개**를 둔 형태로 의도적 설계',
-        'ΔGold 폭등 분석으로 초기 과성장 식별 → 밸런싱 → "훨씬 좋아졌다" 평',
-        '편집 결과를 SkillData SO · Config로 write-back → 인게임 즉시 반영',
+    ceiling: {
+      title: '앞 절의 천장이 여기서 값을 갖는다',
+      body:
+        '처치율을 그대로 쓰지 않고 스폰 공급과 비교해 작은 쪽을 쓴다. ' +
+        '스폰이 막는 구간에서는 `kr` 이 그 자리에서 잘리고, 레벨 하나의 스태미나 값이 그만큼 비싸지고, ' +
+        '결국 도달 레벨이 줄어 골드가 준다. 데미지를 올려도 이 사슬이 안 움직인다. ' +
+        '다만 이 공급 항은 §02 의 점유율 계산을 옮겨 온 것이 아니라 초당 공급량 하나로 뭉뚱그린 **근사**다. ' +
+        '`kr` 이 초당 처치수 두 값을 비교하는 자리라 확률 감쇠나 두 축의 구분이 들어갈 자리가 없다 — ' +
+        '버린 게 아니라 처음부터 이 층에서 필요 없는 정보였다. ' +
+        '모델은 각 레벨이 둘 중 어느 쪽에 막혔는지 세어 함께 내보낸다.',
+    },
+    mirror: {
+      title: '런타임 식을 다시 구현하지 않는다',
+      body:
+        '스킬이 스탯을 바꾸는 식은 런타임이 이미 갖고 있다. 시뮬은 그걸 새로 짜지 않고 **그대로 옮겨 적었다** — ' +
+        '`final = (base + Σ Add × lvl) × (1 + Σ Mul × lvl)`. ' +
+        '해금 플래그도 같은 규칙으로 해석한다. 이게 어긋나면 그 위의 계산은 전부 의미가 없다.',
+    },
+    scope: {
+      title: '이 모델의 사정거리',
+      lead: '모델은 게임이 아니다. 어디까지 읽을 수 있다고 보고 썼는지를 먼저 정했다.',
+      reads: [
+        '업그레이드 사이의 상대 효율 — 같은 비용이면 어느 노드가 더 미는가 (같은 소스 안에서는 믿을 만하고, 소스를 건너뛰면 아래 단서가 붙는다)',
+        '판과 판 사이의 성장 기울기, 그리고 그 기울기가 튀는 구간',
+        '공격력이 무효인 구간이 어디부터인가',
       ],
-      stack: ['UIElements / GraphView', 'Odin Inspector', '수치 역직렬화 (Config / RewardCatalog)', 'ΔGold 히트맵', 'EvolutionStrategyOptimizer (μ+λ)'],
-      mermaid: `graph LR
-    TGT["목표 성장 곡선"]
-    POP["후보 파라미터 집단<br/>(BaseCost · 스탯 모드)"]
-    EVAL["시뮬레이션 평가<br/>RMSE + 범위/한계효용/기여비율 페널티"]
-    SEL["선택 · 변이<br/>(μ+λ) ES"]
-    OUT["튜닝된 노드 수치"]
-
-    TGT --> EVAL
-    POP --> EVAL --> SEL --> POP
-    SEL -->|수렴| OUT
-
-    classDef a fill:#e6efdf,stroke:#7ea571,color:#283825
-    classDef b fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef c fill:#f5dcd2,stroke:#c8674f,color:#3a1810
-    class TGT,OUT a
-    class POP b
-    class EVAL,SEL c`,
+      skips: [
+        '절대 골드량 · 실제 플레이 시간',
+        '조작 · 리듬 · 적 배치 · 화면 상황',
+        '재미 그 자체',
+      ],
+      why:
+        '능력별 중요도 계수는 관측이 아니라 **손으로 정한 값**이다. 코드 주석에도 그렇게 적어 뒀다. ' +
+        '그래서 크기를 재는 자가 아니라 비교하는 자로만 썼다. ' +
+        '그 비교도 계수에 기대고 있다 — 값이 어긋나면 블랙홀과 연쇄번개 사이의 순위가 뒤집힐 수 있다. ' +
+        '한 소스 안에서 노드끼리 비교할 때는 이 계수가 양쪽에 똑같이 걸려 상쇄된다.',
     },
-  ],
-
-  metrics: {
-    title: '결과 — 접근 / 효과',
-    headers: ['항목', '내용'],
-    rows: [
-      ['대량 이펙트',     'async 풀 + 취득 seam(ref-count·idle 30s·in-flight 합류) → 핫패스 할당 0, 끊김 없음'],
-      ['설계 일관성',     '동일 seam 패턴을 VFX·Sound 양쪽에 (취득 책임 분리 + LoadMode 직교)'],
-      ['피격 판정',       '물리 엔진 0 · 자체 2D 원 기하 · 제곱거리 + AABB 브로드페이즈 · I-Frame 결정론'],
-      ['성장 정량화',     '성장 = 런당 골드 수급량 · 성장 체감 = ΔGold (투자 1회당 증가분)'],
-      ['초기 과성장 수정', 'ΔGold 폭등 지점 분석(런별 골드 증가량 · Δln)으로 식별 → 밸런싱 → "훨씬 좋아졌다" 평'],
-      ['수치 자동 탐색',   '목표 곡선 → ES(μ+λ, runs 90 · λ128)로 노드 파라미터 자동 튜닝'],
-    ],
+    handoff: {
+      q: '절대값을 못 읽어도 기울기는 읽힌다.',
+      a: '판마다의 기울기를 이으면 성장 곡선이 된다. 곡선이 있으면 **어디가 튀는지**가 눈에 보인다.',
+    },
   },
+
+  // ─── §04 도구 ───────────────────────────────────────────
+  tool: {
+    gist: '플레이해서 느낀 것과 곡선을 나란히 두고, 어긋나는 구간을 고쳤다.',
+    loopBody:
+      '시뮬레이터는 인크레멘탈 루프를 그대로 돌린다. 한 판을 계산해 eGold 를 받고, ' +
+      '살 수 있는 것 중에서 정책대로 고르고, 빌드를 강화해 다음 판으로 넘어간다. ' +
+      '구매 정책은 둘 — **효율 우선**(비용 대비 eGold 증가가 최대인 것)과 **최저가 우선**. ' +
+      '어느 쪽으로 돌리느냐에 따라 같은 트리에서 다른 곡선이 나온다.',
+    readTitle: '곡선에서 무엇을 읽었나',
+    read: [
+      ['세로축은 증가율',   '골드의 크기가 아니라 인접한 두 판의 ln 차이를 찍는다. 절대값을 안 읽기로 했으니 곡선도 증가율로 그린다.'],
+      ['구간을 집으면 내역', '곡선의 한 구간을 클릭하면 그 구간에서 산 노드 목록과 항목별 eGold 증가분이 나온다. 튀는 지점의 주인이 바로 지목된다.'],
+      ['노드 히트맵',      '노드마다 첫 레벨의 비용 대비 효율을 계산해 그래프에 색으로 얹는다. 전 노드를 만렙으로 놓고 재면 데미지가 포화해 전부 0 에 가깝게 나오므로, **선행 노드만 켠 상태**를 기준선으로 삼는다.'],
+      ['되쓰기',          '고친 값을 스킬 데이터와 각 설정으로 바로 기록한다. 에디터에서 만지고 그대로 플레이로 확인한다.'],
+    ],
+    spike: {
+      from: 50167,
+      to: 164782,
+      ratio: '3.28배',
+      caption: '51~57번째 판에서 산 것들이 58번째 판의 eGold 를 이만큼 올렸다. 곡선에서 튀어 보이는 지점을 집으면 이 내역이 나온다.',
+    },
+    howBody:
+      '실제 작업은 이랬다. 수치를 바꾸고 한 판 해본다. 같은 프리셋(시뮬 입력 계수와 노드 수치를 묶어 저장한 것)으로 곡선을 뽑아 옆에 놓는다. ' +
+      '손으로 느낀 과성장 구간과 곡선이 튀는 구간이 맞아떨어지면 거기가 손댈 곳이다. ' +
+      '위 구간도 그렇게 걸려서, 그 창에서 팔린 노드들의 효과량과 비용을 조정해 기울기를 눌렀다. ' +
+      '곡선이 답을 준 게 아니라, 플레이에서 받은 인상을 *어느 노드 몇 레벨* 로 귀속시킬 수 있게 해줬다.',
+    shots: [
+      { src: 'motelet/assets/skill-tree-editor.png', tag: 'EDITOR', caption: '스킬트리 에디터 — 팀원의 그래프 에디터 위에 밸런싱 수치 역직렬화 · 시뮬 통합 · 노드 히트맵 · 되쓰기를 얹었다. 오른쪽은 시뮬 입력 계수, 왼쪽은 스탯별 탐색 범위.' },
+      { src: 'motelet/assets/balance-sim.png',       tag: 'SIM',    caption: '성장 기울기 곡선. 한 구간을 집으면 그 구간의 구매 내역과 항목별 eGold 증가분이 아래에 뜬다.' },
+      { src: 'motelet/assets/gameplay.png',          tag: 'BATTLE', caption: '같은 프리셋으로 실제 한 판. 곡선과 나란히 놓고 대조한 대상이 이 화면이다.' },
+    ],
+    handoff: {
+      q: '여기까지는 사람이 곡선을 읽는다.',
+      a: '목표 곡선을 주면 수치를 맞춰 오게 하는 것도 만들어 뒀다. 결정에는 **쓰지 않았다.**',
+    },
+  },
+
+  // ─── §05 자동 탐색 ──────────────────────────────────────
+  search: {
+    gist: '그 탐색기가 무엇을 하는지, 그리고 왜 그대로 두었는지.',
+    builtTitle: '만든 것',
+    built: [
+      ['(1+λ) 진화 전략',   '현재 벡터에서 가우시안 변이 후보를 λ개 만들어 가장 나은 것을 채택한다. 개선이 있으면 변이 폭을 키우고, 없으면 줄인다.'],
+      ['변수는 효과량만',    '탐색 변수는 잠기지 않은 노드의 **효과량 95개**뿐이다. 비용 · 최대 레벨 · 트리 연결은 변수에서 뺐다 — 탐색기가 그걸 만지면 트리 설계 자체가 바뀐다.'],
+      ['목적함수 네 항',    '기울기 곡선의 RMSE + 소스별 기여 비율 오차 + 스탯 범위 이탈 + **무의미 업그레이드**.'],
+      ['무의미 업그레이드 항', 'RMSE 만 최소화하면 *곡선은 맞는데 아무도 살 이유가 없는 노드*가 나온다. 어떤 구매 스텝의 eGold 증가분이 그 시점 기준값의 일정 비율보다 작으면 위반으로 세고 제곱으로 벌점을 준다.'],
+    ],
+    costBody:
+      '비용은 곱으로 늘어난다. 곡선 하나가 판 90회, 세대 하나가 후보 128개, 세대를 64번 돌린다.',
+    notUsed: {
+      title: '왜 결정에는 쓰지 않았나',
+      body:
+        '목표 곡선 자체가 참고용이었다. 최적화가 최소화할 진짜 목표가 아닌 값을 최소화해도 의미가 없다. ' +
+        '밸런싱 결정은 곡선을 사람이 읽고 내렸고, 탐색기는 후보를 던져 보는 용도로만 돌렸다. ' +
+        '만들어 둔 것을 안 썼다고 지우지는 않았다 — 목표 곡선을 제대로 정의할 수 있게 되면 그때 쓸 자리다.',
+    },
+  },
+
+  // ─── §06 남은 것 ────────────────────────────────────────
+  limits: [
+    ['판정에는 공간 분할이 없다',
+     '`GeoWorldRegistry` 는 등록된 바디 집합 전체를 훑는다. 브로드페이즈는 캡슐 · 스윕 질의에만 있고, 균일 격자는 밀집 질의에만 들어가 있다. 판정 질의에는 아직 없다.'],
+    ['모델과 플레이를 대조한 적이 없다',
+     '스탯 집계 식은 런타임과 코드 수준으로 같다. 그러나 평균 대시 거리 · 레벨업 요구 처치 수 · 초당 스폰 공급량은 전부 관측이 아니라 가정으로 넣은 값이고, 그것이 실제 플레이와 얼마나 벌어지는지는 재지 않았다. 절대값을 읽지 않기로 한 이유가 이것이다.'],
+    ['밸런싱 결과의 정량 검증이 없다',
+     '고친 뒤 나아졌다는 판단은 플레이 인상이다. 곡선이 목표에 얼마나 붙었는지로 재지 않았다 — 목표 곡선을 그런 용도로 쓰지 않았기 때문이다.'],
+    ['이 페이지에 성능 수치가 없는 이유',
+     '런타임 쪽 결정은 전부 설계 판단이지 성능 개선 주장이 아니다. 프로파일러를 돌린 적이 없어 그런 주장을 아예 넣지 않았다. 여기 있는 수치는 코드와 에디터 화면에서 그대로 읽히는 것뿐이다.'],
+  ],
 };

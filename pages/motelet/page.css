@@ -1,0 +1,197 @@
+/* pages/motelet/page.css
+   페이지 전용 블록. 색·타이포·간격은 전부 tokens.css 변수 — 새 색을 만들지 않는다.
+   레이아웃 크롬(nb-header / nb-body / nb-rail / nb-section / nb-facts / nb-footer)은 notebook.css 공유. */
+
+/* ─── 레이아웃 보정 ──────────────────────────────────── */
+/* grid 자식은 min-width:auto 라 넓은 콘텐츠가 컬럼을 밀어낸다. overflow-x 만으로는 안 줄어든다. */
+.nb-body > main { min-width: 0; }
+@media (max-width: 1100px) { .nb-body { grid-template-columns: minmax(0, 1fr); } }
+
+/* 공유 AsciiBlock 의 pre 는 줄바꿈을 안 하므로 긴 코드 줄이 페이지를 가로로 민다.
+   블록 안에서 스크롤하게 가둔다. */
+.nb-ascii pre { overflow-x: auto; max-width: 100%; }
+
+/* ─── 공통 본문 ──────────────────────────────────────── */
+.mt-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 800px; text-wrap: pretty; }
+.mt-body strong { color: var(--ink); font-weight: 600; }
+.mt-sub { margin-top: 36px; }
+.mt-sub-title { font-size: 17px; font-weight: 600; color: var(--ink); margin: 0 0 14px; display: flex; align-items: baseline; gap: 10px; }
+.mt-sub-title::before { content: ''; width: 14px; height: 2px; background: var(--terra-300); display: inline-block; flex: none; }
+code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout-b code, .mt-scope-why code {
+  font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2);
+  border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px;
+}
+
+/* 섹션 요지 한 줄 */
+.mt-gist {
+  margin: 0 0 26px; padding: 15px 20px;
+  background: var(--sage-50); border-left: 3px solid var(--sage-500); border-radius: 0 4px 4px 0;
+  font-size: 16.5px; line-height: 1.6; color: var(--sage-900); text-wrap: pretty;
+}
+.mt-gist strong { font-weight: 700; }
+.mt-gist code { background: var(--paper); border-color: var(--sage-200); }
+
+/* ─── Hero ───────────────────────────────────────────── */
+.mt-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
+.mt-hero-sub { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-500); margin: 0 0 10px; font-weight: 600; }
+.mt-hook { font-size: 19px; line-height: 1.68; color: var(--ink-2); margin: 20px 0 26px; max-width: 800px; text-wrap: pretty; }
+.mt-hook strong { color: var(--ink); font-weight: 600; }
+
+.mt-shot { margin: 28px 0 24px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); overflow: hidden; }
+.mt-shot img { display: block; width: 100%; height: auto; }
+.mt-shot figcaption { padding: 11px 16px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.6; color: var(--ink-3); background: var(--paper-2); text-wrap: pretty; }
+
+.mt-bigs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
+.mt-big { padding: 22px 24px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
+.mt-big:last-child { border-right: none; }
+.mt-big-n { font-family: var(--font-display); font-size: 38px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.mt-big-l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra-500); font-weight: 600; }
+.mt-big-s { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); line-height: 1.5; }
+
+/* ─── 역할 ───────────────────────────────────────────── */
+.mt-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
+.mt-role { border: 1px solid var(--rule); border-radius: 4px; padding: 16px 18px; background: var(--paper); }
+.mt-role.warn { background: var(--terra-50); border-color: var(--terra-200); }
+.mt-role-h { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; margin-bottom: 10px; }
+.mt-role .glyph { color: var(--sage-500); }
+.mt-role.warn .glyph { color: var(--terra-400); }
+.mt-role p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
+.mt-role p strong { color: var(--ink); font-weight: 600; }
+
+/* ─── 이어서 — 다음 절의 첫 문장을 만드는 고리 ───────── */
+.mt-handoff {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start;
+  margin: 32px 0 4px; padding: 16px 20px; background: var(--ink); color: var(--paper); border-radius: 4px;
+}
+.mt-handoff-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5); border-radius: 3px; padding: 4px 8px; white-space: nowrap; }
+.mt-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
+.mt-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
+.mt-handoff-a strong { color: var(--sage-300); font-weight: 700; }
+.mt-handoff-a code, .mt-handoff-q code { background: rgba(251,249,245,0.12); border: none; color: var(--paper); }
+
+/* ─── §02 항 카드 ────────────────────────────────────── */
+.mt-step { border-top: 2px solid var(--rule-2); padding: 34px 0 6px; scroll-margin-top: 88px; }
+.mt-step:first-of-type { border-top: none; padding-top: 6px; }
+.mt-step-head { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.mt-step-no {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--paper);
+  background: var(--ink); width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.mt-step-title { font-family: var(--font-display); font-size: 25px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); margin: 0; line-height: 1.25; }
+
+/* ─── 요점 목록 ──────────────────────────────────────── */
+/* 중립 색면. sage 는 mt-gist(섹션 요지)와 mt-callout(강조)이 쓰므로,
+   본문 살점인 이 블록까지 sage 를 쓰면 세 층이 같은 무게로 읽힌다. */
+.mt-pts { margin-top: 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); overflow: hidden; }
+.mt-pts-h {
+  padding: 11px 18px; background: var(--paper-3); border-bottom: 1px solid var(--rule-2);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-2);
+}
+.mt-pt { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 14px 18px; border-bottom: 1px dashed var(--rule); }
+.mt-pt:last-child { border-bottom: none; }
+.mt-pt-n {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink-3); color: var(--paper);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.mt-pt-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.mt-pt-v { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-pt-v strong { color: var(--ink); font-weight: 600; }
+.mt-pt-v code, .mt-pt-k code { background: var(--paper); border-color: var(--rule); }
+
+/* 바깥 페이지로 나가는 한 줄 링크 */
+.mt-xlink { margin: 16px 0 0; font-size: 14px; line-height: 1.7; color: var(--ink-3); }
+.mt-xlink a {
+  font-family: var(--font-mono); font-size: 12.5px; font-weight: 700; color: var(--terra-500);
+  text-decoration: none; border-bottom: 1px solid var(--terra-200); padding-bottom: 1px; margin-left: 6px;
+}
+.mt-xlink a:hover { color: var(--terra-700); border-bottom-color: var(--terra-400); }
+
+/* ─── SVG figure ─────────────────────────────────────── */
+/* overflow:hidden — SVG 요소가 viewBox 밖으로 나가면 페이지 가로 스크롤이 생긴다 */
+.mt-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; overflow: hidden; }
+.mt-svg { width: 100%; height: auto; display: block; }
+.mt-figcap { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.65; color: var(--ink-3); text-wrap: pretty; }
+.mt-figcap b { color: var(--ink); font-weight: 600; }
+
+.mt-svg-sub  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--ink-3); }
+.mt-svg-lbl  { font-family: var(--font-mono); font-size: 11.5px; fill: var(--ink-2); font-weight: 600; }
+.mt-svg-tag  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--terra-500); font-weight: 600; }
+.mt-svg-num  { font-family: var(--font-mono); font-size: 22px; font-weight: 700; fill: var(--ink); }
+.mt-svg-num.sm     { font-size: 16px; }
+.mt-svg-num.strong { fill: var(--sage-900); font-size: 24px; }
+.mt-svg-op   { font-family: var(--font-mono); font-size: 18px; font-weight: 700; fill: var(--ink-3); }
+
+/* 밀집 질의 그림의 점 — 검사 대상 여부를 색으로 가른다 */
+.mt-dot-seed { fill: var(--terra-400); stroke: var(--terra-700); }
+.mt-dot-in   { fill: var(--sage-500); stroke: var(--sage-900); }
+.mt-dot-near { fill: var(--paper); stroke: var(--sage-500); }
+.mt-dot-far  { fill: var(--rule-2); stroke: none; }
+
+/* ─── 사정거리 — 읽는 것 / 안 읽는 것 ────────────────── */
+.mt-scope { margin-top: 36px; border: 2px solid var(--ink); border-radius: 4px; background: var(--paper); overflow: hidden; }
+.mt-scope-head {
+  padding: 13px 20px; background: var(--ink); color: var(--paper);
+  font-size: 15px; font-weight: 700; letter-spacing: 0.01em;
+}
+.mt-scope-lead { margin: 0; padding: 16px 20px 4px; font-size: 15px; line-height: 1.7; color: var(--ink); text-wrap: pretty; }
+.mt-scope-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 12px 20px 4px; }
+.mt-scope-col { padding: 4px 16px 8px 0; }
+.mt-scope-col + .mt-scope-col { border-left: 1px solid var(--rule); padding-left: 20px; padding-right: 0; }
+.mt-scope-k { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+.mt-scope-col.reads .mt-scope-k { color: var(--sage-700); }
+.mt-scope-col.skips .mt-scope-k { color: var(--terra-500); }
+.mt-scope-col ul { margin: 0; padding-left: 17px; }
+.mt-scope-col li { font-size: 14px; line-height: 1.65; color: var(--ink-2); margin-bottom: 7px; text-wrap: pretty; }
+.mt-scope-col.reads li::marker { color: var(--sage-500); }
+.mt-scope-col.skips li::marker { color: var(--terra-300); }
+.mt-scope-why {
+  margin: 8px 20px 18px; padding: 13px 16px; background: var(--paper-2);
+  border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0;
+  font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty;
+}
+.mt-scope-why strong { color: var(--ink); font-weight: 700; }
+
+/* ─── Callout ────────────────────────────────────────── */
+/* 색면은 mt-gist(섹션 요지) 하나만 갖는다. 콜아웃은 흰 바탕 + 좌측선으로만 서서
+   요지(색면) > 콜아웃(선) > 요점 목록(중립 면) 세 층이 갈리게 한다. */
+.mt-callout { margin: 26px 0 6px; border: 1px solid var(--rule); border-left: 4px solid var(--sage-500); border-radius: 0 4px 4px 0; padding: 16px 20px; background: var(--paper); box-shadow: var(--shadow-2); }
+.mt-callout.warn { border-color: var(--rule); border-left-color: var(--terra-400); background: var(--paper); }
+.mt-callout-h { display: flex; align-items: center; gap: 9px; font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
+.mt-callout .glyph { color: var(--sage-500); }
+.mt-callout.warn .glyph { color: var(--terra-400); }
+.mt-callout-b { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-callout-b strong { color: var(--ink); font-weight: 600; }
+
+/* ─── 남은 것 ────────────────────────────────────────── */
+.mt-limits { border-top: 1px solid var(--rule); }
+.mt-limit { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.mt-limit-k { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+.mt-limit-v { font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-limit-v strong { color: var(--ink); font-weight: 600; }
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .mt-roles, .mt-scope-cols { grid-template-columns: 1fr; }
+  .mt-scope-col + .mt-scope-col { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 14px; margin-top: 6px; }
+}
+@media (max-width: 720px) {
+  .mt-hero { padding: 36px 0 32px; }
+  .mt-hook { font-size: 17px; }
+  .mt-bigs { grid-template-columns: 1fr; }
+  .mt-big { border-right: none; border-bottom: 1px solid var(--rule); }
+  .mt-big:last-child { border-bottom: none; }
+  .mt-step-head { flex-wrap: wrap; }
+  .mt-step-title { font-size: 21px; }
+  .mt-handoff { grid-template-columns: 1fr; }
+  .mt-limit { grid-template-columns: 1fr; gap: 6px; }
+  .mt-figure { padding: 12px 12px 10px; }
+  /* viewBox 가 화면 폭으로 축소되면 SVG 안 10.5px 글자가 4~5px 로 떨어진다.
+     설명 문장과 범례는 figcaption 이 대신 지므로 여기서는 숨긴다. */
+  .mt-svg-note { display: none; }
+  /* 공유 헤더의 상단 네비가 이 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
+     같은 목적지를 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
+  .nb-header .nb-nav { display: none; }
+}
