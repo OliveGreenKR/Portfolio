@@ -119,57 +119,67 @@ function CMCompare({ rows }) {
 window.CMCompare = CMCompare;
 
 /* ─── 가려진 레이어를 찾는 방법 ──────────────────────── */
-/* "어떻게 적게 만드는가" 를 그림 하나로 — 위에서 훑고, 아래에서 훑고, 둘 다 0이면 지운다 */
+/* 삭제 조건을 그림 하나로 — 위아래 레이어가 좌우로 더 넓어 완전히 포함할 때만 지운다.
+   층을 4장으로 줄였다. 원리를 보여주는 데 필요한 최소 구성:
+     · 완전히 포함된 레이어 1장 (삭제)
+     · 가장자리가 삐져나와 위에서 보이는 레이어 1장 (유지)
+     · 그 둘을 덮는 위/아래 레이어 */
 function CMBuriedViz() {
-  const W = 720, H = 268;
-  // [x, w, 위에서 보이는 넓이(0~1), 아래에서 보이는 넓이(0~1)]
+  const W = 720, H = 236;
+  const h = 22, gap = 18, ox = 24, oy = 62;
+  // [x, w, buried] — 로컬 x 0..250. 아래 → 위 순서
   const layers = [
-    [10, 200, 1.0, 0.0], [50, 140, 0.0, 0.0], [30, 190, 0.0, 0.0],
-    [80, 110, 0.35, 0.0], [20, 210, 0.0, 0.0], [60, 130, 0.0, 0.55], [0, 180, 0.0, 1.0],
+    [0,  250, false],   // 맨 아래
+    [20, 210, false],   // 20~230 — 위 레이어들(30~200)보다 넓어 양끝이 보인다
+    [50, 110, true],    // 50~160 — 위(30~200)·아래(20~230) 모두에 완전히 포함
+    [30, 170, false],   // 맨 위
   ];
-  const h = 18, gap = 12, ox = 16, oy = 58;
-  const colTop = 250, colBot = 322, colW = 56;
-  const yOf = i => oy + (layers.length - 1 - i) * (h + gap);
-  const buried = l => l[2] === 0 && l[3] === 0;
-  const kept = layers.filter(l => !buried(l));
-  const rx = 500;
+  const n = layers.length;
+  const yOf = i => oy + (n - 1 - i) * (h + gap);
+  const kept = layers.filter(l => !l[2]);
+  const bi = layers.findIndex(l => l[2]);
+  const bx1 = ox + layers[bi][0], bx2 = ox + layers[bi][0] + layers[bi][1];
+  const ax = 292, rx = 512, rs = 0.62;
 
   return (
     <figure className="cm-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
-           aria-label="가려진 레이어를 찾아 지우는 방법">
-        <text x={ox} y="20" className="cm-svg-lbl">종이 단면 (아래에서 위로 쌓인 레이어)</text>
-        <text x={colTop} y="20" className="cm-svg-sub">위에서 본</text>
-        <text x={colBot} y="20" className="cm-svg-sub">아래에서 본</text>
-        <text x={colTop} y="36" className="cm-svg-sub">안 덮인 넓이</text>
-        <text x={colBot} y="36" className="cm-svg-sub">안 덮인 넓이</text>
+           aria-label="위아래 레이어에 완전히 포함된 레이어만 삭제한다">
+        <text x={ox} y="22" className="cm-svg-lbl">종이 단면 — 옆에서 본 레이어 스택</text>
+        <text x={ox} y="40" className="cm-svg-sub">아래에서 위로 쌓인다</text>
+
+        {/* 포함 관계를 보여주는 세로 가이드 — 위/아래 레이어가 이 선 바깥까지 뻗어 있다 */}
+        <line x1={bx1} x2={bx1} y1={yOf(n - 1)} y2={yOf(bi - 1) + h}
+              stroke="var(--terra-400)" strokeDasharray="3 3" />
+        <line x1={bx2} x2={bx2} y1={yOf(n - 1)} y2={yOf(bi - 1) + h}
+              stroke="var(--terra-400)" strokeDasharray="3 3" />
 
         {layers.map((l, i) => {
-          const y = yOf(i), b = buried(l);
+          const y = yOf(i), b = l[2];
           return (
-            <g key={i}>
-              <rect x={ox + l[0]} y={y} width={l[1]} height={h} rx="2"
-                    fill={b ? 'var(--terra-50)' : 'var(--sage-100)'}
-                    stroke={b ? 'var(--terra-400)' : 'var(--sage-500)'}
-                    strokeDasharray={b ? '4 3' : ''} />
-              <rect x={colTop} y={y + 4} width={colW} height="10" fill="var(--paper-2)" stroke="var(--rule)" />
-              <rect x={colTop} y={y + 4} width={colW * l[2]} height="10" fill="var(--sage-500)" />
-              <rect x={colBot} y={y + 4} width={colW} height="10" fill="var(--paper-2)" stroke="var(--rule)" />
-              <rect x={colBot} y={y + 4} width={colW * l[3]} height="10" fill="var(--sage-500)" />
-              {b && <text x={colBot + colW + 8} y={y + 14} className="cm-svg-tag">둘 다 0 → 삭제</text>}
-            </g>
+            <rect key={i} x={ox + l[0]} y={y} width={l[1]} height={h} rx="2"
+                  fill={b ? 'var(--terra-100)' : 'var(--sage-100)'}
+                  stroke={b ? 'var(--terra-500)' : 'var(--sage-500)'}
+                  strokeWidth={b ? 1.6 : 1}
+                  strokeDasharray={b ? '5 3' : ''} />
           );
         })}
 
-        <line x1={rx - 20} x2={rx - 20} y1="10" y2={oy + layers.length * (h + gap) - gap} stroke="var(--rule)" strokeDasharray="4 4" />
-        <text x={rx} y="20" className="cm-svg-lbl">삭제 후 — 화면 결과 동일</text>
+        {/* 주석 두 개만 */}
+        <text x={ax} y={yOf(bi) + 10} className="cm-svg-tag">위·아래가 좌우로 더 넓다</text>
+        <text x={ax} y={yOf(bi) + 24} className="cm-svg-tag">→ 완전히 가려짐 · 삭제</text>
+        <text x={ax} y={yOf(1) + 16} className="cm-svg-sub">양끝이 삐져나와 위에서 보인다 · 유지</text>
+
+        <line x1={rx - 24} x2={rx - 24} y1="14" y2={yOf(0) + h} stroke="var(--rule)" strokeDasharray="4 4" />
+        <text x={rx} y="22" className="cm-svg-lbl">삭제 후 — 화면 결과 동일</text>
         {kept.map((l, i) => (
-          <rect key={i} x={rx + l[0] * 0.4} y={oy + (kept.length - 1 - i) * (h + gap)} width={l[1] * 0.7} height={h}
-                rx="2" fill="var(--sage-100)" stroke="var(--sage-500)" />
+          <rect key={i} x={rx + l[0] * rs} y={oy + (kept.length - 1 - i) * (h + gap)}
+                width={l[1] * rs} height={h} rx="2" fill="var(--sage-100)" stroke="var(--sage-500)" />
         ))}
       </svg>
       <figcaption className="cm-figcap">
-        위·아래 <b>양쪽</b>에서 모두 안 보이는 레이어만 지운다. 한쪽만 보면 접었을 때 드러날 레이어까지 지우게 된다.
+        위아래 레이어가 <b>좌우로 더 넓어 완전히 덮을 때만</b> 지운다.
+        조금이라도 삐져나오면 접었을 때 그 부분이 드러나므로 남긴다.
       </figcaption>
     </figure>
   );
