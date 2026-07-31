@@ -88,6 +88,22 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
 }
 .mt-step-title { font-family: var(--font-display); font-size: 25px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); margin: 0; line-height: 1.25; }
 
+/* ─── 문제 / 한 것 두 줄 ─────────────────────────────── */
+/* 각 항의 앞머리는 딱 두 줄이다. 라벨을 붙여 어느 쪽이 문제고 어느 쪽이 답인지
+   읽기 전에 보이게 한다. 세 줄째가 필요하면 아래 요점 목록으로 내린다. */
+.mt-pd { margin: 0 0 4px; }
+.mt-pd-row { display: grid; grid-template-columns: 54px minmax(0, 1fr); gap: 16px; align-items: start; padding: 11px 0; border-top: 1px solid var(--rule); }
+.mt-pd-row:first-child { border-top: none; padding-top: 2px; }
+.mt-pd-row > span {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; font-weight: 700;
+  padding-top: 5px; white-space: nowrap;
+}
+.mt-pd-row.problem > span { color: var(--terra-500); }
+.mt-pd-row.did > span     { color: var(--sage-700); }
+.mt-pd-row p { margin: 0; font-size: 16px; line-height: 1.7; color: var(--ink); text-wrap: pretty; }
+.mt-pd-row.problem p { color: var(--ink-2); }
+.mt-pd-row p strong { font-weight: 700; color: var(--ink); }
+
 /* ─── 요점 목록 ──────────────────────────────────────── */
 /* 중립 색면. sage 는 mt-gist(섹션 요지)와 mt-callout(강조)이 쓰므로,
    본문 살점인 이 블록까지 sage 를 쓰면 세 층이 같은 무게로 읽힌다. */
