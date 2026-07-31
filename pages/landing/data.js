@@ -12,18 +12,37 @@ window.LANDING_DATA = {
       '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, ' +
       '장기 프로젝트 + 출시 운영, PoC 사고 사이클 — 세 결이 같이 있는 포트폴리오.',
     stats: [
-      { n: '12', label: 'projects',       sub: '메인 5 · Labs 7' },
+      { n: '13', label: 'projects',       sub: '메인 6 · Labs 7' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
       { n: '16w', label: 'solo engine',    sub: 'DX11 · 7 모듈 · 147 파일' },
       { n: '07', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
     ],
   },
 
-  // ─── 메인 그리드 — 카드 5 (순서: Motelet · 외주 · Cartapli · Wobble · DX11) ───
+  // ─── 메인 그리드 — 카드 6 (순서: Cartapli Mobile · Motelet · 외주 · Cartapli · Wobble · DX11) ───
   main: [
     {
       idx: '01',
       code: 'MAIN · 01',
+      date: '2026.07',
+      slug: 'cartapli-mobile',
+      href: '../pages/cartapli-mobile.html',
+      title: 'Cartapli Mobile — 종이접기 최적화',
+      oneLine: 'PC 출시작의 종이접기 코어를 모바일로 이식하며 5단계로 나눠 고치고 단계마다 따로 측정. "DOTS 를 쓰면 빨라진다" 가 아니라 구조로 얼마 · DOTS 로 얼마를 갈라 말한다.',
+      meta: [
+        { kind: 'accent', text: '진행 중 · 모바일 이식 + 리메이크' },
+        { kind: 'role',   text: '구조 · 렌더링 · 성능 전부' },
+      ],
+      thumb: null,
+      metrics: [
+        { n: '−93.8%', label: '프레임당 CPU (0.643 → 0.040 ms)' },
+        { n: '298 → 1', label: '드로우콜 — 앞/뒤 2메시 병합' },
+        { n: '5.9×',   label: '레이어 감소 — 파묻힌 레이어 삭제 + Burst 잡 분할' },
+      ],
+    },
+    {
+      idx: '02',
+      code: 'MAIN · 02',
       date: '2026.06',
       slug: 'motelet',
       href: '../pages/motelet.html',
@@ -41,8 +60,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '02',
-      code: 'MAIN · 02',
+      idx: '03',
+      code: 'MAIN · 03',
       date: '2026.07',
       slug: 'edu-gamification',
       href: '../pages/edu-gamification.html',
@@ -60,8 +79,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '03',
-      code: 'MAIN · 03',
+      idx: '04',
+      code: 'MAIN · 04',
       date: '2026.02',
       slug: 'cartapli',
       href: '../pages/cartapli.html',
@@ -79,8 +98,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '04',
-      code: 'MAIN · 04',
+      idx: '05',
+      code: 'MAIN · 05',
       date: '2026.04',
       slug: 'wobble-wobble',
       href: '../pages/wobble-wobble.html',
@@ -98,8 +117,8 @@ window.LANDING_DATA = {
       ],
     },
     {
-      idx: '05',
-      code: 'MAIN · 05',
+      idx: '06',
+      code: 'MAIN · 06',
       date: '2025.07',
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
