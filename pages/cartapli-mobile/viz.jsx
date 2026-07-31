@@ -38,15 +38,18 @@ function CMWaterfall({ steps, unit }) {
               {prev && <line x1={x} x2={x} y1={y(prev.v)} y2={top} stroke={stroke(s.kind)} strokeWidth="1.5" />}
               <rect x={x} y={top} width={barW} height={padT + ih - top}
                     fill={fill(s.kind)} stroke={stroke(s.kind)} rx="2" />
-              <text x={cx(i)} y={top - 8} textAnchor="middle" className="cm-svg-val">{s.t}</text>
-              {s.d && <text x={cx(i)} y={top - 24} textAnchor="middle" className="cm-svg-delta struct">{s.d}</text>}
+              <text x={cx(i)} y={top - 9} textAnchor="middle" className="cm-svg-val">{s.t}</text>
+              {s.d && <text x={cx(i)} y={top - 27} textAnchor="middle" className="cm-svg-delta big">{s.d}</text>}
               <text x={cx(i)} y={padT + ih + 20} textAnchor="middle" className="cm-svg-ax">{s.k}</text>
               <text x={cx(i)} y={padT + ih + 36} textAnchor="middle" className="cm-svg-sub">{s.label}</text>
             </g>
           );
         })}
       </svg>
-      <figcaption className="cm-figcap">{`막대 = 그 시점에 남아 있는 프레임당 비용 (${unit}). 막대 위 값은 직전 대비 감소율.`}</figcaption>
+      <figcaption className="cm-figcap">
+        {`막대 바로 위 = 그 시점에 남아 있는 비용 (${unit}). 그 위 큰 글씨 = 직전 대비 감소율. `}
+        뒤로 갈수록 막대가 작은 것은 <b>남은 비용 자체가 이미 작아졌기 때문</b>이고, 감소율은 그와 별개로 계속 크다.
+      </figcaption>
     </figure>
   );
 }
@@ -106,7 +109,7 @@ function CMCompare({ rows }) {
       </div>
       {rows.map(r => (
         <div className="cm-cmp-row" key={r.k}>
-          <span className="cm-cmp-k">{r.k}</span>
+          <span className="cm-cmp-k">{r.k}<span className="cm-cmp-cy">{r.cy}</span></span>
           <span className="cm-cmp-was">{ri(r.was)}</span>
           <span className="cm-cmp-is">{ri(r.is)}</span>
         </div>
@@ -119,7 +122,7 @@ window.CMCompare = CMCompare;
 /* ─── 가려진 겹을 찾는 방법 ──────────────────────────── */
 /* "어떻게 적게 만드는가" 를 그림 하나로 — 위에서 훑고, 아래에서 훑고, 둘 다 0이면 지운다 */
 function CMBuriedViz() {
-  const W = 720, H = 300;
+  const W = 720, H = 268;
   // [x, w, 위에서 보이는 넓이(0~1), 아래에서 보이는 넓이(0~1)]
   const layers = [
     [10, 200, 1.0, 0.0], [50, 140, 0.0, 0.0], [30, 190, 0.0, 0.0],
@@ -159,7 +162,7 @@ function CMBuriedViz() {
           );
         })}
 
-        <line x1={rx - 20} x2={rx - 20} y1="10" y2={H - 16} stroke="var(--rule)" strokeDasharray="4 4" />
+        <line x1={rx - 20} x2={rx - 20} y1="10" y2={oy + layers.length * (h + gap) - gap} stroke="var(--rule)" strokeDasharray="4 4" />
         <text x={rx} y="20" className="cm-svg-lbl">삭제 후 — 화면 결과 동일</text>
         {kept.map((l, i) => (
           <rect key={i} x={rx + l[0] * 0.4} y={oy + (kept.length - 1 - i) * (h + gap)} width={l[1] * 0.7} height={h}
@@ -178,26 +181,30 @@ window.CMBuriedViz = CMBuriedViz;
 function CMRendererViz() {
   const cells = Array.from({ length: 30 });
   return (
-    <div className="cm-rend">
-      <div className="cm-rend-side">
-        <div className="cm-rend-h">이전 — 겹 1장마다 화면 객체 1개</div>
-        <div className="cm-rend-grid">
-          {cells.map((_, i) => <span key={i} className="cm-rend-dot"></span>)}
-          <span className="cm-rend-more">… × 77</span>
+    <figure className="cm-figure plain">
+      <div className="cm-rend">
+        <div className="cm-rend-side">
+          <div className="cm-rend-h">이전 — 겹 1장마다 화면 객체 1개</div>
+          <div className="cm-rend-grid">
+            {cells.map((_, i) => <span key={i} className="cm-rend-dot"></span>)}
+            <span className="cm-rend-more">… 총 77개</span>
+          </div>
+          <div className="cm-rend-metric">그리기 호출 <b>+71</b></div>
         </div>
-        <div className="cm-rend-metric">그리기 호출 <b>+71</b></div>
-      </div>
-      <div className="cm-rend-arrow">→</div>
-      <div className="cm-rend-side to">
-        <div className="cm-rend-h">현재 — 앞뒤 두 덩어리로 고정</div>
-        <div className="cm-rend-two">
-          <span className="cm-rend-mesh front">앞면</span>
-          <span className="cm-rend-mesh back">뒷면</span>
+        <div className="cm-rend-arrow">→</div>
+        <div className="cm-rend-side to">
+          <div className="cm-rend-h">현재 — 앞뒤 두 덩어리로 고정</div>
+          <div className="cm-rend-two">
+            <span className="cm-rend-mesh front">앞면</span>
+            <span className="cm-rend-mesh back">뒷면</span>
+          </div>
+          <div className="cm-rend-metric ok">그리기 호출 <b>+1</b></div>
         </div>
-        <div className="cm-rend-note">전 겹의 도형을 이 둘에 이어붙인다. 겹이 몇 장이든 2개.</div>
-        <div className="cm-rend-metric ok">그리기 호출 <b>+1</b></div>
       </div>
-    </div>
+      <figcaption className="cm-figcap">
+        그리는 도형의 양은 그대로다. <b>바뀐 것은 그것을 몇 덩어리로 나눠 보내느냐뿐이다.</b>
+      </figcaption>
+    </figure>
   );
 }
 window.CMRendererViz = CMRendererViz;
@@ -206,7 +213,9 @@ window.CMRendererViz = CMRendererViz;
 function CMJobViz() {
   const W = 720, H = 190;
   const caps = [5, 4, 6, 4];
-  const unit = 24, x0 = 20, yBuf = 104, hBuf = 30;
+  // ⚠️ cursor = x0 + Σ(cap × unit × 2) 가 W 를 넘으면 .cm-figure{overflow:hidden} 에 잘린다.
+  //    19 × 16 × 2 + 20 = 628 < 720.
+  const unit = 16, x0 = 20, yBuf = 104, hBuf = 30;
   let cursor = x0;
   const segs = caps.map((cap, n) => {
     const w = cap * unit;
@@ -242,8 +251,8 @@ function CMJobViz() {
         <text x={x0} y={yBuf + hBuf + 22} className="cm-svg-lbl">미리 잡아둔 메모리 — 겹마다 자기 칸이 정해져 있다</text>
       </svg>
       <figcaption className="cm-figcap">
-        칸 너비는 겹마다 다르다 — <b>원래 꼭짓점 수 + 여유분</b> 만큼만 잡는다.
-        접힌 조각과 남는 조각이 각각 어디에 들어갈지가 계산 전에 이미 정해져 있다.
+        칸 너비가 겹마다 다른 것은 겹의 꼭짓점 수가 다르기 때문이다.
+        <b> 어느 겹이 어디에 쓸지는 계산이 시작되기 전에 이미 정해져 있다.</b>
       </figcaption>
     </figure>
   );
