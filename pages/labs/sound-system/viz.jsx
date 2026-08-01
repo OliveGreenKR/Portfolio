@@ -174,62 +174,55 @@ function SDPathViz() {
 }
 window.SDPathViz = SDPathViz;
 
-/* ─── V3 · 복제본 둘과 두 번 간 수정 ─────────────────── */
-/* §04 의 결론. 처음에는 아래 칸을 한 덩이로 그렸다가 실코드에 반증당했다 —
-   두 어셈블리는 서로를 참조하지 않고 공유 코드가 0줄이다. 사본 둘로 다시 그린다.
-   이 그림의 몫은 "고침 화살표가 두 개"라는 것 하나다. */
+/* ─── V3 · 두 시스템에서 선이 같은 높이에 그어졌다 ───── */
+/* §04 의 결론. 이 그림의 몫은 "경계선의 높이가 같다" 하나다.
+   ⚠️ 아래 칸을 한 덩이로 그리지 않는다 — 두 어셈블리는 서로를 참조하지 않고 공유 코드가 0줄이라
+      한 덩이로 그리면 공유 모듈이 있는 것처럼 읽힌다(1차 원고에서 실제로 그렇게 그렸다가 반증당했다).
+      사본이 둘이라는 사실은 §05 한계가 진다. 이 그림은 선의 위치만 말한다. */
 function SDReuseViz() {
-  const W = 760, H = 340;
-  // 좌 40..340, 우 420..720 / 하단 고침 띠 40..720 — 가운데 80 이 라벨 자리 < 760 ✓
+  const W = 760, H = 288;
+  // 좌 40..340, 우 420..720 — 가운데 80 이 라벨 자리 < 760 ✓
   const Lx = 40, Rx = 420, CW = 300;
   const mid = (Lx + CW + Rx) / 2; // 380
+  const SEAM_Y = 158; // 두 스택이 공유하는 경계선 높이
 
-  const stack = (x, title, rows) => (
+  const stack = (x, title, policy) => (
     <g>
       <text x={x + 4} y="28" className="sd-svg-lbl root">{title}</text>
       <rect x={x} y="40" width={CW} height="110" rx="4"
             fill="var(--paper-2)" stroke="var(--rule-2)" />
-      <text x={x + 14} y="62" className="sd-svg-tag">재생 정책 — 따로 짰다</text>
+      <text x={x + 14} y="64" className="sd-svg-tag">재생 정책 — 따로 짰다</text>
       {/* 항목 나열은 아래 표가 진다. 그림에는 한 줄만 둔다. */}
-      <text x={x + 14} y="94" className="sd-svg-sub">{rows}</text>
-      <rect x={x} y="162" width={CW} height="62" rx="4"
+      <text x={x + 14} y="96" className="sd-svg-sub">{policy}</text>
+      <rect x={x} y="166" width={CW} height="66" rx="4"
             fill="var(--sage-50)" stroke="var(--sage-500)" strokeWidth="1.6" />
-      <text x={x + 14} y="184" className="sd-svg-lbl ok">리소스 관리 — 사본</text>
-      <text x={x + 14} y="206" className="sd-svg-sub">참조 수 · 지연 해제 · 합류 · 취소</text>
+      <text x={x + 14} y="190" className="sd-svg-lbl ok">리소스 관리 — 같은 구조</text>
+      <text x={x + 14} y="212" className="sd-svg-sub">참조 수 · 지연 해제 · 합류 · 취소</text>
     </g>
   );
 
   return (
     <figure className="sd-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="sd-svg" role="img"
-           aria-label="두 시스템은 리소스 관리 코드를 공유하지 않고 각자 사본을 들고 있어, 같은 수정이 양쪽에 각각 들어갔다">
+           aria-label="사운드와 이펙트는 재생 정책을 각각 따로 짰지만, 그 아래 리소스 관리와의 경계선은 두 시스템에서 같은 높이에 그어져 있다">
         {stack(Lx, '사운드', '로드 방식 · 핸들 · 풀을 각자 정했다')}
         {stack(Rx, '이펙트', '로드 방식 · 핸들 · 풀을 각자 정했다')}
 
-        {/* 사본 둘 사이 — 참조가 없다.
-            ✕ 와 라벨을 한 g 로 묶는다. 라벨만 숨기면 폰에서 뜻 없는 ✕ 만 남는다. */}
-        <line x1={Lx + CW + 8} x2={Rx - 8} y1="193" y2="193"
-              stroke="var(--rule-2)" strokeWidth="1.3" strokeDasharray="4 4" />
+        {/* 경계선 — 두 스택을 가로지르며 같은 높이임을 보인다 */}
+        <line x1={Lx - 14} x2={Rx + CW + 14} y1={SEAM_Y} y2={SEAM_Y}
+              stroke="var(--terra-400)" strokeWidth="1.5" strokeDasharray="6 4" />
         <g className="sd-svg-note">
-          <text x={mid} y="188" textAnchor="middle" className="sd-svg-lbl accent">✕</text>
-          <text x={mid} y="212" textAnchor="middle" className="sd-svg-tag">참조 없음</text>
+          <rect x={mid - 62} y={SEAM_Y - 13} width="124" height="26" rx="3"
+                fill="var(--terra-50)" stroke="var(--terra-400)" />
+          <text x={mid} y={SEAM_Y + 5} textAnchor="middle" className="sd-svg-lbl accent">같은 높이</text>
         </g>
-
-        {/* 한 달 뒤 같은 수정이 각각 */}
-        <line x1={Lx} x2={Rx + CW} y1="252" y2="252" stroke="var(--rule)" />
-        <rect x={mid - 118} y="266" width="236" height="30" rx="3"
-              fill="var(--terra-50)" stroke="var(--terra-400)" strokeWidth="1.5" />
-        <text x={mid} y="286" textAnchor="middle" className="sd-svg-lbl accent">취소 토큰 수정 — 커밋 하나</text>
-        <path d={`M${mid - 118} 281 L${Lx + CW / 2} 281 L${Lx + CW / 2} 232`}
-              fill="none" stroke="var(--terra-400)" strokeWidth="1.5" />
-        <polygon points={`${Lx + CW / 2},226 ${Lx + CW / 2 - 5},235 ${Lx + CW / 2 + 5},235`} fill="var(--terra-400)" />
-        <path d={`M${mid + 118} 281 L${Rx + CW / 2} 281 L${Rx + CW / 2} 232`}
-              fill="none" stroke="var(--terra-400)" strokeWidth="1.5" />
-        <polygon points={`${Rx + CW / 2},226 ${Rx + CW / 2 - 5},235 ${Rx + CW / 2 + 5},235`} fill="var(--terra-400)" />
+        <text x={Lx} y="272" className="sd-svg-sub sd-svg-note">
+          위가 이만큼 다른데도 선을 옮길 이유가 없었다
+        </text>
       </svg>
       <figcaption className="sd-figcap">
-        아래 두 칸은 <b>같은 코드가 아니라 사본 둘</b>이다. 한 달 뒤 취소 토큰 수정이
-        양쪽으로 갈라져 들어간 것이 그 증거다 — 설계는 리소스 종류를 안 탔지만, 코드는 한 벌이 아니었다.
+        두 시스템에서 <b>선이 같은 높이</b>에 그어졌다. 위 칸이 서로 이만큼 다른데도 아래 칸이
+        같은 모양으로 서는 것이, 경계를 리소스 종류와 무관한 자리에 뒀다는 뜻이다.
       </figcaption>
     </figure>
   );
