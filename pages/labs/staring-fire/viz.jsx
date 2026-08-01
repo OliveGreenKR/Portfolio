@@ -33,6 +33,9 @@ function SFGallery({ g }) {
   return (
     <figure className="sf-gallery">
       <div className="sf-gallery-head">{g.title}</div>
+      {/* 중간 값을 따로 볼 수 있게 만들어 둔 것이 이 PoC 의 검증 도구였다 —
+          면책 문구만 남기면 그 사실이 안 팔린다. */}
+      {g.lead && <p className="sf-gallery-lead">{ri(g.lead)}</p>}
       <div className="sf-gallery-grid">
         {g.shots.map(s => (
           <div className="sf-shot" key={s.src}>
@@ -125,8 +128,7 @@ function SFBoundaryViz() {
         </text>
       </svg>
       <figcaption className="sf-figcap">
-        양쪽에 <b>같은 열</b>을 넣었다. 왼쪽에서 점선이 되돌아오는 자리가 문제의 지점이고,
-        감쇠를 키우는 것은 그 되돌아옴을 느리게 할 뿐 없애지 못한다.
+        양쪽에 <b>같은 열</b>을 넣었고, 왼쪽에서 점선이 되돌아오는 자리가 문제의 지점이다.
       </figcaption>
     </figure>
   );
@@ -186,8 +188,7 @@ function SFSeamViz() {
         </text>
       </svg>
       <figcaption className="sf-figcap">
-        화살표가 <b>둘뿐</b>이고, 아래쪽 하나는 <b>읽기만</b> 한다.
-        오른쪽 상자가 왼쪽 이름을 하나도 모르기 때문에, 태울 것을 새로 만들어도 시뮬은 손대지 않는다.
+        화살표가 <b>둘뿐</b>이고, 아래쪽 하나는 읽기만 하므로 오른쪽 상자는 왼쪽 이름을 하나도 모른다.
       </figcaption>
     </figure>
   );

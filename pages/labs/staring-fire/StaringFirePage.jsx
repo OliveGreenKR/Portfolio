@@ -74,6 +74,8 @@ function SFCase({ c }) {
       <div className="sf-case-row symptom"><span>증상</span><p>{ri(c.symptom)}</p></div>
       <div className="sf-case-row why"><span>값으론</span><p>{ri(c.why)}</p></div>
       <div className="sf-case-row did"><span>한 것</span><p>{ri(c.did)}</p></div>
+      {/* 계측본이 없어도 절차는 쓸 수 있다 — "고쳤다" 만 있고 확인이 없으면 주장이 근거를 잃는다. */}
+      <div className="sf-case-row check"><span>확인</span><p>{ri(c.check)}</p></div>
     </article>
   );
 }
@@ -88,6 +90,7 @@ function SFHeader({ indexHref }) {
         <span className="cur">labs / staring-fire</span>
       </div>
       <nav className="nb-nav">
+        <a href="#context">배경</a>
         <a href="#sim">굴리는 것</a>
         <a href="#fix">고친 것</a>
         <a href="#seam">경계</a>
@@ -179,6 +182,7 @@ function SFScope({ scope }) {
         </div>
       </div>
       <p className="sf-scope-why">{ri(scope.why)}</p>
+      {scope.why2 && <p className="sf-scope-why">{ri(scope.why2)}</p>}
     </div>
   );
 }
@@ -220,7 +224,7 @@ function SFSim({ data }) {
   const s = data.sim;
   return (
     <section id="sim" className="nb-section">
-      <SFSectionHead no="02" title="굴리는 것 — 속도와 온도, 그리고 연기" kind="SIMULATION" />
+      <SFSectionHead no="02" title="굴리는 것 — 속도 · 온도 · 연기" kind="SIMULATION" />
       <SFGist>{s.gist}</SFGist>
       <p className="sf-body">{ri(s.body)}</p>
       <p className="sf-body">{ri(s.body2)}</p>
@@ -243,7 +247,8 @@ function SFFix({ data }) {
       {f.cases.map(c => <SFCase key={c.no} c={c} />)}
       {/* 원리도는 두 사고를 다 읽은 뒤에 온다 — 두 번째 것의 조건만 그린다. */}
       <window.SFBoundaryViz />
-      <p className="sf-body sf-after">{ri(f.after)}</p>
+      {/* 절 마무리 문단(`fix.after`)은 삭제했다 — "이렇게 하니 빨랐다" 는 내 작업 시간을 파는
+          프레임이고, 게다가 위 증상 줄이 "값을 먼저 만졌다" 고 적고 있어 사실과도 반대였다. */}
     </section>
   );
 }
@@ -270,7 +275,7 @@ function SFLimits({ data }) {
   const ri = window.renderInline;
   return (
     <section id="limits" className="nb-section">
-      <SFSectionHead no="05" title="한계 — 안 한 것과 못 한 것" kind="OPEN" />
+      <SFSectionHead no="05" title="한계 — 확인하지 못한 것들" kind="OPEN" />
       <div className="sf-limits">
         {data.limits.map(([k, v]) => (
           <div className="sf-limit" key={k}>
