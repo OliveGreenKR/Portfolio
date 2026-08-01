@@ -1,6 +1,6 @@
 // pages/labs/bbq-master/data.js
 // LAB · 04 — BBQ Master. 3일 / 30 커밋 PoC. 볼류메트릭 고기 굽기 — 외형과 분리된 32³ Internal Field.
-// Source: uploads/bbq-master.md. Schema 는 UE5 Action / Ring Dash / Multi-Leg 와 동일.
+// Source: uploads/bbq-master.md. Schema 는 UE5 Action / Multi-Leg 와 동일.
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
 
 window.BBQ_MASTER_DATA = {

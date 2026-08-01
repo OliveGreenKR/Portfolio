@@ -201,6 +201,6 @@ window.UE5_ACTION_DATA = {
   },
 
   // 실 자산 — hero = 액션 컴포넌트 디버그 뷰 (캡슐 콜라이더 + 구형 탐지 영역 + HP 바).
-  // CursorBlade 캡처는 별개의 2D 탑다운 PoC (ring-dash 변종 중 하나) — UE5 액션 자산 아님.
+  // CursorBlade 캡처는 별개의 2D 탑다운 PoC — UE5 액션 자산이 아니므로 여기 싣지 않는다.
   heroImage: 'ue5-action/assets/hero.png',
 };

@@ -47,11 +47,11 @@ window.ABOUT_DATA = {
     {
       kind: 'POC',
       title: 'PoC 사고 사이클',
-      lede: 'Labs 6 — 1일에서 8주 사이에 가설을 세우고, 한 결정의 결과만 남기고 접는다.',
+      lede: 'Labs 5 — 1일에서 8주 사이에 가설을 세우고, 한 결정의 결과만 남기고 접는다.',
       examples: [
-        { tag: 'Ring Dash',    line: 'dash 메커닉을 4안으로 분기 — 변형 워크플로우 자체가 산출물.',      href: '../pages/labs/ring-dash.html' },
-        { tag: 'Staring Fire', line: 'GPU Stable Fluids + Blackbody. 닫힌 계 + Vorticity flame gate.', href: '../pages/labs/staring-fire.html' },
-        { tag: '1000 Kittens', line: 'Odin Inspector 4 검증으로 기획자 입력의 누락을 즉시 표시.',       href: '../pages/labs/1000-kittens.html' },
+        { tag: 'Multi-Leg Creature', line: '협동 다족류 IK + 다리 사이 힘 합벡터로 자연스러운 보행 생성.',   href: '../pages/labs/multi-leg-creature.html' },
+        { tag: 'BBQ Master',         line: '32³ 볼류메트릭 시뮬레이션. 내부 상태를 외부 시각으로 가시화.',    href: '../pages/labs/bbq-master.html' },
+        { tag: 'Staring Fire',       line: 'GPU Stable Fluids + Blackbody. 닫힌 계 + Vorticity flame gate.', href: '../pages/labs/staring-fire.html' },
       ],
     },
   ],

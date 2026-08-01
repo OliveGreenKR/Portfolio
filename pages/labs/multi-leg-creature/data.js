@@ -1,6 +1,6 @@
 // pages/labs/multi-leg-creature/data.js
 // LAB · 03 — Multi-Leg Creature. 1일 / 15 커밋 PoC. 다리 1개당 1명 협동 다족류의 물리적 성립 검증.
-// Source: uploads/multi-leg-creature.md. Schema 는 UE5 Action / Ring Dash 와 동일.
+// Source: uploads/multi-leg-creature.md. Schema 는 UE5 Action / BBQ Master 와 동일.
 // classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만 사용.
 
 window.MULTI_LEG_DATA = {
