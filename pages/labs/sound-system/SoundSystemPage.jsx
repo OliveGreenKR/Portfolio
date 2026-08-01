@@ -91,7 +91,7 @@ function SDHeader({ indexHref }) {
       <nav className="nb-nav">
         <a href="#effects">되는 일</a>
         <a href="#seam">모듈 경계</a>
-        <a href="#reuse">재사용</a>
+        <a href="#reuse">두 번째</a>
         <a href="#limits">한계</a>
       </nav>
     </header>
@@ -130,7 +130,7 @@ function SDRail({ steps }) {
       {steps.map((s, i) => link(SD_EF_IDS[i], `${s.no} · ${s.rail || s.title}`))}
       <span className="nb-rail-section">structure</span>
       {link('seam', '03 · 모듈 경계')}
-      {link('reuse', '04 · 복제와 값')}
+      {link('reuse', '04 · 두 번째')}
       <span className="nb-rail-section">wrap-up</span>
       {link('limits', '05 · 한계')}
     </aside>
@@ -251,7 +251,7 @@ function SDReuse({ data }) {
   const r = data.reuse;
   return (
     <section id="reuse" className="nb-section">
-      <SDSectionHead no="04" title="복제 — 이펙트 리소스 시스템과 그 값" kind="EVIDENCE" />
+      <SDSectionHead no="04" title="두 번째 — 같은 경계가 이펙트에도 섰다" kind="EVIDENCE" />
       <SDGist>{r.gist}</SDGist>
       <p className="sd-body">{ri(r.body)}</p>
       <SDPoints points={r.points} />
