@@ -5,13 +5,17 @@
 //   이전 판은 그 칸을 채우려고 "가상의 baseline" 표 8행을 지어 넣었다.
 //   `limits` 도 공통 렌더러가 모르는 필드라, 한계 절이 통째로 빠져 있었다.
 //
-// 순서 = 배경 → 만든 것 → 나눠 둔 것 → 튜닝 → 한계.
-//   §02→§03, §03→§04 에만 handoff 를 둔다. §01·§05 는 앞뒤로 인과가 없다.
-//   Labs 는 메인 페이지의 1/3 분량이 적정하다 — 본문 4절에서 멈춘다.
+// 순서 = 배경 → 만든 것 → 나눠 둔 것 → 한계. 본문 3절에서 멈춘다.
+//   §02→§03 한 곳에만 handoff 를 둔다. §01·§04 는 앞뒤로 인과가 없다.
 //
-// 그림은 넷 중 둘만 진다. 자산이 hero 한 장뿐이고 추가 캡처가 불가능하다.
+// 튜닝 절(값을 한 곳에 모았다 · 계산부를 재생 없이 돌린다 · 일찍 했다)은 통째로 버렸다.
+//   "내 작업 편의를 줄였다" 는 프레임이라 읽는 쪽이 살 이유가 없다.
+//   그 안에서 유일하게 설계 판단이던 것(두 힘의 크기를 일부러 안 맞췄다)만
+//   §02 의 요점으로 흡수했다 — V1 그림이 이미 두 색으로 갈라 그려 두고 있다.
+//
+// 그림은 셋 중 둘이 진다. 자산이 hero 한 장뿐이고 추가 캡처가 불가능하다.
 //   §02 힘 원리도 + 붙잡은 자리 접사 / §03 흐름 원리도.
-//   §01·§04·§05 는 글만 — 넣을 그림이 없으면 넣지 않는다.
+//   §01·§04 는 글만 — 넣을 그림이 없으면 넣지 않는다.
 //
 // 공유: tokens.css · notebook.css 크롬 · notebook-components.jsx (renderInline)
 // 전용: viz.jsx · page.css
@@ -84,9 +88,9 @@ function MLHeader({ indexHref }) {
         <span className="cur">labs / multi-leg-creature</span>
       </div>
       <nav className="nb-nav">
+        <a href="#context">배경</a>
         <a href="#force">만든 것</a>
         <a href="#split">나눠 둔 것</a>
-        <a href="#tune">튜닝</a>
         <a href="#limits">한계</a>
       </nav>
     </header>
@@ -96,7 +100,7 @@ function MLHeader({ indexHref }) {
 function MLRail() {
   const [active, setActive] = useStateML('hero');
   useEffectML(() => {
-    const ids = ['hero', 'context', 'force', 'split', 'tune', 'limits'];
+    const ids = ['hero', 'context', 'force', 'split', 'limits'];
     const els = ids.map(id => document.getElementById(id)).filter(Boolean);
     if (!els.length) return;
     const io = new IntersectionObserver(entries => {
@@ -122,9 +126,8 @@ function MLRail() {
       <span className="nb-rail-section">build</span>
       {link('force', '02 · 만든 것')}
       {link('split', '03 · 나눠 둔 것')}
-      {link('tune', '04 · 튜닝')}
       <span className="nb-rail-section">wrap-up</span>
-      {link('limits', '05 · 한계')}
+      {link('limits', '04 · 한계')}
     </aside>
   );
 }
@@ -248,33 +251,16 @@ function MLSplit({ data }) {
       <p className="ml-body">{ri(s.body3)}</p>
       <window.MLFlowViz />
       <MLPoints points={s.points} />
-      <MLHandoff h={s.handoff} />
     </section>
   );
 }
 
-/* ─── §04 튜닝 ───────────────────────────────────────── */
-function MLTune({ data }) {
-  const ri = window.renderInline;
-  const t = data.tune;
-  return (
-    <section id="tune" className="nb-section">
-      <MLSectionHead no="04" title="튜닝 — 값을 바꿔 보는 시간을 먼저 줄였다" kind="WORKFLOW" />
-      <MLGist>{t.gist}</MLGist>
-      <p className="ml-body">{ri(t.body)}</p>
-      <p className="ml-body">{ri(t.body2)}</p>
-      <p className="ml-body">{ri(t.body3)}</p>
-      <MLPoints points={t.points} />
-    </section>
-  );
-}
-
-/* ─── §05 한계 ───────────────────────────────────────── */
+/* ─── §04 한계 ───────────────────────────────────────── */
 function MLLimits({ data }) {
   const ri = window.renderInline;
   return (
     <section id="limits" className="nb-section">
-      <MLSectionHead no="05" title="한계 — 안 한 것과 못 한 것" kind="OPEN" />
+      <MLSectionHead no="04" title="한계 — 안 한 것과 못 한 것" kind="OPEN" />
       <div className="ml-limits">
         {data.limits.map(([k, v]) => (
           <div className="ml-limit" key={k}>
@@ -300,7 +286,6 @@ function MultiLegPage({ indexHref = '../../pages/landing.html' }) {
           <MLContext data={data} />
           <MLForce data={data} />
           <MLSplit data={data} />
-          <MLTune data={data} />
           <MLLimits data={data} />
           <footer className="nb-footer">
             <span>JCH · 2026 · labs / multi-leg-creature</span>
