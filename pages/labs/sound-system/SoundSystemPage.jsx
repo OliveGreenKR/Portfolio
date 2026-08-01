@@ -43,11 +43,10 @@ function SDHandoff({ h }) {
   );
 }
 
-function SDPoints({ points, title }) {
+function SDPoints({ points }) {
   const ri = window.renderInline;
   return (
     <div className="sd-pts">
-      {title && <div className="sd-pts-h">{ri(title)}</div>}
       {points.map(([k, v], i) => (
         <div className="sd-pt" key={k}>
           <span className="sd-pt-n">{i + 1}</span>
@@ -131,7 +130,7 @@ function SDRail({ steps }) {
       {steps.map((s, i) => link(SD_EF_IDS[i], `${s.no} · ${s.rail || s.title}`))}
       <span className="nb-rail-section">structure</span>
       {link('seam', '03 · 모듈 경계')}
-      {link('reuse', '04 · 재사용')}
+      {link('reuse', '04 · 복제와 값')}
       <span className="nb-rail-section">wrap-up</span>
       {link('limits', '05 · 한계')}
     </aside>
@@ -191,7 +190,6 @@ function SDContext({ data }) {
     <section id="context" className="nb-section">
       <SDSectionHead no="01" title="배경 — 부딪힌 두 요구" kind="CONTEXT" />
       <p className="sd-body">{ri(c.body)}</p>
-      <p className="sd-body">{ri(c.body2)}</p>
 
       <div className="sd-tension">
         {c.tension.map(([k, v]) => (
@@ -222,7 +220,6 @@ function SDEffects({ data }) {
     <section id="effects" className="nb-section">
       <SDSectionHead no="02" title="되는 일 — 클립마다 다르게 다룬다" kind="BEHAVIOUR" />
       <SDGist>{e.gist}</SDGist>
-      <p className="sd-lede">{ri(e.lede)}</p>
       {e.steps.map((s, i) => <SDStep key={s.key} s={s} id={SD_EF_IDS[i]} />)}
       {/* 그림은 셋을 다 읽은 뒤에 온다 — 셋이 한 경로 위에서 어떻게 만나는지가 그림의 몫이다. */}
       <window.SDPathViz />
@@ -237,7 +234,7 @@ function SDSeam({ data }) {
   const s = data.seam;
   return (
     <section id="seam" className="nb-section">
-      <SDSectionHead no="03" title="모듈 경계 — 안에 무엇을 넣고 밖에 무엇을 뒀나" kind="ARCHITECTURE" />
+      <SDSectionHead no="03" title="모듈 경계 — 클립 취득만 안에 넣었다" kind="ARCHITECTURE" />
       <SDGist>{s.gist}</SDGist>
       <p className="sd-body">{ri(s.body)}</p>
       <SDPoints points={s.points} />
@@ -254,10 +251,11 @@ function SDReuse({ data }) {
   const r = data.reuse;
   return (
     <section id="reuse" className="nb-section">
-      <SDSectionHead no="04" title="재사용 — 이펙트 리소스 시스템을 닷새에" kind="EVIDENCE" />
+      <SDSectionHead no="04" title="복제 — 이펙트 리소스 시스템과 그 값" kind="EVIDENCE" />
       <SDGist>{r.gist}</SDGist>
       <p className="sd-body">{ri(r.body)}</p>
       <SDPoints points={r.points} />
+      <window.AsciiBlock title={r.code.title} code={r.code.code} result={r.code.result} />
       <window.SDReuseViz />
       <window.DataTable title={r.tableTitle} headers={r.table.headers} rows={r.table.rows} />
     </section>

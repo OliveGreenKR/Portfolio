@@ -17,12 +17,8 @@
    이 페이지에서 sage 색면은 섹션 요지(.sd-gist) 하나만 갖는다 — 중립 면으로 내린다. */
 .nb-page .nb-ascii-result { background: var(--paper-2); color: var(--ink-2); }
 
-/* `.nb-page code`(0,1,1) 가 베어 `code`(0,0,1) 를 이기므로 특이도를 맞춘다.
-   안 맞추면 .sd-figcap · .sd-built-s 안의 코드 칩만 다른 모양으로 렌더된다. */
-.nb-page code {
-  font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2);
-  border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px;
-}
+/* 인라인 코드 칩 규칙은 두지 않는다 — 이 페이지 산문에는 백틱 마크업이 하나도 없다.
+   (식별자를 문장에 박는 대신 코드 블록과 그림 라벨로 보인다.) */
 
 /* ─── 공통 본문 ──────────────────────────────────────── */
 .sd-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 800px; text-wrap: pretty; }
@@ -36,9 +32,9 @@
   font-size: 16.5px; line-height: 1.6; color: var(--sage-900); text-wrap: pretty;
 }
 .sd-gist strong { font-weight: 700; }
-.sd-gist code { background: var(--paper); border-color: var(--sage-200); }
 
-/* 표준 기법을 발명처럼 쓰지 않는다는 주석 — 색면이 아니라 좌측선으로 이탈시킨다. */
+/* 표준 기법을 발명처럼 쓰지 않는다는 주석 — 색면이 아니라 좌측선으로 이탈시킨다.
+   §01 의 .sd-scope-why 는 같은 물체가 되지 않게 무테 각주로 한 단 내렸다. */
 .sd-caution {
   margin: 22px 0 0; padding: 13px 17px; background: var(--paper-2);
   border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0;
@@ -102,11 +98,6 @@
 
 /* ─── 요점 목록 ──────────────────────────────────────── */
 .sd-pts { margin-top: 20px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); overflow: hidden; }
-.sd-pts-h {
-  padding: 11px 18px; background: var(--paper-3); border-bottom: 1px solid var(--rule-2);
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase;
-  font-weight: 700; color: var(--ink-2);
-}
 .sd-pt { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 14px 18px; border-bottom: 1px dashed var(--rule); }
 .sd-pt:last-child { border-bottom: none; }
 .sd-pt-n {
@@ -117,7 +108,6 @@
 .sd-pt-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
 .sd-pt-v { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
 .sd-pt-v strong { color: var(--ink); font-weight: 600; }
-.sd-pt-v code, .sd-pt-k code { background: var(--paper); border-color: var(--rule); }
 
 /* ─── 이어서 — 다음 절의 첫 문장을 만드는 고리 ───────── */
 /* §02→§03, §03→§04 두 곳에만 쓴다. */
@@ -129,7 +119,6 @@
 .sd-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
 .sd-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
 .sd-handoff-a strong { color: var(--sage-300); font-weight: 700; }
-.sd-handoff-a code, .sd-handoff-q code { background: rgba(251,249,245,0.12); border: none; color: var(--paper); }
 
 /* ─── SVG figure ─────────────────────────────────────── */
 /* overflow:hidden — SVG 요소가 viewBox 밖으로 나가면 페이지 가로 스크롤이 생긴다 */
@@ -161,10 +150,10 @@
 .sd-scope-col li { font-size: 14px; line-height: 1.65; color: var(--ink-2); margin-bottom: 7px; text-wrap: pretty; }
 .sd-scope-col.reads li::marker { color: var(--sage-500); }
 .sd-scope-col.skips li::marker { color: var(--terra-300); }
+/* .sd-caution 과 같은 물체가 되지 않게 무테 각주로 둔다 — 여기는 범위 단서일 뿐이다. */
 .sd-scope-why {
-  margin: 8px 20px 18px; padding: 13px 16px; background: var(--paper-2);
-  border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0;
-  font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty;
+  margin: 4px 20px 18px; padding: 12px 0 0; border-top: 1px dashed var(--rule);
+  font-size: 13.5px; line-height: 1.7; color: var(--ink-3); text-wrap: pretty;
 }
 .sd-scope-why strong { color: var(--ink); font-weight: 700; }
 
@@ -180,6 +169,15 @@
   .sd-scope-cols { grid-template-columns: 1fr; }
   .sd-scope-col + .sd-scope-col { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 14px; margin-top: 6px; }
 }
+/* 그림 완화는 900px 부터 — 721~900 대역에서 main 이 660px 안팎이라
+   viewBox 760 이 축척 0.87 로 줄고 10.5px 주석이 9px 아래로 떨어진다.
+   dx11 은 720 만 뒀지만 이 페이지 그림은 글자가 더 많아 한 단 위에서 건다. */
+@media (max-width: 900px) {
+  .sd-svg-note { display: none; }
+  .sd-figure { overflow-x: auto; overflow-y: hidden; }
+  .sd-figure .sd-svg { min-width: 560px; }
+  .sd-figure figcaption { min-width: 0; }
+}
 @media (max-width: 720px) {
   .sd-hero { padding: 36px 0 32px; }
   .sd-hook { font-size: 17px; }
@@ -189,6 +187,8 @@
   .sd-tension { grid-template-columns: 1fr; }
   .sd-tension-cell { border-right: none; border-bottom: 1px solid var(--rule-2); }
   .sd-tension-cell:last-child { border-bottom: none; }
+  /* 좌우 대치가 상하로 바뀌면 tint 는 "맞선다" 가 아니라 "이쪽이 더 중요" 로 읽힌다. */
+  .sd-tension-cell:first-child { background: var(--paper); }
   .sd-step-head { flex-wrap: wrap; }
   .sd-step-title { font-size: 21px; }
   .sd-handoff { grid-template-columns: 1fr; }
@@ -204,16 +204,8 @@
   .nb-tablewrap .nb-table { min-width: 520px; }
   /* crumb 전체를 두면 320px 기기에서 헤더가 넘친다. 브랜드가 같은 목적지를 갖는다. */
   .nb-header .nb-crumbs a, .nb-header .nb-crumbs .sep { display: none; }
-  /* viewBox 가 화면 폭으로 축소되면 SVG 안 10.5px 글자가 4~5px 로 떨어진다.
-     설명 문장은 figcaption 이 대신 지므로 여기서는 숨긴다. */
-  .sd-svg-note { display: none; }
-  /* 남는 라벨(도형 이름)은 숨길 수 없다 — 그림이 그것으로 읽힌다.
-     390px 폭에서 viewBox 760 은 배율 0.42 → 11.5px 라벨이 4.8px 가 된다.
-     그림만 가로로 스와이프하게 두고 최소 폭을 확보한다 (배율 0.74 → 8.5px).
-     세로는 잠근다 — 열어 두면 페이지가 세로로 이중 스크롤된다. */
-  .sd-figure { padding: 12px 12px 10px; overflow-x: auto; overflow-y: hidden; }
-  .sd-figure .sd-svg { min-width: 560px; }
-  .sd-figure figcaption { min-width: 0; }
+  /* 그림 완화(note 숨김 · 최소폭 · 스와이프)는 위 900px 블록이 이미 건다. */
+  .sd-figure { padding: 12px 12px 10px; }
   /* 공유 헤더의 상단 네비가 이 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
      같은 목적지를 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
   .nb-header .nb-nav { display: none; }
