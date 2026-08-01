@@ -141,12 +141,15 @@ window.LANDING_DATA = {
   ],
 
   // ─── Labs 그리드 — 카드 5 ────────────────────────────────
-  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection). 데이터 순서는 idx 기준 그대로 둔다.
-  // idx 는 표시용 라벨. L.02(Ring Dash) · L.06(1000 Kittens) 제거로 번호가 비어 있다 — Labs 재작성 완료 후 L.01~L.05 로 재부여할 것.
+  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection).
+  // idx 는 표시용 라벨 — **보이는 순서와 어긋나지 않게 date desc 순으로 부여한다.**
+  //   2026-08-02 재부여: Ring Dash(L.02) · 1000 Kittens(L.06) 제거로 비었던 번호를 닫고
+  //   L.01~L.05 로 다시 매겼다. 데이터 배열 순서도 idx 와 같게 맞춰 둔다.
+  //   각 페이지의 `meta.eyebrow` · html `<title>` · `data-screen-label` 도 같은 번호다.
   // date: 정렬 키 (ISO `YYYY-MM-DD`). 기간 있는 경우 종료일. 미상은 빈 문자열 — 가장 뒤로 밀림.
   labs: [
     {
-      idx: 'L.07',
+      idx: 'L.01',
       title: '리소스 관리 모듈 — Sound / VFX',
       slug: 'sound-system',
       href: 'labs/sound-system.html',
@@ -158,18 +161,7 @@ window.LANDING_DATA = {
       line: '리소스를 언제 올리고 내릴지 판단하는 일만 재생 정책에서 떼어 냈고, 같은 경계로 이펙트 리소스 시스템을 하루에 세웠다.',
     },
     {
-      idx: 'L.01',
-      title: 'UE5 Action',
-      slug: 'ue5-action',
-      href: 'labs/ue5-action.html',
-      tag: 'UE5 · C++',
-      duration: '8주 · 1인',
-      date: '2024-11-30',
-      // "디자이너가 코드 없이" 는 쓰지 않는다 — 8주 1인 프로젝트라 디자이너가 없었다.
-      line: '스킬이 무엇을 하고 어디로 이어지는지는 데이터에 두고, 코드에는 언제 실행할지만 남겼다.',
-    },
-    {
-      idx: 'L.03',
+      idx: 'L.02',
       title: 'Multi-Leg Creature',
       slug: 'multi-leg-creature',
       href: 'labs/multi-leg-creature.html',
@@ -180,7 +172,7 @@ window.LANDING_DATA = {
       line: '다리를 하나씩 골라 붙잡고 당긴다 — 몸통에는 이동 입력이 없고, 다리들이 낸 힘의 합만으로 움직인다.',
     },
     {
-      idx: 'L.04',
+      idx: 'L.03',
       title: 'BBQ Master',
       slug: 'bbq-master',
       href: 'labs/bbq-master.html',
@@ -191,14 +183,26 @@ window.LANDING_DATA = {
       line: '고기 안쪽 상태를 32³ 격자로 겉모양과 따로 굴리고, 겉면 색과 잘린 단면으로만 보여 준다.',
     },
     {
-      idx: 'L.05',
+      idx: 'L.04',
       title: 'Staring Fire',
       slug: 'staring-fire',
       href: 'labs/staring-fire.html',
       tag: 'GPU / Shader',
       duration: '3일',
       date: '2026-04-29',
-      line: 'GPU Stable Fluids + Blackbody. 불멍 인터랙션을 위한 셰이더 PoC.',
+      // 표준 기법 이름(Stable Fluids · Blackbody)을 앞세우지 않는다 — 페이지가 한 일로 쓴다.
+      line: '불을 그리지 않고 굴렸다 — 격자 위에서 온도와 속도를 계산하고, 그 온도를 그대로 빛으로 옮긴다.',
+    },
+    {
+      idx: 'L.05',
+      title: 'UE5 Action',
+      slug: 'ue5-action',
+      href: 'labs/ue5-action.html',
+      tag: 'UE5 · C++',
+      duration: '8주 · 1인',
+      date: '2024-11-30',
+      // "디자이너가 코드 없이" 는 쓰지 않는다 — 8주 1인 프로젝트라 디자이너가 없었다.
+      line: '스킬이 무엇을 하고 어디로 이어지는지는 데이터에 두고, 코드에는 언제 실행할지만 남겼다.',
     },
   ],
 
