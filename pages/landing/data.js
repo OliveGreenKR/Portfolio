@@ -147,13 +147,15 @@ window.LANDING_DATA = {
   labs: [
     {
       idx: 'L.07',
-      title: 'Sound System',
+      title: '리소스 관리 모듈 — Sound / VFX',
       slug: 'sound-system',
       href: 'labs/sound-system.html',
-      tag: 'System / Package',
-      duration: '재사용 패키지 · async 개선',
+      tag: 'System / Reusable Module',
+      duration: '모듈 하나 · 시스템 둘',
       date: '2026-05-20',
-      line: '키 기반 사운드 god-class 에서 취득 책임 만 인터페이스로 분리 · `LoadMode` 직교 데이터화로 BGM async 로드/해제.',
+      // 페이지 §02·§04 와 어긋나지 않게 유지할 것. "god-class 해체" 는 쓰지 않는다 —
+      // 매니저 파일은 오히려 커졌다 (labs/sound-system/data.js 머리 주석 참조).
+      line: '리소스를 언제 올리고 내릴지 판단하는 일만 재생 코드에서 떼어 모듈로 만들었다 · 그 위에 이펙트 리소스 시스템을 닷새에.',
     },
     {
       idx: 'L.01',

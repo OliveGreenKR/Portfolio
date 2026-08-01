@@ -1,346 +1,247 @@
 // pages/labs/sound-system/data.js
-// LAB · 07 — Sound System (Chul.SoundSystem). 키 기반 사운드 god-class에서 취득 책임만
-// 인터페이스로 분리하고 로드 방식을 직교 데이터 축(LoadMode)으로 빼낸 재사용 패키지.
-// Wobble Wobble(BadeulBadeul.SoundSystem) → CursorBlade 이식·async 개선.
-// 이후 증분: 라이브러리 단위 그룹 Preload + 재생 경로 풀 단일화(PlayOnSource 폐기→PlayAttached).
-// 시각 자산 없음 — HERO 는 저수준 모듈 아키텍처 다이어그램(heroMermaid). Schema 는 다른 Lab 과 동일.
+// LAB · 07 — Chul.SoundSystem / Chul.VFXSystem. Unity 재사용 리소스 관리 모듈. 1인.
+//
+// ⚠️ 이 페이지가 말하는 것 = "리소스 관리를 모듈로 만들어 뒀더니 다음 리소스 시스템이 빨리 섰다".
+//   "층을 옮겼다" 가 아니다 — 옮기기가 아니라 **모듈이 자원 종류를 안 탄다**는 것이 요지다.
+//   용어는 **모듈**로 고정한다. "층" 은 V3 그림의 위/아래 위치를 가리킬 때만 쓴다.
+// 출처: D:\UnityProjects\CursorBlade, 브랜치 `feat/stage02` (= origin/develop 팁, 2026-07-31).
+//       CursorBlade = Motelet 의 개발 코드명. Motelet 페이지 §05-c 가 이 페이지로 링크를 건다.
+//
+// ⚠️ 순서 — 결과 → 구조 → 증거.
+//   §02 되는 일(효과) → §03 어떻게 갈랐나(구조) → §04 두 번째 적용(증거) → §05 한계.
+//   §02·§03 은 인과가 있다("이게 되게 하려고 저렇게 갈랐다"). §04 는 §03 의 결과라 이어진다.
+//   그래서 §02→§03, §03→§04 에만 handoff 를 둔다.
+//
+// ⚠️ 문장 규칙
+//   1. 한 덩이는 한 문장. 문제 한 줄 → 한 것 한 줄 → 요점 한 줄씩.
+//   2. 제목에 비유·대구 금지. 제목만 읽고 무슨 얘긴지 몰라야 하는 제목은 실패다.
+//   3. 굵게는 3~8자 핵심 구에만. 절이나 문장을 통째로 감싸지 않는다.
+//   4. 튜닝 설정값은 본문에서 뺀다 — 구조만 말한다. idle 대기 시간도 숫자를 쓰지 않는다.
+//   5. 접속 부사(그래서·다만·그리고·결국) 최소.
+//   6. 절 제목과 gist 가 같은 말이면 gist 를 다시 쓴다.
+//   7. 리팩터링 어휘로 시작하지 않는다 — 독자는 "무엇이 안 되고 있었나" 를 먼저 알아야 한다.
+//
+// ⚠️ 사실 규칙 — 전부 코드 대조로 확정한 것만 쓴다 (2026-08-01 감사).
+//   근거표 = knowledge_base/projects/labs/sound-system/_code_audit.md (SSOT).
+//   1. **정도를 말하는 주장 금지.** 프로파일러·메모리 스냅샷이 하나도 없다.
+//      버린 것 — "메모리가 줄었다" · "hitch 를 제거했다" · "응답성이 좋아졌다".
+//      대신 **불변식**만 쓴다 — 코드로 참·거짓이 갈리는 동작.
+//   2. **"god-class 를 해체했다" 금지.** SoundManager.cs 는 1023 → 1374 줄로 **커졌다**.
+//      나간 것은 코루틴 크로스페이드·클립 직접 취득, 들어온 것은 비동기 오케스트레이션.
+//      쓸 수 있는 말은 "취득 하나를 떼어냈다" 까지다.
+//   3. 고친 수치 — 테스트 "구 84 유지 + 3" → 이식 직후 **102**, 현재 **99**. VFX 는 **0**.
+//   4. **씬에 없는 코드는 싣지 않는다.** SoundCollisionTriggerAdvanced(319줄) = 배치 0건 → 전면 배제.
+//      PlayAttached = 씬 진입로가 전부 꺼져 있음 → 성과 아님, §05 에만 한 줄.
+//   5. **표준 기법을 발명처럼 쓰지 않는다.** 인터페이스 분리 · 참조 카운트 · 오브젝트 풀 · 지연 해제는
+//      전부 표준이다. 이 프로젝트에서 정한 것만 적는다.
+//   6. 히어로 3칸은 성과 수치가 아니라 **되는 일**이다. 파일 수·클래스 수를 성과인 척 세우지 않는다.
+//
+// renderInline 이 아는 마크업은 **굵게** / `코드` / *기울임* 뿐. 중첩 금지.
+// AsciiBlock 의 intro·result 는 마크업을 안 태우므로 백틱을 쓰지 않는다.
 
-window.SOUND_SYSTEM_DATA = {
-  // Evidence(메트릭)를 Context 바로 뒤(§02)로 끌어올림. 기본 페이지는 미설정 → 현행 순서 유지.
-  evidenceFirst: true,
-
+window.SOUND_DATA = {
   meta: {
-    eyebrow: 'LAB · 07 ─ System / Reusable Package',
-    code: 'LAB · 07',
-    date: '2026.05',
-    title: 'Sound System — 취득 책임만 떼어낸 재사용 사운드 패키지',
-    oneLine:
-      '키 기반 사운드 god-class에서 클립 취득(load/release) 책임만 인터페이스로 분리하고, ' +
-      '로드 방식을 카테고리와 직교하는 `LoadMode` 축으로 데이터화 — ' +
-      'SFX 동기 응답성을 보존한 채 BGM async 로드/해제 + 엔진 교체 seam 을 동시에 확보.',
-    weeks: '재사용 패키지 · 이식 + async 개선',
-    team: '1 인 (전 영역 본인)',
-    role: '설계 + 구현 + 테스트',
-    platform: 'Unity 6.1 LTS · URP · C# 10',
-  },
-
-  // HERO — 저수준 모듈 아키텍처 (클래스/파일 단위 의존)
-  heroMermaid: `graph LR
-    subgraph CONTENT["컨텐츠 (자체 소스 없음)"]
-        ST["SoundTrigger<br/>_followOwner"]
-        STB["SoundTriggerForBGM"]
-        STN["SoundTriggerForButton"]
-        SCT["SoundCollisionTriggerAdvanced"]
-        SLL["SoundLibraryLoader<br/>OnEnable/OnDisable"]
-    end
-    subgraph CORE["SoundManager (싱글턴)"]
-        SM["SoundManager"]
-        GATE["CanPlay<br/>cooldown · maxConcurrent"]
-        POOL["ObjectPool&lt;AudioSource&gt;"]
-        BGM["BGM Source A / B<br/>크로스페이드"]
-        ATT["부착 추종<br/>_attachedSources · LateUpdate"]
-        GRP["그룹 Preload<br/>Release · ForceUnload"]
-    end
-    subgraph RES["취득 seam (신규)"]
-        IF["ISoundResourceManager<br/>TryGetClip · LoadAsync<br/>Release · ForceUnload"]
-        IMPL["AddressablesSoundResourceManager<br/>_inFlightByClip 합류"]
-        HD["Handle<br/>Op · Clip · RefCount · IdleCts"]
-    end
-    subgraph DATA["데이터 (SO / 직렬화)"]
-        LIB["SoundLibrarySO<br/>그룹 Preload 단위"]
-        ENT["SoundEntry<br/>key · category · 정책"]
-        CLIP["SoundClip<br/>loadMode · directClip · assetRef"]
-        ENUM["enums<br/>LoadMode · SoundMode · SoundCategory"]
-    end
-    ST -->|Play / PlayAttached| SM
-    STB --> SM
-    STN --> SM
-    SCT --> SM
-    SLL -->|Preload / Release| SM
-    SM --> GATE
-    SM --> POOL
-    SM --> BGM
-    SM --> ATT
-    SM --> GRP
-    SM -->|위임| IF
-    GRP -->|클립 일괄 ref| IF
-    IF -. implements .- IMPL
-    IMPL --> HD
-    SM --> LIB
-    LIB --> ENT
-    ENT --> CLIP
-    CLIP --> ENUM
-    IMPL -->|loadMode 분기| CLIP
-    classDef content fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef core fill:#e6efdf,stroke:#7ea571,color:#1f3a18
-    classDef res fill:#f5dcd2,stroke:#c8674f,color:#3a1810
-    classDef data fill:#f6ddd2,stroke:#c97a5f,color:#3a1f15
-    class ST,STB,STN,SCT,SLL content
-    class SM,GATE,POOL,BGM,ATT,GRP core
-    class IF,IMPL,HD res
-    class LIB,ENT,CLIP,ENUM data`,
-
-  heroMetrics: [
-    { n: '1',     label: '신규 인터페이스 seam',      sub: 'ISoundResourceManager — sync/async 은닉' },
-    { n: '2',     label: '직교 LoadMode',             sub: 'Direct 동기 상주 · Addressable async' },
-    { n: 'SO',    label: '라이브러리 단위 Preload',    sub: '구간 뱅크 일괄 ref · refCount 일임' },
-    { n: '1',     label: '재생 경로 (풀 단일화)',      sub: 'PlayOnSource 폐기 → PlayAttached' },
-  ],
-
-  facts: [
-    ['한 줄 정의', '키 기반 사운드 시스템에서 취득 책임만 인터페이스(`ISoundResourceManager`)로 분리 + 로드 방식 `LoadMode` 직교 데이터화'],
-    ['계보',     'Wobble Wobble `BadeulBadeul.SoundSystem` (Direct 전용, 84 테스트) → CursorBlade `Chul.SoundSystem` 이식 + async 개선'],
-    ['엔진',     'Unity 6.1 LTS · URP · C# 10'],
-    ['의존',     'UniTask · Unity.Addressables 2.9.1 · UniTask.Addressables (엔진 비종속 독립 패키지)'],
-    ['팀 구성',   '1 인 — 프로젝트 간 재사용 패키지'],
-    ['본인 역할', '전 영역 (설계 + 구현 + 테스트)'],
-    ['기술 태그', 'Interface Seam · Async Loading · Ref-Count Lifetime · Group Preload · Pool-Only · Data-Oriented · Migration-Safe'],
-    ['산출물',   '신규 인터페이스 1 + 구현체 1 + `LoadMode` 데이터 축 + 라이브러리 단위 그룹 Preload + `PlayAttached` 풀 단일화 + Addressable PlayMode 테스트 3'],
-  ],
-
-  roles: {
-    mine:
-      '전 영역 본인. ISoundResourceManager 취득 seam (god-class에서 load/release 책임만 추출) · ' +
-      'LoadMode 직교 데이터화 (`SoundClip` 에 loadMode/directClip/assetRef) · ' +
-      'AddressablesSoundResourceManager (async 로드 + ref-count + idle 30s 지연 해제 + 취소) · ' +
-      'BGM 경로 async 화 (코루틴 → UniTask, 최신 요청 우선) · ' +
-      'SFX 동기 응답성 보존 (TryGetClip 동프레임 / 미로드 Addressable 만 폴백) · ' +
-      '무손실 마이그레이션 (`[FormerlySerializedAs("clip")]`) · ' +
-      '라이브러리(SoundLibrarySO) 단위 그룹 Preload/Release/ForceUnload (refCount 일임 · _inFlightByClip 동시로드 합류 · SoundLibraryLoader) · ' +
-      '재생 경로 풀 단일화 (PlayOnSource 폐기 → PlayAttached, LateUpdate owner 추종 + owner死 회수) · ' +
-      'Addressable PlayMode 테스트 3 신규.',
-    others:
-      '외부 라이브러리 — UniTask (Cysharp, MIT) · Unity Addressables / ResourceManager (Unity). ' +
-      '재생 정책·풀·믹서·SoundMode 등 코어 골격은 구버전(Wobble Wobble) 에서 본인이 구축한 것이며, ' +
-      '본 페이지는 그 위에 얹은 취득 분리 + async 개선분에 집중한다.',
-  },
-
-  systems: [
-    /* ─── 3.1 취득 책임 분리 (seam) ─────────────────────────── */
-    {
-      no: '3.1',
-      kind: 'ARCHITECTURE',
-      title: '취득 책임만 인터페이스 뒤로 — SoundManager 는 sync/async 를 모른다',
-      lede:
-        '재생 정책(크로스페이드 · 게이트 · 풀)과 클립 취득(load/release)은 변하는 이유가 다르다. ' +
-        '취득만 `ISoundResourceManager` 뒤로 숨기면 정책 코드는 AudioClip 을 어떻게 얻는지 알 필요가 없다.',
-      problem:
-        '구버전은 모든 AudioClip 을 메모리 상주(Direct) 시키는 god-class 였다. ' +
-        'SFX 응답성은 좋지만 대용량 BGM 까지 상주해 메모리 압박. ' +
-        '다음 프로젝트에서 SFX 는 동프레임 즉시 재생(상주) · BGM 은 필요 시 async 로드/해제 두 요구가 충돌. ' +
-        '카테고리로 "BGM=async" 묶으면 정책과 취득이 다시 강결합 된다.',
-      decision:
-        '취득(load/release)만 POCO 인터페이스 `ISoundResourceManager` 로 추출. ' +
-        'SoundManager 는 `TryGetClip` (동기 시도) → 실패 시 `LoadAsync` (폴백) 로 위임만 하고 ' +
-        'sync/async 여부를 알지 못한다. ' +
-        '미래 엔진 리소스매니저 도입 시 다른 구현체로 교체 — 인터페이스 불변.',
-      results: [
-        'SoundManager 가 취득 방식과 무관 — 재생 정책 코드 변경 0',
-        '엔진 리소스매니저 교체 seam 확보 (구현체만 교체)',
-        'SFX 동기 / BGM async 를 한 코드 경로(`AcquireClipAsync`)로 처리',
-        '구버전 재생 정책 · 풀 · 믹서 · 크로스페이드 전부 불변',
-      ],
-      stack: [
-        'ISoundResourceManager : TryGetClip / LoadAsync / Release / ReleaseAll',
-        'SoundManager → resMgr 위임 (sync/async 은닉)',
-        'AcquireClipAsync: TryGetClip → 실패 시 LoadAsync',
-        '구현체: AddressablesSoundResourceManager',
-      ],
-    },
-
-    /* ─── 3.2 LoadMode 직교 데이터화 ────────────────────────── */
-    {
-      no: '3.2',
-      kind: 'SYSTEM',
-      title: 'LoadMode — 로드 방식을 카테고리와 직교하는 데이터 축으로',
-      lede:
-        '"BGM=async, SFX=sync" 로 카테고리에 묶으면 정책과 취득이 재결합 된다. ' +
-        '로드 방식을 클립 고유 속성으로 빼면 둘은 독립적으로 변한다.',
-      problem:
-        '취득 방식을 카테고리로 결정하면 — 작은 BGM 도 강제 async, 큰 SFX 도 강제 상주. ' +
-        '정책(카테고리)과 취득(로드 방식)이 한 축에 묶여 한쪽 변경이 다른 쪽을 끌고 간다.',
-      decision:
-        '`LoadMode{Direct, Addressable}` 를 SoundClip 고유 필드로 분리 — 카테고리와 직교. ' +
-        '`directClip` (Direct) · `assetRef : AssetReferenceT<AudioClip>` (Addressable) 를 함께 두고 ' +
-        '`HasClip` 으로 모드별 취득 가능성 판정. ' +
-        '→ BGM 도 작으면 Direct, SFX 도 크면 Addressable 자유 조합.',
-      results: [
-        '정책 ↔ 취득 결합 제거 — 카테고리와 로드 방식 독립',
-        '클립 단위로 Direct / Addressable 자유 선택',
-        '`HasClip` 이 모드별 취득 가능성 판정 — 무음 안전',
-        '데이터(인스펙터)만으로 로드 전략 전환 — 코드 변경 0',
-      ],
-      stack: [
-        'enum LoadMode { Direct, Addressable }  // SoundCategory.cs',
-        'SoundClip.loadMode / directClip / assetRef',
-        'HasClip => Direct ? directClip!=null : assetRef.RuntimeKeyIsValid()',
-        'SoundEntry 정책 필드(cooldown/maxConcurrent/spatial) 불변',
-      ],
-    },
-
-    /* ─── 3.3 ref-count + idle 지연 해제 ────────────────────── */
-    {
-      no: '3.3',
-      kind: 'SYSTEM',
-      title: 'ref-count + idle 지연 해제 — 해제 타이밍 ≠ 참조 종료',
-      lede:
-        'Addressable 클립을 ref==0 즉시 해제 하면 BGM 왕복 같은 잦은 재요청 마다 재로드 비용. ' +
-        '참조 종료 와 실제 해제 를 분리한다.',
-      problem:
-        'async 로드한 클립을 참조 0 이 되는 순간 해제 하면, ' +
-        '메뉴↔전투 BGM 왕복처럼 짧은 간격 재요청 에서 매번 재로드 — load hitch 반복. ' +
-        '반대로 해제를 안 하면 메모리가 다시 쌓인다.',
-      decision:
-        'ref-count + idle 30 초 지연 해제. `Release` 는 ref-- 만, 0 도달 시 즉시 해제하지 않고 ' +
-        '`UniTask.Delay(30s, UnscaledDeltaTime)` 대기 후 `Addressables.Release`. ' +
-        '대기 중 재요청 되면 타이머 취소 + ref++ 재사용 (재로드 회피). ' +
-        '종료 시 `ReleaseAll` 이 전 핸들 정리.',
-      results: [
-        '잦은 BGM 왕복 에서 재로드 0 (idle 윈도우 내 캐시 재사용)',
-        'idle 만료 + ref==0 → 실제 해제 로 메모리 회수',
-        '취소 안전 — lifetime 토큰 linked CTS, 파괴 시 ReleaseAll 위임',
-        '해제 타이밍을 정책화 — 참조 종료와 분리',
-      ],
-      stack: [
-        'Release: refCount-- → 0 이면 StartIdleRelease().Forget()',
-        'StartIdleRelease: UniTask.Delay(30s) → Addressables.Release',
-        'CancelIdle + refCount++ : 대기 중 재요청 시 재사용',
-        'ReleaseAll: 종료 시 전 핸들 즉시 해제',
-      ],
-      ascii: {
-        title: '보조 — idle 지연 해제 (C#)',
-        intro:
-          '참조 종료(`Release`)와 실제 해제(`Addressables.Release`)를 30 초 윈도우로 분리. ' +
-          '대기 중 재요청은 타이머 취소 + ref++ 로 흡수해 재로드를 막는다.',
-        code: `// AddressablesSoundResourceManager (요약)
-public void Release(SoundClip clip) {
-    if (clip.loadMode == LoadMode.Direct) return;     // Direct 무동작
-    if (!_handleByClip.TryGetValue(clip, out var h)) return;
-    if (--h.RefCount > 0) return;                      // 아직 참조 중
-    StartIdleRelease(clip, h).Forget();               // ref==0 → idle 대기
-}
-
-async UniTaskVoid StartIdleRelease(SoundClip clip, Handle h) {
-    h.IdleCts = LinkedCts(_lifetimeToken);
-    try { await UniTask.Delay(30s, UnscaledDeltaTime, h.IdleCts.Token); }
-    catch (OperationCanceledException) { return; }     // 재요청/종료 → 유지
-    if (h.RefCount > 0) return;                        // 대기 중 재사용됨
-    Addressables.Release(h.Op);                        // 실제 해제
-    _handleByClip.Remove(clip);
-}`,
-        result: 'BGM 왕복 같은 짧은 재요청은 idle 윈도우 안에서 재로드 없이 재사용, 진짜 안 쓰면 30 초 뒤 회수.',
-      },
-    },
-
-    /* ─── 3.4 이중 경로 + 무손실 마이그레이션 ──────────────── */
-    {
-      no: '3.4',
-      kind: 'SYSTEM',
-      title: '동기/비동기 이중 경로 + 기존 에셋 무손실 마이그레이션',
-      lede:
-        'SFX 가 Addressable 이어도 동프레임 재생 이 깨지면 안 된다. ' +
-        '그리고 기존 SO 에셋 의 클립 할당이 필드명 변경으로 유실되면 안 된다.',
-      problem:
-        'async 를 도입하면 모든 재생이 await 로 한 프레임 밀릴 위험 — SFX 타격감 저하. ' +
-        '또한 `clip` → `directClip` 필드명 변경 시 구버전 SO 에셋의 인스펙터 할당이 0 으로 역직렬화 되어 무음 발생.',
-      decision:
-        '이중 경로 — `TryGetClip` 동기 성공(Direct/캐시) 이면 동프레임 재생, ' +
-        '미로드 Addressable 만 `LoadAsync` 폴백. 첫 로드 후엔 캐시 hit 로 다시 동기. ' +
-        '`[FormerlySerializedAs("clip")]` 로 구 `clip` 직렬화를 `directClip` 으로 무손실 승계. ' +
-        '신규 Addressable PlayMode 테스트 3 으로 로드/전환/캐시 검증.',
-      results: [
-        'SFX 동프레임 재생 보존 — 첫 로드만 async, 이후 캐시 동기',
-        '구버전 SO 에셋 재할당 0 — `[FormerlySerializedAs]` 무손실 승계',
-        'BGM 전환 중 취소/실패 시 미커밋 클립 ref 환원 — 누수 차단',
-        '구 84 테스트 유지 + Addressable PlayMode 3 신규',
-      ],
-      stack: [
-        'PlayPooled: TryGetClip(동기) ? Immediate : PlayPooledAsync(폴백)',
-        'PlayBgmAsync → AcquireClipAsync: TryGetClip → LoadAsync',
-        '[FormerlySerializedAs("clip")] public AudioClip directClip',
-        'AddressableSoundTests: 로드+재생 / Addr→Direct 전환 / LoadAsync→캐시hit',
-      ],
-    },
-
-    /* ─── 3.5 라이브러리 단위 그룹 Preload ─────────────────── */
-    {
-      no: '3.5',
-      kind: 'SYSTEM',
-      title: '라이브러리 단위 그룹 Preload — 수명 단위를 데이터(SO)에 맞춘다',
-      lede:
-        '클립 하나씩 로드/해제하면 구간(보스방) 진입마다 수작업 호출이 흩어진다. ' +
-        '로드/해제 단위를 SoundLibrarySO(뱅크)로 올려 refCount 에 일임한다.',
-      problem:
-        '보스전 전용 대용량 Addressable 뱅크를 첫 재생 시 로드하면 load hitch. ' +
-        '클립 단위로 일일이 Preload/Release 를 부르면 호출처가 흩어지고, ' +
-        '여러 구간이 같은 클립을 공유할 때 누가 마지막인지 추적하기 어렵다.',
-      decision:
-        '`Preload/Release/ForceUnload(SoundLibrarySO)` — 라이브러리의 Addressable 클립을 일괄 ref++/ref--. ' +
-        '실제 로드/언로드 타이밍은 resMgr refCount 가 결정해 공유 클립은 마지막 사용처까지 유지. ' +
-        '동일 클립 동시 로드는 `_inFlightByClip` 진행 task 에 합류(핸들 1개). ' +
-        '`SoundLibraryLoader`(구간 GameObject, OnEnable Preload / OnDisable Release) 로 코드 없이 구간 로딩. ' +
-        '`ForceUnload` 는 refCount 무시 강제 해제 — 누수 복구 최후수단.',
-      results: [
-        '구간 진입 시 뱅크 일괄 선로딩 — 첫 재생 hitch 제거',
-        '공유 클립은 refCount 가 마지막 사용처까지 보장 — 조기 해제 0',
-        '동시 Preload 중복 로드 0 (`_inFlightByClip` 합류, 핸들 1개)',
-        'SoundLibraryLoader 로 구간 단위 로딩을 코드 없이 데이터화',
-      ],
-      stack: [
-        'SoundManager.Preload/Release/ForceUnload(SoundLibrarySO)',
-        'resMgr: _inFlightByClip 동시로드 합류 + ForceUnload(clip)',
-        'SoundLibraryLoader: OnEnable Preload / OnDisable Release',
-        '로드/해제 타이밍 = refCount (SoundManager 는 정책만 호출)',
-      ],
-    },
-
-    /* ─── 3.6 재생 경로 풀 단일화 (SourcePool Only) ─────────── */
-    {
-      no: '3.6',
-      kind: 'ARCHITECTURE',
-      title: '재생 경로 풀 단일화 — PlayOnSource 폐기, PlayAttached 로 흡수',
-      lede:
-        '외부 AudioSource 를 받는 경로는 resMgr ref 추적이 안 돼 그룹 unload 신뢰성을 깨뜨렸다. ' +
-        '모든 재생을 풀 단일 경로로 모은다.',
-      problem:
-        '구 `PlayOnSource(key, AudioSource)` 는 호출자가 넘긴 외부 소스라 resMgr 가 수명을 추적하지 못한다. ' +
-        '→ 그룹 Release 시 그 소스가 잡고 있는 클립을 알 수 없어 누수/조기 해제 위험. ' +
-        '추종 사운드(움직이는 객체의 3D 루프)는 여전히 필요하다.',
-      decision:
-        '`PlayOnSource` 폐기. 추종은 `PlayAttached(key, owner, offset)` — 풀에서 Get + SoundEntry 적용 후 ' +
-        '`_attachedSources` 에 등록, LateUpdate 에서 owner 위치 추종, owner 파괴(가짜 null)/자연종료 시 자동 회수 + resMgr Release. ' +
-        'SoundTrigger 도 자체 AudioSource 제거 — spatial 은 SoundEntry 가 소유하고 `_followOwner` 로 추종 여부만 선택. ' +
-        '취득·수명·추종이 한 경로로 모여 ref 누수 가능성 제거.',
-      results: [
-        '재생 경로 1개로 단일화 — ref 추적 사각지대 제거',
-        '추종 사운드는 PlayAttached 로 흡수 (owner死 자동 회수)',
-        'SoundTrigger 자체 소스 제거 — spatial 일원화(SoundEntry)',
-        '그룹 unload 신뢰성 확보 — 모든 클립 수명을 resMgr 가 관장',
-      ],
-      stack: [
-        'PlayAttached(key, owner, offset) → 풀 Get + _attachedSources 등록',
-        'LateUpdate: owner.position + offset 추종 / owner死·종료 회수',
-        'SoundTrigger: 자체 AudioSource 제거, _followOwner 토글',
-        'PlayOnSource 폐기 — 추종은 PlayAttached 로 일원화',
-      ],
-    },
-  ],
-
-  metrics: {
-    title: '결과 — 구버전(Direct 전용 god-class) vs 개선판',
-    headers: ['지표', '구버전 (BadeulBadeul.SoundSystem)', '개선판 (Chul.SoundSystem)'],
-    rows: [
-      ['클립 취득',        'SoundManager 내부 directClip 직접 사용',        '`ISoundResourceManager` 위임 (sync/async 은닉 seam)'],
-      ['로드 방식',        '전부 메모리 상주 (Direct only)',               '`LoadMode` 직교 축 — Direct / Addressable 클립 단위 선택'],
-      ['BGM',             '코루틴 크로스페이드',                          'UniTask async 로드 + 크로스페이드 (최신 요청 우선)'],
-      ['수명 관리',        '없음 (전부 상주)',                            'ref-count + idle 30s 지연 해제 + 캐시 재사용'],
-      ['그룹 로딩',        '없음 (전부 상주)',                            '라이브러리(SO) 단위 Preload/Release/ForceUnload + SoundLibraryLoader'],
-      ['재생 경로',        'Play + PlayOnSource(외부 소스)',              '풀 단일화 — PlayOnSource 폐기 → PlayAttached(추종)'],
-      ['트리거 컴포넌트',   '자체 AudioSource 보유',                       '자체 소스 제거 (spatial=SoundEntry · _followOwner)'],
-      ['SFX 응답성',       '동프레임 (상주)',                             '동프레임 보존 (TryGetClip 캐시, 첫 로드만 폴백)'],
-      ['에셋 마이그레이션', '-',                                          '`[FormerlySerializedAs]` 무손실 승계'],
-      ['패키지 경계',      '게임 종속',                                   'UniTask/Addressables 참조, 엔진 비종속'],
-      ['테스트',          '84 (데이터 13 · 런타임 29 · 구조 42)',         '84 + Addressable PlayMode 3 (로드/전환/캐시)'],
+    eyebrow: 'LAB · 07 ─ 재사용 시스템 · 1인',
+    subtitle: 'Chul.SoundSystem / Chul.VFXSystem',
+    // 제목은 읽는 즉시 도메인(게임 리소스 로딩)과 행위(모듈로 떼어냄)가 잡혀야 한다.
+    // 재사용 결과는 훅이 받는다 — 제목에 둘 다 넣으면 대구가 된다.
+    title: '게임 리소스를 올리고 내리는 구조를 모듈로 떼어냈다',
+    pills: [
+      { kind: 'accent', text: '2026.05 · 1인' },
+      { kind: 'plain',  text: 'Unity 6.1 LTS · C# 10' },
+      { kind: 'plain',  text: 'UniTask · Addressables' },
+      { kind: 'accent', text: '설계 · 구현 · 테스트' },
     ],
   },
+
+  hook:
+    '소리를 미리 다 올려두면 안 쓰는 것까지 메모리를 먹고, 필요할 때 불러오면 ' +
+    '**타격음이 한 박자 늦는다.** 리소스를 언제 올리고 언제 내릴지 판단하는 일만 ' +
+    '재생 코드에서 떼어 독립 모듈로 만들었다. 그 모듈 위에 이펙트 리소스 시스템을 ' +
+    '올리는 데 **닷새** 걸렸다.',
+
+  // 히어로 3칸 = 되는 일. 성과 지표가 아니다 — 개선 전후를 비교할 계측본이 없다.
+  built: [
+    { kind: 'DATA',   title: '클립마다 로드 방식을 고른다',
+      sub: '인스펙터에서 상주와 비동기를 바꾼다. 재생 코드는 안 바뀐다.' },
+    { kind: 'TIMING', title: '올라와 있으면 같은 프레임에 낸다',
+      sub: '아직 안 올라온 것만 그때 기다린다. 한 번 올라오면 다시 즉시.' },
+    { kind: 'REUSE',  title: '새 리소스 종류를 빠르게 붙인다',
+      sub: '모듈은 그대로 두고 위에 얹을 재생 정책만 새로 짜면 된다.' },
+  ],
+
+  // ─── §01 배경 ───────────────────────────────────────────
+  context: {
+    body:
+      '앞 프로젝트에서 내가 만든 사운드 매니저를 다음 프로젝트로 옮겨 오며 계속 키운 것이다.',
+    body2:
+      '옮겨 온 시점의 그것은 모든 클립을 메모리에 올려 두고 시작했다. ' +
+      '게임이 커지자 두 요구가 정면으로 부딪혔다.',
+    tension: [
+      ['타격음은 누른 프레임에 나야 한다', '불러오는 동안 기다리면 손맛이 죽는다. 상주 말고는 방법이 없어 보인다.'],
+      ['음악과 대형 이펙트는 상주하면 안 된다', '그 구간에 들어가지도 않았는데 자리를 차지한다. 필요할 때 올리는 수밖에 없다.'],
+    ],
+    tensionWhy:
+      '보통은 둘 중 하나를 고른다 — 전부 상주시키거나, 전부 비동기로 돌리거나. ' +
+      '**둘 다 하려면** 무엇을 언제 올릴지가 재생 코드 밖에 있어야 한다.',
+    facts: [
+      ['프로젝트', 'Chul.SoundSystem · Chul.VFXSystem — 게임 코드와 분리된 어셈블리 둘'],
+      ['기간',     '2026.05 — 사운드 분리 05-20, 이펙트 첫 커밋 05-25'],
+      ['팀',       '1인 (설계 · 구현 · 테스트)'],
+      ['규모',     '사운드 12파일 + 테스트 5 · 이펙트 12파일'],
+      ['테스트',   '사운드 99 · 이펙트 0'],
+      ['환경',     'Unity 6.1 LTS · C# 10 · UniTask · Addressables 2.9.1'],
+      ['쓰이는 곳', '게임 코드 사운드 7곳 · 이펙트 5곳 / 씬·프리팹 사운드 21 · 이펙트 2'],
+    ],
+    scope: {
+      title: '어디까지가 이 페이지의 내용인가',
+      lead: '재생 쪽 골격은 앞 프로젝트에서 만든 것이 그대로 넘어왔다. 이 페이지는 그 아래에 깐 모듈 이야기다.',
+      reads: [
+        '리소스를 손에 넣고 놓는 모듈 — 로드 방식 · 참조 수 · 지연 해제 · 동시 요청 · 취소',
+        '구간 단위 선로딩 · 재생 경로 정리 · 이펙트 리소스 시스템으로의 재사용',
+      ],
+      skips: [
+        '재생 정책 · 소스 풀 · 믹서 · 크로스페이드 — 앞 프로젝트에서 만든 그대로',
+        'UniTask (Cysharp) · Addressables (Unity) — 외부 라이브러리',
+      ],
+      why:
+        '**성능 수치**는 이 페이지에 없다. 프로파일러를 돌린 적이 없어, ' +
+        '코드로 참·거짓이 갈리는 동작만 싣고 재지 못한 것은 마지막 절에 모았다.',
+    },
+  },
+
+  // ─── §02 되는 일 — 효과부터 ─────────────────────────────
+  effects: {
+    gist: '로드 방식은 **클립마다** 데이터로 정하고, 아직 안 올라온 것만 기다린다.',
+    lede:
+      '아래 셋은 전부 코드로 확인되는 동작이다. 얼마나 빨라졌는지는 재지 않았다.',
+    steps: [
+      {
+        key: 'axis', no: 'a', rail: '방식 선택',
+        title: '클립마다 로드 방식을 고른다',
+        problem: '카테고리로 "음악은 비동기, 효과음은 상주" 를 묶으면 짧은 음악도 강제로 기다리고 큰 효과음도 강제로 상주한다.',
+        did: '로드 방식을 카테고리와 **별개 축**으로 두고 클립마다 정하게 했다.',
+        points: [
+          ['한 클립에 두 자리', '상주용 참조와 주소용 참조를 함께 두고 고른 쪽만 쓴다 — 어느 쪽이 유효한지도 클립이 스스로 답한다.'],
+          ['카테고리는 다른 일을 한다', '카테고리는 믹서 그룹과 정책만 정한다. 로드 방식과 서로 간섭하지 않는다.'],
+          ['바꿔도 코드가 안 바뀐다', '인스펙터에서 클립 하나의 방식을 바꾸는 것으로 끝난다 — 재생 쪽은 어느 경우든 같은 호출이다.'],
+          ['이름을 바꿔도 안 잃는다', '앞 프로젝트 에셋의 클립 할당은 필드 이름이 바뀌어도 그대로 이어받게 표시해 두었다.'],
+        ],
+      },
+      {
+        key: 'sync', no: 'b', rail: '즉시 재생',
+        title: '올라와 있으면 같은 프레임에 낸다',
+        problem: '비동기를 들이면 모든 재생이 한 번씩 기다리게 된다. 타격음이 그러면 손맛이 죽는다.',
+        did: '먼저 **동기로 물어보고**, 없다고 답한 것만 비동기로 빠지게 했다.',
+        points: [
+          ['상주는 항상 즉시', '상주 클립은 물어보는 그 자리에서 나온다 — 비동기 경로를 아예 지나지 않는다.'],
+          ['첫 번째만 기다린다', '주소로 올리는 클립도 한 번 올라오면 그다음부터 같은 물음에 "있다" 로 답한다.'],
+          ['동시에 불러도 한 번만', '같은 클립을 두 곳이 같은 프레임에 요청하면 뒤엣것이 앞의 작업에 합류한다 — 올리는 작업은 하나뿐이다.'],
+          ['한쪽이 취소해도 안 죽는다', '합류한 요청 중 하나가 취소돼도 진행 중인 작업은 남는다. 취소한 쪽만 자기 몫을 되돌린다.'],
+        ],
+      },
+      {
+        key: 'bank', no: 'c', rail: '구간 수명',
+        title: '구간 단위로 올리고 내린다',
+        problem: '클립을 하나씩 올리고 내리면 호출이 게임 코드 곳곳에 흩어지고, 두 구간이 같은 소리를 쓰면 누가 마지막인지 알 수 없다.',
+        did: '올리고 내리는 단위를 **뱅크 하나**로 키우고, 실제 해제 시점은 참조 수가 정하게 했다.',
+        points: [
+          ['구간 오브젝트가 켜지면 올라온다', '뱅크 목록을 든 컴포넌트를 구간에 붙이면 코드 없이 걸린다 — 실제 씬·프리팹 6곳에 붙어 있다.'],
+          ['겹쳐도 안 끊긴다', '두 구간이 같은 소리를 쓰면 마지막 구간이 떠날 때까지 남는다.'],
+          ['내려도 바로 안 버린다', '참조가 0이 돼도 잠깐 들고 있다가, 그 사이 다시 부르면 올리지 않고 그대로 쓴다.'],
+          ['어긋났을 때의 문', '참조 수가 꼬였을 때만 쓰는 강제 해제를 따로 뒀다. 정상 경로가 아니라 복구용이다.'],
+        ],
+      },
+    ],
+    handoff: {
+      q: '이 셋은 서로 다른 기능처럼 보인다.',
+      a: '같은 물음 하나에 걸려 있다 — **리소스를 언제 손에 넣고 언제 놓는가.** 그 판단만 모으면 한 모듈이 된다.',
+    },
+  },
+
+  // ─── §03 모듈 경계 — 구조 ───────────────────────────────
+  seam: {
+    gist: '모듈 안에는 **리소스 판단**만 넣었다. 재생 정책은 밖에 그대로 뒀다.',
+    body:
+      '재생 정책과 리소스 판단은 바뀌는 이유가 다르다 — 크로스페이드 시간을 고치는 일과 ' +
+      '에셋을 어디서 읽을지 정하는 일은 서로 무관하다.',
+    points: [
+      ['매니저는 묻기만 한다', '동기로 한 번 묻고 없다고 하면 비동기로 다시 묻는다. 그게 상주인지 주소인지는 묻지 않는다.'],
+      ['안에 넣은 것', '참조 수 · 지연 해제 · 동시 요청 합류 · 취소 처리 — 언제 올리고 내릴지에 관한 판단은 전부 모듈 안에 있다.'],
+      ['밖에 둔 것', '소스 풀 · 믹서 · 크로스페이드 · 쿨다운 · 동시 재생 제한. 앞 프로젝트에서 온 형태 그대로 남았다.'],
+      ['샜던 길을 막았다', '외부에서 넘겨받은 소스로 재생하던 길을 없앴다 — 그 길로 나간 클립은 모듈이 수명을 추적할 수 없었다.'],
+    ],
+    code: {
+      title: '모듈이 밖에 내보이는 전부 (C#)',
+      code: `namespace Chul.SoundSystem
+{
+    // 클립 취득 + 수명 관리 seam. SoundManager는 sync/async 여부를
+    // 알지 못하고 본 인터페이스에 위임한다.
+    public interface ISoundResourceManager
+    {
+        // Direct(상주) 또는 이미 로드된 캐시면 true + clip. 미로드면 false.
+        bool TryGetClip(SoundClip soundClip, out AudioClip clip);
+
+        // Direct는 즉시, Addressable은 로드 후 반환(ref++). 실패 시 null.
+        UniTask<AudioClip> LoadAsync(SoundClip soundClip, CancellationToken ct);
+
+        // 사용 종료 통지. ref-- 후 0이면 idle 대기 후 해제. Direct는 무동작.
+        void Release(SoundClip soundClip);
+
+        // refCount 무시하고 즉시 강제 해제 (누수 복구용).
+        void ForceUnload(SoundClip soundClip);
+
+        // 모든 핸들 즉시 해제 (종료 정리용).
+        void ReleaseAll();
+    }
+}`,
+      result: '재생 쪽에 보이는 것은 이 다섯 줄뿐이다. 상주인지 주소인지는 이 뒤에서 갈린다.',
+    },
+    caution:
+      '인터페이스로 가르는 것도 참조 수를 세는 것도 표준이다. ' +
+      '이 프로젝트에서 정한 것은 **경계의 위치** 하나 — 재생 정책은 밖에 두고 리소스 판단만 안에 넣었다는 것.',
+    handoff: {
+      q: '경계를 저기 그은 것이 맞았는지 어떻게 아나.',
+      a: '**다른 리소스 종류**로 한 번 더 만들어 봤다 — 모듈은 손대지 않았다.',
+    },
+  },
+
+  // ─── §04 두 번째 시스템 — 증거 ──────────────────────────
+  reuse: {
+    gist: '모듈은 **한 줄도 안 고치고** 이펙트용 재생 정책만 새로 짰다.',
+    body:
+      '사운드 쪽 모듈을 떼어낸 지 닷새 뒤 이펙트 리소스 시스템을 시작했다. ' +
+      '모듈은 다루는 자원 이름만 바꿔 그대로 섰고, 새로 짠 것은 그 위 재생 정책뿐이다.',
+    points: [
+      ['모듈이 자원 종류를 안 탄다', '클립 자리에 프리팹을 넣었을 뿐이다 — 식별자를 맞춰 놓고 대조하면 안쪽에 남는 차이가 셋뿐이다.'],
+      ['새로 짠 것은 위층뿐', '이펙트는 켜 둔 동안 주인이 필요하다. 정지와 생존 확인이 들어가야 하니 재생 정책은 같을 수 없다 — 다른 점은 아래 표에 모았다.'],
+      ['그래서 무엇을 알았나', '리소스 관리가 자원 종류에 안 묶인다는 것을 두 번째로 만들어 보고서야 확인했다. 세 번째 종류가 와도 새로 짤 것은 위층이다.'],
+    ],
+    tableTitle: '모듈 위에 새로 짠 것 — 두 시스템의 재생 정책',
+    table: {
+      headers: ['', '사운드', '이펙트'],
+      rows: [
+        ['로드 방식',   '둘 — 상주 / 주소',        '셋 — 상주 / 구간 선로딩 / 첫 재생 로드'],
+        ['재생 핸들',   '없다 — 틀면 끝난다',       '재생마다 돌려준다 (정지 · 생존 확인)'],
+        ['풀',         '소스 풀 하나',            '프리팹마다 따로'],
+        ['구간 참조 수', '모듈에 맡긴다 (클립 단위)',  '매니저가 직접 센다 (뱅크 단위)'],
+        ['시간축',      '해당 없음',               '느려짐을 따를지 무시할지 고른다'],
+        ['테스트',      '99',                     '0'],
+      ],
+    },
+  },
+
+  // ─── §05 한계 ───────────────────────────────────────────
+  limits: [
+    ['구현체는 아직 하나다',
+     '교체할 수 있게 잘라 뒀지만 실제로 갈아 끼워 본 적은 없다. 이펙트 쪽은 같은 계약을 **다른 자원**으로 다시 채운 것이지, 사운드 구현체를 바꾼 것이 아니다.'],
+    ['따라다니는 소리는 꺼져 있다',
+     '움직이는 대상을 따라가는 재생을 만들고 테스트도 넣었지만, 실제 씬에서는 그 옵션이 켜진 곳이 없다. 코드로만 존재한다.'],
+    ['이펙트 쪽 테스트가 없다',
+     '사운드는 99개인데 이펙트는 0개다. 모듈을 다시 쓰면서 검증은 다시 쓰지 않았다.'],
+    ['파일은 오히려 커졌다',
+     '취득 하나를 떼어냈지만 그 자리에 비동기 처리와 구간 선로딩이 들어와, 매니저 파일은 1023줄에서 1374줄이 됐다. 줄어든 것은 매니저가 **지는 책임의 종류**지 분량이 아니다.'],
+    ['재지 않았다',
+     '메모리가 얼마나 줄었는지 프레임이 얼마나 나아졌는지 측정한 적이 없다. 목적은 상주 메모리였고, 위에 적은 것은 전부 코드로 확인되는 동작이지 성능 수치가 아니다.'],
+  ],
 };
