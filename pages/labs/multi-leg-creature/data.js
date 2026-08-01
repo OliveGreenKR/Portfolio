@@ -1,261 +1,210 @@
 // pages/labs/multi-leg-creature/data.js
-// LAB · 03 — Multi-Leg Creature. 1일 / 15 커밋 PoC. 다리 1개당 1명 협동 다족류의 물리적 성립 검증.
-// Source: uploads/multi-leg-creature.md. Schema 는 UE5 Action / BBQ Master 와 동일.
-// classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만 사용.
+// LAB · 03 — Multi-Leg Creature. 하루짜리 PoC.
+// 소스: knowledge_base/projects/labs/PocLabs/multi-leg-creature.md · assets/hero.png (1장).
+//
+// ─── 사실 규칙 ───────────────────────────────────────────
+// 1. 실코드가 손에 없다 (`D:\UnityProjects\PoCs\` 는 빈 폴더). 코드 블록을 싣지 않는다.
+//    이전 판에는 C# 30줄이 실려 있었는데 KB 에 근거가 있는 것은 클래스 이름 두 개뿐이었고
+//    함수 시그니처 · 기본값 · 테스트 이름은 전부 창작이었다. 통째로 버렸다.
+// 2. 계측본이 없다. fps·ms·GC 를 쓰지 않는다.
+//    이전 판의 `GC alloc 0` · `FixedUpdate 60Hz 안전` 은 프로파일러 스냅샷이 있어야 하는 주장이라 버렸다.
+// 3. 지어낸 baseline 을 만들지 않는다.
+//    이전 판 `"가상의 통합 / 결합 baseline vs 채택 구조"` 표 8행 중 왼쪽 열이 전부 허구였고
+//    오른쪽 열은 본문 재서술이라 잃는 사실 0 으로 버렸다.
+// 4. 규모를 성과로 세우지 않는다. 커밋 15 · C# 25 파일 · ~3,000 LoC 는 히어로에 올리지 않는다.
+//    (이전 판 히어로 첫 칸 '1 일 / 15 커밋', 둘째 칸 '25 / C# 파일', 넷째 칸 '3 / 핵심 판단'.)
+// 5. **"보행 생성" 을 쓰지 않는다.** gait 생성기가 없다 — 어느 다리를 언제 떼서 어디에 놓을지는
+//    사람이 정한다. IK 는 "끝점을 여기 두려면 관절을 어떻게 굽히나" 까지고 그 위층이 없다.
+//    지면 보행도 아니다. 화면 목표는 "위로 올라가세요" — 벽 등반이다.
+// 6. FABRIK 은 표준 IK 알고리즘이다. 발명처럼 쓰지 않는다.
+//    이 PoC 가 정한 것은 관절 수 · 순수 함수 분리 · 힘을 몸통에서 합친다는 구조다.
+// 7. **안 쓰는 다리의 거동은 싣지 않는다.** 간단한 자동 흔들림 + 랜덤 부착이 있었으나
+//    이 페이지의 주장(힘 합성)과 무관하고 수준도 간단해서 뺀다. (2026-08-02 사용자 확인)
+//
+// ─── 문장 규칙 ───────────────────────────────────────────
+// 1. 한 덩이는 한 문장. 2. 절 제목에 비유·대구 ❌. 3. 굵게는 3~8자 핵심 구에만.
+// 4. 튜닝 설정값은 본문에서 뺀다. 5. 절 제목과 gist 가 같은 말이면 gist 를 다시 쓴다.
+// 6. handoff 는 §02→§03, §03→§04 두 곳만.
 
-window.MULTI_LEG_DATA = {
-  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
+window.ML_DATA = {
   meta: {
-    eyebrow: 'LAB · 03 ─ PoC / 물리 합벡터',
-    code: 'LAB · 03',
+    eyebrow: 'LAB · 03 ─ 물리 · 절차적 애니메이션',
+    subtitle: '하루 PoC · Unity 6.3 LTS · URP 2D',
+    title: 'Multi-Leg Creature',
     date: '2026.05',
-    title: 'Multi-Leg Creature — 협동형 다족류의 힘 합벡터',
-    oneLine: '다리 1개당 1명이 조작하는 협동/방해 다족류의 핵심 — 각 다리의 힘이 몸통에 합벡터로 모이는 구조 를 단일 사용자로 먼저 검증한 1일 PoC.',
-    period: '2026.05.04 (1 일)',
-    weeks: '1 일 · 15 커밋',
-    team: '1 인 개인 PoC',
-    role: '디자인 + 클라이언트 (전 영역 본인)',
-    platform: 'Unity 6.3 LTS (2D) · URP 2D',
-    stack: ['Unity 6.3 LTS', 'URP 2D', 'FABRIK IK (2D · in-place solver)', 'Rigidbody2D', 'ScriptableObject', 'EditMode Tests'],
-  },
-
-  // 4 hero metrics — PoC 임팩트
-  heroMetrics: [
-    { n: '1 일',  label: '15 커밋 PoC',          sub: '협동 다족류의 물리적 성립 검증' },
-    { n: '25',    label: 'C# 파일 / ~3,000 LoC', sub: 'EditMode 테스트 동반' },
-    { n: '5 × 3', label: '관절 FABRIK · 다리 3', sub: 'in-place solver + SafeDir' },
-    { n: '3',     label: '핵심 판단',            sub: '분산 구조 · 2-Force · 순수 함수' },
-  ],
-
-  facts: [
-    ['한 줄 정의', '다리 1개당 1명 조작 협동/방해 다족류 — 5관절 IK 촉수 다리들의 힘 합벡터로 몸통이 움직이는 메커닉 토대'],
-    ['기간',     '2026.05.04 (1 일)'],
-    ['커밋',     '15'],
-    ['팀 구성',   '1 인 개인 PoC'],
-    ['본인 역할', '디자인 + 클라이언트 (전 영역 본인)'],
-    ['스택',     'Unity 6.3 LTS (2D) · URP 2D · FABRIK IK · Rigidbody2D · ScriptableObject · EditMode Tests'],
-    ['기술 태그', 'FABRIK IK · Procedural Animation · Force Composition · Component Architecture · ScriptableObject Tuning'],
-    ['산출물',   'C# 25 파일 / ~3,000 LoC · 8 핵심 파라미터 SO · 단독 빌드'],
-  ],
-
-  roles: {
-    mine:
-      '전 영역 본인. 베이스 메커닉 설계 (5관절 촉수 × 3, 키 1/2/3 순차 조작, 마우스 추적 FABRIK, 좌클릭 grip, 우클릭 pull, 최대 길이 자동 당김) · ' +
-      '구조 판단 3건 (다리 1개 = MB 1개 분산 · 2-Force 모델 분리 · IK / Force 순수 함수 + EditMode 테스트) · ' +
-      'Input → Leg → Body 단방향 흐름 확립 · ' +
-      '8 핵심 파라미터 ScriptableObject 인스펙터 실시간 노출 · ' +
-      'FABRIK 2D in-place solver + SafeDir 처리.',
-    others:
-      '1 인 개인 PoC 로 외부 협업 없음. 외부 의존: Unity 6.3 LTS · URP 2D · Rigidbody2D · ScriptableObject · Test Framework (EditMode) — 엔진 / 기본 패키지만 사용.',
-  },
-
-  // ─── Systems (§3) ──────────────────────────────────────────
-  systems: [
-    /* ─── 3.1 단방향 흐름 + 다리별 책임 분리 ─────────────── */
-    {
-      no: '3.1',
-      kind: 'ARCHITECTURE',
-      title: '단방향 흐름 + 다리 1개 = MB 1개 — 분산 구조',
-      lede: 'Input → Leg → Body 단방향. 다리는 자기 ForceVec 만 노출, 몸통은 합산만 한다. 멀티 본편 의 다리 1개 = 플레이어 1명 구조와 결이 같다.',
-      problem:
-        '다리 3개의 상태 / IK / Force 를 어떻게 관리할지. ' +
-        '통합 LegSystem_MB 가 `LegRuntimeState[3]` 배열을 갖는 데이터 지향 이 깔끔하지만, ' +
-        '멀티플레이 본편 에서 다리 1개당 플레이어 1명을 붙이는 구조와 어긋난다. ' +
-        '또한 Update / FixedUpdate 가 섞인 입력·물리 경로에서 양방향 ad hoc 통신 이 생기면 디버깅이 무너진다.',
-      decision:
-        '다리 1개 = MB 1개 — `MLC_LegController_MB × 3`. ' +
-        'Body 는 `Σ Leg.ForceVec` 만 합산 후 `ClampMagnitude → AddForce` 한 번 호출. ' +
-        '단방향 흐름 — Input(Update) 에서 `InputSnapshot` 구조체 1프레임 캐시 생성 → 활성 다리만 소비 → 다리는 자기 ForceVec 만 노출 → Body 가 합산. ' +
-        '다리끼리 직접 통신 없음. ' +
-        'M2 멀티 확장 — Input 컨트롤러만 다리별로 분리하면 본 PoC 코드 재작성 없이 완성.',
-      results: [
-        '다리별 `ForceVec` 이 Inspector 에 직접 노출 — 튜닝 직관성↑',
-        'Body 는 합산 + AddForce 1회 — FixedUpdate 경합 없음',
-        'M2 멀티 확장 시 Leg / Body / IK / Force 코드 재작성 없음 — Input 컨트롤러만 다리별로 갈아끼우면 됨',
-        '다리끼리 직접 의존이 없어 다리 N 으로 일반화 도 같은 구조',
-      ],
-      stack: [
-        'MLC_InputController_MB (Update) → InputSnapshot { ActiveLegIndex, MouseWorld, LmbPressedThisFrame, RmbHeld, Time }',
-        'MLC_LegController_MB × 3 — FSM (Idle / Reaching / Gripped / Pulling)',
-        'MLC_LegTargetResolver_C (SmoothDamp + clamp + grip lock)',
-        'MLC_LegVisualRenderer_MB (LineRenderer + widthCurve)',
-        'MLC_BodyController_MB (Rigidbody2D Dynamic · FixedUpdate · ΣForceVec → ClampMagnitude → AddForce 1회)',
-        'Grip — Transform parenting (정적 + 움직이는 플랫폼 추종)',
-      ],
-      mermaid: `graph TB
-    subgraph INPUT["Input Layer · Update"]
-        IC["MLC_InputController_MB"]
-        SNAP["InputSnapshot (struct, per-frame)<br/>ActiveLegIndex · MouseWorld<br/>LmbPressedThisFrame · RmbHeld · Time"]
-        IC --> SNAP
-    end
-
-    subgraph LEG["Per-Leg × 3 · FixedUpdate"]
-        LC["MLC_LegController_MB<br/>FSM: Idle / Reaching / Gripped / Pulling"]
-        TR["MLC_LegTargetResolver_C<br/>(SmoothDamp + clamp + grip lock)"]
-        FK["MLC_FabrikSolver2D · static<br/>in-place solve + SafeDir"]
-        FCALC["MLC_LegForceCalculator · static<br/>2-Force 모델"]
-        GRIP["Grip — Transform parenting<br/>(플랫폼 추종)"]
-        VIS["MLC_LegVisualRenderer_MB<br/>LineRenderer + widthCurve"]
-        LC --> TR
-        LC --> FK
-        LC --> FCALC
-        LC --> GRIP
-        LC --> VIS
-    end
-
-    subgraph BODY["Body · FixedUpdate"]
-        BC["MLC_BodyController_MB<br/>(Rigidbody2D Dynamic)"]
-        SUM["ΣForceVec → ClampMagnitude<br/>→ AddForce (1회)"]
-        BC --> SUM
-    end
-
-    WALLS["Walls — attachLayerMask"]
-
-    SNAP -.->|"per-frame snapshot"| LEG
-    LEG -.->|"ForceVec 노출"| BODY
-    GRIP -.-> WALLS
-
-    classDef input   fill:#e6efdf,stroke:#7ea571,color:#283825
-    classDef body    fill:#f6ddd2,stroke:#c97a5f,color:#3a1f15
-    classDef leg     fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef wall    fill:#ebe6da,stroke:#807a6e,color:#1f1d1a
-    class IC,SNAP input
-    class BC,SUM body
-    class LC,TR,FK,FCALC,GRIP,VIS leg
-    class WALLS wall`,
-      fsmTrail: ['Idle', 'Reaching', 'Gripped', 'Pulling'],
-    },
-
-    /* ─── 3.2 2-Force 모델 — 뉴턴 3법칙 의도적 분리 ─────── */
-    {
-      no: '3.2',
-      kind: 'PHYSICS',
-      title: '2-Force 모델 — 뉴턴 3법칙 의도적 분리',
-      lede: '다리가 뻗는 힘 → 몸통 반작용 과 부착 후 당기는 힘 → 몸통 작용 을 동일 파라미터로 묶지 않는다. 물리 정합성보다 PoC 튜닝 실험성 우선.',
-      problem:
-        '뻗는 힘의 반작용 과 당기는 힘 을 동일 파라미터로 묶으면 디자인 의도를 슬라이더 하나로 만들 수 없다. ' +
-        '예) "다리는 잘 뻗는데 몸통이 안 끌려옴" 같은 비물리적 의도 가 생기지 않는다. ' +
-        '또한 부착 직후 명시적 당김 (`explicit_pull`) 과 최대 길이 도달 시 자동 당김 (`auto_pull`) 도 분리하지 않으면 ' +
-        '우클릭 강도 와 최대 길이 자동 보정 의 결이 섞인다.',
-      decision:
-        '3 축 독립 튜닝 — `reach_reaction_coef` (반작용 전달 비율) ↔ `explicit_pull_force` (좌클릭 grip 후 우클릭) ↔ `auto_pull_force` (최대 길이 자동 당김). ' +
-        '계산은 `MLC_LegForceCalculator` static 순수 함수 가 담당 — MB 와 의존성 없음. ' +
-        '8 핵심 파라미터 를 단일 `ScriptableObject` 에 모아 인스펙터 실시간 노출. ' +
-        'Play 중에도 슬라이더로 디자인 의도 를 즉시 조정.',
-      results: [
-        '다리는 잘 뻗는데 몸통이 안 끌려옴 같은 디자인 의도 가 슬라이더 1 개 로 만들어짐',
-        '명시적 / 자동 당김 분리로 우클릭 무게감 과 최대 길이 보정 의 결을 따로 조정',
-        'EditMode 테스트가 Force 계산 단독 으로 mock 입력에서 검증 가능 — MB 의존성 0',
-        '8 파라미터 SO 한 장에 모여 튜닝 회기 가 짧음',
-      ],
-      stack: [
-        'reach_reaction_coef — 뻗기 반작용 비율',
-        'explicit_pull_force — grip 후 우클릭 당김',
-        'auto_pull_force — 최대 길이 도달 자동 당김',
-        'MLC_LegForceCalculator (static · 순수)',
-        'TuningParams.asset — 8 핵심 파라미터 SO',
-        'Inspector 실시간 노출 + Play 중 조정',
-      ],
-      tableTitle: '뻗기 / 당김 — 3 축의 결',
-      table: {
-        headers: ['축', '발화 조건', '디자인 의도', '파라미터'],
-        rows: [
-          ['뻗기 반작용', '활성 다리가 마우스로 reach', '뻗을수록 몸통이 반작용으로 살짝 밀림', '`reach_reaction_coef`'],
-          ['명시적 당김', 'grip 상태 + 우클릭 hold',     '신중한 한 번의 당김 — 결정의 무게',         '`explicit_pull_force`'],
-          ['자동 당김',   '최대 길이 도달',              '뻗다가 못 견디고 마우스 방향으로 끌려감',     '`auto_pull_force`'],
-        ],
-      },
-    },
-
-    /* ─── 3.3 IK / Force 순수 함수 + EditMode 테스트 ────── */
-    {
-      no: '3.3',
-      kind: 'SYSTEM',
-      title: 'IK Solver / Force Calculator — 순수 함수 + EditMode 테스트로 분리',
-      lede: 'PoC 의 본질이 튜닝 / 알고리즘 실험 이라면, Play 모드 진입 비용 을 1슬라이스에 갚는다. 이후 13 슬라이스의 불안한 손 차단.',
-      problem:
-        'IK 와 Force 계산 이 MB 안에 결합되면 ' +
-        '매 튜닝 실험마다 씬 로드 → 셋업 → 입력 → 결과 관찰의 반복. ' +
-        'FABRIK 회귀 가 5관절 × 다리 3 × edge case 에서 발생하면 ' +
-        'Play 가시 검증 만으로는 원인 격리 가 어렵다. ' +
-        'PoC 단계에 EditMode 테스트 도입 비용을 나중에 갚을 수 있다고 가정하면 ' +
-        '그 나중 이 언제나 안 옴.',
-      decision:
-        'static 순수 함수 분리 — `MLC_FabrikSolver2D` (in-place solve · SafeDir) / `MLC_LegForceCalculator` (2-Force 모델). ' +
-        'MB 의존성 0 · GC alloc 0 · 입력만 받고 출력만 반환. ' +
-        'EditMode 테스트 — `MLC_FabrikSolver2D_Tests` 가 5관절 / SafeDir / 최대 길이 edge 를 Play 없이 검증. ' +
-        'Force 계산은 mock InputSnapshot + mock 다리 상태 로 단독 검증. ' +
-        '도입 비용 1슬라이스 = 이후 13 슬라이스의 불안한 손 차단.',
-      results: [
-        'IK 정합성 회귀를 Play 없이 검증 — 씬 로드 / 셋업 비용 0',
-        'Force 계산 단독 회귀를 mock 입력으로 검증',
-        'in-place solve · SafeDir 덕분에 GC alloc 0 — FixedUpdate 60Hz × 다리 3 안전',
-        'PoC 에 EditMode 테스트 라는 문화 자산 — 다음 PoC 에 그대로 재사용',
-      ],
-      stack: [
-        'MLC_FabrikSolver2D (static · in-place · SafeDir)',
-        'MLC_LegForceCalculator (static · 2-Force)',
-        'MLC_FabrikSolver2D_Tests (EditMode)',
-        'Force mock — InputSnapshot + 다리 상태 stub',
-        'GC alloc 0 · FixedUpdate 60Hz × 3 다리 안전',
-      ],
-      ascii: {
-        title: '보조 — FABRIK 2D in-place solver 의 모양',
-        intro: 'static 순수 함수 + ref 출력 + SafeDir 처리. MB 와 의존성이 없어 EditMode 테스트에서 씬 없이 호출 가능.',
-        code: `// MLC_FabrikSolver2D.cs (요약)
-public static void Solve(
-    Vector2[] joints,           // ref, in-place
-    float[]    segmentLengths,
-    Vector2    rootAnchor,
-    Vector2    target,
-    int        iterations = 8,
-    float      epsilon    = 1e-4f)
-{
-    // 1) Forward — tip → root, target 부터 길이 보존 후퇴
-    joints[N-1] = target;
-    for (int i = N - 2; i >= 0; i--)
-        joints[i] = MoveAlong(joints[i+1], joints[i], segmentLengths[i]);
-
-    // 2) Backward — root → tip, rootAnchor 부터 길이 보존 전진
-    joints[0] = rootAnchor;
-    for (int i = 1; i < N; i++)
-        joints[i] = MoveAlong(joints[i-1], joints[i], segmentLengths[i-1]);
-
-    // 반복 — tip ↔ target 거리 ≤ epsilon 또는 iterations 소진
-}
-
-// SafeDir — 길이 0 이면 fallback 단위벡터
-static Vector2 SafeDir(Vector2 from, Vector2 to)
-    => (to - from).sqrMagnitude < 1e-8f ? Vector2.right : (to - from).normalized;
-
-// EditMode 테스트 — Play 없이 호출
-[Test] public void Solve_5Joints_Reaches_Within_Epsilon() { ... }
-[Test] public void Solve_When_Target_Beyond_Reach_Extends_Straight() { ... }
-[Test] public void Solve_When_Target_Equals_Root_Uses_SafeDir() { ... }`,
-        result: '회귀가 Play 없이 잡힘 — PoC 1슬라이스 비용이 손의 불안 을 끝까지 막음.',
-      },
-    },
-  ],
-
-  // ─── Evidence — 정량 결과 (이전/이후 질적 비교) ─────────
-  metrics: {
-    title: '결과 — 가상의 통합 / 결합 baseline vs 채택 구조',
-    headers: ['지표', '통합 / 결합 baseline (가상)', '채택 구조'],
-    rows: [
-      ['다리 관리',         '`LegSystem_MB` 가 `LegRuntimeState[3]` 배열 보유', '다리 1개 = `MLC_LegController_MB` 1개 — Inspector 직접 노출'],
-      ['입력 → 힘 흐름',     'Update / FixedUpdate 사이 양방향 ad hoc',          'Input → Leg → Body 단방향 + InputSnapshot 프레임 캐시'],
-      ['Body Force 적용',    '다리별 산발적 AddForce',                          'ΣForceVec → ClampMagnitude → AddForce 1 회'],
-      ['IK / Force 결합',    'MB 안에 결합 — Play 모드 진입 필요',              'static 순수 함수 + EditMode 테스트 — Play 없이 검증'],
-      ['뻗기 / 당김',        '단일 파라미터로 묶음',                            '`reach_reaction_coef` · `explicit_pull_force` · `auto_pull_force` 3 축 독립'],
-      ['튜닝 회기',          'Play 진입 → 셋업 → 입력 → 관찰 반복',             'Inspector 실시간 + 8 핵심 파라미터 SO 한 장'],
-      ['M2 멀티 확장',       '본 PoC 코드 재작성',                              'Input 컨트롤러만 다리별로 분리 — 본 코드 0 줄 수정'],
-      ['GC alloc / Frame',  '미상',                                            'in-place solve + ref out — 0'],
+    pills: [
+      { kind: 'accent', text: '하루 · 1인' },
+      { kind: '',       text: '디자인 · 구현 전부 본인' },
+      { kind: '',       text: 'Unity 6.3 LTS (2D)' },
     ],
   },
 
-  // 실 자산 — hero 1 장 (튜토리얼 화면 — 다리 1·2·3 전환 + grip/pull 키 가이드)
-  heroImage: 'multi-leg-creature/assets/hero.png',
-  screenshots: [
-    { src: 'multi-leg-creature/assets/hero.png', tag: 'TUTORIAL', caption: '튜토리얼 1 단계 — 5관절 IK 촉수 1 개 reach + grip + pull. 사용 안 한 다리는 PoC 단계에서 AI 가 자동 운용 (M2 멀티에선 다른 플레이어 자리)' },
+  hook:
+    '몸통에는 **이동 입력이 없다.** ' +
+    '다리 셋이 각자 벽을 붙잡고 당긴 힘을 몸통 한 곳에 모아, 그 **합**만으로 몸이 움직인다.',
+
+  built: [
+    {
+      kind: 'FORCE',
+      title: '힘을 한 곳에서 더한다',
+      sub: '다리는 자기 힘만 내놓고, 몸통은 그것들을 더해 물리에 한 번 넘긴다. 어디로 갈지는 아무도 정하지 않는다.',
+    },
+    {
+      kind: 'SPLIT',
+      title: '다리는 서로를 모른다',
+      sub: '다리끼리 주고받는 것이 없다. 다리를 늘리거나 조종하는 사람을 늘려도 기존 다리는 그대로다.',
+    },
+    {
+      kind: 'TUNE',
+      title: '값을 만지는 회전을 짧게',
+      sub: '뻗는 힘과 당기는 힘을 따로 잡고, 계산부는 재생 없이 돌려 볼 수 있게 떼어 놨다.',
+    },
+  ],
+
+  // ─── §01 배경 ──────────────────────────────────────────
+  context: {
+    body:
+      '만들고 싶었던 것은 다리 하나에 사람 하나가 붙어, 서로 당기는 방향이 어긋나면 몸이 엉키는 게임이다.',
+    body2:
+      '그런데 여러 사람이 한 몸을 당긴다는 것이 **조작으로 성립하는지**를 모르는 상태였고, ' +
+      '사람을 모아 붙이기 전에 혼자서 다리를 번갈아 잡으며 하루 안에 확인해 보기로 했다.',
+
+    tension: [
+      ['힘은 여러 곳에서 온다',
+       '다리마다 붙잡은 자리가 다르고 당기는 방향도 다르다. 몸통은 그것들을 동시에 받는다.'],
+      ['몸은 하나다',
+       '결국 몸통은 한 방향으로만 움직인다. 그 방향을 누가 정하느냐가 이 PoC 의 물음이다.'],
+    ],
+    tensionWhy:
+      '그래서 판정 기준을 하나로 잡았다 — **힘이 합벡터로 모이는 구조가 조작으로 성립하는가.**',
+
+    facts: [
+      ['날짜', '2026.05.04 · 하루'],
+      ['팀', '1인 · 디자인부터 구현까지 전부 본인'],
+      ['환경', 'Unity 6.3 LTS (2D) · URP · 단독 빌드'],
+      ['조작', '키 `1` `2` `3` 으로 다리 선택 · 마우스로 그 다리를 뻗음 · 좌클릭 부착/해제 · 부착 상태에서 우클릭으로 당김'],
+      ['자동 전환', '다리가 최대 길이에 닿으면 뻗기에서 당기기로 저절로 넘어간다'],
+      ['목표', '화면 지시는 "위로 올라가세요" — 벽을 타고 오르는 것이 검증 시나리오'],
+    ],
+
+    scope: {
+      title: '이 페이지가 다루는 범위',
+      lead: '하루짜리 PoC 이고, 게임이 아니다.',
+      reads: [
+        '여러 힘을 한 몸에 모으는 방식',
+        '다리 · 몸통 · 입력을 어떤 선으로 갈랐나',
+        '값을 만지는 회전을 줄이려고 한 것',
+      ],
+      skips: [
+        '성능 수치 — 재지 않았다',
+        '걸음걸이 생성 · 카메라 · 사운드',
+        '멀티플레이 — 구조만 열어 뒀고 만들지 않았다',
+      ],
+      why:
+        '**실코드를 이 문서에 붙이지 않는다.** 지금 손에 없어서, 호출되는지 확인할 수 없는 조각을 싣지 않기로 했다. ' +
+        '**IK 도 이 PoC 가 만든 것이 아니다** — 관절을 굽히는 계산은 표준 알고리즘을 썼고, 정한 것은 그 위의 구조다.',
+    },
+  },
+
+  // ─── §02 만든 것 ───────────────────────────────────────
+  force: {
+    gist: '몸통을 미는 힘은 **다리가 낸 것뿐**이다. 이동 입력이라는 것이 아예 없다.',
+    body:
+      '보통은 방향키가 몸을 밀고 다리는 그 움직임을 따라가는 그림으로 그려지는데, 여기서는 반대다.',
+    body2:
+      '다리 하나하나가 뻗고 붙잡고 당기면서 자기 힘을 내놓고, 몸통은 그 힘들을 **더하기만** 해서 물리에 한 번 넘긴다.',
+    body3:
+      '그래서 몸이 어디로 갈지는 아무도 정하지 않는다 — 세 힘이 서로 도우면 올라가고, 어긋나면 제자리에서 흔들린다.',
+
+    points: [
+      ['힘은 두 종류다',
+       '뻗을 때 생기는 반작용과, 붙잡고 나서 당기는 힘. 방향도 생기는 시점도 다르다.'],
+      ['한 번에 한 다리만 조종한다',
+       '키로 다리를 고르면 그 다리만 마우스를 따라간다. 나머지는 붙잡고 있던 자리를 유지한다.'],
+      ['붙잡으면 그 자리에 고정된다',
+       '벽이든 움직이는 발판이든, 한 번 붙으면 발판이 이동해도 접점이 따라간다.'],
+      ['최대 길이에서 스스로 넘어간다',
+       '더 뻗을 수 없게 되면 뻗기를 멈추고 마우스 쪽으로 당기기 시작한다.'],
+    ],
+
+    figure: {
+      src: 'multi-leg-creature/assets/grip.png',
+      alt: '다리 끝이 발판의 왼쪽 아래 모서리에 닿아 있고, 닿은 자리에 초록 점이 찍혀 있다.',
+      cap:
+        '초록 점이 **붙잡은 자리**다. 이 점이 찍힌 뒤부터 그 다리는 마우스를 따라가지 않고, ' +
+        '대신 이 자리를 축으로 몸통을 당긴다.',
+    },
+
+    handoff: {
+      q: '힘을 한 곳에서 더하려면 누가 무엇을 알아야 하는가.',
+      a: '답은 **아무도 서로를 몰라도 된다** 였다.',
+    },
+  },
+
+  // ─── §03 나눠 둔 것 ────────────────────────────────────
+  split: {
+    gist: '다리끼리 주고받는 것이 **하나도 없다.** 각자 자기 힘만 내놓는다.',
+    body:
+      '다리 셋을 배열 하나에 담고 한 곳에서 돌리는 쪽이 코드는 짧지만, 그러면 다리가 서로의 상태를 들여다보게 된다.',
+    body2:
+      '본편에서는 다리마다 사람이 다르므로, 그 시점에 **다리를 갈라내는 일**을 다시 해야 한다.',
+    body3:
+      '그 비용을 하루짜리 PoC 에서 미리 치르기로 하고, 다리 하나를 처음부터 독립된 조각으로 두었다.',
+
+    points: [
+      ['다리가 내놓는 것은 힘 하나뿐',
+       '자기 상태를 남에게 보여 주지 않고, 남의 상태도 묻지 않는다.'],
+      ['몸통은 다리를 하나씩 보지 않는다',
+       '들어온 힘을 더해 한 번에 밀 뿐, 어느 다리가 얼마나 냈는지로 분기하지 않는다.'],
+      ['입력은 고른 다리 하나에만 닿는다',
+       '조종하는 사람이 늘어나도 닿는 곳이 늘 뿐, 다리 안쪽은 그대로다.'],
+      ['입력과 물리를 한 박자 끊었다',
+       '입력은 화면 갱신에 맞춰 들어오고 힘은 물리 주기에 맞춰 나간다. 그 사이를 값 하나로 옮겨 담아 섞이지 않게 했다.'],
+    ],
+
+    handoff: {
+      q: '구조를 이렇게 갈라 두니 다음 일이 생겼다.',
+      a: '값을 만지는 자리가 **여러 축으로 갈렸다** — 그걸 빨리 돌려 볼 방법이 필요했다.',
+    },
+  },
+
+  // ─── §04 튜닝 ──────────────────────────────────────────
+  tune: {
+    gist: 'PoC 에서 제일 많이 하는 일은 **값을 바꿔 보는 것**이라, 거기 드는 시간을 먼저 줄였다.',
+    body:
+      '"다리는 잘 뻗는데 몸이 안 끌려온다" 같은 감각은 값을 여러 번 바꿔 보기 전에는 잡히지 않는다.',
+    body2:
+      '뻗는 힘과 당기는 힘을 한 값으로 묶으면 하나를 키울 때 다른 하나가 따라 움직여서, ' +
+      '원하는 감각을 만들 수가 없다.',
+    body3:
+      '그래서 둘을 **따로** 잡았다 — 힘의 크기가 물리적으로 맞아떨어지는 것보다, ' +
+      '만들고 싶은 감각을 슬라이더 하나로 만들 수 있는 쪽을 택했다.',
+
+    points: [
+      ['물리 정합성을 일부러 접었다',
+       '작용과 반작용의 크기를 같게 두지 않는다. 이 선택은 튜닝을 위한 것이고, 그래서 실제 물리와 다르다.'],
+      ['만지는 값은 한 자리에 모았다',
+       '핵심 파라미터를 설정 파일 한 장에 모아 게임을 돌리는 중에도 바꿀 수 있게 했다.'],
+      ['계산부는 재생 없이 돌아간다',
+       '관절을 굽히는 계산과 힘을 만드는 계산을 화면·컴포넌트에서 떼어 내, 값만 넣으면 결과가 나오게 했다.'],
+      ['하루 중 이른 시점에 했다',
+       '이 정리를 뒤로 미루면 남은 작업 내내 재생 버튼을 누르며 확인하게 된다. 앞에서 한 번 치렀다.'],
+    ],
+  },
+
+  // ─── §05 한계 ──────────────────────────────────────────
+  limits: [
+    ['성능을 재지 않았다',
+     '하루 안에 구조가 서는지만 봤다. 프레임 시간도 메모리도 남긴 계측본이 없다.'],
+    ['여럿이 동시에 당기는 것은 확인 못 했다',
+     '혼자서 다리를 **번갈아** 잡았을 뿐이라, 셋이 동시에 다른 방향으로 당길 때 힘이 어떻게 튀는지는 모른다. 정작 본편이 그 상황이다.'],
+    ['다리 수가 3개로 굳어 있다',
+     '다리를 배열이 아니라 각각의 조각으로 뒀기 때문에, 수를 바꾸려면 만들어 둔 것을 손봐야 한다.'],
+    ['멀티는 만들지 않았다',
+     '입력이 닿는 곳만 갈라 두었고, 사람을 여럿 붙이는 일 자체는 하지 않았다.'],
+    ['안 쓰는 다리는 대충 둔다',
+     '지금 조종하지 않는 다리의 움직임에는 손을 거의 안 댔다. 몸이 흔들릴 때 다리가 늦게 따라오는 느낌은 없다.'],
+    ['무거운 물체를 잡는 것은 뺐다',
+     '고정된 벽과 움직이는 발판까지만 붙잡는다. 굴러다니는 물체를 잡아 던지는 것은 계획에서 지웠다.'],
   ],
 };
