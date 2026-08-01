@@ -176,7 +176,7 @@ function UAContext({ data }) {
   const c = data.context;
   return (
     <section id="context" className="nb-section">
-      <UASectionHead no="01" title="배경 — 고치는 데 걸리는 시간" kind="CONTEXT" />
+      <UASectionHead no="01" title="배경 — 계속 고칠 수 있게 먼저 잡은 것" kind="CONTEXT" />
       <p className="ua-body">{ri(c.body)}</p>
       <p className="ua-body">{ri(c.body2)}</p>
 
@@ -241,7 +241,7 @@ function UALimits({ data }) {
   const ri = window.renderInline;
   return (
     <section id="limits" className="nb-section">
-      <UASectionHead no="04" title="한계 — 안 한 것과 못 한 것" kind="OPEN" />
+      <UASectionHead no="04" title="한계 — 확인하지 못한 것" kind="OPEN" />
       <div className="ua-limits">
         {data.limits.map(([k, v]) => (
           <div className="ua-limit" key={k}>

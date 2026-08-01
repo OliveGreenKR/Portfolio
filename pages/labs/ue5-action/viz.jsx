@@ -70,12 +70,12 @@ function UABoundaryViz() {
               stroke="var(--ink-3)" strokeWidth="1.5" strokeDasharray="6 5" />
 
         <text x={LX} y="288" className="ua-svg-sub ua-svg-note">
-          스킬을 하나 더 넣을 때 오른쪽은 그대로다 — 왼쪽에 한 줄이 늘어날 뿐이다
+          스킬이 늘어도 오른쪽은 그대로고, 왼쪽 표가 하나 더 생길 뿐이다
         </text>
       </svg>
       <figcaption className="ua-figcap">
-        오른쪽 세 줄이 <b>어떤 스킬에도 똑같이</b> 도는 절차다. 스킬마다 달라지는 것은 전부 왼쪽에 있고,
-        연결(다음에 무엇이 오는가)까지 왼쪽이라는 점이 이 그림의 요지다.
+        연결(다음에 무엇이 오는가)까지 포함해 스킬마다 달라지는 것은 전부 왼쪽에 있고,
+        오른쪽 세 줄은 <b>어떤 스킬에도</b> 똑같이 돈다.
       </figcaption>
     </figure>
   );
@@ -120,8 +120,9 @@ function UATimingViz() {
         {track(224, win.b, 'var(--terra-400)', '여기서 확정')}
 
         {/* 도중 변화 표시 */}
+        {/* 시스템이 읽는 것은 입력 방향뿐이다 — 적을 보지 않는다. 근거를 입력 축으로 통일한다. */}
         <text x={(win.a + win.b) / 2} y="160" textAnchor="middle" className="ua-svg-tag">
-          이 사이에 적이 움직인다
+          이 사이에 입력이 바뀐다
         </text>
         <path d={`M${win.a + 40} 140 L${win.b - 40} 140`} stroke="var(--rule-2)" strokeWidth="1.2" strokeDasharray="4 4" />
 
@@ -130,8 +131,8 @@ function UATimingViz() {
         </text>
       </svg>
       <figcaption className="ua-figcap">
-        두 줄의 <b>구간은 같다.</b> 다른 것은 세로선의 위치뿐이고, 그 차이가
-        "이미 마음을 바꾼 입력이 반영되느냐" 를 가른다.
+        두 줄의 <b>구간은 같고</b> 다른 것은 세로선의 위치뿐이며,
+        그 차이가 "이미 바뀐 입력이 반영되느냐"를 가른다.
       </figcaption>
     </figure>
   );
