@@ -12,10 +12,10 @@ window.LANDING_DATA = {
       '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, ' +
       '장기 프로젝트 + 출시 운영, PoC 사고 사이클 — 세 결이 같이 있는 포트폴리오.',
     stats: [
-      { n: '13', label: 'projects',       sub: '메인 6 · Labs 7' },
+      { n: '11', label: 'projects',       sub: '메인 6 · Labs 5' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
       { n: '137', label: 'solo engine',    sub: 'DX11 · C++17 · 커밋 586' },
-      { n: '07', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
+      { n: '05', label: 'PoC labs',        sub: '1–8 주 PoC · 재사용 시스템' },
     ],
   },
 
@@ -140,8 +140,9 @@ window.LANDING_DATA = {
     },
   ],
 
-  // ─── Labs 그리드 — 카드 7 ────────────────────────────────
-  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection). 데이터 순서는 idx (L.01..L.07) 기준 그대로 둔다.
+  // ─── Labs 그리드 — 카드 5 ────────────────────────────────
+  // 렌더 시점에 date desc 로 정렬됨 (LandingPage.jsx 의 LabsSection). 데이터 순서는 idx 기준 그대로 둔다.
+  // idx 는 표시용 라벨. L.02(Ring Dash) · L.06(1000 Kittens) 제거로 번호가 비어 있다 — Labs 재작성 완료 후 L.01~L.05 로 재부여할 것.
   // date: 정렬 키 (ISO `YYYY-MM-DD`). 기간 있는 경우 종료일. 미상은 빈 문자열 — 가장 뒤로 밀림.
   labs: [
     {
@@ -163,16 +164,6 @@ window.LANDING_DATA = {
       duration: '8주 · 1인',
       date: '2024-11-30',
       line: 'UE5 + C++ 데이터 기반 스킬 · 콤보 시스템. 디자이너가 코드 없이 분기 편집.',
-    },
-    {
-      idx: 'L.02',
-      title: 'Ring Dash',
-      slug: 'ring-dash',
-      href: 'labs/ring-dash.html',
-      tag: 'Design / Variant',
-      duration: '6일 · 3 디자인 테스트',
-      date: '2026-05-12',
-      line: 'dash 메커닉의 핵심 경험을 3안으로 분기 — 변형 워크플로우 자체가 산출물.',
     },
     {
       idx: 'L.03',
@@ -203,16 +194,6 @@ window.LANDING_DATA = {
       duration: '3일',
       date: '2026-04-29',
       line: 'GPU Stable Fluids + Blackbody. 불멍 인터랙션을 위한 셰이더 PoC.',
-    },
-    {
-      idx: 'L.06',
-      title: '1000 Kittens',
-      slug: '1000-kittens',
-      href: 'labs/1000-kittens.html',
-      tag: 'Editor Tool',
-      duration: '게임잼',
-      date: '2026-04-15', // 게임잼 — UE5 Action(2024-11) 보다 최근 · Staring Fire(2026-04-29) 보다 과거
-      line: 'Odin Inspector 로 분기 흐름 시각화 · 검증 도구. 기획자 입력의 누락 즉시 표시.',
     },
   ],
 
