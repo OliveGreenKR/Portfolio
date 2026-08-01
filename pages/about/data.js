@@ -32,7 +32,9 @@ window.ABOUT_DATA = {
       examples: [
         { tag: 'Cartapli',    line: '위임형 상태 기반 씬 아키텍처 — 시스템 추가 시 기존 코드 변경 0 줄.', href: '../pages/cartapli.html' },
         { tag: 'DX11 Engine', line: '게임/물리 컨텍스트 완전 분리 + Job 기반 비동기 명령 시스템.',          href: '../pages/dx11-engine.html' },
-        { tag: 'UE5 Action',  line: '컴포넌트 + 델리게이트 + DataAsset — 디자이너가 코드 없이 분기 편집.',  href: '../pages/labs/ue5-action.html' },
+        // "디자이너가 코드 없이 편집" 은 쓰지 않는다 — 8주 1인 프로젝트라 디자이너가 없었다.
+        // 만든 것은 그렇게 편집할 수 있는 구조이고, 동기는 본인의 재컴파일 대기 시간이었다.
+        { tag: 'UE5 Action',  line: '스킬이 무엇을 하고 어디로 이어지는지는 데이터에, 코드에는 언제 실행할지만.', href: '../pages/labs/ue5-action.html' },
       ],
     },
     {
@@ -49,7 +51,8 @@ window.ABOUT_DATA = {
       title: 'PoC 사고 사이클',
       lede: 'Labs 5 — 1일에서 8주 사이에 가설을 세우고, 한 결정의 결과만 남기고 접는다.',
       examples: [
-        { tag: 'Multi-Leg Creature', line: '협동 다족류 IK + 다리 사이 힘 합벡터로 자연스러운 보행 생성.',   href: '../pages/labs/multi-leg-creature.html' },
+        // "보행 생성" 은 쓰지 않는다 — gait 생성기가 없다. 다리를 고르고 붙잡고 당기는 것은 사람이다.
+        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.',   href: '../pages/labs/multi-leg-creature.html' },
         { tag: 'BBQ Master',         line: '안쪽 상태를 32³ 격자로 따로 굴리고 겉면 색·단면으로만 노출.',      href: '../pages/labs/bbq-master.html' },
         { tag: 'Staring Fire',       line: 'GPU Stable Fluids + Blackbody. 닫힌 계 + Vorticity flame gate.', href: '../pages/labs/staring-fire.html' },
       ],
