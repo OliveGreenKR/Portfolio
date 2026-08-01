@@ -1,243 +1,238 @@
 // pages/labs/bbq-master/data.js
-// LAB · 04 — BBQ Master. 3일 / 30 커밋 PoC. 볼류메트릭 고기 굽기 — 외형과 분리된 32³ Internal Field.
-// Source: uploads/bbq-master.md. Schema 는 UE5 Action / Multi-Leg 와 동일.
-// classDef 는 5 swatch (sage / terra / wheat / dusty / plum) 만.
+// LAB · 04 — BBQ Master. 3일 볼류메트릭 고기 굽기 PoC.
+// 소스: knowledge_base/projects/labs/PocLabs/bbq-master.md · assets/ 스크린샷 2장.
+//
+// ─── 사실 규칙 ───────────────────────────────────────────
+// 1. 실코드가 손에 없다. 그래서 코드 블록을 싣지 않는다 —
+//    호출부를 못 찾는 코드를 싣는 것이 이 페이지에서 가장 쉽게 나는 사고다.
+//    클래스 이름도 구조를 말하는 데 꼭 필요한 것만 남긴다.
+// 2. 계측본이 하나도 없다. fps·ms·메모리를 쓰지 않는다.
+//    한 일은 "이렇게 확인했다"(절차)로만 쓴다.
+// 3. 지어낸 baseline 을 만들지 않는다.
+//    이전 판에는 "가상의 통합 / 결합 baseline vs 채택 구조" 표가 있었다 —
+//    왼쪽 열 8행이 존재한 적 없는 비교 대상이었고, 오른쪽 열은 전부 본문과 같은 말이었다. 버렸다.
+// 4. 규모를 성과로 세우지 않는다. 커밋 수·파일 수·LoC 는 히어로에 올리지 않는다.
+//    (이전 판 히어로 첫 칸이 '3 일 / 30 커밋', 넷째 칸이 '3 / 핵심 판단' — 자기 절 개수였다.)
+// 5. 표준 기법을 발명처럼 쓰지 않는다. 볼류메트릭 격자·이웃 전도·정점 색은 전부 표준이다.
+//    "표준을 쓰되 이 PoC 에 맞게 무엇을 정했나" 로 쓴다.
+//
+// ─── 문장 규칙 ───────────────────────────────────────────
+// 1. 한 덩이는 한 문장. 두 문장이 되면 자른다.
+// 2. 절 제목에 비유·대구를 쓰지 않는다. 제목만 읽고 무슨 얘긴지 알아야 한다.
+// 3. 굵게는 3~8자 핵심 구에만.
+// 4. 튜닝 설정값(임계 온도·반경·주기)은 본문에서 뺀다. 구조만 말한다.
+// 5. 절 제목과 gist 가 같은 말이면 gist 를 다시 쓴다.
+// 6. handoff 는 §02→§03, §03→§04 두 곳만. §01·§05 는 앞뒤로 인과가 없다.
 
-window.BBQ_MASTER_DATA = {
-  evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
+window.BBQ_DATA = {
   meta: {
-    eyebrow: 'LAB · 04 ─ PoC / 볼류메트릭 시뮬',
-    code: 'LAB · 04',
+    eyebrow: 'LAB · 04 ─ 볼류메트릭 시뮬',
+    subtitle: '3일 PoC · Unity 6.3 LTS · URP',
+    title: 'BBQ Master',
     date: '2026.05',
-    title: 'BBQ Master — 볼류메트릭 고기 굽기',
-    oneLine: '3D Mesh 외형과 분리된 32³ Internal Field 로 고기 내부 온도·익힘을 누적 시뮬레이션하고, 표면 vertex color + 단면 텍스처로 내부 상태를 외부로 가시화한 3일 PoC.',
-    period: '2026.04.30 – 2026.05.02 (3 일)',
-    weeks: '3 일 · 30 커밋',
-    team: '1 인 개인 PoC',
-    role: '디자인 + 클라이언트 (전 영역 본인)',
-    platform: 'Unity 6.3 LTS · URP',
-    stack: ['Unity 6.3 LTS', 'URP', 'Voxel Field 32³', 'Heat Conduction (6-neighbor)', 'Vertex Color Shader', 'Procedural Mesh', 'Mesh Cutting', 'HLSL', 'ScriptableObject Config', 'Game Phase FSM'],
-  },
-
-  // 4 hero metrics
-  heroMetrics: [
-    { n: '3 일',   label: '30 커밋 PoC',           sub: '볼류메트릭 시뮬 + 메커닉 + 가시화' },
-    { n: '32³',    label: 'Internal Field',        sub: '32K voxels · 1D managed array · FixedUpdate' },
-    { n: '3-class',label: 'Voxel 분류',            sub: 'Air / Surface / Interior · bake 1 회' },
-    { n: '3',      label: '핵심 판단',             sub: '좌표계 분리 · Surface 우선 샘플러 · 상태 vs 해석' },
-  ],
-
-  facts: [
-    ['한 줄 정의', '3D Mesh 외형과 분리된 32³ Internal Field로 내부 온도·익힘을 누적 시뮬, 표면 색 + 단면 텍스처로 내부 상태를 외부로 가시화'],
-    ['기간',     '2026.04.30 – 2026.05.02 (3 일)'],
-    ['커밋',     '30'],
-    ['팀 구성',   '1 인 개인 PoC'],
-    ['본인 역할', '디자인 + 클라이언트 (전 영역 본인)'],
-    ['스택',     'Unity 6.3 LTS · URP · Voxel Field · Heat Conduction · Vertex Color Shader · Procedural Mesh · Mesh Cutting · HLSL · SO Config · Phase FSM'],
-    ['기술 태그', 'Voxel Field · Heat Conduction · Vertex Color · Mesh Cutting · 4-Layer Architecture · State vs Interpretation'],
-    ['산출물',   'C# 36 파일 / ~6,600 LoC + Shader 2 (Vertex Color Only / Multiply) · 단독 빌드'],
-  ],
-
-  roles: {
-    mine:
-      '전 영역 본인. 4-Layer 아키텍처 (Phase / Meat / Heat / Cutting) · ' +
-      '32³ Internal Field (POCO · 1D managed · mesh-local invariant) · ' +
-      '3-class Voxel bake + Air-aware Surface 우선 샘플러 · ' +
-      'Mesh Cutting + Vertex Color Rebuilder + 단면 Texture2D · ' +
-      '자동 화력 변동 (Sin + Noise) + 미래 예측 곡선 HUD · ' +
-      '3 Phase FSM (Cooking → Resting carryover → Sliced).',
-    others:
-      '1 인 개인 PoC 로 외부 협업 없음. 외부 의존: ' +
-      'Unity 6.3 LTS · URP · Mesh / Material API · ScriptableObject · Test Framework — 엔진 / 기본 패키지만 사용. ' +
-      'HLSL 셰이더 2 종 (Vertex Color Only / Multiply) 자체 작성.',
-  },
-
-  // ─── Systems (§3) ──────────────────────────────────────────
-  systems: [
-    /* ─── 3.1 4-Layer 구조 + 단방향 결합 ────────────────── */
-    {
-      no: '3.1',
-      kind: 'ARCHITECTURE',
-      title: '4-Layer 구조 — 외형 과 내부 상태 의 좌표계 분리',
-      lede: 'Phase / Meat / Heat / Cutting 4 레이어. Mesh transform 변화는 시각 에만 영향, 시뮬에는 무영향. Phase → Meat 는 명시 메서드 호출만.',
-      problem:
-        '회전·이동·뒤집기를 자유롭게 해도 익은 부분의 내부 상태가 유지 되어야 한다. ' +
-        '만약 Field 가 world 좌표계 라면 회전 시 voxel 격자와 mesh 가 어긋나며 익힘 분포가 망가진다. ' +
-        '또한 Phase Controller 와 Meat 가 이벤트로 양방향 통신 하면 진행 단계 (Cooking → Resting → Sliced) 의 흐름이 불투명해진다.',
-      decision:
-        'Field 는 mesh-local 좌표계로 1회 bake 후 고정 — transform 변화는 시각에만 영향. ' +
-        '`InternalField` 는 POCO 클래스 로 두고 `MeatController` 가 소유. ' +
-        'Phase → Meat 는 명시 메서드 호출만 — 이벤트 의존 X. ' +
-        '표면 시각화 · 단면 텍스처 · 점수 평가는 모두 `InternalField` 의 Air-aware sampling API 한 종류 를 통과. ' +
-        '4 레이어: Phase (FSM · Score) / Meat (Field · Tick · Mesh 갱신) / Heat (열원 · HUD) / Cutting (Mesh 분할 · 단면 텍스처).',
-      results: [
-        '회전 / 뒤집기 자유 — 익힘 분포가 정확히 따라옴 (mesh-local invariant)',
-        'bake 비용 1 회 — 이후 FixedUpdate tick 만',
-        'Phase 변경 (목표 등급 / 점수 기준) 이 시뮬 코드 0 줄 수정',
-        '향후 `NativeArray<MeatSample>` 전환 비용 최소 — 1D index 유지',
-      ],
-      stack: [
-        'Phase: BBQPhaseController · CookingSubmitController · RestingFlowController · ScoreEvaluator + ResultHUD',
-        'Meat: MeatController (FixedUpdate · 시뮬 명시 호출) · InternalField (POCO · 32³ MeatSample[1D])',
-        'Meat 시각: MeatMotionController · MeatSurfaceGridMeshBuilder · MeatSurfaceRenderer (vertex color 갱신) · CutPlanePreview',
-        'Heat: HeatSourceController (Sin + Noise · Y축 falloff) · HeatHUD (현재 + 5s 예측 곡선)',
-        'Cutting: CuttingPhaseController · LocalPlaneMeshCutter · MeatPieceFactory + MeatPiece · VertexColorRebuilder · MeatSectionTextureBuilder',
-      ],
-      mermaid: `graph TB
-    subgraph PHASE["🎬 Phase Layer"]
-        PC["BBQPhaseController<br/>(Cooking → Resting → Sliced)"]
-        CSC["CookingSubmitController"]
-        RFC["RestingFlowController<br/>(carryover · 자르기 → Sliced)"]
-        SE["ScoreEvaluator + ResultHUD"]
-        PC --> CSC
-        PC --> RFC
-        PC --> SE
-    end
-
-    subgraph MEAT["🥩 Meat Layer (mesh-local invariant)"]
-        MC["MeatController<br/>(FixedUpdate · 시뮬 명시 호출)"]
-        IF["InternalField (POCO)<br/>32³ MeatSample[1D]"]
-        BAKE["bake: VoxelKind 3-class<br/>(Air / Surface / Interior)"]
-        TICK["Tick — Heat Absorption +<br/>Conduction 6-neighbor (2-pass) +<br/>Surface ambient loss"]
-        SAMPLE["Sampling API<br/>Trilinear (일반) / Surface 우선"]
-        MM["MotionController + GridMeshBuilder<br/>+ SurfaceRenderer (vertex color)<br/>+ CutPlanePreview (단면 Tex)"]
-        MC --> IF
-        IF --> BAKE
-        IF --> TICK
-        IF --> SAMPLE
-        MC --> MM
-    end
-
-    subgraph HEAT["🔥 Heat Layer"]
-        HSC["HeatSourceController<br/>Sin + Noise · Y축 falloff"]
-        HHUD["HeatHUD — 현재 + 5s 예측"]
-    end
-
-    subgraph CUT["✂ Cutting Layer (Mesh 분할)"]
-        CPC["CuttingPhaseController"]
-        LPMC["LocalPlaneMeshCutter (mesh-local)"]
-        MPF["MeatPieceFactory + MeatPiece"]
-        VCR["VertexColorRebuilder<br/>(분할 직후 양쪽 색 보정)"]
-        MST["MeatSectionTextureBuilder<br/>(단면 Texture2D)"]
-        CPC --> LPMC
-        CPC --> MPF
-        CPC --> VCR
-        CPC --> MST
-    end
-
-    PHASE -.->|"명시 메서드 호출"| MEAT
-    HEAT -.->|"열원 → 고기"| MEAT
-    PHASE -.-> CUT
-
-    classDef phase fill:#f5dcd2,stroke:#c8674f,color:#3a1810
-    classDef meat  fill:#f6ecd2,stroke:#c19a4a,color:#3a2a10
-    classDef heat  fill:#f6ddd2,stroke:#c97a5f,color:#3a1f15
-    classDef cut   fill:#e6efdf,stroke:#7ea571,color:#283825
-    class PC,CSC,RFC,SE phase
-    class MC,IF,BAKE,TICK,SAMPLE,MM meat
-    class HSC,HHUD heat
-    class CPC,LPMC,MPF,VCR,MST cut`,
-      fsmTrail: ['Cooking', 'Resting (carryover)', 'Sliced (결과)'],
-    },
-
-    /* ─── 3.2 3-class Voxel + Surface 우선 샘플러 ──────── */
-    {
-      no: '3.2',
-      kind: 'PHYSICS',
-      title: '3-class Voxel bake + Surface 우선 샘플러 — 표면 색을 즉시 반응 하게',
-      lede: '표면 색은 겉면 가열 에 즉시 반응해야 하는데, 일반 trilinear 는 Interior 의 낮은 MaxT 와 평균돼 늦게 보인다. 샘플링 API 를 2 종류로 분리.',
-      problem:
-        '표면 vertex color 가 겉면 가열 에 즉시 반응해야 시각적 피드백 이 살아난다. ' +
-        '하지만 일반 trilinear 샘플링은 8 corner 중 Interior 의 낮은 MaxT 와 평균화되어 ' +
-        '표면 색이 느릿느릿 따라온다. ' +
-        '반대로 단면은 깊이 분포 가 자연스럽게 보여야 하므로 trilinear 그 자체 가 필요. ' +
-        '또한 mesh 바깥 (Air 8-corner) 케이스를 조용히 무시 하면 시각적 오류가 감춰진다.',
-      decision:
-        'bake 시 VoxelKind 3-class 분류 — `Air` / `Surface` / `Interior`. ' +
-        '`Surface` = `Interior` 후보 중 Chebyshev radius 안에 `Air` 가 1 개 이상 있는 것 (한 번에 분류). ' +
-        '샘플링 API 2 종 분리 — ' +
-        '`TrySampleMaxTemperatureTrilinear` (일반 · Air-aware) / ' +
-        '`TrySampleSurfaceMaxTemperature` (Surface 우선 — Air 와 Interior 의 영향 제거). ' +
-        'Air 8-corner 케이스는 **`_outsideFieldColor` (magenta) 로 *오류 가시화*** — 조용히 무시하지 않는다.',
-      results: [
-        '표면 색이 즉시 반응 — 겉면 가열 직후 vertex color 변화 가시',
-        '단면 텍스처는 깊이 분포 가 자연스럽게 보임',
-        'mesh 바깥 케이스가 magenta 로 즉시 보임 — 디버그 비용↓',
-        'bake 1 회 + 1D index 유지로 NativeArray 전환 비용 최소',
-      ],
-      stack: [
-        'VoxelKind { Air, Surface, Interior }',
-        'bake — Chebyshev radius 안 Air 검사',
-        'TrySampleMaxTemperatureTrilinear (Air-aware)',
-        'TrySampleSurfaceMaxTemperature (Surface 우선)',
-        'MeatSurfaceRenderer — Surface 우선 샘플러 호출',
-        '_outsideFieldColor = magenta — 오류 가시화',
-      ],
-      tableTitle: '샘플링 API 의 2 갈래',
-      table: {
-        headers: ['용도', '샘플러', '대상 voxel', '특성'],
-        rows: [
-          ['표면 vertex color',  '`TrySampleSurfaceMaxTemperature`', 'Surface 만',          '겉면 가열에 즉시 반응'],
-          ['단면 텍스처 (자른 후)', '`TrySampleMaxTemperatureTrilinear`', 'Surface + Interior (Air-aware)', '깊이 분포 자연스럽게'],
-          ['점수 평가',          '`TrySampleMaxTemperatureTrilinear`', '전 격자',             '비율 derive (Raw / Rare / … / Burnt)'],
-          ['mesh 바깥 (Air 8-corner)', '— ',                            'Air 만',              'magenta 로 오류 가시화'],
-        ],
-      },
-    },
-
-    /* ─── 3.3 상태 vs 해석 분리 ────────────────────────── */
-    {
-      no: '3.3',
-      kind: 'DATA-DRIVEN',
-      title: '상태(state) 와 해석(interpretation) 분리 — voxel 에는 시뮬 진리값 만',
-      lede: '굽기 등급 · 정규화값 · 점수는 해석. voxel 에 원본 상태 만 저장하고 나머지는 lazy derive. 게임 룰 변경이 시뮬을 안 건드리게.',
-      problem:
-        '굽기 등급 (Raw / Rare / Medium / WellDone / Burnt) · `Doneness01` · `Burn01` 같은 해석값 을 voxel 에 직접 저장 하면 ' +
-        '게임 룰 변경 (목표 등급 / 임계 온도 / 점수 기준) 마다 32³ 격자 갱신 이 필요하고, ' +
-        '시뮬 코드와 게임 룰이 한 데이터 모델 에 섞여 의존 방향이 무너진다. ' +
-        '목표 굽기 같은 게임 룰 도 `MeatSample` 안에 들어가면 모델 책임 이 불분명해진다.',
-      decision:
-        '**voxel 에 저장하는 것은 원본 상태 만** — ' +
-        '`Temperature` · `MaxTemperature` · `ThermalConductivity` · `Kind` · `VolumeWeight`. ' +
-        '등급 · 정규화값 · 점수 · 색 은 해석 이므로 별도 단계 (Score · Renderer) 에서 lazy derive. ' +
-        '목표 굽기 는 `MeatSample` 소유 아님 — 게임 룰 영역 (`ScoreEvaluator` 가 보유).',
-      results: [
-        'voxel 데이터 모델이 시뮬 진리값 으로 깔끔하게 좁혀짐',
-        '게임 룰 변경 (목표 등급 / 점수 기준) 이 시뮬 코드 0 줄 수정',
-        '`MaxTemperature` 단방향 누적 — 회전 · 이동 · 꺼내기 후에도 익힘 보존 (비가역성)',
-        '시각 · 점수 · 단면 텍스처가 같은 진리값 을 다른 해석으로 사용',
-      ],
-      stack: [
-        'MeatSample — Temperature / MaxTemperature / ThermalCond / Kind / VolumeWeight',
-        'ScoreEvaluator — 비율 derive (Raw / Rare / … / Burnt)',
-        'MeatSurfaceRenderer — Surface MaxT → vertex color',
-        'MeatSectionTextureBuilder — trilinear MaxT → 단면 Texture',
-        '목표 등급 / 점수 기준 — 게임 룰 영역 (시뮬 모델 외부)',
-      ],
-    },
-  ],
-
-  // ─── Evidence — 이전/이후 질적 비교 ─────────────────────
-  metrics: {
-    title: '결과 — 가상의 통합 / 결합 baseline vs 채택 구조',
-    headers: ['지표', '통합 / 결합 baseline (가상)', '채택 구조'],
-    rows: [
-      ['Field 좌표계',       'world 좌표계 — 회전 시 격자 어긋남',     'mesh-local — transform 무관 · bake 1 회'],
-      ['Phase ↔ Meat',       '양방향 이벤트',                         '명시 메서드 호출만 — 흐름 명료'],
-      ['표면 색 반응 속도',   'trilinear 평균 — Interior 가 끌어내림',  'Surface 우선 샘플러 — 즉시 반응'],
-      ['mesh 바깥 케이스',   '조용히 무시 → 시각적 오류 잠복',         '`_outsideFieldColor` = magenta — 오류 가시화'],
-      ['voxel 데이터 모델',   '등급 / 정규화값 / 점수까지 저장',         '원본 상태 만 — 해석은 lazy derive'],
-      ['게임 룰 변경 비용',   '시뮬 코드 + 32³ 격자 갱신',              '시뮬 코드 0 줄 — Score / Renderer 만'],
-      ['회전 / 이동 후 익힘', '격자 어긋남 → 분포 망가짐',              '`MaxTemperature` 단방향 누적 — 비가역 보존'],
-      ['단면 텍스처',         '별도 정적 텍스처',                       '`VertexColorRebuilder` + Section Texture — 분할 직후 즉시 보정'],
+    pills: [
+      { kind: 'accent', text: '3일 · 1인' },
+      { kind: '',       text: '디자인 · 구현 전부 본인' },
+      { kind: '',       text: 'Unity 6.3 LTS · URP' },
     ],
   },
 
-  // 실 자산 — hero = Doneness Result 화면 (5 등급 % 표시).
-  // screen-2-cooking 은 자르기 phase 의 mid-cut 화면 (Cuts 2/3).
-  heroImage: 'bbq-master/assets/hero.png',
-  screenshots: [
-    { src: 'bbq-master/assets/hero.png',            tag: 'RESULT',  caption: 'Doneness Result — 5 등급 비율 / 색 그라데이션 / Restart. Heat 게이지 + Forecast 5s 예측 곡선이 위쪽 HUD 에 상시.' },
-    { src: 'bbq-master/assets/screen-2-cooking.png', tag: 'SLICED', caption: 'Sliced phase mid-cut (Cuts 2/3) — Mesh 분할 + `VertexColorRebuilder` 가 분할 직후 양쪽 색을 보정. Finish 로 점수 평가.' },
+  hook:
+    '고기 **안쪽 상태**를 겉모양과 따로 두고 계속 계산한 뒤, ' +
+    '그 안쪽을 **겉면 색**과 **잘린 단면**으로만 보여 준다.',
+
+  // 만든 것 3칸 — 성과 수치가 아니다. 이 PoC 에는 비교할 계측본이 없다.
+  built: [
+    {
+      kind: 'FIELD',
+      title: '겉모양과 분리된 상태 격자',
+      sub: '고기 안을 32³ 칸으로 나눠 칸마다 온도를 들고 있다. 격자는 고기에 붙어 있어 돌려도 따라온다.',
+    },
+    {
+      kind: 'CLASSIFY',
+      title: '칸을 세 종류로 한 번 가르기',
+      sub: '바깥 · 겉면 · 속. 굽기 전에 한 번 가르고 그 뒤로 다시 가르지 않는다.',
+    },
+    {
+      kind: 'SHOW',
+      title: '안쪽을 내보내는 두 창',
+      sub: '겉면 색은 정점 색으로, 깊이 분포는 자를 때 만드는 단면 그림으로.',
+    },
+  ],
+
+  // ─── §01 배경 ──────────────────────────────────────────
+  context: {
+    body:
+      '스테이크를 굽는 사람이 실제로 쓰는 판단은 겉을 세게 지지는 일 · 불에서 내려 두는 일 · 화력을 올렸다 내리는 일이다.',
+    body2:
+      '이 셋을 숫자 게이지로 바꾸면 게임이 쉬워지지만 원래 재미가 사라져서, ' +
+      '플레이어가 **겉면 색과 잘린 단면**만 보고 판단하게 만들 수 있는지를 보려 했다.',
+
+    // 두 요구가 마주 본다 — 이 절의 내용이 "둘이 부딪힌다" 는 것이다.
+    tension: [
+      ['안쪽은 계속 변해야 한다',
+       '겉만 익고 속은 안 익은 상태, 불에서 내린 뒤에도 남은 열로 더 익는 상태가 따로 있어야 한다.'],
+      ['안쪽은 보이지 않는다',
+       '플레이어가 볼 수 있는 것은 겉면과, 잘랐을 때 드러나는 단면뿐이다.'],
+    ],
+    tensionWhy:
+      '그래서 이 PoC 의 물음은 고기 굽기 게임을 만들 수 있느냐가 아니라 ' +
+      '**보이지 않는 상태를 따로 굴려도 되느냐** 하나였다.',
+
+    facts: [
+      ['기간', '2026.04.30 – 2026.05.02 (3일)'],
+      ['팀', '1인 · 디자인부터 구현까지 전부 본인'],
+      ['환경', 'Unity 6.3 LTS · URP · 단독 빌드'],
+      ['조작', '마우스 드래그로 회전 · 키보드로 높이 · 뒤집기 · 꺼내기 · 자르기'],
+      ['화력', '플레이어가 못 만진다 — 저절로 오르내리고, 앞으로 5초가 어떻게 될지를 화면 위쪽에 미리 보여 준다'],
+      ['진행', '굽는 중 → 불에서 내려 둔 상태 → 자른 뒤 결과, 세 단계'],
+    ],
+
+    scope: {
+      title: '이 페이지가 다루는 범위',
+      lead: '3일짜리 PoC 이고, 완성한 게임이 아니다.',
+      reads: [
+        '겉모양과 안쪽 상태를 갈라 둔 방식',
+        '안쪽을 화면에 내보내는 두 가지 경로',
+        '칸에 무엇을 저장하고 무엇을 저장하지 않았나',
+      ],
+      skips: [
+        '성능 수치 — 재지 않았다',
+        '레벨 · 밸런싱 · 진행 구조',
+        '최종 게임으로서의 완성도',
+      ],
+      why:
+        '**실코드를 이 문서에 붙이지 않는다.** 지금 손에 없어서, 호출되는지 확인할 수 없는 조각을 싣지 않기로 했다. ' +
+        '대신 화면에 실제로 찍힌 것과 구조만 쓴다.',
+    },
+  },
+
+  // ─── §02 만든 것 ───────────────────────────────────────
+  field: {
+    gist: '고기 안을 칸으로 나눠 온도를 들고 있게 하고, 그 칸들을 **고기 쪽에** 붙였다.',
+    body:
+      '겉모양은 돌아가고 뒤집히고 자리를 옮기는데 안쪽 상태는 그것과 무관하게 이어져야 한다.',
+    body2:
+      '칸을 화면 기준으로 두면 고기를 한 번 돌리는 순간 칸과 고기가 남남이 되므로, ' +
+      '칸을 **고기 기준**으로 한 번 정해 두고 그 뒤로 고치지 않았다.',
+
+    points: [
+      ['칸은 고기와 함께 움직인다',
+       '시작할 때 한 번 정하고 끝까지 그대로 둔다. 돌리거나 뒤집는 것은 보이는 쪽만 바꾼다.'],
+      ['열은 세 갈래로 움직인다',
+       '겉면 칸이 불에서 받고, 이웃한 칸끼리 서로 주고받고, 겉면 칸만 공기 중으로 잃는다.'],
+      ['한 번 익은 것은 안 돌아간다',
+       '칸마다 **지금 온도**와 **여태 닿은 최고 온도**를 따로 들고 있고, 뒤엣것은 내려가지 않는다.'],
+      ['불에서 내려도 계속 익는다',
+       '남은 열이 안쪽으로 퍼지는 시간을 따로 한 단계로 두었다.'],
+    ],
+
+    figure: {
+      src: 'bbq-master/assets/cut-gradient.png',
+      alt: '자른 조각 세 개의 단면. 겉면은 짙은 갈색이고 안으로 갈수록 옅어지다가 가운데가 분홍이다.',
+      cap:
+        '겉면이 짙고 안으로 갈수록 옅어지는 **띠가 층으로** 보인다. ' +
+        '이 층은 그려 넣은 무늬가 아니라, 칸마다 다른 최고 온도를 그 자리에서 읽어 만든 것이다.',
+    },
+
+    handoff: {
+      q: '안쪽 상태는 이렇게 굴러간다. 그런데 플레이어는 이걸 볼 수 없다.',
+      a: '보여 주려고 했더니 **어느 칸을 읽느냐**가 문제가 됐다.',
+    },
+  },
+
+  // ─── §03 보이게 만든 것 ────────────────────────────────
+  show: {
+    gist: '겉면 색과 단면 그림은 **읽는 범위**가 서로 달라야 한다.',
+    body:
+      '겉을 세게 지질 때 색이 바로 따라오지 않으면 플레이어는 자기가 뭘 하고 있는지 알 수 없다.',
+    body2:
+      '겉면 한 점의 색을 주변 칸을 섞어서 정하면 아직 찬 속 칸이 값을 끌어내려 색이 뒤늦게 따라오므로, ' +
+      '칸을 **바깥 · 겉면 · 속** 셋으로 갈라 두고 읽는 곳을 용도마다 다르게 잡았다.',
+
+    points: [
+      ['겉면은 겉면만 읽는다',
+       '겉면 색을 정할 때는 겉면 칸만 본다. 속 칸이 섞이지 않아 지지는 즉시 색이 움직인다.'],
+      ['단면은 섞어서 읽는다',
+       '자른 면은 깊이가 층으로 보여야 하므로 겉면과 속을 함께 섞어 읽는다.'],
+      ['자를 때 실제로 갈린다',
+       '자르기는 겉모양을 진짜로 둘로 나눈다. 나뉜 직후 양쪽 겉면 색을 다시 맞추고, 새로 생긴 면에는 그 자리의 깊이를 읽어 만든 그림을 붙인다.'],
+      ['고기 밖은 자홍색으로 드러낸다',
+       '읽으려는 자리가 고기 바깥이면 그 자리를 **자홍색**으로 칠한다. 조용히 넘기면 잘못된 자리를 읽고 있다는 것을 못 본다.'],
+      ['정점을 늘려 두었다',
+       '겉면 색을 정점에 실어 보내는 방식이라, 기본 상자 모양으로는 정점이 모자라 면을 잘게 나눈 판을 따로 만들었다.'],
+    ],
+
+    tableTitle: '같은 격자를 세 곳이 서로 다르게 읽는다',
+    table: {
+      headers: ['읽는 쪽', '보는 칸', '왜 그렇게'],
+      rows: [
+        ['겉면 색',   '겉면만',       '지지는 즉시 색이 따라와야 한다'],
+        ['자른 단면', '겉면 + 속',    '깊이가 층으로 보여야 한다'],
+        ['결과 판정', '고기 전체',    '어느 정도로 익었는지를 부피 비율로 센다'],
+        ['고기 바깥', '읽을 곳 없음', '자홍색으로 칠해 잘못 읽었음을 드러낸다'],
+      ],
+    },
+
+    figure: {
+      src: 'bbq-master/assets/outside-magenta.png',
+      alt: '고기 왼쪽 모서리가 자홍색으로 칠해져 있고, 자를 위치를 알리는 빨간 선이 함께 보인다.',
+      cap:
+        '왼쪽 모서리의 자홍색이 **격자 밖을 읽은 자리**다. 화면에 그대로 남겨 두었기 때문에 스크린샷에도 찍혔다. ' +
+        '가로지르는 빨간 선은 자르면 어디가 갈라지는지 미리 보여 주는 표시다.',
+    },
+
+    handoff: {
+      q: '읽는 범위를 나누고 나니 다음 물음이 남았다.',
+      a: '**칸에는 무엇까지 저장할 것인가** — 익힘 등급과 점수도 칸이 들고 있어야 하나.',
+    },
+  },
+
+  // ─── §04 갈라 둔 것 ────────────────────────────────────
+  model: {
+    gist: '칸에는 **잰 값**만 두고, 등급·점수·색은 밖에서 그때그때 만든다.',
+    body:
+      '레어인지 미디엄인지, 몇 점인지, 무슨 색인지는 전부 게임이 정한 기준을 통과시킨 결과다.',
+    body2:
+      '이 결과들을 칸에 같이 저장하면 기준을 한 번 바꿀 때마다 칸 전체를 다시 채워야 하므로, ' +
+      '칸에는 온도와 성질만 남기고 나머지는 필요할 때 계산하게 했다.',
+
+    points: [
+      ['칸이 드는 것',
+       '지금 온도 · 여태 닿은 최고 온도 · 열이 얼마나 잘 통하는지 · 어느 종류인지 · 부피 몫.'],
+      ['칸이 들지 않는 것',
+       '익힘 등급 · 0에서 1 사이로 고친 값 · 점수 · 화면에 쓸 색.'],
+      ['목표 굽기도 칸 밖',
+       '무엇을 목표로 삼을지는 게임 규칙이라 칸이 아니라 점수 매기는 쪽이 들고 있다.'],
+      ['같은 값을 셋이 다르게 쓴다',
+       '겉면 색 · 단면 그림 · 결과 판정이 모두 같은 최고 온도를 읽고 각자 다른 해석을 붙인다.'],
+    ],
+
+    figure: {
+      src: 'bbq-master/assets/result-doneness.png',
+      alt: '자른 뒤 뜨는 결과 화면. 다섯 등급의 비율과 색 띠, 등급별 기준 온도가 함께 표시된다.',
+      cap:
+        '이 화면의 다섯 줄은 **저장된 값이 아니다** — 자르는 순간 격자를 훑어 부피 비율로 센 결과다. ' +
+        '위쪽 색 띠 아래 눈금이 각 등급을 가르는 온도이고, 그 기준만 바꾸면 격자를 건드리지 않고 이 화면이 바뀐다.',
+    },
+  },
+
+  // ─── §05 한계 ──────────────────────────────────────────
+  // PoC 는 미완성이 정상이다. 변명하지 않고 한 줄로 적는다.
+  limits: [
+    ['성능을 재지 않았다',
+     '3일 안에 구조가 서는지만 봤다. 프레임 시간도 메모리도 남긴 계측본이 없다.'],
+    ['일부러 느린 쪽을 골랐다',
+     '병렬 처리와 GPU 계산을 둘 다 검토하고 **쓰지 않기로** 했다. 값이 어떻게 도는지 에디터에서 눈으로 따라갈 수 있는 쪽을 택했다.'],
+    ['격자 크기가 고정이다',
+     '더 잘게 나누려면 배열을 다른 형태로 옮겨야 한다. 한 줄로 늘어놓은 구조라 옮기는 일 자체는 크지 않다.'],
+    ['불은 평평한 판 하나뿐',
+     '높이만으로 세기가 줄어드는 모델이라, 점이나 구 모양 열원을 쓰려면 거리 계산을 다시 정의해야 한다.'],
+    ['가림 판정이 한 칸뿐',
+     '겉면 칸의 바로 아래 한 칸만 본다. 두꺼운 껍질이나 뼈처럼 여러 칸에 걸친 구조는 반영되지 않는다.'],
+    ['자른 면은 겉면이 되지 않는다',
+     '칸을 한 번만 갈라 두므로 잘라서 새로 생긴 면은 겉면으로 다시 분류되지 않는다. 자르면 곧 결과라 이번에는 문제가 되지 않았다.'],
+    ['고기 하나 · 그릴 하나',
+     '여러 개를 올리려면 열을 나눠 주는 쪽의 창구만 넓히면 된다.'],
   ],
 };

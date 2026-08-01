@@ -1,0 +1,186 @@
+/* pages/labs/bbq-master/page.css
+   페이지 전용 블록. 색·타이포·간격은 전부 tokens.css 변수 — 새 색을 만들지 않는다.
+   레이아웃 크롬(nb-header / nb-body / nb-rail / nb-section / nb-facts / nb-footer)은 notebook.css 공유. */
+
+/* ─── 레이아웃 보정 ──────────────────────────────────── */
+/* grid 자식은 min-width:auto 라 넓은 콘텐츠가 컬럼을 밀어낸다. overflow-x 만으로는 안 줄어든다. */
+.nb-body > main { min-width: 0; }
+@media (max-width: 1100px) { .nb-body { grid-template-columns: minmax(0, 1fr); } }
+
+/* 공유 DataTable 은 마지막 열을 우측정렬 모노로 둔다 — 한글 산문이 안 읽힌다. */
+.nb-table td:last-child { text-align: left; font-family: var(--font-sans); }
+
+/* `.nb-page code`(0,1,1) 가 베어 `code`(0,0,1) 를 이기므로 특이도를 맞춘다.
+   안 맞추면 .bq-figcap 안의 코드 칩만 다른 모양으로 렌더된다. */
+.nb-page code {
+  font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2);
+  border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px;
+}
+
+/* ─── 공통 본문 ──────────────────────────────────────── */
+.bq-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 800px; text-wrap: pretty; }
+.bq-body strong { color: var(--ink); font-weight: 600; }
+
+/* 섹션 요지 한 줄 — 이 페이지에서 sage 색면은 이것 하나뿐이다.
+   색면을 여러 종류로 깔면 층이 하나로 뭉갠다. */
+.bq-gist {
+  margin: 0 0 22px; padding: 15px 20px;
+  background: var(--sage-50); border-left: 3px solid var(--sage-500); border-radius: 0 4px 4px 0;
+  font-size: 16.5px; line-height: 1.6; color: var(--sage-900); text-wrap: pretty;
+}
+.bq-gist strong { font-weight: 700; }
+.bq-gist code { background: var(--paper); border-color: var(--sage-200); }
+
+/* ─── Hero ───────────────────────────────────────────── */
+.bq-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
+.bq-hero-sub { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.1em; color: var(--terra-500); margin: 0 0 10px; font-weight: 600; }
+.bq-hook { font-size: 19px; line-height: 1.68; color: var(--ink-2); margin: 20px 0 26px; max-width: 800px; text-wrap: pretty; }
+.bq-hook strong { color: var(--ink); font-weight: 600; }
+
+.bq-hero-media {
+  margin: 26px 0 0; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--paper-2); overflow: hidden;
+}
+.bq-hero-media img { display: block; width: 100%; height: auto; }
+
+/* 만든 것 3칸 */
+.bq-built { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); margin-top: 24px; }
+.bq-built-cell { padding: 20px 22px 22px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 9px; }
+.bq-built-cell:last-child { border-right: none; }
+.bq-built-kind {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--terra-500); font-weight: 700; display: flex; align-items: center; gap: 8px;
+}
+.bq-built-kind::after { content: ''; height: 1px; flex: 1; background: var(--rule); }
+.bq-built-t { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.34; }
+.bq-built-s { font-size: 13.5px; color: var(--ink-2); line-height: 1.62; text-wrap: pretty; }
+
+/* ─── §01 마주 보는 두 요구 ──────────────────────────── */
+.bq-tension { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule-2); border-radius: 4px; overflow: hidden; background: var(--paper); margin: 6px 0 0; }
+.bq-tension-cell { padding: 18px 20px; border-right: 1px solid var(--rule-2); }
+.bq-tension-cell:last-child { border-right: none; }
+.bq-tension-cell:first-child { background: var(--paper-2); }
+.bq-tension-k { font-size: 15.5px; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 7px; }
+.bq-tension-v { font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
+.bq-tension-why { margin: 14px 0 26px; font-size: 15.5px; line-height: 1.75; color: var(--ink); max-width: 800px; text-wrap: pretty; }
+.bq-tension-why strong { font-weight: 700; }
+
+/* ─── 요점 목록 ──────────────────────────────────────── */
+.bq-pts { margin-top: 24px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); overflow: hidden; }
+.bq-pts-h {
+  padding: 11px 18px; background: var(--paper-3); border-bottom: 1px solid var(--rule-2);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-2);
+}
+.bq-pt { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 14px 18px; border-bottom: 1px dashed var(--rule); }
+.bq-pt:last-child { border-bottom: none; }
+.bq-pt-n {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink-3); color: var(--paper);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.bq-pt-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.bq-pt-v { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.bq-pt-v strong { color: var(--ink); font-weight: 600; }
+.bq-pt-v code, .bq-pt-k code { background: var(--paper); border-color: var(--rule); }
+
+/* ─── 이어서 — 다음 절의 첫 문장을 만드는 고리 ───────── */
+/* §02→§03, §03→§04 두 곳에만 쓴다. */
+.bq-handoff {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start;
+  margin: 30px 0 4px; padding: 16px 20px; background: var(--ink); color: var(--paper); border-radius: 4px;
+}
+.bq-handoff-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5); border-radius: 3px; padding: 4px 8px; white-space: nowrap; }
+.bq-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
+.bq-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
+.bq-handoff-a strong { color: var(--sage-300); font-weight: 700; }
+.bq-handoff-a code, .bq-handoff-q code { background: rgba(251,249,245,0.12); border: none; color: var(--paper); }
+
+/* ─── 그림 ───────────────────────────────────────────── */
+/* overflow:hidden — SVG 요소가 viewBox 밖으로 나가면 페이지 가로 스크롤이 생긴다 */
+.bq-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; overflow: hidden; }
+.bq-svg { width: 100%; height: auto; display: block; }
+
+/* 화면 캡처. 크롭 원본이 730px·410px 이라 늘리면 뭉개진다 —
+   width 를 주지 않아야 원본 폭에서 멈춘다. max-width 만으로 큰 캡처를 가둔다. */
+.bq-shot { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 14px 16px 12px; }
+.bq-shot img { display: block; max-width: 100%; height: auto; margin: 0 auto; border-radius: 3px; background: var(--paper-2); }
+.bq-shot .bq-figcap { max-width: 800px; }
+
+.bq-figcap { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.65; color: var(--ink-3); text-wrap: pretty; }
+.bq-figcap b, .bq-figcap strong { color: var(--ink); font-weight: 600; }
+
+.bq-svg-sub  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--ink-3); }
+.bq-svg-lbl  { font-family: var(--font-mono); font-size: 11.5px; fill: var(--ink-2); font-weight: 600; }
+.bq-svg-lbl.root { font-size: 13px; fill: var(--ink); font-weight: 700; }
+.bq-svg-lbl.accent { fill: var(--terra-700); }
+.bq-svg-tag  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--terra-500); font-weight: 600; }
+.bq-svg-tag.ok { fill: var(--sage-700); }
+
+/* ─── §01 범위 ───────────────────────────────────────── */
+/* ink 면은 .bq-handoff(절 사이 고리) 전용이다. 이 상자는 한 단 내려 둔다. */
+.bq-scope { margin-top: 30px; border: 1px solid var(--rule-2); border-radius: 4px; background: var(--paper); overflow: hidden; }
+.bq-scope-head { padding: 13px 20px; background: var(--paper-3); color: var(--ink); border-bottom: 1px solid var(--rule-2); font-size: 15px; font-weight: 700; letter-spacing: 0.01em; }
+.bq-scope-lead { margin: 0; padding: 16px 20px 4px; font-size: 15px; line-height: 1.7; color: var(--ink); text-wrap: pretty; }
+.bq-scope-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 12px 20px 4px; }
+.bq-scope-col { padding: 4px 16px 8px 0; }
+.bq-scope-col + .bq-scope-col { border-left: 1px solid var(--rule); padding-left: 20px; padding-right: 0; }
+.bq-scope-k { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+.bq-scope-col.reads .bq-scope-k { color: var(--sage-700); }
+.bq-scope-col.skips .bq-scope-k { color: var(--terra-500); }
+.bq-scope-col ul { margin: 0; padding-left: 17px; }
+.bq-scope-col li { font-size: 14px; line-height: 1.65; color: var(--ink-2); margin-bottom: 7px; text-wrap: pretty; }
+.bq-scope-col.reads li::marker { color: var(--sage-500); }
+.bq-scope-col.skips li::marker { color: var(--terra-300); }
+.bq-scope-why {
+  margin: 8px 20px 18px; padding: 13px 16px; background: var(--paper-2);
+  border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0;
+  font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty;
+}
+.bq-scope-why strong { color: var(--ink); font-weight: 700; }
+
+/* ─── §05 한계 ───────────────────────────────────────── */
+.bq-limits { border-top: 1px solid var(--rule); }
+.bq-limit { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.bq-limit-k { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+.bq-limit-v { font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.bq-limit-v strong { color: var(--ink); font-weight: 600; }
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .bq-scope-cols { grid-template-columns: 1fr; }
+  .bq-scope-col + .bq-scope-col { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 14px; margin-top: 6px; }
+}
+@media (max-width: 720px) {
+  .bq-hero { padding: 36px 0 32px; }
+  .bq-hook { font-size: 17px; }
+  .bq-built { grid-template-columns: 1fr; }
+  .bq-built-cell { border-right: none; border-bottom: 1px solid var(--rule); }
+  .bq-built-cell:last-child { border-bottom: none; }
+  .bq-tension { grid-template-columns: 1fr; }
+  .bq-tension-cell { border-right: none; border-bottom: 1px solid var(--rule-2); }
+  .bq-tension-cell:last-child { border-bottom: none; }
+  .bq-handoff { grid-template-columns: 1fr; }
+  .bq-handoff-k { justify-self: start; }
+  .bq-limit { grid-template-columns: 1fr; gap: 6px; }
+  .bq-pt { grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 12px 12px; }
+  .bq-pt-n { width: 20px; height: 20px; font-size: 10px; }
+  /* 표 첫 열이 짧아도 셋째 열 산문이 min-content 이하로 안 줄어든다 — 표만 가로로 스크롤시킨다. */
+  .nb-tablewrap { overflow-x: auto; }
+  .nb-tablewrap .nb-table { min-width: 520px; }
+  /* crumb 전체를 두면 320px 기기에서 헤더가 넘친다. 브랜드가 같은 목적지를 갖는다. */
+  .nb-header .nb-crumbs a, .nb-header .nb-crumbs .sep { display: none; }
+  /* viewBox 가 화면 폭으로 축소되면 SVG 안 10.5px 글자가 4~5px 로 떨어진다.
+     설명 문장은 figcaption 이 대신 지므로 여기서는 숨긴다. */
+  .bq-svg-note { display: none; }
+  /* 남는 라벨(도형 이름)은 숨길 수 없다 — 그림이 그것으로 읽힌다.
+     390px 폭에서 viewBox 760 은 배율 0.42 → 11.5px 라벨이 4.8px 가 된다.
+     그림만 가로로 스와이프하게 두고 최소 폭을 확보한다 (배율 0.74 → 8.5px).
+     세로는 잠근다 — 열어 두면 페이지가 세로로 이중 스크롤된다. */
+  .bq-figure { padding: 12px 12px 10px; overflow-x: auto; overflow-y: hidden; }
+  .bq-figure .bq-svg { min-width: 560px; }
+  .bq-figure figcaption { min-width: 0; }
+  /* 공유 헤더의 상단 네비가 이 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
+     같은 목적지를 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
+  .nb-header .nb-nav { display: none; }
+}
