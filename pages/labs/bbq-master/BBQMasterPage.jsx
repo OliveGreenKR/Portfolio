@@ -218,13 +218,16 @@ function BQField({ data }) {
   const f = data.field;
   return (
     <section id="field" className="nb-section">
-      <BQSectionHead no="02" title="만든 것 — 안쪽 상태를 따로 굴린다" kind="SIMULATION" />
+      <BQSectionHead no="02" title="만든 것 — 공간을 칸으로 나눠 열을 굴린다" kind="SIMULATION" />
       <BQGist>{f.gist}</BQGist>
       <p className="bq-body">{ri(f.body)}</p>
       <p className="bq-body">{ri(f.body2)}</p>
-      {/* 원리도가 먼저 온다 — 격자가 어디에 붙어 있는지를 알아야 아래 네 줄이 읽힌다. */}
-      <window.BQFrameViz />
+      {/* 공간 그림이 먼저다 — 나눈 것이 고기가 아니라 공간이라는 게 이 절의 전제다. */}
+      <window.BQSpaceViz />
+      <p className="bq-body">{ri(f.body3)}</p>
       <BQPoints points={f.points} />
+      {/* 회전 그림은 요점 4번(격자가 고기에 붙어 있다)을 받는다 — 그 뒤에 온다. */}
+      <window.BQFrameViz />
       <BQShot f={f.figure} />
       <BQHandoff h={f.handoff} />
     </section>
@@ -256,10 +259,13 @@ function BQModel({ data }) {
   const m = data.model;
   return (
     <section id="model" className="nb-section">
-      <BQSectionHead no="04" title="갈라 둔 것 — 칸에 무엇을 저장했나" kind="DATA MODEL" />
+      <BQSectionHead no="04" title="갈라 둔 것 — 데이터와 렌더러 사이" kind="DATA FLOW" />
       <BQGist>{m.gist}</BQGist>
       <p className="bq-body">{ri(m.body)}</p>
+      {/* 파이프라인이 이 절의 본체다. 아래 다섯 줄은 이 그림의 칸을 하나씩 푼 것이다. */}
+      <window.BQPipeViz />
       <p className="bq-body">{ri(m.body2)}</p>
+      <p className="bq-body">{ri(m.body3)}</p>
       <BQPoints points={m.points} />
       <BQShot f={m.figure} />
     </section>
