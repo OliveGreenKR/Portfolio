@@ -267,7 +267,7 @@ for (int oy = -1; oy <= 1; oy++) {
           ['수명 단위는 라이브러리', '구간에 들어갈 때 묶음으로 올리고 나갈 때 내린다.'],
           ['재지 않았다',        '프레임에 얼마나 이득인지는 측정한 적이 없다. 목적은 상주 메모리였다.'],
         ],
-        link: { text: '설계 전체는 따로 정리해 뒀다.', label: 'Labs · Sound System →', href: 'labs/sound-system.html' },
+        link: { text: '설계 전체는 따로 정리해 뒀다.', label: 'Labs · 리소스 관리 모듈 →', href: 'labs/sound-system.html' },
       },
       {
         key: 'spawn', no: 'd', title: '스폰 상한',
