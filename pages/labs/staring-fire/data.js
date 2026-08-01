@@ -32,7 +32,7 @@
 
 window.SF_DATA = {
   meta: {
-    eyebrow: 'LAB · 05 ─ GPU 시뮬 · 셰이더',
+    eyebrow: 'LAB · 04 ─ GPU 시뮬 · 셰이더',
     subtitle: '3일 PoC · Unity 6.3 LTS · URP',
     title: 'Staring Fire',
     date: '2026.04',

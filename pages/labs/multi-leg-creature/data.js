@@ -31,7 +31,7 @@
 
 window.ML_DATA = {
   meta: {
-    eyebrow: 'LAB · 03 ─ 물리 · 절차적 애니메이션',
+    eyebrow: 'LAB · 02 ─ 물리 · 절차적 애니메이션',
     subtitle: '하루 PoC · Unity 6.3 LTS · URP 2D',
     title: 'Multi-Leg Creature',
     date: '2026.05',

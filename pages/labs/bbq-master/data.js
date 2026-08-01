@@ -26,7 +26,7 @@
 
 window.BBQ_DATA = {
   meta: {
-    eyebrow: 'LAB · 04 ─ 볼류메트릭 시뮬',
+    eyebrow: 'LAB · 03 ─ 볼류메트릭 시뮬',
     subtitle: '3일 PoC · Unity 6.3 LTS · URP',
     title: 'BBQ Master',
     date: '2026.05',

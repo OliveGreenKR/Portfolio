@@ -46,7 +46,7 @@
 
 window.SOUND_DATA = {
   meta: {
-    eyebrow: 'LAB · 07 ─ 재사용 시스템 · 1인',
+    eyebrow: 'LAB · 01 ─ 재사용 시스템 · 1인',
     subtitle: 'Chul.SoundSystem / Chul.VFXSystem',
     // 제목은 읽는 즉시 도메인(게임 리소스 로딩)과 행위(모듈로 떼어냄)가 잡혀야 한다.
     // 재사용 결과는 훅이 받는다 — 제목에 둘 다 넣으면 대구가 된다.

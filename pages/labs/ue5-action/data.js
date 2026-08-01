@@ -30,7 +30,7 @@
 
 window.UA_DATA = {
   meta: {
-    eyebrow: 'LAB · 01 ─ UE5 · Unreal C++',
+    eyebrow: 'LAB · 05 ─ UE5 · Unreal C++',
     subtitle: '8주 개인 학습 · Unreal Engine 5.4',
     title: 'UE5 Action',
     date: '2024.11',
