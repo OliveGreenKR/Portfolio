@@ -1,0 +1,236 @@
+/* pages/labs/bsf-master/page.css
+   페이지 전용 블록. 색·타이포·간격은 전부 tokens.css 변수 — 새 색을 만들지 않는다.
+   레이아웃 크롬(nb-header / nb-body / nb-rail / nb-section / nb-facts / nb-footer)은 notebook.css 공유. */
+
+/* ─── 레이아웃 보정 ──────────────────────────────────── */
+/* grid 자식은 min-width:auto 라 넓은 콘텐츠가 컬럼을 밀어낸다. overflow-x 만으로는 안 줄어든다. */
+.nb-body > main { min-width: 0; }
+@media (max-width: 1100px) { .nb-body { grid-template-columns: minmax(0, 1fr); } }
+
+/* `.nb-page code`(0,1,1) 가 베어 `code`(0,0,1) 를 이기므로 특이도를 맞춘다.
+   안 맞추면 .sf-figcap 안의 코드 칩만 다른 모양으로 렌더된다. */
+.nb-page code {
+  font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2);
+  border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px;
+}
+
+/* ─── 공통 본문 ──────────────────────────────────────── */
+.sf-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 800px; text-wrap: pretty; }
+.sf-body strong { color: var(--ink); font-weight: 600; }
+
+/* 섹션 요지 한 줄 — 이 페이지에서 sage 색면은 이것 하나뿐이다.
+   색면을 여러 종류로 깔면 층이 하나로 뭉갠다. */
+.sf-gist {
+  margin: 0 0 22px; padding: 15px 20px;
+  background: var(--sage-50); border-left: 3px solid var(--sage-500); border-radius: 0 4px 4px 0;
+  font-size: 16.5px; line-height: 1.6; color: var(--sage-900); text-wrap: pretty;
+}
+.sf-gist strong { font-weight: 700; }
+.sf-gist code { background: var(--paper); border-color: var(--sage-200); }
+
+/* ─── Hero ───────────────────────────────────────────── */
+.sf-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
+.sf-hero-sub { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.1em; color: var(--terra-500); margin: 0 0 10px; font-weight: 600; }
+.sf-hook { font-size: 19px; line-height: 1.68; color: var(--ink-2); margin: 20px 0 26px; max-width: 800px; text-wrap: pretty; }
+.sf-hook strong { color: var(--ink); font-weight: 600; }
+
+.sf-hero-media {
+  margin: 26px 0 0; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--paper-2); overflow: hidden;
+}
+.sf-hero-media img { display: block; width: 100%; height: auto; }
+.sf-hero-media figcaption { padding: 0 18px 14px; margin-top: 0; border-top: none; }
+
+/* 만든 것 3칸 */
+.sf-built { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); margin-top: 24px; }
+.sf-built-cell { padding: 20px 22px 22px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 9px; }
+.sf-built-cell:last-child { border-right: none; }
+.sf-built-kind {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--terra-500); font-weight: 700; display: flex; align-items: center; gap: 8px;
+}
+.sf-built-kind::after { content: ''; height: 1px; flex: 1; background: var(--rule); }
+.sf-built-t { font-size: 17px; font-weight: 700; letter-spacing: -0.01em; color: var(--ink); line-height: 1.34; }
+.sf-built-s { font-size: 13.5px; color: var(--ink-2); line-height: 1.62; text-wrap: pretty; }
+
+/* ─── §01 마주 보는 두 요구 ──────────────────────────── */
+.sf-tension { display: grid; grid-template-columns: 1fr 1fr; gap: 0; border: 1px solid var(--rule-2); border-radius: 4px; overflow: hidden; background: var(--paper); margin: 6px 0 0; }
+.sf-tension-cell { padding: 18px 20px; border-right: 1px solid var(--rule-2); }
+.sf-tension-cell:last-child { border-right: none; }
+.sf-tension-cell:first-child { background: var(--paper-2); }
+.sf-tension-k { font-size: 15.5px; font-weight: 700; color: var(--ink); line-height: 1.45; margin-bottom: 7px; }
+.sf-tension-v { font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
+.sf-tension-why { margin: 14px 0 26px; font-size: 15.5px; line-height: 1.75; color: var(--ink); max-width: 800px; text-wrap: pretty; }
+.sf-tension-why strong { font-weight: 700; }
+
+/* ─── 요점 목록 ──────────────────────────────────────── */
+.sf-pts { margin-top: 24px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); overflow: hidden; }
+.sf-pt { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 14px 18px; border-bottom: 1px dashed var(--rule); }
+.sf-pt:last-child { border-bottom: none; }
+.sf-pt-n {
+  width: 22px; height: 22px; border-radius: 50%; background: var(--ink-3); color: var(--paper);
+  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center;
+}
+.sf-pt-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
+.sf-pt-v { font-size: 14.5px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.sf-pt-v strong { color: var(--ink); font-weight: 600; }
+.sf-pt-v code, .sf-pt-k code { background: var(--paper); border-color: var(--rule); }
+
+/* ─── 이어서 — 다음 절의 첫 문장을 만드는 고리 ───────── */
+/* §02→§03, §03→§04 두 곳에만 쓴다. */
+.sf-handoff {
+  display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start;
+  margin: 30px 0 4px; padding: 16px 20px; background: var(--ink); color: var(--paper); border-radius: 4px;
+}
+.sf-handoff-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5); border-radius: 3px; padding: 4px 8px; white-space: nowrap; }
+.sf-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
+.sf-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
+.sf-handoff-a strong { color: var(--sage-300); font-weight: 700; }
+.sf-handoff-a code, .sf-handoff-q code { background: rgba(251,249,245,0.12); border: none; color: var(--paper); }
+
+/* ─── 그림 ───────────────────────────────────────────── */
+/* overflow:hidden — SVG 요소가 viewBox 밖으로 나가면 페이지 가로 스크롤이 생긴다 */
+.sf-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; overflow: hidden; }
+.sf-svg { width: 100%; height: auto; display: block; }
+
+/* 화면 캡처. 크롭 원본이 730px·410px 이라 늘리면 뭉개진다 —
+   width 를 주지 않아야 원본 폭에서 멈춘다. max-width 만으로 큰 캡처를 가둔다. */
+.sf-shot { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 14px 16px 12px; }
+.sf-shot img { display: block; max-width: 100%; height: auto; margin: 0 auto; border-radius: 3px; background: var(--paper-2); }
+.sf-shot .sf-figcap { max-width: 800px; }
+
+.sf-figcap { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.65; color: var(--ink-3); text-wrap: pretty; }
+.sf-figcap b, .sf-figcap strong { color: var(--ink); font-weight: 600; }
+
+.sf-svg-sub  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--ink-3); }
+.sf-svg-lbl  { font-family: var(--font-mono); font-size: 11.5px; fill: var(--ink-2); font-weight: 600; }
+.sf-svg-lbl.root { font-size: 13px; fill: var(--ink); font-weight: 700; }
+.sf-svg-lbl.accent { fill: var(--terra-700); }
+.sf-svg-tag  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--terra-500); font-weight: 600; }
+.sf-svg-tag.ok { fill: var(--sage-700); }
+
+/* ─── §01 범위 ───────────────────────────────────────── */
+/* ink 면은 .sf-handoff(절 사이 고리) 전용이다. 이 상자는 한 단 내려 둔다. */
+.sf-scope { margin-top: 30px; border: 1px solid var(--rule-2); border-radius: 4px; background: var(--paper); overflow: hidden; }
+.sf-scope-head { padding: 13px 20px; background: var(--paper-3); color: var(--ink); border-bottom: 1px solid var(--rule-2); font-size: 15px; font-weight: 700; letter-spacing: 0.01em; }
+.sf-scope-lead { margin: 0; padding: 16px 20px 4px; font-size: 15px; line-height: 1.7; color: var(--ink); text-wrap: pretty; }
+.sf-scope-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 0; padding: 12px 20px 4px; }
+.sf-scope-col { padding: 4px 16px 8px 0; }
+.sf-scope-col + .sf-scope-col { border-left: 1px solid var(--rule); padding-left: 20px; padding-right: 0; }
+.sf-scope-k { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; margin-bottom: 10px; }
+.sf-scope-col.reads .sf-scope-k { color: var(--sage-700); }
+.sf-scope-col.skips .sf-scope-k { color: var(--terra-500); }
+.sf-scope-col ul { margin: 0; padding-left: 17px; }
+.sf-scope-col li { font-size: 14px; line-height: 1.65; color: var(--ink-2); margin-bottom: 7px; text-wrap: pretty; }
+.sf-scope-col.reads li::marker { color: var(--sage-500); }
+.sf-scope-col.skips li::marker { color: var(--terra-300); }
+.sf-scope-why {
+  margin: 8px 20px 18px; padding: 13px 16px; background: var(--paper-2);
+  border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0;
+  font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty;
+}
+.sf-scope-why strong { color: var(--ink); font-weight: 700; }
+
+/* ─── §05 한계 ───────────────────────────────────────── */
+.sf-limits { border-top: 1px solid var(--rule); }
+.sf-limit { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.sf-limit-k { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+.sf-limit-v { font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.sf-limit-v strong { color: var(--ink); font-weight: 600; }
+
+/* ─── Responsive ─────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .sf-scope-cols { grid-template-columns: 1fr; }
+  .sf-scope-col + .sf-scope-col { border-left: none; border-top: 1px solid var(--rule); padding-left: 0; padding-top: 14px; margin-top: 6px; }
+}
+@media (max-width: 720px) {
+  .sf-hero { padding: 36px 0 32px; }
+  .sf-hook { font-size: 17px; }
+  .sf-built { grid-template-columns: 1fr; }
+  .sf-built-cell { border-right: none; border-bottom: 1px solid var(--rule); }
+  .sf-built-cell:last-child { border-bottom: none; }
+  .sf-tension { grid-template-columns: 1fr; }
+  .sf-tension-cell { border-right: none; border-bottom: 1px solid var(--rule-2); }
+  .sf-tension-cell:last-child { border-bottom: none; }
+  .sf-handoff { grid-template-columns: 1fr; }
+  .sf-handoff-k { justify-self: start; }
+  .sf-limit { grid-template-columns: 1fr; gap: 6px; }
+  .sf-pt { grid-template-columns: 20px minmax(0, 1fr); gap: 10px; padding: 12px 12px; }
+  .sf-pt-n { width: 20px; height: 20px; font-size: 10px; }
+  /* crumb 전체를 두면 320px 기기에서 헤더가 넘친다. 브랜드가 같은 목적지를 갖는다. */
+  .nb-header .nb-crumbs a, .nb-header .nb-crumbs .sep { display: none; }
+  /* viewBox 가 화면 폭으로 축소되면 SVG 안 10.5px 글자가 4~5px 로 떨어진다.
+     설명 문장은 figcaption 이 대신 지므로 여기서는 숨긴다. */
+  .sf-svg-note { display: none; }
+  /* 남는 라벨(도형 이름)은 숨길 수 없다 — 그림이 그것으로 읽힌다.
+     390px 폭에서 viewBox 760 은 배율 0.42 → 11.5px 라벨이 4.8px 가 된다.
+     그림만 가로로 스와이프하게 두고 최소 폭을 확보한다 (배율 0.74 → 8.5px).
+     세로는 잠근다 — 열어 두면 페이지가 세로로 이중 스크롤된다. */
+  .sf-figure { padding: 12px 12px 10px; overflow-x: auto; overflow-y: hidden; }
+  .sf-figure .sf-svg { min-width: 560px; }
+  .sf-figure figcaption { min-width: 0; }
+  /* 공유 헤더의 상단 네비가 이 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
+     같은 목적지를 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
+  .nb-header .nb-nav { display: none; }
+}
+
+/* ─── 캡처 넉 장 (§02) ───────────────────────────────── */
+/* 넷이 같은 순간이 아니라는 경고를 한 곳에서 해야 해서 figure 하나로 묶는다. */
+.sf-gallery { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); overflow: hidden; }
+.sf-gallery-head {
+  padding: 11px 18px; background: var(--paper-3); border-bottom: 1px solid var(--rule-2);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.13em; text-transform: uppercase;
+  font-weight: 700; color: var(--ink-2);
+}
+.sf-gallery-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+.sf-shot { padding: 14px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 8px; }
+.sf-shot:last-child { border-right: none; }
+.sf-shot-tag {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  font-weight: 700; color: var(--terra-500);
+}
+/* 크롭 원본이 1151px 이라 늘리지 않는다 — width 를 주지 않고 max-width 로만 가둔다. */
+.sf-shot img { display: block; max-width: 100%; height: auto; border-radius: 3px; background: var(--paper-2); }
+.sf-shot-cap { font-size: 12.5px; line-height: 1.6; color: var(--ink-3); text-wrap: pretty; }
+.sf-gallery figcaption { margin: 0; padding: 12px 18px 14px; border-top: 1px solid var(--rule); }
+
+/* ─── 사고 카드 (§03) ────────────────────────────────── */
+.sf-case { border-top: 2px solid var(--rule-2); padding: 30px 0 6px; }
+.sf-case:first-of-type { border-top: none; padding-top: 4px; }
+.sf-case-head { display: flex; align-items: center; gap: 14px; margin-bottom: 16px; }
+.sf-case-no {
+  font-family: var(--font-mono); font-size: 12px; font-weight: 700; color: var(--paper);
+  background: var(--ink); width: 26px; height: 26px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center; flex: none;
+}
+.sf-case-title { font-family: var(--font-display); font-size: 23px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); margin: 0; line-height: 1.25; }
+.sf-case-row { display: grid; grid-template-columns: 58px minmax(0, 1fr); gap: 16px; align-items: start; padding: 11px 0; border-top: 1px solid var(--rule); }
+.sf-case-row:first-of-type { border-top: none; padding-top: 2px; }
+.sf-case-row > span {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.13em; font-weight: 700;
+  padding-top: 5px; white-space: nowrap;
+}
+.sf-case-row.symptom > span { color: var(--terra-500); }
+.sf-case-row.why     > span { color: var(--ink-3); }
+.sf-case-row.did     > span { color: var(--sage-700); }
+.sf-case-row p { margin: 0; font-size: 15.5px; line-height: 1.72; color: var(--ink); text-wrap: pretty; }
+.sf-case-row.why p { color: var(--ink-2); }
+.sf-case-row p strong { font-weight: 700; }
+
+/* 절 마무리 한 문단 — 색면이 아니라 좌측선으로 이탈시킨다 (색면은 gist 하나뿐). */
+.sf-after {
+  margin: 26px 0 0; padding: 13px 17px; background: var(--paper-2);
+  border-left: 3px solid var(--rule-2); border-radius: 0 4px 4px 0; color: var(--ink-2);
+}
+
+@media (max-width: 1100px) { .sf-gallery-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 720px) {
+  .sf-gallery-grid { grid-template-columns: 1fr; }
+  .sf-shot { border-right: none; border-bottom: 1px solid var(--rule); }
+  .sf-shot:last-child { border-bottom: none; }
+  .sf-case-title { font-size: 20px; }
+  /* 라벨 열 58px 을 두면 본문이 한 줄 12자로 떨어진다. */
+  .sf-case-row { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .sf-case-row > span { padding-top: 0; }
+}
