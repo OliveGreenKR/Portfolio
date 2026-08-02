@@ -23,38 +23,53 @@ window.ABOUT_DATA = {
     ['어학',     '한국어 (모국어) · 영어 (일상 회화, 토익 860 / 2024.05)'],
   ],
 
-  // ─── 세 결 — master.md §1 + 이력서 성과 발췌
+  // ─── 네 결 (2026-08-02 재정의)
+  // 이전 판은 "메인 3 + Labs" 시절 분류라 프로젝트가 11개로 늘면서 담기지 않았다 —
+  // lede 가 `메인 3` 이라고 적혀 있었고, Cartapli Mobile · Motelet · 외주 셋이
+  // 자기소개에 한 번도 나오지 않았다.
+  // 신설한 것은 ②(재서 판단하기) 하나다. 최근 1년의 실제 축인데 이전 판이 한 글자도 안 팔았다.
+  // ⚠️ 각 line 은 상세 페이지·랜딩 카드와 같은 말을 쓴다. 어긋나면 상세 페이지가 원본이다.
   strands: [
     {
       kind: 'SYSTEMS',
-      title: '시스템 아키텍처 결정 사례',
-      lede: '메인 3 — 동시에 도는 다수 시스템을 직접 참조 0 으로 분리하는 결정의 누적.',
+      title: '시스템을 가르는 결정',
+      lede: '동시에 도는 것들이 서로를 직접 부르지 않게 선을 긋는다.',
       examples: [
-        { tag: 'Cartapli',    line: '위임형 상태 기반 씬 아키텍처 — 시스템 추가 시 기존 코드 변경 0 줄.', href: '../pages/cartapli.html' },
-        { tag: 'DX11 Engine', line: '게임/물리 컨텍스트 완전 분리 + Job 기반 비동기 명령 시스템.',          href: '../pages/dx11-engine.html' },
+        { tag: 'Cartapli',    line: '11개 싱글톤이 동시에 도는 배틀씬을 시스템 간 직접 참조 0 으로 — 시스템 추가 시 기존 코드 변경 0 줄.', href: '../pages/cartapli.html' },
+        { tag: 'DX11 Engine', line: '물리 데이터 소유권을 게임 객체에서 떼어내 중앙 배열로 옮기고, 게임과 물리를 통로 넷으로만 이었다.', href: '../pages/dx11-engine.html' },
         // "디자이너가 코드 없이 편집" 은 쓰지 않는다 — 8주 1인 프로젝트라 디자이너가 없었다.
-        // 만든 것은 그렇게 편집할 수 있는 구조이고, 동기는 본인의 재컴파일 대기 시간이었다.
-        { tag: 'UE5 Action',  line: '스킬이 무엇을 하고 어디로 이어지는지는 데이터에, 코드에는 언제 실행할지만.', href: '../pages/labs/ue5-action.html' },
+        { tag: 'UE5 Action',  line: '스킬이 무엇을 하고 어디로 이어지는지는 데이터에, 코드에는 실행 순서만 남겼다.', href: '../pages/labs/ue5-action.html' },
       ],
     },
     {
-      kind: 'OPERATIONS',
-      title: '장기 프로젝트 · 출시 운영',
-      lede: '게임랩 빌드 → Steam 글로벌 출시. 다중 워크스트림 + 자동화 인프라 자율 도입.',
+      kind: 'MEASURE',
+      title: '재서 판단하기',
+      lede: '감으로 못 짚는 것을 숫자와 모델로 짚는다. 고친 만큼을 나눠서 말할 수 있게.',
       examples: [
-        { tag: 'Wobble Wobble', line: '5주 · 5인 · Steam + STOVE · 사운드 테스트 84개 · 14개 언어 자동 번역.', href: '../pages/wobble-wobble.html' },
+        { tag: 'Cartapli Mobile', line: '종이접기 코어를 5단계로 나눠 고치고 단계마다 따로 측정 — 구조로 얼마, DOTS 로 얼마를 갈라 말한다.', href: '../pages/cartapli-mobile.html' },
+        { tag: 'Motelet',         line: '플레이 감각이 못 짚는 "어느 구간이 왜 과한가" 를, 런타임 공식을 옮겨 적은 계산 모델로 짚었다.', href: '../pages/motelet.html' },
+      ],
+    },
+    {
+      kind: 'SHIP',
+      title: '출시하고 운영하기',
+      lede: '만드는 것과 내보내는 것은 다른 일이다. 내보내는 쪽도 직접 했다.',
+      examples: [
         { tag: 'Cartapli',      line: '13주 · 4인 · Steam 매우 긍정 98% (155/157) · 26,269 lifetime users.', href: '../pages/cartapli.html' },
+        { tag: 'Wobble Wobble', line: '5주 · 5인 · Steam + STOVE 동시 출시 · 14개 언어 자동 번역 인프라를 직접 도입.', href: '../pages/wobble-wobble.html' },
+        { tag: '교육용 게이미피케이션', line: '외주 납품 완료 — 비개발자용 원터치 배포 콘솔과 우회 불가능한 단일 인가 게이트까지.', href: '../pages/edu-gamification.html' },
       ],
     },
     {
       kind: 'POC',
-      title: 'PoC 사고 사이클',
-      lede: 'Labs 5 — 1일에서 8주 사이에 가설을 세우고, 한 결정의 결과만 남기고 접는다.',
+      title: '만들어서 확인하기',
+      lede: 'Labs 5 — 하루에서 몇 주 사이에 하나만 확인하고, 그 결과만 남기고 접는다.',
       examples: [
         // "보행 생성" 은 쓰지 않는다 — gait 생성기가 없다. 다리를 고르고 붙잡고 당기는 것은 사람이다.
-        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.',   href: '../pages/labs/multi-leg-creature.html' },
-        { tag: 'BBQ Master',         line: '안쪽 상태를 32³ 격자로 따로 굴리고 겉면 색·단면으로만 노출.',      href: '../pages/labs/bbq-master.html' },
-        { tag: 'Staring Fire',       line: 'GPU Stable Fluids + Blackbody. 닫힌 계 + Vorticity flame gate.', href: '../pages/labs/staring-fire.html' },
+        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.', href: '../pages/labs/multi-leg-creature.html' },
+        { tag: 'BBQ Master',         line: '공간을 32³ 복셀로 나눠 열 전도만 굴리고, 그 온도를 겉면 색과 잘린 단면으로 보여 준다.', href: '../pages/labs/bbq-master.html' },
+        // 표준 기법 이름(Stable Fluids · Blackbody)을 앞세우지 않는다 — 페이지가 한 일로 쓴다.
+        { tag: 'Staring Fire',       line: '불을 그리지 않고 굴렸다 — 격자 위에서 온도를 계산하고 그대로 빛으로 옮긴다.', href: '../pages/labs/staring-fire.html' },
       ],
     },
   ],
@@ -135,8 +150,9 @@ window.ABOUT_DATA = {
     note: '학력 · 외부 활동 · 자격. 게임랩 메타 서사 포함.',
     rows: [
       { y: '2017.03 ─ 2024.08', t: '서울시립대학교 기계정보공학 (졸업). 컴퓨터 시스템 구조론 · 시스템 소프트웨어 · 그래픽스 · 운영체제 · 자료구조 및 알고리즘 · 임베디드 시스템 등.' },
-      { y: '2025.09',          t: '크래프톤 게임랩 4기 — 트랙 종료 → Steam 무료 게임 Cartapli: Fold Quest 출시 (EPIC 으로 연결).' },
-      { y: '게임랩 다주차',     t: '주차 단위 PM 운영 경험 → Wobble Wobble 출시 PM + 자동화 엔지니어 로 직결.' },
+      { y: '2025.07 ─ 2026.02', t: '크래프톤 게임랩 4기 — 주차 단위 다주차 트랙을 거쳐 EPIC 으로, Cartapli: Fold Quest 를 Steam 에 출시하며 종료.' },
+      { y: '2026.03 ─ 2026.04', t: '게임랩에서 만든 빌드를 5주 만에 Wobble Wobble 로 Steam · STOVE 동시 출시. PM 겸 자동화 담당.' },
+      { y: '2026.05 ─ 현재',    t: '외주 납품(교육용 게이미피케이션, 2026.07) 완료. Motelet · Cartapli Mobile 진행 중.' },
       { y: '2024.05',          t: '토익 860.' },
       { y: '2023.06',          t: '서울시립대 C++ 소모임 강의 진행 (Accelerated C++ 기반).' },
       { y: '2023.02',          t: '백준 플래티넘 달성 (C++).' },
@@ -155,5 +171,5 @@ window.ABOUT_DATA = {
     ],
   },
 
-  footer: 'JCH · 정철 · 2026 · last update 2026.05.22',
+  footer: 'JCH · 정철 · 2026 · last update 2026.08.02',
 };

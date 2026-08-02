@@ -183,7 +183,7 @@ function AboutRail() {
       {link('hero', 'Overview')}
       {link('facts', 'Context')}
       <span className="nb-rail-section">strands</span>
-      {link('strands', '시스템 / 운영 / PoC')}
+      {link('strands', '결 넷')}
       <span className="nb-rail-section">profile</span>
       {link('skills', 'Skills')}
       {link('background', 'Background')}

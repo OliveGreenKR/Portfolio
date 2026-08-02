@@ -9,7 +9,20 @@
   <style>
     html, body { margin: 0; padding: 0; background: var(--paper); }
     html { scroll-behavior: smooth; }
-    [data-screen-label] { /* labelled for design comment context */ }
+
+    /* 이 페이지는 page.css 가 없고 스타일이 AboutPage.jsx 안에 인라인으로 있다.
+       아래 둘은 공유 크롬(notebook.css) 을 덮는 것이라 여기 둔다. */
+    @media (max-width: 720px) {
+      /* 공유 .nb-nav 가 모바일 폭에서 헤더 밖으로 밀려 페이지를 가로로 민다 (실측 630 > 390).
+         같은 목적지를 좌측 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
+      .nb-header .nb-nav { display: none; }
+      /* 320px 기기에서 brand + crumb 전체가 헤더 폭을 넘는다. 브랜드가 같은 목적지를 갖는다. */
+      .nb-header .nb-crumbs a,
+      .nb-header .nb-crumbs .sep { display: none; }
+    }
+    /* 링크 줄 끝의 장식 화살표가 부모 밖 3px 로 나가 페이지를 가로로 민다.
+       내용 열에서 잘라 준다 — 레일은 형제라 영향받지 않는다. */
+    .nb-body > main { min-width: 0; overflow-x: clip; }
   </style>
 </head>
 <body data-screen-label="About">
