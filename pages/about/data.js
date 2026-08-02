@@ -40,13 +40,12 @@ window.ABOUT_DATA = {
       kind: 'BUILD',
       title: '만들어 보고 정하기',
       lede: '말로 좋아 보이는 아이디어와 해 봤을 때 재미있는 것은 다르다. 아이디어는 아이디어로 두고, 만들어서 직접 해 본 뒤에 남길지 접을지 정한다.',
-      examples: [
-        // "보행 생성" 은 쓰지 않는다 — gait 생성기가 없다. 다리를 고르고 붙잡고 당기는 것은 사람이다.
-        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.', href: '../pages/labs/multi-leg-creature.html' },
-        { tag: 'BBQ Master',         line: '공간을 32³ 복셀로 나눠 열 전도만 굴리고, 그 온도를 겉면 색과 잘린 단면으로 보여 준다.', href: '../pages/labs/bbq-master.html' },
-        // 표준 기법 이름(Stable Fluids · Blackbody)을 앞세우지 않는다 — 페이지가 한 일로 쓴다.
-        { tag: 'Staring Fire',       line: '불을 그리지 않고 굴렸다 — 격자 위에서 온도를 계산하고 그대로 빛으로 옮긴다.', href: '../pages/labs/staring-fire.html' },
-      ],
+      // 예시를 일부러 비워 둔다. PoC 를 만들었다는 사실은 이 방식의 증거가 아니다 —
+      // PoC 는 누구나 거치는 공정 단계고, 각 Labs 줄은 그 PoC 가 기술적으로 뭘 하는지의 설명이었다.
+      // Labs 전체를 한 줄로 묶는 안도 버렸다: 5개 중 sound-system(재사용 모듈)과
+      // ue5-action(학습 프로젝트)은 "하나만 확인하고 접은 실험" 이 아니라 문장이 사실이 아니게 된다.
+      // 이 카드는 선호하는 작업 방식의 진술로 두고, 근거는 면접에서 말한다.
+      examples: [],
     },
     {
       kind: 'SYSTEMS',
