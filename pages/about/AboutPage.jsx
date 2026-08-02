@@ -41,7 +41,7 @@ const aboutStyles = {
   },
   dd: { margin: 0, color: 'var(--ink-2)' },
 
-  // ─── Strands (3 cards)
+  // ─── Approach (카드 수는 data.js strands 가 정한다 — 여기에 숫자를 적지 않는다)
   strandsWrap: { paddingTop: 56, paddingBottom: 40 },
   strandsGrid: { display: 'flex', flexDirection: 'column', gap: 18 },
   strand: {
@@ -151,7 +151,7 @@ function AboutHeader() {
         <span className="cur">about</span>
       </div>
       <nav className="nb-nav">
-        <a href="#strands">Strands</a>
+        <a href="#strands">Approach</a>
         <a href="#skills">Skills</a>
         <a href="#background">Background</a>
         <a href="#links">Contact</a>
@@ -182,8 +182,8 @@ function AboutRail() {
       <span className="nb-rail-section">page</span>
       {link('hero', 'Overview')}
       {link('facts', 'Context')}
-      <span className="nb-rail-section">strands</span>
-      {link('strands', '결 넷')}
+      <span className="nb-rail-section">work</span>
+      {link('strands', 'Approach')}
       <span className="nb-rail-section">profile</span>
       {link('skills', 'Skills')}
       {link('background', 'Background')}
@@ -239,8 +239,8 @@ function AboutStrands({ items }) {
   return (
     <section id="strands" style={aboutStyles.strandsWrap} data-screen-label="About · Strands">
       <div style={aboutStyles.sectionHead}>
-        <h2 style={aboutStyles.sectionTitle}>세 결</h2>
-        <div style={aboutStyles.sectionMeta}>§ 02 ─ Systems / Operations / PoC</div>
+        <h2 style={aboutStyles.sectionTitle}>Approach</h2>
+        <div style={aboutStyles.sectionMeta}>§ 02 ─ Systems / Measure / Ship / PoC</div>
       </div>
       <div style={aboutStyles.strandsGrid}>
         {items.map((s, i) => (
