@@ -9,8 +9,8 @@ window.LANDING_DATA = {
     headline: ['사용은 단순하게,', '구조는 확장에 유연하게.'],
     headlineMarkSecondLine: '확장에 유연하게', // 두 번째 줄의 형광펜 부분
     lede:
-      '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, ' +
-      '장기 프로젝트 + 출시 운영, PoC 사고 사이클 — 세 결이 같이 있는 포트폴리오.',
+      '게임 개발자 1인 · 정철. 시스템 아키텍처 결정 사례, 재서 판단한 최적화, ' +
+      '장기 프로젝트 + 출시 운영, PoC 사고 사이클이 한자리에 있는 포트폴리오.',
     stats: [
       { n: '11', label: 'projects',       sub: '메인 6 · Labs 5' },
       { n: '02', label: 'Steam 글로벌 출시', sub: 'Cartapli · Wobble' },
