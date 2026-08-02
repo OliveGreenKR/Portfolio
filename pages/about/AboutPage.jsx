@@ -240,7 +240,7 @@ function AboutStrands({ items }) {
     <section id="strands" style={aboutStyles.strandsWrap} data-screen-label="About · Strands">
       <div style={aboutStyles.sectionHead}>
         <h2 style={aboutStyles.sectionTitle}>Approach</h2>
-        <div style={aboutStyles.sectionMeta}>§ 02 ─ Systems / Measure / Ship / PoC</div>
+        <div style={aboutStyles.sectionMeta}>§ 02 ─ Build / Systems / Measure / Ship</div>
       </div>
       <div style={aboutStyles.strandsGrid}>
         {items.map((s, i) => (

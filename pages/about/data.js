@@ -29,9 +29,25 @@ window.ABOUT_DATA = {
   // 이전 판은 "메인 3 + Labs" 시절 분류라 프로젝트가 11개로 늘면서 담기지 않았다 —
   // lede 가 `메인 3` 이라고 적혀 있었고, Cartapli Mobile · Motelet · 외주 셋이
   // 자기소개에 한 번도 나오지 않았다.
-  // 신설한 것은 ②(재서 판단하기) 하나다. 최근 1년의 실제 축인데 이전 판이 한 글자도 안 팔았다.
+  // 신설한 것은 "숫자로 판단하기" 하나다. 최근 1년의 실제 축인데 이전 판이 한 글자도 안 팔았다.
+  // 순서는 판단 → 설계 → 검증 → 출시. 첫 카드가 "무엇을 믿고 정하는가" 라서 맨 앞이다.
   // ⚠️ 각 line 은 상세 페이지·랜딩 카드와 같은 말을 쓴다. 어긋나면 상세 페이지가 원본이다.
   strands: [
+    {
+      // 첫 자리. 이건 공정의 한 단계(PoC)가 아니라 판단을 어디에 맡기느냐의 문제라 맨 앞에 둔다.
+      // kind 를 POC 에서 BUILD 로 바꾼 이유도 같다 — PoC 는 누구나 거치는 단계 이름이라
+      // "무엇을 믿고 정하는가" 라는 이 카드의 내용을 가리키지 못했다.
+      kind: 'BUILD',
+      title: '만들어 보고 정하기',
+      lede: '말로 좋아 보이는 아이디어와 해 봤을 때 재미있는 것은 다르다. 아이디어는 아이디어로 두고, 만들어서 직접 해 본 뒤에 남길지 접을지 정한다.',
+      examples: [
+        // "보행 생성" 은 쓰지 않는다 — gait 생성기가 없다. 다리를 고르고 붙잡고 당기는 것은 사람이다.
+        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.', href: '../pages/labs/multi-leg-creature.html' },
+        { tag: 'BBQ Master',         line: '공간을 32³ 복셀로 나눠 열 전도만 굴리고, 그 온도를 겉면 색과 잘린 단면으로 보여 준다.', href: '../pages/labs/bbq-master.html' },
+        // 표준 기법 이름(Stable Fluids · Blackbody)을 앞세우지 않는다 — 페이지가 한 일로 쓴다.
+        { tag: 'Staring Fire',       line: '불을 그리지 않고 굴렸다 — 격자 위에서 온도를 계산하고 그대로 빛으로 옮긴다.', href: '../pages/labs/staring-fire.html' },
+      ],
+    },
     {
       kind: 'SYSTEMS',
       title: '책임을 나누기',
@@ -61,18 +77,6 @@ window.ABOUT_DATA = {
         { tag: 'Cartapli',      line: '13주 · 4인 · Steam 매우 긍정 98% (155/157) · 26,269 lifetime users.', href: '../pages/cartapli.html' },
         { tag: 'Wobble Wobble', line: '5주 · 5인 · Steam + STOVE 동시 출시 · 14개 언어 자동 번역 인프라를 직접 도입.', href: '../pages/wobble-wobble.html' },
         { tag: '교육용 게이미피케이션', line: '외주 납품 완료 — 비개발자용 원터치 배포 콘솔과 우회 불가능한 단일 인가 게이트까지.', href: '../pages/edu-gamification.html' },
-      ],
-    },
-    {
-      kind: 'POC',
-      title: '만들어서 확인하기',
-      lede: 'Labs 5 — 하루에서 몇 주 사이에 하나만 확인하고, 그 결과만 남기고 접는다.',
-      examples: [
-        // "보행 생성" 은 쓰지 않는다 — gait 생성기가 없다. 다리를 고르고 붙잡고 당기는 것은 사람이다.
-        { tag: 'Multi-Leg Creature', line: '몸통에 이동 입력이 없다 — 다리들이 낸 힘의 합만으로 움직인다.', href: '../pages/labs/multi-leg-creature.html' },
-        { tag: 'BBQ Master',         line: '공간을 32³ 복셀로 나눠 열 전도만 굴리고, 그 온도를 겉면 색과 잘린 단면으로 보여 준다.', href: '../pages/labs/bbq-master.html' },
-        // 표준 기법 이름(Stable Fluids · Blackbody)을 앞세우지 않는다 — 페이지가 한 일로 쓴다.
-        { tag: 'Staring Fire',       line: '불을 그리지 않고 굴렸다 — 격자 위에서 온도를 계산하고 그대로 빛으로 옮긴다.', href: '../pages/labs/staring-fire.html' },
       ],
     },
   ],
