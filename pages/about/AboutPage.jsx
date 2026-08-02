@@ -250,7 +250,9 @@ function AboutStrands({ items }) {
             </div>
             <div>
               <h3 style={aboutStyles.strandTitle}>{s.title}</h3>
-              <p style={aboutStyles.strandLede}>{s.lede}</p>
+              {/* examples 가 빈 카드가 있다 — 빈 ul 을 흘리지 않게 막는다 */}
+              <p style={{ ...aboutStyles.strandLede, marginBottom: s.examples.length ? 18 : 0 }}>{s.lede}</p>
+              {s.examples.length > 0 && (
               <ul style={aboutStyles.exampleList}>
                 {s.examples.map((e, j) => (
                   <li key={j}>
@@ -262,6 +264,7 @@ function AboutStrands({ items }) {
                   </li>
                 ))}
               </ul>
+              )}
             </div>
           </div>
         ))}
