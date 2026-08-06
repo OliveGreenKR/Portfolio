@@ -198,6 +198,62 @@ function MTOccupancyViz() {
 }
 window.MTOccupancyViz = MTOccupancyViz;
 
+/* ─── 재사용 — 바깥은 한 번, 안쪽만 계속 돈다 ────────── */
+/* 원리도다. 개수도 시간도 없다 — 이 항의 주장은 "몇 개를 아꼈나" 가 아니라
+   "무엇이 한 번이고 무엇이 반복인가" 하나뿐이다. 그 대비만 그린다. */
+function MTPoolViz() {
+  const W = 760, H = 118;
+  // 총폭: 쓰는 쪽 열이 530 + 210 = 740 < 760 ✓
+  // 계열별 차이(반환 시점 · 담는 단위)는 그리지 않는다 — 본문 요점 한 줄이 받는다.
+  const box = (x, y, w, h, t, subs, tone) => (
+    <g key={t}>
+      <rect x={x} y={y} width={w} height={h} rx="3"
+            fill={tone === 'pool' ? 'var(--sage-100)' : 'var(--paper)'}
+            stroke={tone === 'pool' ? 'var(--sage-500)' : 'var(--rule-2)'}
+            strokeWidth={tone === 'pool' ? 1.8 : 1} />
+      <text x={x + w / 2} y={y + (subs ? 21 : h / 2 + 5)} textAnchor="middle"
+            className={tone === 'pool' ? 'mt-svg-lbl root' : 'mt-svg-lbl'}>{t}</text>
+      {subs && subs.map((s, i) => (
+        <text key={i} x={x + w / 2} y={y + 38 + i * 15} textAnchor="middle" className="mt-svg-sub">{s}</text>
+      ))}
+    </g>
+  );
+  // 화살표 — head 6px. both 면 왼쪽에도 머리를 단다.
+  const arrow = (x1, x2, y, both) => (
+    <g>
+      <line x1={x1} x2={x2} y1={y} y2={y} stroke="var(--sage-500)" strokeWidth="1.4" />
+      <polygon points={`${x2},${y} ${x2 - 7},${y - 4} ${x2 - 7},${y + 4}`} fill="var(--sage-500)" />
+      {both && <polygon points={`${x1},${y} ${x1 + 7},${y - 4} ${x1 + 7},${y + 4}`} fill="var(--sage-500)" />}
+    </g>
+  );
+
+  return (
+    <figure className="mt-figure">
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
+           aria-label="묶음을 올리는 것은 구간마다 한 번이고, 쓰는 쪽과 풀 사이만 계속 돈다">
+        {box(20, 26, 200, 66, '묶음', ['씬 · 테마 · 해금 단위', '걸린 것만 올린다'], 'plain')}
+
+        {arrow(228, 300, 59)}
+        <text x={264} y={49} textAnchor="middle" className="mt-svg-sub">한 번</text>
+
+        {box(300, 26, 150, 66, '풀', ['꺼진 채로 미리', '유휴분은 버린다'], 'pool')}
+
+        {arrow(458, 522, 59, true)}
+        <text x={490} y={49} textAnchor="middle" className="mt-svg-op">계속</text>
+
+        {box(530, 26, 210, 66, '쓰는 쪽',
+             ['적 · 아이템 · 능력 효과', 'UI · 파티클 · 사운드'], 'plain')}
+
+      </svg>
+      <figcaption className="mt-figcap">
+        왼쪽 화살표는 구간마다 <b>한 번</b>, 오른쪽 화살표만 <b>계속</b> 돈다.
+        네 계열이 이 골격을 공유한다 — 쓰는 쪽은 스폰과 반환만 부르고, 세는 것도 버리는 것도 풀이 한다.
+      </figcaption>
+    </figure>
+  );
+}
+window.MTPoolViz = MTPoolViz;
+
 /* ─── 노드 영향력을 재는 법 — 빼 보고 차이를 본다 ────── */
 /* 원리도다. 막대에 눈금도 값도 없다 — 이 페이지에는 노드별 실측 표가 없고,
    있는 것처럼 보이게 만들지 않는다. 보여줄 것은 "빼서 재는 방식" 하나뿐이다. */
