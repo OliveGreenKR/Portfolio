@@ -10,7 +10,7 @@
 
 const { useEffect: useEffectMT, useState: useStateMT } = React;
 
-const MT_STEP_IDS = ['rt-0', 'rt-1', 'rt-2', 'rt-3'];
+const MT_STEP_IDS = ['rt-0', 'rt-1', 'rt-2', 'rt-3', 'rt-4'];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
 function MTGist({ children }) {
@@ -81,6 +81,7 @@ function MTSub({ title, body }) {
 function MTViz({ kind }) {
   if (kind === 'density') return <window.MTDensityViz />;
   if (kind === 'occupancy') return <window.MTOccupancyViz />;
+  if (kind === 'pool') return <window.MTPoolViz />;
   return null;
 }
 
@@ -290,7 +291,7 @@ function MTRuntime({ data }) {
   const r = data.runtime;
   return (
     <section id="runtime" className="nb-section">
-      <MTSectionHead no="05" title="배틀 런타임 — 엔진이 정해 주지 않는 것 넷" kind="RUNTIME" />
+      <MTSectionHead no="05" title="배틀 런타임 — 엔진이 정해 주지 않는 것 다섯" kind="RUNTIME" />
       <MTGist>{r.gist}</MTGist>
       {r.steps.map((s, i) => <MTStep key={s.key} s={s} idx={i} />)}
     </section>
