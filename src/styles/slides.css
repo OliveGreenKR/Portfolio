@@ -98,6 +98,13 @@
 .sl-cover__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
 .sl-cover__art { flex: 0 0 820px; }
 .sl-cover__art img { width: 100%; border: 1px solid var(--rule); display: block; }
+.sl-cover__name {
+  font-family: var(--font-mono);
+  font-size: 26px;
+  letter-spacing: 0.06em;
+  color: var(--sage-700);
+  font-weight: 600;
+}
 .sl-cover__cap { font-size: 21px; line-height: 1.5; color: var(--ink-3); margin: 10px 0 0; }
 
 .sl-pills { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -112,14 +119,13 @@
 .sl-pill--accent { border-color: var(--sage-400); color: var(--ink); background: var(--sage-100); }
 
 /* ─── columns ────────────────────────────────────── */
-.sl-cols { display: grid; gap: 28px; grid-template-columns: repeat(var(--cols, 3), 1fr); flex: 1 1 auto; min-height: 0; }
+.sl-cols { display: grid; gap: 28px; grid-template-columns: repeat(var(--cols, 3), 1fr); flex: 1 1 auto; min-height: 0; align-items: center; }
 .sl-col {
   border: 1px solid var(--rule);
   background: var(--paper-2);
   padding: 36px;
   display: flex;
   flex-direction: column;
-  justify-content: center;
   gap: 18px;
 }
 .sl-col__kind {
@@ -135,27 +141,41 @@
 .sl-col__list li { font-size: 29px; line-height: 1.55; color: var(--ink-2); padding-left: 18px; position: relative; }
 .sl-col__list li::before { content: '·'; position: absolute; left: 4px; color: var(--ink-3); }
 
-/* ─── step ───────────────────────────────────────── */
-.sl-step { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; flex: 1 1 auto; min-height: 0; }
+/* ─── step ───────────────────────────────────────────
+   읽는 순서를 한 방향으로 강제한다 — 절 요약 → 주장 → 왜 → 뭘 했나 → 근거.
+   problem/did 를 전폭으로 올린 이유는 둘이다.
+     1. 그림이 did 를 설명하는데, 좌측 세로로 쌓으면 요점을 다 읽은 뒤에야 그림이 온다.
+     2. 절반 폭에서 29px 문장은 줄바꿈이 잦아 문장이 토막난다.
+   PROBLEM/DID mono 라벨은 뺐다 — 92px 열을 먹으면서 정보를 주지 않았고,
+   크기·색 위계로 같은 구실을 한다. */
+.sl-secgist {
+  font-size: 24px;
+  line-height: 1.5;
+  color: var(--ink-3);
+  border-left: 3px solid var(--sage-300);
+  padding-left: 16px;
+  margin: 0;
+}
+
+.sl-lead { display: flex; flex-direction: column; gap: 10px; }
+/* 배경. 작고 흐리게 — 이 장의 주장이 아니다 */
+.sl-lead__why { font-size: 25px; line-height: 1.5; color: var(--ink-3); margin: 0; max-width: 1560px; }
+/* 이 장의 주장. 가장 크고 진하다 */
+.sl-lead__did { font-size: 34px; line-height: 1.45; font-weight: 500; color: var(--ink); margin: 0; max-width: 1560px; }
+
+.sl-step { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; flex: 1 1 auto; min-height: 0; }
 .sl-step--wide { grid-template-columns: 1fr; }
-.sl-step__left { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+/* 코드는 89열까지 간다 — 잘리면 읽을 수 없으므로 코드 쪽을 더 넓게 준다 */
+.sl-step--code { grid-template-columns: 0.78fr 1.22fr; }
 .sl-step__right { min-width: 0; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
 
-.sl-pd { display: flex; flex-direction: column; gap: 8px; }
-.sl-pd__row { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: baseline; }
-.sl-pd__k {
-  font-family: var(--font-mono);
-  font-size: 18px;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-  padding-top: 6px;
+/* 말로 된 근거. 그림과 같은 층에 나란히 선다 */
+.sl-points {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column;
+  gap: 10px; justify-content: space-evenly;
+  flex: 1 1 auto; min-height: 0;
 }
-.sl-pd__v { font-size: 29px; line-height: 1.55; margin: 0; }
-.sl-pd__row--did .sl-pd__v { color: var(--ink); }
-.sl-pd__row--problem .sl-pd__v { color: var(--ink-2); }
-
-.sl-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; justify-content: space-evenly; flex: 1 1 auto; min-height: 0; }
 .sl-points li { border-left: 2px solid var(--sage-300); padding-left: 16px; }
 .sl-points b { display: block; font-size: 27px; font-weight: 600; margin-bottom: 2px; }
 .sl-points span { font-size: 24px; line-height: 1.5; color: var(--ink-2); }
@@ -165,7 +185,7 @@
 .sl-code__t {
   font-family: var(--font-mono);
   font-size: 20px;
-  padding: 12px 18px;
+  padding: 9px 18px;
   border-bottom: 1px solid var(--rule);
   color: var(--ink-2);
 }
@@ -173,13 +193,13 @@
   margin: 0;
   padding: 18px;
   font-family: var(--font-mono);
-  font-size: 19px;
-  line-height: 1.45;
+  font-size: 16px;
+  line-height: 1.4;
   white-space: pre;
   overflow: hidden;
   color: var(--ink);
 }
-.sl-code__intro { font-size: 24px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+.sl-code__intro { font-size: 22px; line-height: 1.5; color: var(--ink-2); margin: 0; }
 
 /* ─── list ───────────────────────────────────────── */
 .sl-pairs { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(var(--pair-cols, 2), 1fr); gap: 20px 52px; flex: 1 1 auto; align-content: space-evenly; }

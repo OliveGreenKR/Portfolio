@@ -25,6 +25,7 @@
       {
         layout: 'cover',
         section: 'Main · Engine',
+        subtitle: D.meta.subtitle,
         title: D.meta.title,
         hook: D.hook,
         pills: D.meta.pills,
@@ -53,7 +54,7 @@
 
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
       // 요점 5개는 그림과 나란히 두면 넘친다. '충돌 형상도 같이'는 §03 충돌이 따로 말하므로 뺀다
-      step('01 경계', D.boundary.steps[0], { points: D.boundary.steps[0].points.filter((_, i) => i !== 3) }),
+      step('01 경계', D.boundary.steps[0], { gist: D.boundary.gist, points: D.boundary.steps[0].points.filter((_, i) => i !== 3) }),
       step('01 경계', D.boundary.steps[3]), // batch  · code
       step('01 경계', D.boundary.steps[4]), // compact· viz compact
 
@@ -68,12 +69,12 @@
       },
 
       // ─── §03 충돌 ───
-      step('03 충돌', D.collision.steps[0]), // tree · viz fat
+      step('03 충돌', D.collision.steps[0], { gist: D.collision.gist }), // tree · viz fat
       // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
       step('03 충돌', D.collision.steps[3], { points: D.collision.steps[3].points.slice(0, 4) }),
 
       // ─── §04 렌더 ───
-      step('04 렌더', D.render.steps[3]), // arena · code
+      step('04 렌더', D.render.steps[3], { gist: D.render.gist }), // arena · code
 
       // ─── §07 남은 것 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 장이다.
       //     재지 못한 것을 재지 못했다고 적는 것이 그 주장의 증거다 ───
