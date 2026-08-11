@@ -42,6 +42,7 @@ function LandingRail({ active }) {
 function LandingHero({ data }) {
   const s = window.landingStyles;
   const [a, b] = data.headline;
+  const [st1, st2] = data.stance;
   // 두 번째 줄에서 marker 부분을 분할
   const mark = data.headlineMarkSecondLine;
   let beforeMark = b, markText = '', afterMark = '';
@@ -61,6 +62,7 @@ function LandingHero({ data }) {
           {markText && <mark className="hl hl--thick">{markText}</mark>}
           {afterMark}
         </h1>
+        <p style={s.stance}>{st1}<br />{st2}</p>
         <p style={s.lede}>{window.renderLandingInline(data.lede)}</p>
         <div style={s.miniStats}>
           {data.stats.map((st, i) => (
