@@ -231,7 +231,7 @@
 
 /* ─── stats ──────────────────────────────────────────
    수치가 주장인 장. 숫자를 표지 제목급으로 키운다 — 카드 제목보다 먼저 읽혀야 한다. */
-.sl-bigs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 28px; flex: 0 0 auto; }
+.sl-bigs { display: grid; grid-template-columns: repeat(var(--bigs, 3), 1fr); gap: 24px; flex: 0 0 auto; }
 .sl-big { border: 1px solid var(--rule); background: var(--paper-2); padding: 30px 32px; }
 .sl-big__n { font-family: var(--font-display); font-size: 76px; line-height: 1.16;
              font-weight: 700; letter-spacing: -0.03em; color: var(--ink); }
@@ -356,6 +356,9 @@
   display: flex; flex-direction: column;
 }
 .sl-step--viz figure > svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; }
+/* mermaid 는 svg 를 innerHTML 로 꽂으므로 자식 선택자로 같은 규칙을 건다 */
+.sl-mermaid { margin: 0; height: 100%; min-height: 0; display: flex; }
+.sl-mermaid > svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; max-width: 100%; }
 .sl-step--viz figure figcaption { flex: 0 0 auto; }
 .sl-step--viz .sl-points {
   display: grid; grid-template-columns: 1fr 1fr;

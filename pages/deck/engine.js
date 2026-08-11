@@ -8,10 +8,11 @@
 // 순서 원칙: 핵심 강점이면서 보여줄 게 많은 것부터.
 //   dx11 — "엔진을 통째로 짜봤다". 엔진 직군이 첫 5장에서 찾는 단어가 여기 있다
 //   cm   — 계측된 개선. 사이트 전체에서 before/after 측정본이 있는 유일한 프로젝트
+//   cartapli — 출시와 시스템 설계. 팀 작업이라 역할 경계를 먼저 밝힌다
 
 (function buildEngineDeck() {
   const P = window.DECK_PARTS || {};
-  const FULL = ['intro', 'dx11', 'cm', 'outro'];
+  const FULL = ['intro', 'dx11', 'cm', 'cartapli', 'outro'];
 
   // 프로젝트 하나만 검토할 때 — deck.html?only=cm  (여러 개면 쉼표)
   // 별도 HTML 을 프로젝트마다 만들지 않는 이유: 최종 산출물이 PDF 한 개라
