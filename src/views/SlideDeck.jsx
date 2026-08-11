@@ -54,9 +54,13 @@
     );
   }
 
-  function Viz({ name }) {
-    const Comp = window[VIZ[name]];
-    return Comp ? <Comp /> : null;
+  // 프로젝트마다 viz 키가 겹칠 수 있어(둘 다 'job' 등) 매니페스트가 컴포넌트 이름을
+  // 직접 주는 길을 열어 둔다. 키 맵은 DX11 하위호환용이다.
+  // 그림 컴포넌트마다 인자 규약이 다르다 — DX11 것은 인자가 없고,
+  // CM 워터폴은 steps/unit 을 받는다. 매니페스트가 vizProps 로 넘긴다.
+  function Viz({ name, component, props }) {
+    const Comp = window[component || VIZ[name]];
+    return Comp ? <Comp {...(props || {})} /> : null;
   }
 
   // ─── cover ────────────────────────────────────────
@@ -89,7 +93,10 @@
       <div className="sl-body">
         <h2 className="sl-h">{s.title}</h2>
         {s.gist && <p className="sl-gist">{RI(s.gist)}</p>}
-        <div className="sl-cols" style={{ '--cols': s.cols.length }}>
+        <div
+          className={'sl-cols' + (s.colCount && s.cols.length > s.colCount ? ' sl-cols--grid' : '')}
+          style={{ '--cols': s.colCount || s.cols.length }}
+        >
           {s.cols.map((c, i) => (
             <div className="sl-col" key={i}>
               {c.mark && <div className={'sl-col__mark sl-col__mark--' + (c.mark === '✓' ? 'yes' : 'no')}>{c.mark}</div>}
@@ -136,7 +143,7 @@
           </ul>
           {hasRight && (
             <div className="sl-step__right">
-              {st.viz && <Viz name={st.viz} />}
+              {st.viz && <Viz name={st.viz} component={s.vizComponent} props={s.vizProps} />}
               {!st.viz && st.code && <CodeBlock code={st.code} />}
             </div>
           )}
@@ -161,7 +168,32 @@
     );
   }
 
-  const LAYOUTS = { cover: Cover, columns: Columns, step: Step, list: List };
+  // ─── stats ────────────────────────────────────────
+  // 수치가 주장인 장. 큰 숫자 3칸이 먼저 오고 그 아래 차트가 근거를 댄다.
+  // columns 로는 안 된다 — 카드 제목이 아니라 **수치 자체**가 시선을 먼저 받아야 한다.
+  function Stats({ s }) {
+    return (
+      <div className="sl-body">
+        <h2 className="sl-h">{s.title}</h2>
+        {s.gist && <p className="sl-gist">{RI(s.gist)}</p>}
+        <div className="sl-bigs">
+          {s.bigs.map((b, i) => (
+            <div className="sl-big" key={i}>
+              <div className="sl-big__n">{b.n}</div>
+              <div className="sl-big__k">{b.label}</div>
+              <div className="sl-big__s">{RI(b.sub)}</div>
+            </div>
+          ))}
+        </div>
+        {s.vizComponent && (
+          <div className="sl-stats__viz"><Viz component={s.vizComponent} props={s.vizProps} /></div>
+        )}
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
+      </div>
+    );
+  }
+
+  const LAYOUTS = { cover: Cover, columns: Columns, step: Step, list: List, stats: Stats };
 
   function SlideDeck({ deck }) {
     const total = deck.slides.length;
@@ -171,7 +203,7 @@
           const Body = LAYOUTS[s.layout];
           return (
             <section className="slide" key={i} data-screen-label={deck.name + ' · ' + (i + 1)}>
-              <Chrome section={s.section || deck.name} no={s.no} deck={deck.name} page={i + 1} total={total} />
+              <Chrome section={s.section || deck.name} no={s.no} deck={s.proj || deck.name} page={i + 1} total={total} />
               <Body s={s} />
             </section>
           );
