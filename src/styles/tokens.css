@@ -231,20 +231,16 @@ mark.hl,
   color: inherit;
   padding: 0 0.18em;
   margin: 0 -0.06em;
-  font-weight: 600;
+  /* 굵기를 정하지 않는다. 형광펜은 글자 **위에 띠를 얹는 것**이고,
+     굵기는 그 글자가 놓인 자리(제목 700 · <strong> · 본문 400)가 정한다.
+     예전에는 여기서 600 을 박아, <strong>·제목 안에서는 오히려 굵기를 떨어뜨리고
+     <em> 안에서는 원치 않는 굵기를 더했다. 적용되는 실사용처가 하나도 없었다. */
   background-image: linear-gradient(180deg, transparent 55%, var(--sage-300) 55%, var(--sage-300) 92%, transparent 92%);
   background-repeat: no-repeat;
   background-size: 100% 100%;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
 }
-/* .hl 의 600 은 본문(400)을 올리려는 값이다. 700 짜리 제목 안에서는 오히려
-   **굵기를 떨어뜨린다** — 표제지에서 형광펜 부분만 가늘어 보이던 원인.
-   제목 안에서는 주변 굵기를 그대로 따른다. */
-h1 mark.hl, h2 mark.hl, h3 mark.hl,
-h1 .hl, h2 .hl, h3 .hl,
-.sl-h mark.hl, .sl-h .hl { font-weight: inherit; }
-
 mark.hl--terra,
 .hl--terra {
   background-image: linear-gradient(180deg, transparent 55%, var(--terra-300) 55%, var(--terra-300) 92%, transparent 92%);
