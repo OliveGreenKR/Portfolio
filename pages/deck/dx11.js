@@ -1,4 +1,4 @@
-// pages/deck/dx11-pilot.js
+// pages/deck/dx11.js
 // 슬라이드 덱 매니페스트 — DX11 파일럿.
 //
 // ⚠️ 이 파일은 사실을 만들지 않는다. pages/dx11-engine/data.js 를 참조만 한다.
@@ -18,8 +18,9 @@
 
   const step = (section, st, over) => Object.assign({ layout: 'step', section, no: st.no, step: st }, over);
 
-  window.DECK_DX11 = {
-    name: 'DX11 Custom Engine',
+  window.DECK_PARTS = window.DECK_PARTS || {};
+  window.DECK_PARTS.dx11 = {
+    proj: 'DX11 Custom Engine',
     slides: [
       // ─── 표지 ───
       {

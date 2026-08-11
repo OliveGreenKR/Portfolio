@@ -3,17 +3,18 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>제출용 덱 — DX11 파일럿 · JCH Portfolio</title>
+  <title>제출용 덱 — 엔진 프로그래머 · JCH Portfolio</title>
   <link rel="stylesheet" href="../src/styles/tokens.css">
   <link rel="stylesheet" href="../src/styles/notebook.css">
   <link rel="stylesheet" href="dx11-engine/page.css">
+  <link rel="stylesheet" href="cartapli-mobile/page.css">
   <link rel="stylesheet" href="../src/styles/slides.css">
   <link rel="stylesheet" href="../src/styles/syntax.css">
   <style>
     html, body { margin: 0; padding: 0; background: var(--rule); }
   </style>
 </head>
-<body data-screen-label="Deck · DX11 파일럿" data-code-lang="cpp">
+<body data-screen-label="Deck · 엔진" data-code-lang="cpp">
   <div id="root"></div>
 
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
@@ -31,12 +32,16 @@
   <script src="../src/views/syntax.js"></script>
 
   <script src="dx11-engine/data.js"></script>
+  <script src="cartapli-mobile/data.js"></script>
   <script type="text/babel" src="../src/views/notebook-components.jsx"></script>
   <script type="text/babel" src="dx11-engine/viz.jsx"></script>
+  <script type="text/babel" src="cartapli-mobile/viz.jsx"></script>
   <script type="text/babel" src="../src/views/SlideDeck.jsx"></script>
-  <script type="text/babel" src="deck/dx11-pilot.js"></script>
+  <script type="text/babel" src="deck/dx11.js"></script>
+  <script type="text/babel" src="deck/cartapli-mobile.js"></script>
+  <script type="text/babel" src="deck/engine.js"></script>
   <script type="text/babel">
-    ReactDOM.createRoot(document.getElementById('root')).render(<window.SlideDeck deck={window.DECK_DX11} />);
+    ReactDOM.createRoot(document.getElementById('root')).render(<window.SlideDeck deck={window.DECK_ENGINE} />);
   </script>
 </body>
 </html>
