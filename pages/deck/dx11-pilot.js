@@ -52,7 +52,8 @@
       },
 
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
-      step('01 경계', D.boundary.steps[0]), // own    · viz boundary
+      // 요점 5개는 그림과 나란히 두면 넘친다. '충돌 형상도 같이'는 §03 충돌이 따로 말하므로 뺀다
+      step('01 경계', D.boundary.steps[0], { points: D.boundary.steps[0].points.filter((_, i) => i !== 3) }),
       step('01 경계', D.boundary.steps[3]), // batch  · code
       step('01 경계', D.boundary.steps[4]), // compact· viz compact
 
