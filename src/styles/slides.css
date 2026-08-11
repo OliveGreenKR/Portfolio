@@ -38,7 +38,7 @@
   align-items: baseline;
   gap: 16px;
   font-family: var(--font-mono);
-  font-size: 18px;
+  font-size: 22px;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--ink-3);
@@ -56,7 +56,7 @@
   bottom: 40px;
   display: flex;
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 20px;
   color: var(--ink-3);
   border-top: 1px solid var(--rule);
   padding-top: 14px;
@@ -66,24 +66,24 @@
 .sl-body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 40px 0 56px;
+  padding: 44px 0 72px;
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 34px;
 }
 
 /* ─── 타이포 ─────────────────────────────────────── */
 .sl-h {
   font-family: var(--font-display);
-  font-size: 54px;
+  font-size: 68px;
   line-height: 1.16;
   font-weight: 700;
   letter-spacing: -0.02em;
   margin: 0;
 }
-.sl-h--cover { font-size: 84px; }
-.sl-sub { font-size: 27px; line-height: 1.55; color: var(--ink-2); margin: 0; max-width: 1180px; }
-.sl-gist { font-size: 24px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 1180px; }
+.sl-h--cover { font-size: 104px; }
+.sl-sub { font-size: 34px; line-height: 1.55; color: var(--ink-2); margin: 0; max-width: 1180px; }
+.sl-gist { font-size: 30px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 1180px; }
 
 .slide code {
   font-family: var(--font-mono);
@@ -94,16 +94,16 @@
 }
 
 /* ─── cover ──────────────────────────────────────── */
-.sl-cover { flex-direction: row; gap: 56px; align-items: flex-start; }
+.sl-cover { flex-direction: row; gap: 56px; align-items: center; }
 .sl-cover__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
-.sl-cover__art { flex: 0 0 720px; }
+.sl-cover__art { flex: 0 0 820px; }
 .sl-cover__art img { width: 100%; border: 1px solid var(--rule); display: block; }
-.sl-cover__cap { font-size: 17px; line-height: 1.5; color: var(--ink-3); margin: 10px 0 0; }
+.sl-cover__cap { font-size: 21px; line-height: 1.5; color: var(--ink-3); margin: 10px 0 0; }
 
 .sl-pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .sl-pill {
   font-family: var(--font-mono);
-  font-size: 17px;
+  font-size: 21px;
   padding: 7px 15px;
   border: 1px solid var(--rule-2);
   border-radius: var(--r-pill);
@@ -116,54 +116,55 @@
 .sl-col {
   border: 1px solid var(--rule);
   background: var(--paper-2);
-  padding: 32px;
+  padding: 36px;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  justify-content: center;
+  gap: 18px;
 }
 .sl-col__kind {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 19px;
   letter-spacing: 0.16em;
   color: var(--sage-500);
   font-weight: 600;
 }
-.sl-col__title { font-size: 30px; font-weight: 600; line-height: 1.3; margin: 0; }
-.sl-col__sub { font-size: 21px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+.sl-col__title { font-size: 42px; font-weight: 600; line-height: 1.3; margin: 0; }
+.sl-col__sub { font-size: 30px; line-height: 1.6; color: var(--ink-2); margin: 0; }
 .sl-col__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
-.sl-col__list li { font-size: 20px; line-height: 1.55; color: var(--ink-2); padding-left: 18px; position: relative; }
+.sl-col__list li { font-size: 29px; line-height: 1.55; color: var(--ink-2); padding-left: 18px; position: relative; }
 .sl-col__list li::before { content: '·'; position: absolute; left: 4px; color: var(--ink-3); }
 
 /* ─── step ───────────────────────────────────────── */
 .sl-step { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; flex: 1 1 auto; min-height: 0; }
 .sl-step--wide { grid-template-columns: 1fr; }
-.sl-step__left { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.sl-step__left { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
 .sl-step__right { min-width: 0; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
 
-.sl-pd { display: flex; flex-direction: column; gap: 12px; }
+.sl-pd { display: flex; flex-direction: column; gap: 8px; }
 .sl-pd__row { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: baseline; }
 .sl-pd__k {
   font-family: var(--font-mono);
-  font-size: 15px;
+  font-size: 18px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-3);
   padding-top: 6px;
 }
-.sl-pd__v { font-size: 23px; line-height: 1.55; margin: 0; }
+.sl-pd__v { font-size: 29px; line-height: 1.55; margin: 0; }
 .sl-pd__row--did .sl-pd__v { color: var(--ink); }
 .sl-pd__row--problem .sl-pd__v { color: var(--ink-2); }
 
-.sl-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.sl-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 10px; justify-content: space-evenly; flex: 1 1 auto; min-height: 0; }
 .sl-points li { border-left: 2px solid var(--sage-300); padding-left: 16px; }
-.sl-points b { display: block; font-size: 21px; font-weight: 600; margin-bottom: 3px; }
-.sl-points span { font-size: 19px; line-height: 1.55; color: var(--ink-2); }
+.sl-points b { display: block; font-size: 27px; font-weight: 600; margin-bottom: 2px; }
+.sl-points span { font-size: 24px; line-height: 1.5; color: var(--ink-2); }
 
 /* ─── code ───────────────────────────────────────── */
 .sl-code { border: 1px solid var(--rule); background: var(--paper-2); overflow: hidden; }
 .sl-code__t {
   font-family: var(--font-mono);
-  font-size: 16px;
+  font-size: 20px;
   padding: 12px 18px;
   border-bottom: 1px solid var(--rule);
   color: var(--ink-2);
@@ -172,19 +173,35 @@
   margin: 0;
   padding: 18px;
   font-family: var(--font-mono);
-  font-size: 17px;
-  line-height: 1.5;
+  font-size: 19px;
+  line-height: 1.45;
   white-space: pre;
   overflow: hidden;
   color: var(--ink);
 }
-.sl-code__intro { font-size: 19px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+.sl-code__intro { font-size: 24px; line-height: 1.55; color: var(--ink-2); margin: 0; }
 
 /* ─── list ───────────────────────────────────────── */
-.sl-pairs { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(var(--pair-cols, 2), 1fr); gap: 20px 44px; flex: 1 1 auto; align-content: start; }
+.sl-pairs { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(var(--pair-cols, 2), 1fr); gap: 20px 52px; flex: 1 1 auto; align-content: space-evenly; }
 .sl-pairs li { border-top: 1px solid var(--rule); padding-top: 14px; }
-.sl-pairs b { display: block; font-size: 22px; font-weight: 600; margin-bottom: 5px; }
-.sl-pairs span { font-size: 19px; line-height: 1.55; color: var(--ink-2); }
+.sl-pairs b { display: block; font-size: 28px; font-weight: 600; margin-bottom: 5px; }
+.sl-pairs span { font-size: 24px; line-height: 1.55; color: var(--ink-2); }
+
+/* ─── 그림(viz) ──────────────────────────────────────
+   페이지의 viz.jsx 를 그대로 재사용하지만, 웹 본문 기준으로 잡힌 라벨 크기(10.5~13px)는
+   1920 슬라이드에서 본문의 절반이라 읽히지 않는다. 값은 viewBox 유저 단위다.
+
+   폰트도 여기서 갈아끼운다 — page.css 는 라벨에 `--font-mono`(JetBrains Mono)를 쓰는데
+   fonts/ 에는 Pretendard 밖에 없다. 한글이 시스템 mono 폴백으로 떨어져 본문과 다른
+   글꼴로 나오므로, 슬라이드에서는 본문과 같은 Pretendard 로 통일한다. */
+.slide .dx-svg text { font-family: var(--font-sans); }
+.slide .dx-svg-sub { font-size: 16px; }
+.slide .dx-svg-lbl { font-size: 18px; }
+.slide .dx-svg-tag { font-size: 16px; }
+.slide .dx-svg-lbl.root { font-size: 20px; }
+
+/* 그림이 있는 슬라이드는 그림 쪽을 넓게 — viewBox 가 커지는 만큼 라벨 실크기도 같이 오른다 */
+.sl-step--viz { grid-template-columns: 0.92fr 1.08fr; }
 
 /* ─── 인쇄 ───────────────────────────────────────── */
 @page { size: 1920px 1200px; margin: 0; }

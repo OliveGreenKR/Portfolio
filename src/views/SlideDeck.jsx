@@ -111,7 +111,7 @@
     return (
       <div className="sl-body">
         <h2 className="sl-h">{st.title}</h2>
-        <div className={'sl-step' + (hasRight ? '' : ' sl-step--wide')}>
+        <div className={'sl-step' + (hasRight ? (st.viz ? ' sl-step--viz' : '') : ' sl-step--wide')}>
           <div className="sl-step__left">
             <div className="sl-pd">
               <div className="sl-pd__row sl-pd__row--problem">
