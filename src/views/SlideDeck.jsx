@@ -148,6 +148,7 @@
             <li key={i}><b>{RI(k)}</b><span>{RI(v)}</span></li>
           ))}
         </ul>
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );
   }
