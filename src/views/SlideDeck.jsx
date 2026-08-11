@@ -115,7 +115,7 @@
     return (
       <div className="sl-body">
         {s.gist && <p className="sl-secgist">{RI(s.gist)}</p>}
-        <h2 className="sl-h">{st.title}</h2>
+        <h2 className="sl-h">{s.title || st.title}</h2>
         <div className="sl-lead">
           <p className="sl-lead__why">{RI(st.problem)}</p>
           <p className="sl-lead__did">{RI(st.did)}</p>
