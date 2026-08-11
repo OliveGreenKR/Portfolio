@@ -63,6 +63,75 @@
     return Comp ? <Comp {...(props || {})} /> : null;
   }
 
+  // 링크는 <a> 여야 한다 — PDF 로 뽑아도 눌린다. 텍스트로 두면 URL 을 손으로 쳐야 한다.
+  function LinkRow({ items, big }) {
+    if (!items || !items.length) return null;
+    return (
+      <div className={'sl-links' + (big ? ' sl-links--big' : '')}>
+        {items.map((l, i) => (
+          <a className="sl-link" key={i} href={l.href} target="_blank" rel="noopener">
+            <span className="sl-link__k">{l.label}</span>
+            {l.v && <span className="sl-link__v">{l.v}</span>}
+          </a>
+        ))}
+      </div>
+    );
+  }
+
+  // ─── title — 문서 표제지. 프로젝트 표지가 아니라 **이 문서 전체의 첫 장**이다.
+  //     소개를 여러 장으로 늘리지 않는다 — 항목마다 해당 사실 한 줄이면 된다. ───
+  function Title({ s }) {
+    const [h1, h2] = s.headline;
+    const mark = s.headlineMark;
+    let pre = h2, mk = '', post = '';
+    if (mark && h2.includes(mark)) {
+      const i = h2.indexOf(mark);
+      pre = h2.slice(0, i); mk = mark; post = h2.slice(i + mark.length);
+    }
+    return (
+      <div className="sl-body sl-title">
+        <div className="sl-title__top">
+          {s.photo && <img className="sl-title__photo" src={s.photo} alt="" />}
+          <div className="sl-title__main">
+            <h1 className="sl-h sl-h--title">
+              {h1}<br />{pre}{mk && <mark className="hl hl--thick">{mk}</mark>}{post}
+            </h1>
+            {s.stance && <p className="sl-title__stance">{s.stance[0]}<br />{s.stance[1]}</p>}
+            <dl className="sl-title__facts">
+              {s.facts.map(([k, v], i) => (
+                <React.Fragment key={i}><dt>{k}</dt><dd>{RI(v)}</dd></React.Fragment>
+              ))}
+            </dl>
+            <LinkRow items={s.links} />
+          </div>
+        </div>
+        {s.stats && (
+          <div className="sl-title__stats">
+            {s.stats.map((st, i) => (
+              <div className="sl-tstat" key={i}>
+                <span className="sl-tstat__n">{st.n}</span>
+                <span className="sl-tstat__k">{st.label}</span>
+                <span className="sl-tstat__s">{st.sub}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  // ─── outro — 마지막 링크 정리 ───
+  function Outro({ s }) {
+    return (
+      <div className="sl-body sl-outro">
+        <h2 className="sl-h">{s.title}</h2>
+        {s.gist && <p className="sl-gist">{RI(s.gist)}</p>}
+        <LinkRow items={s.links} big />
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
+      </div>
+    );
+  }
+
   // ─── cover ────────────────────────────────────────
   function Cover({ s }) {
     return (
@@ -76,6 +145,7 @@
               <span key={i} className={'sl-pill' + (p.kind === 'accent' ? ' sl-pill--accent' : '')}>{p.text}</span>
             ))}
           </div>
+          <LinkRow items={s.links} />
         </div>
         {s.hero && (
           <div className="sl-cover__art">
@@ -193,7 +263,7 @@
     );
   }
 
-  const LAYOUTS = { cover: Cover, columns: Columns, step: Step, list: List, stats: Stats };
+  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, list: List, stats: Stats, outro: Outro };
 
   function SlideDeck({ deck }) {
     const total = deck.slides.length;
