@@ -133,6 +133,23 @@
     );
   }
 
+  // 페이지의 MermaidToggle 은 클릭해서 펼치는 물건이다. 슬라이드는 접힘이 없고,
+  // PDF 스냅샷 시점에 이미 그려져 있어야 하므로 마운트 즉시 그린다.
+  let mmSeq = 0;
+  function Mermaid({ source }) {
+    const host = React.useRef(null);
+    React.useEffect(() => {
+      const m = window.mermaid;
+      if (!m || !host.current) return;
+      let dead = false;
+      m.render('sl-mm-' + ++mmSeq, source)
+        .then(({ svg }) => { if (!dead && host.current) host.current.innerHTML = svg; })
+        .catch(() => {});
+      return () => { dead = true; };
+    }, [source]);
+    return <figure className="sl-mermaid" ref={host} />;
+  }
+
   // ─── cover ────────────────────────────────────────
   function Cover({ s }) {
     return (
@@ -197,7 +214,7 @@
   // "말로 된 근거 / 그림으로 된 근거" 가 나란히 선다.
   function Step({ s }) {
     const st = s.step;
-    const hasRight = st.viz || st.code;
+    const hasRight = st.viz || st.code || st.mermaid;
     return (
       <div className="sl-body">
         {s.gist && <p className="sl-secgist">{RI(s.gist)}</p>}
@@ -206,16 +223,18 @@
           <p className="sl-lead__why">{RI(st.problem)}</p>
           <p className="sl-lead__did">{RI(st.did)}</p>
         </div>
-        <div className={'sl-step' + (hasRight ? (st.viz ? ' sl-step--viz' : ' sl-step--code') : ' sl-step--wide')}>
+        <div className={'sl-step' + (hasRight ? (st.viz || st.mermaid ? ' sl-step--viz' : ' sl-step--code') : ' sl-step--wide')}>
           <ul className="sl-points">
-            {(s.points || st.points).map(([k, v], i) => (
-              <li key={i}><b>{RI(k)}</b><span>{RI(v)}</span></li>
-            ))}
+            {(s.points || st.points).map((p, i) => {
+              const [k, v] = Array.isArray(p) ? p : [null, p];
+              return <li key={i}>{k && <b>{RI(k)}</b>}<span>{RI(v)}</span></li>;
+            })}
           </ul>
           {hasRight && (
             <div className="sl-step__right">
               {st.viz && <Viz name={st.viz} component={s.vizComponent} props={s.vizProps} />}
-              {!st.viz && st.code && <CodeBlock code={st.code} />}
+              {!st.viz && st.mermaid && <Mermaid source={st.mermaid} />}
+              {!st.viz && !st.mermaid && st.code && <CodeBlock code={st.code} />}
             </div>
           )}
         </div>
@@ -247,7 +266,7 @@
       <div className="sl-body">
         <h2 className="sl-h">{s.title}</h2>
         {s.gist && <p className="sl-gist">{RI(s.gist)}</p>}
-        <div className="sl-bigs">
+        <div className="sl-bigs" style={{ '--bigs': s.bigs.length }}>
           {s.bigs.map((b, i) => (
             <div className="sl-big" key={i}>
               <div className="sl-big__n">{b.n}</div>
