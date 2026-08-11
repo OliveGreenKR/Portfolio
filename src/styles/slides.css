@@ -204,6 +204,12 @@
 /* ─── list ───────────────────────────────────────── */
 .sl-pairs { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(var(--pair-cols, 2), 1fr); gap: 20px 52px; flex: 1 1 auto; align-content: space-evenly; }
 .sl-pairs li { border-top: 1px solid var(--rule); padding-top: 14px; }
+/* 목록 아래 마무리 한 줄. 목록이 던진 것을 받아 닫는다 */
+.sl-note {
+  font-size: 25px; line-height: 1.5; color: var(--ink); margin: 0;
+  border-left: 3px solid var(--terra-300); padding: 4px 0 4px 18px;
+  flex: 0 0 auto;
+}
 .sl-pairs b { display: block; font-size: 28px; font-weight: 600; margin-bottom: 5px; }
 .sl-pairs span { font-size: 24px; line-height: 1.55; color: var(--ink-2); }
 
