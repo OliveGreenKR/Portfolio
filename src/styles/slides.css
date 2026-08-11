@@ -20,10 +20,8 @@
    같은 실수를 반복하지 않으려면 예외를 여기 한 곳에만 둬야 한다.
    라벨의 mono 느낌은 letter-spacing + uppercase 가 대신한다. */
 .slide, .slide * { font-family: var(--font-sans); }
-/* 코드 안 한글 주석까지 mono 스택에 맡기면 시스템 폰트로 떨어진다.
-   스택 끝에 Pretendard 를 붙이면 글리프 단위 폴백으로 ASCII 는 mono,
-   한글은 본문과 같은 Pretendard 가 된다. */
-.slide pre, .slide code, .slide kbd, .slide samp { font-family: var(--font-mono), var(--font-sans); }
+/* 한글 폴백은 --font-mono 토큰이 이미 갖는다 (tokens.css 주석 참조) */
+.slide pre, .slide code, .slide kbd, .slide samp { font-family: var(--font-mono); }
 .slide .dx-svg text { font-family: var(--font-sans); }
 
 /* ─── 덱 · 슬라이드 ───────────────────────────────── */
@@ -100,7 +98,7 @@
 .sl-gist { font-size: 30px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 1180px; }
 
 .slide code {
-  font-family: var(--font-mono), var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 0.88em;
   background: var(--paper-3);
   padding: 1px 6px;
@@ -209,7 +207,7 @@
 .sl-code pre {
   margin: 0;
   padding: 18px;
-  font-family: var(--font-mono), var(--font-sans);
+  font-family: var(--font-mono);
   font-size: 16px;
   line-height: 1.4;
   white-space: pre;
