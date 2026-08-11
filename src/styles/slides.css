@@ -105,18 +105,42 @@
   border-radius: 3px;
 }
 
-/* ─── 링크 줄 ─────────────────────────────────────── */
+/* ─── 링크 ─────────────────────────────────────────
+   배지(.sl-pill = 둥근 캡슐)와 **모양 자체를 다르게** 한다. 색만 다르면
+   "누를 수 있는 것" 인지 안 보인다.
+     각진 사각형 + 왼쪽 색 막대 + 오른쪽 화살표.
+   화살표가 링크임을 알리고, 왼쪽 막대가 종류(tone)를 알린다. */
 .sl-links { display: flex; flex-wrap: wrap; gap: 12px; }
 .sl-link {
-  display: inline-flex; align-items: baseline; gap: 10px;
-  padding: 9px 18px; border: 1px solid var(--rule-2); border-radius: var(--r-pill);
-  text-decoration: none; color: var(--ink);
+  display: inline-flex; align-items: baseline; gap: 12px;
+  padding: 11px 16px;
+  border: 1px solid var(--rule-2);
+  border-left: 4px solid var(--tone);
+  border-radius: 3px;
+  background: var(--paper-2);
+  text-decoration: none;
+  color: var(--ink);
 }
-.sl-link__k { font-size: 19px; font-weight: 600; letter-spacing: 0.04em; }
+.sl-link__k { font-size: 19px; font-weight: 600; letter-spacing: 0.02em; }
 .sl-link__v { font-size: 19px; color: var(--ink-2); }
-.sl-links--big .sl-link { padding: 18px 30px; border-radius: 6px; background: var(--paper-2); }
-.sl-links--big .sl-link__k { font-size: 27px; }
+.sl-link__go { font-size: 19px; color: var(--tone); font-weight: 700; }
+/* tone 은 왼쪽 막대와 화살표에만 쓴다 — 글자까지 물들이면 다시 배지처럼 보인다.
+   border-color 를 쓰면 왼쪽 막대까지 덮으므로 나머지 세 변만 지정한다. */
+.sl-link[data-tone] {
+  color: var(--ink); background: var(--paper-2);
+  border-top-color: var(--rule-2); border-right-color: var(--rule-2); border-bottom-color: var(--rule-2);
+}
+.sl-link[data-tone] .sl-link__v { color: var(--ink-2); opacity: 1; }
+
+/* 마무리 장 — 한 줄에 하나씩, 화살표를 오른쪽 끝으로 민다 */
+.sl-links--big { flex-direction: column; gap: 14px; }
+.sl-links--big .sl-link {
+  width: 100%; box-sizing: border-box;
+  padding: 20px 26px; border-left-width: 6px; border-radius: 4px;
+}
+.sl-links--big .sl-link__k { font-size: 27px; flex: 0 0 250px; }
 .sl-links--big .sl-link__v { font-size: 25px; }
+.sl-links--big .sl-link__go { font-size: 27px; margin-left: auto; }
 
 /* ─── title — 문서 표제지 ──────────────────────────
    소개는 한 장이다. 항목마다 사실 한 줄씩만 두고, 설명 문장을 붙이지 않는다. */
@@ -232,8 +256,8 @@
 .sl-col[data-tone] { border-color: var(--tone); }
 .sl-col[data-tone] .sl-col__kind { color: var(--tone); }
 .sl-pill[data-tone] { color: var(--tone); border-color: var(--tone); background: var(--tone-bg); }
-.sl-link[data-tone] { color: var(--tone); border-color: var(--tone); background: var(--tone-bg); }
-.sl-link[data-tone] .sl-link__v { color: var(--tone); opacity: 0.85; }
+/* 링크는 위 "링크" 절이 스스로 tone 을 쓴다 (왼쪽 막대 + 화살표에만).
+   여기서 배경·글자까지 물들이면 다시 배지처럼 보인다 — 건드리지 않는다. */
 
 /* ─── step ───────────────────────────────────────────
    읽는 순서를 한 방향으로 강제한다 — 절 요약 → 주장 → 왜 → 뭘 했나 → 근거.
