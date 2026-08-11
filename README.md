@@ -2,7 +2,7 @@
 
 게임/엔진 클라이언트 프로그래머 **정철**의 개인 포트폴리오 사이트.
 
-> 사용은 단순하게, 구조는 확장에 유연하게.
+> 코드를 짜기 전에 구조를 봅니다. 만든 뒤에는 숫자를 봅니다.
 
 - **라이브**: https://olivegreenkr.github.io/Portfolio/
 - **다루는 작업**: Cartapli: Fold Quest (Steam 출시) · Wobble Wobble (Steam · STOVE 동시 출시) · DX11 커스텀 물리 엔진 + Labs(PoC·실험) 6종
@@ -20,7 +20,7 @@ pages/                페이지별 .html + React 소스 + data.js (콘텐츠)
 src/                  컴포넌트 · 뷰 · 스타일 토큰 (디자인 시스템 소스)
 ui_kits/portfolio/    포트폴리오 UI 키트 재현
 assets/ · fonts/      이미지 · Pretendard 폰트
-DESIGN_SYSTEM.md      디자인 시스템 명세 (색·타이포·레이아웃 규칙)
+DESIGN_SYSTEM.md      디자인 테마 (톤·색 의도·글쓰기 규칙). 값·스펙은 코드가 원본
 ```
 
 ## 로컬 실행

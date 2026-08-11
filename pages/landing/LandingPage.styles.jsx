@@ -91,6 +91,16 @@ const landingStyles = {
     color: 'var(--ink)',
     margin: '0 0 28px',
   },
+  // 헤드라인 아래 기준선 2행. 헤드라인(정체성)과 lede(이력) 사이 층.
+  stance: {
+    fontSize: 20,
+    lineHeight: 1.6,
+    fontWeight: 500,
+    color: 'var(--ink)',
+    maxWidth: 620,
+    margin: '0 0 26px',
+    textWrap: 'pretty',
+  },
   lede: {
     fontSize: 17,
     lineHeight: 1.65,
