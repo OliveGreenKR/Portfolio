@@ -20,8 +20,11 @@
         title: '더 볼 곳',
         gist: '각 프로젝트의 상세 서술 · 코드 스니펫 · 다이어그램은 공개 사이트에 있다. 이 문서는 그중 엔진 직군에 맞는 것만 뽑은 것이다.',
         links: [
-          { label: '포트폴리오 사이트', v: 'olivegreenkr.github.io/Portfolio', href: 'https://olivegreenkr.github.io/Portfolio/' },
-        ].concat(A.links.items),
+          { label: '포트폴리오 사이트', v: 'olivegreenkr.github.io/Portfolio',
+            href: 'https://olivegreenkr.github.io/Portfolio/', tone: 'sage' },
+        ].concat(A.links.items.map((l) => Object.assign({}, l, {
+          tone: l.label === 'GitHub' ? 'blue' : l.label === 'Steam' ? 'sage' : undefined,
+        }))),
         note: A.footer,
       },
     ],

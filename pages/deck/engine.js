@@ -19,6 +19,8 @@
   const only = new URLSearchParams(location.search).get('only');
   const ORDER = only ? only.split(',').map((x) => x.trim()) : FULL;
 
+  const ROLE = '게임 클라이언트 · 엔진 프로그래머';
+
   const slides = [];
   ORDER.forEach((key) => {
     const part = P[key];
@@ -26,5 +28,13 @@
     part.slides.forEach((s) => slides.push(Object.assign({ proj: part.proj }, s)));
   });
 
-  window.DECK_ENGINE = { name: 'JCH · 엔진 프로그래머', slides };
+  // 표제지의 지원 직무는 이 덱이 정한다 — about/data.js 의 "클라이언트 프로그래머" 는
+  // 사이트의 사실이고, 지원 직무는 덱마다 다르다. 매니페스트 로드 순서와 무관하게
+  // 조립 시점에 덮는다 (intro.js 가 engine.js 보다 먼저 실행된다).
+  slides.forEach((s) => {
+    if (s.layout !== 'title' || !s.facts) return;
+    s.facts = s.facts.map((f) => (f[0] === '지원 직무' ? ['지원 직무', ROLE] : f));
+  });
+
+  window.DECK_ENGINE = { name: 'JCH · 엔진 프로그래머', role: ROLE, slides };
 })();

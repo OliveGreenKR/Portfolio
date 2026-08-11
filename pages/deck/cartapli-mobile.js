@@ -80,7 +80,11 @@
         title: '틀린 것을 스스로 걷어낸 기록',
         gist: C.rigor.gist,
         colCount: 2,   // 카드 4장을 한 줄에 넣으면 본문이 잘린다 — 2x2
-        cols: C.rigor.cards.map((c) => ({ kind: c.badge, title: c.title, sub: c.body })),
+        // 기각·철회는 무엇을 버렸나(terra), 재측정은 무엇을 다시 쟀나(wheat)
+        cols: C.rigor.cards.map((c) => ({
+          kind: c.badge, tone: /기각|철회/.test(c.badge) ? 'terra' : 'wheat',
+          title: c.title, sub: c.body,
+        })),
       },
 
       // ─── 남은 것 ───

@@ -33,8 +33,8 @@
         // 표지에서 바로 눌리는 링크. data.js 에 있는 것만 쓴다 —
         // CM 처럼 링크가 없는 프로젝트는 이 줄이 없고, LinkRow 가 알아서 안 그린다.
         links: [
-          { label: 'Repo', v: D.repo.label.replace('github.com/', ''), href: D.repo.href },
-          { label: 'Demo', v: '데모 영상', href: D.youtube.href },
+          { label: 'Repo', v: D.repo.label.replace('github.com/', ''), href: D.repo.href, tone: 'blue' },
+          { label: 'Demo', v: '데모 영상', href: D.youtube.href, tone: 'terra' },
         ],
         hero: D.hero,
       },
@@ -49,7 +49,7 @@
         title: '자체 구현과 외부 의존',
         gist: D.context.scope.lead,
         cols: [
-          { kind: 'BUILT', title: '자체 구현', items: D.context.scope.reads },
+          { kind: 'BUILT', tone: 'sage', title: '자체 구현', items: D.context.scope.reads },
           { kind: 'EXTERNAL', title: '외부 라이브러리 · API', items: D.context.scope.skips },
         ],
       },
@@ -59,7 +59,9 @@
         layout: 'columns',
         section: '00 구성',
         title: '엔진을 이루는 세 축',
-        cols: D.built.map((b) => ({ kind: b.kind, title: b.title, sub: b.sub })),
+        // 세 축은 서로 다른 영역이라 색으로 갈라 둔다
+        cols: D.built.map((b, i) => ({ kind: b.kind, tone: ['sage', 'wheat', 'blue'][i],
+                                       title: b.title, sub: b.sub })),
       },
 
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
@@ -98,14 +100,14 @@
         title: '검증한 것과 측정 밖의 것',
         gist: '코드로 참·거짓이 갈리는 것만 본문에 실었다. 눈과 화면 카운터로만 본 것은 여기 모은다.',
         cols: [
-          { mark: '✗', kind: '계측', title: '측정 도구 없음',
+          { mark: '✗', tone: 'terra', kind: '계측', title: '측정 도구 없음',
             pairs: [D.limits[0], D.limits[1]] },
-          { mark: '✗', kind: '검사', title: '자동 검증 없음',
+          { mark: '✗', tone: 'terra', kind: '검사', title: '자동 검증 없음',
             pairs: [D.limits[3], D.limits[7]] },
           // 지어낸 계획이 아니라 실제로 한 것이다. 출처 = pages/cartapli-mobile/data.js
           // (프레임당 CPU 0.643 → 0.040 ms 를 3사이클로 분리 측정 · 측정 조건 명시 ·
           //  네이티브 구현을 관리형 구현과 오라클로 대조).
-          { mark: '✓', kind: '이후 프로젝트', title: 'Cartapli Mobile 에서 확보',
+          { mark: '✓', tone: 'sage', kind: '이후 프로젝트', title: 'Cartapli Mobile 에서 확보',
             pairs: [
               ['측정 조건을 남긴다', '기기 · 씬 · 로그 배제 여부를 적고 프레임당 CPU 를 세 사이클로 갈라 잰다 — 구조로 얼마, Burst 로 얼마.'],
               ['구현끼리 대조한다', '네이티브 구현이 관리형 구현과 같은 답을 내는지 오라클로 확인하고, 쌓임 순서는 파이프라인 테스트로 따로 본다.'],
@@ -117,7 +119,7 @@
         section: '06 한계',
         title: '알려진 결함과 한계',
         cols: [
-          { kind: '결함', title: '재현 가능',
+          { kind: '결함', tone: 'terra', title: '재현 가능',
             pairs: [D.limits[2], D.limits[6]] },
           { kind: '범위 배제', title: '애초에 넣지 않음',
             pairs: [D.limits[4], D.limits[5], D.limits[8]] },

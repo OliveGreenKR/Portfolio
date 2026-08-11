@@ -69,7 +69,7 @@
     return (
       <div className={'sl-links' + (big ? ' sl-links--big' : '')}>
         {items.map((l, i) => (
-          <a className="sl-link" key={i} href={l.href} target="_blank" rel="noopener">
+          <a className="sl-link" key={i} href={l.href} data-tone={l.tone} target="_blank" rel="noopener">
             <span className="sl-link__k">{l.label}</span>
             {l.v && <span className="sl-link__v">{l.v}</span>}
           </a>
@@ -142,7 +142,7 @@
           <p className="sl-sub">{RI(s.hook)}</p>
           <div className="sl-pills">
             {s.pills.map((p, i) => (
-              <span key={i} className={'sl-pill' + (p.kind === 'accent' ? ' sl-pill--accent' : '')}>{p.text}</span>
+              <span key={i} data-tone={p.tone} className={'sl-pill' + (p.kind === 'accent' ? ' sl-pill--accent' : '')}>{p.text}</span>
             ))}
           </div>
           <LinkRow items={s.links} />
@@ -168,7 +168,7 @@
           style={{ '--cols': s.colCount || s.cols.length }}
         >
           {s.cols.map((c, i) => (
-            <div className="sl-col" key={i}>
+            <div className="sl-col" key={i} data-tone={c.tone}>
               {c.mark && <div className={'sl-col__mark sl-col__mark--' + (c.mark === '✓' ? 'yes' : 'no')}>{c.mark}</div>}
               {c.kind && <div className="sl-col__kind">{c.kind}</div>}
               <h3 className="sl-col__title">{c.title}</h3>

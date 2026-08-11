@@ -29,12 +29,14 @@
         stance: L.identity.stance,
         facts: [
           ['이름', fact('이름')],
-          ['직무', fact('직무')],
+          ['지원 직무', window.DECK_ROLE || fact('직무')],
           ['학력', edu ? edu.y + ' · ' + edu.t.split('.')[0] : fact('어학')],
           ['엔진', fact('엔진')],
           ['언어', fact('언어')],
         ],
-        links: A.links.items,
+        links: A.links.items.map((l) => Object.assign({}, l, {
+          tone: l.label === 'GitHub' ? 'blue' : l.label === 'Steam' ? 'sage' : undefined,
+        })),
         stats: L.identity.stats,
       },
     ],
