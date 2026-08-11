@@ -30,6 +30,12 @@
         title: D.meta.title,
         hook: D.hook,
         pills: D.meta.pills,
+        // 표지에서 바로 눌리는 링크. data.js 에 있는 것만 쓴다 —
+        // CM 처럼 링크가 없는 프로젝트는 이 줄이 없고, LinkRow 가 알아서 안 그린다.
+        links: [
+          { label: 'Repo', v: D.repo.label.replace('github.com/', ''), href: D.repo.href },
+          { label: 'Demo', v: '데모 영상', href: D.youtube.href },
+        ],
         hero: D.hero,
       },
 

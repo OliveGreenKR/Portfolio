@@ -105,6 +105,46 @@
   border-radius: 3px;
 }
 
+/* ─── 링크 줄 ─────────────────────────────────────── */
+.sl-links { display: flex; flex-wrap: wrap; gap: 12px; }
+.sl-link {
+  display: inline-flex; align-items: baseline; gap: 10px;
+  padding: 9px 18px; border: 1px solid var(--rule-2); border-radius: var(--r-pill);
+  text-decoration: none; color: var(--ink);
+}
+.sl-link__k { font-size: 19px; font-weight: 600; letter-spacing: 0.04em; }
+.sl-link__v { font-size: 19px; color: var(--ink-2); }
+.sl-links--big .sl-link { padding: 18px 30px; border-radius: 6px; background: var(--paper-2); }
+.sl-links--big .sl-link__k { font-size: 27px; }
+.sl-links--big .sl-link__v { font-size: 25px; }
+
+/* ─── title — 문서 표제지 ──────────────────────────
+   소개는 한 장이다. 항목마다 사실 한 줄씩만 두고, 설명 문장을 붙이지 않는다. */
+.sl-title { gap: 30px; }
+.sl-title__top { display: flex; gap: 52px; align-items: flex-start; flex: 1 1 auto; min-height: 0; }
+.sl-title__photo {
+  flex: 0 0 300px; width: 300px; height: 372px; object-fit: cover; object-position: center 18%;
+  border: 1px solid var(--rule); filter: saturate(0.85) contrast(1.02);
+}
+.sl-title__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 22px; }
+.sl-h--title { font-size: 76px; line-height: 1.14; }
+.sl-title__stance { font-size: 27px; line-height: 1.55; font-weight: 500; color: var(--ink-2); margin: 0; }
+.sl-title__facts {
+  display: grid; grid-template-columns: 108px 1fr; gap: 8px 20px; margin: 0;
+  border-top: 1px solid var(--rule); padding-top: 20px;
+}
+.sl-title__facts dt { font-size: 19px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); font-weight: 600; }
+.sl-title__facts dd { font-size: 23px; line-height: 1.45; margin: 0; color: var(--ink); }
+.sl-title__stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; flex: 0 0 auto;
+  border-top: 1px solid var(--rule); padding-top: 24px; }
+.sl-tstat { display: flex; flex-direction: column; gap: 4px; }
+.sl-tstat__n { font-family: var(--font-display); font-size: 44px; font-weight: 700; letter-spacing: -0.02em; }
+.sl-tstat__k { font-size: 21px; font-weight: 600; }
+.sl-tstat__s { font-size: 18px; color: var(--ink-2); line-height: 1.45; }
+
+/* ─── outro ───────────────────────────────────────── */
+.sl-outro { justify-content: center; gap: 34px; }
+
 /* ─── cover ──────────────────────────────────────── */
 .sl-cover { flex-direction: row; gap: 56px; align-items: center; }
 .sl-cover__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }

@@ -11,7 +11,13 @@
 
 (function buildEngineDeck() {
   const P = window.DECK_PARTS || {};
-  const ORDER = ['dx11', 'cm'];
+  const FULL = ['intro', 'dx11', 'cm', 'outro'];
+
+  // 프로젝트 하나만 검토할 때 — deck.html?only=cm  (여러 개면 쉼표)
+  // 별도 HTML 을 프로젝트마다 만들지 않는 이유: 최종 산출물이 PDF 한 개라
+  // 조립본이 반드시 필요하고, 개별본을 따로 두면 두 벌이 갈라진다.
+  const only = new URLSearchParams(location.search).get('only');
+  const ORDER = only ? only.split(',').map((x) => x.trim()) : FULL;
 
   const slides = [];
   ORDER.forEach((key) => {
