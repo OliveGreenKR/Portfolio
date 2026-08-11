@@ -62,6 +62,7 @@
     return (
       <div className="sl-body sl-cover">
         <div className="sl-cover__main">
+          {s.subtitle && <div className="sl-cover__name">{s.subtitle}</div>}
           <h1 className="sl-h sl-h--cover">{s.title}</h1>
           <p className="sl-sub">{RI(s.hook)}</p>
           <div className="sl-pills">
@@ -105,30 +106,26 @@
   }
 
   // ─── step ─────────────────────────────────────────
+  // 위에서 아래로 한 방향으로 읽힌다 — 절 요약 → 주장(제목) → 왜 → 뭘 했나 → 근거.
+  // 근거(요점 + 그림)만 좌우로 갈라 놓는다. 그림은 요점과 같은 층이라
+  // "말로 된 근거 / 그림으로 된 근거" 가 나란히 선다.
   function Step({ s }) {
     const st = s.step;
     const hasRight = st.viz || st.code;
     return (
       <div className="sl-body">
+        {s.gist && <p className="sl-secgist">{RI(s.gist)}</p>}
         <h2 className="sl-h">{st.title}</h2>
-        <div className={'sl-step' + (hasRight ? (st.viz ? ' sl-step--viz' : '') : ' sl-step--wide')}>
-          <div className="sl-step__left">
-            <div className="sl-pd">
-              <div className="sl-pd__row sl-pd__row--problem">
-                <span className="sl-pd__k">Problem</span>
-                <p className="sl-pd__v">{RI(st.problem)}</p>
-              </div>
-              <div className="sl-pd__row sl-pd__row--did">
-                <span className="sl-pd__k">Did</span>
-                <p className="sl-pd__v">{RI(st.did)}</p>
-              </div>
-            </div>
-            <ul className="sl-points">
-              {(s.points || st.points).map(([k, v], i) => (
-                <li key={i}><b>{RI(k)}</b><span>{RI(v)}</span></li>
-              ))}
-            </ul>
-          </div>
+        <div className="sl-lead">
+          <p className="sl-lead__why">{RI(st.problem)}</p>
+          <p className="sl-lead__did">{RI(st.did)}</p>
+        </div>
+        <div className={'sl-step' + (hasRight ? (st.viz ? ' sl-step--viz' : ' sl-step--code') : ' sl-step--wide')}>
+          <ul className="sl-points">
+            {(s.points || st.points).map(([k, v], i) => (
+              <li key={i}><b>{RI(k)}</b><span>{RI(v)}</span></li>
+            ))}
+          </ul>
           {hasRight && (
             <div className="sl-step__right">
               {st.viz && <Viz name={st.viz} />}
