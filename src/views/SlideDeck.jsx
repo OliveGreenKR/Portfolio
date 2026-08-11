@@ -72,6 +72,7 @@
           <a className="sl-link" key={i} href={l.href} data-tone={l.tone} target="_blank" rel="noopener">
             <span className="sl-link__k">{l.label}</span>
             {l.v && <span className="sl-link__v">{l.v}</span>}
+            <span className="sl-link__go" aria-hidden="true">→</span>
           </a>
         ))}
       </div>
