@@ -1,0 +1,201 @@
+/* JCH Portfolio — slides.css
+   제출용 슬라이드 덱. 사이트 페이지(notebook)와 같은 data.js 를 먹고 배치만 다르다.
+
+   규격은 이 두 변수가 전부다 — 16:10 = 1920x1200 / 16:9 = 1920x1080.
+   바꿔서 렌더해 보고 어느 쪽이 덜 넘치는지 실측한다. 다른 곳에 픽셀을 박지 않는다. */
+
+:root {
+  --slide-w: 1920px;
+  --slide-h: 1200px;
+  --slide-pad: 84px;
+}
+
+/* ─── 덱 · 슬라이드 ───────────────────────────────── */
+.deck {
+  background: var(--rule);
+  padding: 0;
+  margin: 0;
+}
+
+.slide {
+  position: relative;
+  width: var(--slide-w);
+  height: var(--slide-h);
+  padding: var(--slide-pad);
+  box-sizing: border-box;
+  background: var(--paper);
+  color: var(--ink);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  /* 화면에서 장 사이를 가른다. 인쇄에서는 @page 가 자른다. */
+  margin: 0 auto 24px;
+}
+
+/* ─── 상·하단 크롬 ────────────────────────────────── */
+.sl-top {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+  font-family: var(--font-mono);
+  font-size: 18px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-bottom: 18px;
+  border-bottom: 1px solid var(--rule);
+  flex: 0 0 auto;
+}
+.sl-top__no { color: var(--ink); font-weight: 600; }
+.sl-top__spacer { margin-left: auto; }
+
+.sl-foot {
+  position: absolute;
+  left: var(--slide-pad);
+  right: var(--slide-pad);
+  bottom: 40px;
+  display: flex;
+  font-family: var(--font-mono);
+  font-size: 16px;
+  color: var(--ink-3);
+  border-top: 1px solid var(--rule);
+  padding-top: 14px;
+}
+.sl-foot__page { margin-left: auto; color: var(--ink-2); font-weight: 600; }
+
+.sl-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 40px 0 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+/* ─── 타이포 ─────────────────────────────────────── */
+.sl-h {
+  font-family: var(--font-display);
+  font-size: 54px;
+  line-height: 1.16;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.sl-h--cover { font-size: 84px; }
+.sl-sub { font-size: 27px; line-height: 1.55; color: var(--ink-2); margin: 0; max-width: 1180px; }
+.sl-gist { font-size: 24px; line-height: 1.6; color: var(--ink-2); margin: 0; max-width: 1180px; }
+
+.slide code {
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  background: var(--paper-3);
+  padding: 1px 6px;
+  border-radius: 3px;
+}
+
+/* ─── cover ──────────────────────────────────────── */
+.sl-cover { flex-direction: row; gap: 56px; align-items: flex-start; }
+.sl-cover__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
+.sl-cover__art { flex: 0 0 720px; }
+.sl-cover__art img { width: 100%; border: 1px solid var(--rule); display: block; }
+.sl-cover__cap { font-size: 17px; line-height: 1.5; color: var(--ink-3); margin: 10px 0 0; }
+
+.sl-pills { display: flex; flex-wrap: wrap; gap: 10px; }
+.sl-pill {
+  font-family: var(--font-mono);
+  font-size: 17px;
+  padding: 7px 15px;
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+}
+.sl-pill--accent { border-color: var(--sage-400); color: var(--ink); background: var(--sage-100); }
+
+/* ─── columns ────────────────────────────────────── */
+.sl-cols { display: grid; gap: 28px; grid-template-columns: repeat(var(--cols, 3), 1fr); flex: 1 1 auto; min-height: 0; }
+.sl-col {
+  border: 1px solid var(--rule);
+  background: var(--paper-2);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.sl-col__kind {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  letter-spacing: 0.16em;
+  color: var(--sage-500);
+  font-weight: 600;
+}
+.sl-col__title { font-size: 30px; font-weight: 600; line-height: 1.3; margin: 0; }
+.sl-col__sub { font-size: 21px; line-height: 1.6; color: var(--ink-2); margin: 0; }
+.sl-col__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
+.sl-col__list li { font-size: 20px; line-height: 1.55; color: var(--ink-2); padding-left: 18px; position: relative; }
+.sl-col__list li::before { content: '·'; position: absolute; left: 4px; color: var(--ink-3); }
+
+/* ─── step ───────────────────────────────────────── */
+.sl-step { display: grid; grid-template-columns: 1fr 1fr; gap: 44px; flex: 1 1 auto; min-height: 0; }
+.sl-step--wide { grid-template-columns: 1fr; }
+.sl-step__left { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+.sl-step__right { min-width: 0; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
+
+.sl-pd { display: flex; flex-direction: column; gap: 12px; }
+.sl-pd__row { display: grid; grid-template-columns: 92px 1fr; gap: 14px; align-items: baseline; }
+.sl-pd__k {
+  font-family: var(--font-mono);
+  font-size: 15px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  padding-top: 6px;
+}
+.sl-pd__v { font-size: 23px; line-height: 1.55; margin: 0; }
+.sl-pd__row--did .sl-pd__v { color: var(--ink); }
+.sl-pd__row--problem .sl-pd__v { color: var(--ink-2); }
+
+.sl-points { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }
+.sl-points li { border-left: 2px solid var(--sage-300); padding-left: 16px; }
+.sl-points b { display: block; font-size: 21px; font-weight: 600; margin-bottom: 3px; }
+.sl-points span { font-size: 19px; line-height: 1.55; color: var(--ink-2); }
+
+/* ─── code ───────────────────────────────────────── */
+.sl-code { border: 1px solid var(--rule); background: var(--paper-2); overflow: hidden; }
+.sl-code__t {
+  font-family: var(--font-mono);
+  font-size: 16px;
+  padding: 12px 18px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-2);
+}
+.sl-code pre {
+  margin: 0;
+  padding: 18px;
+  font-family: var(--font-mono);
+  font-size: 17px;
+  line-height: 1.5;
+  white-space: pre;
+  overflow: hidden;
+  color: var(--ink);
+}
+.sl-code__intro { font-size: 19px; line-height: 1.55; color: var(--ink-2); margin: 0; }
+
+/* ─── list ───────────────────────────────────────── */
+.sl-pairs { margin: 0; padding: 0; list-style: none; display: grid; grid-template-columns: repeat(var(--pair-cols, 2), 1fr); gap: 20px 44px; flex: 1 1 auto; align-content: start; }
+.sl-pairs li { border-top: 1px solid var(--rule); padding-top: 14px; }
+.sl-pairs b { display: block; font-size: 22px; font-weight: 600; margin-bottom: 5px; }
+.sl-pairs span { font-size: 19px; line-height: 1.55; color: var(--ink-2); }
+
+/* ─── 인쇄 ───────────────────────────────────────── */
+@page { size: 1920px 1200px; margin: 0; }
+
+@media print {
+  .deck { background: none; }
+  .slide {
+    margin: 0;
+    break-after: page;
+    page-break-after: always;
+    box-shadow: none;
+  }
+  .slide:last-child { break-after: auto; page-break-after: auto; }
+}
