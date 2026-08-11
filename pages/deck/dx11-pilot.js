@@ -36,19 +36,22 @@
       {
         layout: 'columns',
         section: '00 범위',
-        title: D.context.scope.title,
+        // 제목·라벨은 슬라이드 어법으로 바꾼다. data.js 의 "무엇을 직접 짰고 무엇을
+        // 가져다 썼나" 는 노트 톤이라 웹 본문에서는 맞지만, 스캔하는 매체에서는
+        // 명사구여야 한다. 바꾸는 것은 제목뿐이고 항목(reads/skips)은 원문 그대로다.
+        title: '자체 구현과 외부 의존',
         gist: D.context.scope.lead,
         cols: [
-          { kind: 'BUILT', title: '직접 짰다', items: D.context.scope.reads },
-          { kind: 'USED', title: '가져다 썼다', items: D.context.scope.skips },
+          { kind: 'BUILT', title: '자체 구현', items: D.context.scope.reads },
+          { kind: 'EXTERNAL', title: '외부 라이브러리 · API', items: D.context.scope.skips },
         ],
       },
 
       // ─── 만든 것 3칸 ───
       {
         layout: 'columns',
-        section: '00 만든 것',
-        title: '만든 것',
+        section: '00 구성',
+        title: '엔진을 이루는 세 축',
         cols: D.built.map((b) => ({ kind: b.kind, title: b.title, sub: b.sub })),
       },
 
@@ -62,7 +65,7 @@
       {
         layout: 'list',
         section: '02 프레임',
-        title: '한 틱 안에서 통로 넷이 어디 있나',
+        title: '통로 넷은 서브스텝 바깥에 있다',
         gist: D.frame.gist,
         pairs: D.frame.points,
         pairCols: 2,
@@ -81,7 +84,7 @@
       {
         layout: 'list',
         section: '05 남은 것',
-        title: '재지 못한 것과 남은 결함',
+        title: '측정하지 못한 것과 남은 결함',
         pairs: [D.limits[0], D.limits[1], D.limits[2], D.limits[3], D.limits[5], D.limits[7]],
         pairCols: 2,
       },
