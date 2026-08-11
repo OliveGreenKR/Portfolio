@@ -90,12 +90,18 @@
         <div className="sl-cols" style={{ '--cols': s.cols.length }}>
           {s.cols.map((c, i) => (
             <div className="sl-col" key={i}>
+              {c.mark && <div className={'sl-col__mark sl-col__mark--' + (c.mark === '✓' ? 'yes' : 'no')}>{c.mark}</div>}
               {c.kind && <div className="sl-col__kind">{c.kind}</div>}
               <h3 className="sl-col__title">{c.title}</h3>
               {c.sub && <p className="sl-col__sub">{RI(c.sub)}</p>}
               {c.items && (
                 <ul className="sl-col__list">
                   {c.items.map((t, j) => <li key={j}>{RI(t)}</li>)}
+                </ul>
+              )}
+              {c.pairs && (
+                <ul className="sl-col__pairs">
+                  {c.pairs.map(([k, v], j) => <li key={j}><b>{RI(k)}</b><span>{RI(v)}</span></li>)}
                 </ul>
               )}
             </div>

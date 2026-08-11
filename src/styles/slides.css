@@ -140,6 +140,13 @@
 .sl-col__list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 12px; }
 .sl-col__list li { font-size: 29px; line-height: 1.55; color: var(--ink-2); padding-left: 18px; position: relative; }
 .sl-col__list li::before { content: '·'; position: absolute; left: 4px; color: var(--ink-3); }
+/* 카드 상태 마크. 30초 안에 카드 성격이 갈리게 하는 장치 */
+.sl-col__mark { font-size: 46px; line-height: 1.2; font-weight: 700; }
+.sl-col__mark--no { color: var(--terra-500); }
+.sl-col__mark--yes { color: var(--sage-700); }
+.sl-col__pairs { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 16px; }
+.sl-col__pairs b { display: block; font-size: 25px; font-weight: 600; margin-bottom: 3px; }
+.sl-col__pairs span { font-size: 21px; line-height: 1.5; color: var(--ink-2); }
 
 /* ─── step ───────────────────────────────────────────
    읽는 순서를 한 방향으로 강제한다 — 절 요약 → 주장 → 왜 → 뭘 했나 → 근거.
@@ -214,20 +221,36 @@
 .sl-pairs span { font-size: 24px; line-height: 1.55; color: var(--ink-2); }
 
 /* ─── 그림(viz) ──────────────────────────────────────
-   페이지의 viz.jsx 를 그대로 재사용하지만, 웹 본문 기준으로 잡힌 라벨 크기(10.5~13px)는
-   1920 슬라이드에서 본문의 절반이라 읽히지 않는다. 값은 viewBox 유저 단위다.
+   page.css 의 라벨 크기(10.5~13px)는 viewBox 유저 좌표다. 이 값을 키우면
+   글자가 도형을 침범한다 — viz.jsx 의 사각형·간격이 그 크기 기준으로 짜여 있다.
+   그래서 폰트는 그대로 두고 **그림을 크게** 그려 실제 픽셀을 올린다.
 
-   폰트도 여기서 갈아끼운다 — page.css 는 라벨에 `--font-mono`(JetBrains Mono)를 쓰는데
-   fonts/ 에는 Pretendard 밖에 없다. 한글이 시스템 mono 폴백으로 떨어져 본문과 다른
-   글꼴로 나오므로, 슬라이드에서는 본문과 같은 Pretendard 로 통일한다. */
+   폰트 패밀리만 바꾼다 — page.css 는 `--font-mono`(JetBrains Mono)를 쓰는데
+   fonts/ 에는 Pretendard 뿐이라 한글이 시스템 mono 폴백으로 떨어진다. */
 .slide .dx-svg text { font-family: var(--font-sans); }
-.slide .dx-svg-sub { font-size: 16px; }
-.slide .dx-svg-lbl { font-size: 18px; }
-.slide .dx-svg-tag { font-size: 16px; }
-.slide .dx-svg-lbl.root { font-size: 20px; }
 
-/* 그림이 있는 슬라이드는 그림 쪽을 넓게 — viewBox 가 커지는 만큼 라벨 실크기도 같이 오른다 */
-.sl-step--viz { grid-template-columns: 0.92fr 1.08fr; }
+/* 그림이 있는 단계는 세로로 쌓는다 — 그림을 폭 1250px 로 키우면 라벨이
+   11.5 x 1.64 = 약 19px 로 올라 본문 옆에 둘 때(13px)의 두 배가 된다.
+   요점은 그림 아래 2열로 내린다. */
+.sl-step--viz { display: flex; flex-direction: column; gap: 26px; }
+/* 그림은 고정 폭이 아니라 **남는 세로에 맞춰** 커진다. 폭을 박으면 슬라이드마다
+   텍스트 길이가 달라 어떤 장은 넘치고 어떤 장은 빈다. 높이를 기준으로 맞추면
+   viewBox 비율이 알아서 폭을 정하므로 넘칠 수가 없다. */
+.sl-step--viz .sl-step__right { order: -1; flex: 1 1 auto; min-height: 0; }
+/* figure 는 남는 세로를 통째로 갖고, 그 안에서 svg 가 width/height 100% 로 늘어난다.
+   viewBox + preserveAspectRatio="xMidYMid meet"(기본) 덕에 비율을 지키며 상자에
+   맞춰지므로 — 폭이 남으면 폭까지, 세로가 모자라면 세로에 맞춰 — 넘칠 수가 없다.
+   figcaption 은 flex:0 이라 항상 아래에 남는다. */
+.sl-step--viz .dx-figure {
+  margin: 0; height: 100%; min-height: 0;
+  display: flex; flex-direction: column;
+}
+.sl-step--viz .dx-figure .dx-svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; }
+.sl-step--viz .dx-figure figcaption { flex: 0 0 auto; }
+.sl-step--viz .sl-points {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 14px 52px; flex: 0 0 auto;
+}
 
 /* ─── 인쇄 ───────────────────────────────────────── */
 @page { size: 1920px 1200px; margin: 0; }

@@ -56,10 +56,12 @@
       },
 
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
-      // 요점 5개는 그림과 나란히 두면 넘친다. '충돌 형상도 같이'는 §03 충돌이 따로 말하므로 뺀다
-      step('01 경계', D.boundary.steps[0], { gist: D.boundary.gist, points: D.boundary.steps[0].points.filter((_, i) => i !== 3) }),
-      step('01 경계', D.boundary.steps[3]), // batch  · code
-      step('01 경계', D.boundary.steps[4]), // compact· viz compact
+      // 그림이 주인공인 장은 요점을 둘만 남긴다 — 그림이 이미 말하는 것을 글로 또 쓰지 않는다.
+      // own: 그림이 소유권 이전을 보이므로, 배열 형태(SoA)와 그래서 열린 것만 남긴다
+      step('01 경계', D.boundary.steps[0], { points: [D.boundary.steps[0].points[0], D.boundary.steps[0].points[4]] }),
+      step('01 경계', D.boundary.steps[3]), // batch · code
+      // compact: 그림이 당겨 채우기와 ID 유지를 보이므로, 그림에 없는 정책 둘만
+      step('01 경계', D.boundary.steps[4], { points: [D.boundary.steps[4].points[1], D.boundary.steps[4].points[3]] }),
 
       // ─── §02 프레임 — 통로 넷이 서브스텝 반복 바깥에 있다 ───
       {
@@ -72,36 +74,47 @@
       },
 
       // ─── §03 충돌 ───
-      step('03 충돌', D.collision.steps[0], { gist: D.collision.gist }), // tree · viz fat
+      // tree: 그림이 여유 폭(fat bounds)을 보이므로 '여유 밖으로 나갈 때만' 은 중복이다
+      step('03 충돌', D.collision.steps[0], { points: D.collision.steps[0].points.slice(0, 2) }),
       // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
       step('03 충돌', D.collision.steps[3], { points: D.collision.steps[3].points.slice(0, 4) }),
 
       // ─── §04 렌더 ───
-      step('04 렌더', D.render.steps[3], { gist: D.render.gist }), // arena · code
+      step('04 렌더', D.render.steps[3]), // arena · code
 
-      // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 두 장이다.
-      //     한 장에 9개를 뭉치면 "결함 목록"으로 읽힌다. 성격이 다른 둘로 가른다 —
-      //     (1) 검증이 어디까지 닿았나  (2) 무엇이 재현 가능한 결함이고 무엇이 한계인가.
-      //     마무리 줄은 지어낸 계획이 아니라 실제로 한 것이다: 같은 항목을
-      //     Cartapli Mobile 에서 갖췄다(3사이클 계측 · 네이티브↔관리형 오라클).
+      // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 두 장.
+      //     글 목록이 아니라 카드로 간다 — 슬라이드는 읽는 매체가 아니라 스캔하는 매체다.
+      //     카드 제목만 훑어도 성격이 갈려야 한다.
       {
-        layout: 'list',
+        layout: 'columns',
         section: '05 검증',
         title: '검증한 것과 측정 밖의 것',
         gist: '코드로 참·거짓이 갈리는 것만 본문에 실었다. 눈과 화면 카운터로만 본 것은 여기 모은다.',
-        pairs: [D.limits[0], D.limits[1], D.limits[3], D.limits[7]],
-        pairCols: 2,
-        note:
-          '측정 조건을 남기고 구현끼리 대조해 검증하는 방식은 다음 프로젝트에서 갖췄다 — ' +
-          'Cartapli Mobile 은 프레임당 CPU 를 3사이클로 나눠 재고, 네이티브 구현을 관리형 구현과 오라클로 대조한다.',
+        cols: [
+          { mark: '✗', kind: '계측', title: '측정 도구 없음',
+            pairs: [D.limits[0], D.limits[1]] },
+          { mark: '✗', kind: '검사', title: '자동 검증 없음',
+            pairs: [D.limits[3], D.limits[7]] },
+          // 지어낸 계획이 아니라 실제로 한 것이다. 출처 = pages/cartapli-mobile/data.js
+          // (프레임당 CPU 0.643 → 0.040 ms 를 3사이클로 분리 측정 · 측정 조건 명시 ·
+          //  네이티브 구현을 관리형 구현과 오라클로 대조).
+          { mark: '✓', kind: '이후 프로젝트', title: 'Cartapli Mobile 에서 확보',
+            pairs: [
+              ['측정 조건을 남긴다', '기기 · 씬 · 로그 배제 여부를 적고 프레임당 CPU 를 세 사이클로 갈라 잰다 — 구조로 얼마, Burst 로 얼마.'],
+              ['구현끼리 대조한다', '네이티브 구현이 관리형 구현과 같은 답을 내는지 오라클로 확인하고, 쌓임 순서는 파이프라인 테스트로 따로 본다.'],
+            ] },
+        ],
       },
       {
-        layout: 'list',
+        layout: 'columns',
         section: '06 한계',
         title: '알려진 결함과 한계',
-        gist: '앞 둘은 재현 조건까지 짚은 결함이고, 뒤 셋은 애초에 범위 밖으로 둔 것이다.',
-        pairs: [D.limits[2], D.limits[6], D.limits[4], D.limits[5], D.limits[8]],
-        pairCols: 2,
+        cols: [
+          { kind: '결함', title: '재현 가능',
+            pairs: [D.limits[2], D.limits[6]] },
+          { kind: '범위 배제', title: '애초에 넣지 않음',
+            pairs: [D.limits[4], D.limits[5], D.limits[8]] },
+        ],
       },
     ],
   };
