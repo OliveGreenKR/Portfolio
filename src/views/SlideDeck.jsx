@@ -46,7 +46,9 @@
         {code.intro && <p className="sl-code__intro">{RI(code.intro)}</p>}
         <div className="sl-code">
           <div className="sl-code__t">{code.title}</div>
-          <pre>{code.code}</pre>
+          {window.highlightCode
+            ? <pre dangerouslySetInnerHTML={{ __html: window.highlightCode(code.code, code.lang) }} />
+            : <pre>{code.code}</pre>}
         </div>
       </React.Fragment>
     );

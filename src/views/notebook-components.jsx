@@ -175,9 +175,11 @@ function FSMTrail({ steps }) {
 window.FSMTrail = FSMTrail;
 
 /* ─── ASCII / code block ────────────────────────────────── */
-function AsciiBlock({ title, intro, code, result }) {
-  // Very light syntax tinting — comments only.
-  const lines = code.split('\n').map((line, i) => {
+function AsciiBlock({ title, intro, code, result, lang }) {
+  // 신택스 색은 src/views/syntax.js + src/styles/syntax.css 가 갖는다.
+  // 그 둘이 안 실린 페이지에서는 highlightCode 가 없으므로 예전대로 주석만 틴팅한다.
+  const hl = window.highlightCode;
+  const lines = hl ? null : code.split('\n').map((line, i) => {
     const trim = line.trimStart();
     if (trim.startsWith('//')) {
       return <span key={i} className="c">{line + '\n'}</span>;
@@ -191,7 +193,7 @@ function AsciiBlock({ title, intro, code, result }) {
         <span className="lbl">{title}</span>
       </div>
       {intro && <div className="nb-ascii-intro">{intro}</div>}
-      <pre>{lines}</pre>
+      {hl ? <pre dangerouslySetInnerHTML={{ __html: hl(code, lang) }} /> : <pre>{lines}</pre>}
       {result && <div className="nb-ascii-result">→ {result}</div>}
     </div>
   );

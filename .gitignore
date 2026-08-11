@@ -1,2 +1,5 @@
 # 덱 스냅샷 — deck.html 을 렌더해서 만든 산출물. data.js + 매니페스트로 언제든 다시 만든다
 pages/deck.snapshot.html
+
+# 코드 블록 다크/라이트 비교 시안 — 판단 끝나면 지워도 된다
+pages/_syntax-preview.html
