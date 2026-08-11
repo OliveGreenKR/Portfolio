@@ -1,0 +1,96 @@
+/* JCH Portfolio — syntax.css
+   코드 블록 다크 테마 + 신택스 색. 사이트(.nb-ascii)와 덱(.sl-code) 둘 다 여기서 온다.
+
+   색은 전부 tokens.css 의 태그 팔레트에서 가져왔다 — sage / wheat / terra /
+   dusty-blue / plum. 새 색을 만들지 않았다.
+
+   배정은 IDE 관습을 따른다. 계산상 더 벌어지는 조합이 있었지만
+   (타입=주황 · 문자열=금색, 자주 나오는 셋 최소 ΔE 42.6) 관습과 반대라
+   색이 정보가 아니라 소음이 된다. 관습 배정의 실측값:
+     자주 나오는 셋(keyword · type · function) 최소 ΔE 27.2
+     타입 vs 문자열 32.2 · 타입 vs 숫자 52.6 · 숫자 vs 문자열 43.7
+     모든 색 배경 대비 6.3:1 이상
+   (직전 배정은 함수 vs 키워드가 ΔE 16.1 로 붙어 있었고 타입·숫자가 같은 색이었다.)
+
+   ⚠️ DESIGN_SYSTEM 의 "sage 와 terracotta 두 색만" 규칙의 **명시적 예외**다.
+      코드 색은 장식이 아니라 정보다 — 두 색으로는 타입·함수·문자열·주석을 못 가른다. */
+
+:root {
+  --code-bg:      #211f1b;   /* 순검정이 아닌 따뜻한 잉크 — 종이 톤과 붙는다 */
+  --code-bg-head: #1a1815;
+  --code-rule:    #3a352e;
+  --code-fg:      #e6e1d6;
+  --code-dim:     #8f887a;   /* 주석 */
+  --code-punct:   #9a9385;   /* 연산자 · 구두점 */
+  --code-kw:      #b9d1b0;   /* sage-300   초록 — 키워드 */
+  --code-type:    #d4b87a;   /* wheat      금색 — 타입 · 클래스 */
+  --code-fn:      #8fa8b8;   /* dusty-blue 파랑 — 함수 */
+  --code-str:     #e08a75;   /* terra-300  주황 — 문자열 */
+  --code-num:     #b9a3c7;   /* plum       보라 — 숫자 */
+  --code-macro:   #ecc0b0;   /* terra-200        — 전처리기 */
+}
+
+/* ─── 사이트: .nb-ascii ──────────────────────────── */
+.nb-ascii { background: var(--code-bg); border-color: var(--code-rule); }
+.nb-ascii-head {
+  background: var(--code-bg-head);
+  border-bottom-color: var(--code-rule);
+  color: var(--code-dim);
+}
+.nb-ascii-head .lbl { color: var(--code-fg); }
+.nb-ascii-intro {
+  background: var(--code-bg-head);
+  border-bottom-color: var(--code-rule);
+  color: #c8c1b4;
+}
+.nb-ascii pre { background: var(--code-bg); color: var(--code-fg); }
+.nb-ascii-result { background: var(--code-bg-head); border-top-color: var(--code-rule); color: #c8c1b4; }
+
+/* 이전 수동 틴팅(.c/.k/.s)은 Prism 이 대신한다 — 남아 있어도 어긋나지 않게 맞춰 둔다 */
+.nb-ascii pre .c { color: var(--code-dim); font-style: italic; }
+.nb-ascii pre .k { color: var(--code-kw); }
+.nb-ascii pre .s { color: var(--code-str); }
+
+/* ─── 덱: .sl-code ──────────────────────────────── */
+.sl-code { background: var(--code-bg); border-color: var(--code-rule); }
+.sl-code__t { background: var(--code-bg-head); border-bottom-color: var(--code-rule); color: var(--code-dim); }
+.sl-code pre { color: var(--code-fg); }
+
+/* ─── Prism 토큰 ────────────────────────────────── */
+.nb-ascii .token.comment, .sl-code .token.comment,
+.nb-ascii .token.prolog,  .sl-code .token.prolog   { color: var(--code-dim); font-style: italic; }
+
+.nb-ascii .token.keyword, .sl-code .token.keyword  { color: var(--code-kw); font-weight: 600; }
+
+.nb-ascii .token.base-clause,  .sl-code .token.base-clause,
+.nb-ascii .token.generic,      .sl-code .token.generic,
+.nb-ascii .token.class-name,   .sl-code .token.class-name,
+.nb-ascii .token.engine-type,  .sl-code .token.engine-type,
+.nb-ascii .token.builtin,      .sl-code .token.builtin,
+.nb-ascii .token.return-type,  .sl-code .token.return-type,
+.nb-ascii .token.type-list,    .sl-code .token.type-list,
+.nb-ascii .token.constructor-invocation, .sl-code .token.constructor-invocation { color: var(--code-type); }
+
+.nb-ascii .token.function,         .sl-code .token.function,
+.nb-ascii .token.method,           .sl-code .token.method,
+.nb-ascii .token.generic-function, .sl-code .token.generic-function { color: var(--code-fn); }
+
+.nb-ascii .token.string, .sl-code .token.string,
+.nb-ascii .token.char,   .sl-code .token.char,
+.nb-ascii .token.regex,  .sl-code .token.regex,
+.nb-ascii .token.string-interpolation, .sl-code .token.string-interpolation { color: var(--code-str); }
+
+.nb-ascii .token.number,  .sl-code .token.number,
+.nb-ascii .token.boolean, .sl-code .token.boolean,
+.nb-ascii .token.constant,.sl-code .token.constant  { color: var(--code-num); }
+
+.nb-ascii .token.operator,    .sl-code .token.operator,
+.nb-ascii .token.punctuation, .sl-code .token.punctuation,
+.nb-ascii .token.double-colon,.sl-code .token.double-colon { color: var(--code-punct); }
+
+.nb-ascii .token.macro,     .sl-code .token.macro,
+.nb-ascii .token.directive, .sl-code .token.directive,
+.nb-ascii .token.property,  .sl-code .token.property,
+.nb-ascii .token.attribute, .sl-code .token.attribute  { color: var(--code-macro); }
+
+.nb-ascii .token.important, .sl-code .token.important { color: var(--code-macro); font-weight: 600; }
