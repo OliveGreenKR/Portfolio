@@ -16,9 +16,32 @@
 //   cycles[*].results · callout · next → 같은 이유.
 // verify.tests(오라클 대조 400/200/16)는 §04 로 되살렸다 — DX11 '검증 범위' 장이
 //   "Cartapli Mobile 에서 확보" 라고 주장하는데 정작 근거가 덱에 없었다.
+//
+// 2026-08-12 (사용자 판단): **Cartapli: Fold Quest 절(6장)을 폐지**하고 이 절의
+//   §00 한 장으로 접었다. 원작은 "출시까지 갔다" 는 사실 이상의 값어치가 이 덱에 없다.
+//   그 한 장을 여기에 두는 이유 — 이 절의 최적화 대상이 그 게임이고, CM 표지에는
+//   히어로 이미지가 없어 무슨 게임인지가 덱 어디에도 안 나온다.
+//   매니페스트 파일(deck/cartapli.js)은 지우지 않는다. 클라이언트 직무 덱에서 되살린다.
 
 (function buildCartapliMobileDeck() {
   const C = window.CM_DATA;
+  const O = window.CARTAPLI_DATA; // 원작(PC · Steam 출시작) — §00 한 장에만 쓴다
+
+  // 괄호 밖의 가운뎃점에서만 자른다. roles.mine 은 "…시스템(턴 · 스킬 · AI) · 텍스처링…"
+  // 처럼 괄호 안에도 가운뎃점을 쓴다 — 그냥 split 하면 항목이 조각난다.
+  const splitTop = (text) => {
+    const out = [];
+    let depth = 0, buf = '';
+    for (const ch of text) {
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      if (ch === '·' && depth === 0) { out.push(buf.trim()); buf = ''; continue; }
+      buf += ch;
+    }
+    if (buf.trim()) out.push(buf.trim());
+    return out;
+  };
+  const metric = (k) => (O.metrics.rows.find((r) => r[0] === k) || ['', ''])[1];
 
   // 사이클 하나를 step 슬라이드로 옮긴다. viz 키는 프로젝트마다 겹칠 수 있어
   // 컴포넌트 이름을 직접 준다.
@@ -72,6 +95,29 @@
         // hero 이미지는 페이지에 없다 — cover 가 이미지 없이도 서게 되어 있다
       },
 
+      // ─── §00 원작. 폐지한 Cartapli 절(6장)을 한 장으로 접은 것 ───
+      // 표지 바로 뒤다 — 무슨 게임을 최적화하는지 모르는 채로 수치를 읽게 두지 않는다.
+      // 사실은 전부 pages/cartapli/data.js 가 갖는다. 여기서 새로 쓰는 문장은 없다.
+      {
+        layout: 'diagram',
+        section: '00 원작',
+        title: '원작 — ' + O.meta.title,
+        lead: O.meta.oneLine + '. 이 절이 최적화하는 것은 이 게임의 모바일 이식이다.',
+        step: { img: O.screenshots[0] },
+        points: [
+          ['Steam 평가', metric('Steam 평가')],
+          ['누적', '무료 라이선스 ' + metric('Lifetime free licenses')
+            + ' · 순 사용자 ' + metric('Lifetime unique users')],
+          // 역할 경계는 원작을 꺼내는 이상 먼저 밝힌다. 본인 몫은 roles.mine 의
+          // 첫 항목(배틀씬 전체 시스템)만 — 나머지는 이 덱의 주장과 무관하다.
+          ['본인', splitTop(O.roles.mine)[0]],
+          ['본인 아님', O.roles.others.replace(/\.$/, '')],
+        ],
+        note: O.meta.period + ' · ' + O.meta.weeks.replace(/\s*weeks?$/i, '주')
+          + ' · ' + O.meta.team.replace(/(\d)\s+인/, '$1인')
+          + ' · ' + O.meta.role + ' · ' + O.meta.platform,
+      },
+
       // ─── 성과와 측정 조건. 원래 두 장이었다 ───
       // "수치를 앞세웠으면 조건을 바로 대야 한다" — 그 '바로' 는 다음 장이 아니라 같은 장이다.
       // 결과 장은 큰 수치 셋 + 막대뿐이었고 조건 장은 지표 셋뿐이라, 둘 다 반 장짜리였다.
@@ -80,6 +126,25 @@
         section: '01 결과',
         title: '성능 개선 결과와 측정 조건',
         bigs: C.bigs,
+        pairs: C.context.measure.metrics.rows,
+        pairCols: 3,
+        // note 는 하나만 둔다. 조건 장의 담당 범위는 표지 pills 가 대신한다.
+        // 남기는 것은 측정 조건 자체 — 수치를 앞세운 장이 반드시 달아야 하는 줄이다.
+        note: C.context.measure.body.split('. ').slice(0, 3).join('. ') + '.',
+      },
+
+      // ─── 워터폴. 위 장에 얹혀 있던 것을 뗀 것이다 ───
+      // stats 는 한 상자에 큰 수치 + 차트 + 지표격자 + 노트를 세로로 쌓는다. 차트 몫이
+      // 216px 까지 눌려 막대 라벨이 **5.6px** 로 찍혔다(실측). 세로를 나눠 갖는 구조라
+      // CSS 로는 못 편다 — 차트가 전폭·전세로를 갖는 장으로 뗀다.
+      // lead 는 data.js 의 waterfallNote 다. 덱이 한 번도 안 쓰던 문장이고,
+      // "뒤 막대가 작은 것은 이미 줄어 있었기 때문" 이라는 이 그림의 유일한 오독 방지선이다.
+      {
+        layout: 'diagram',
+        section: '01 결과',
+        title: '사이클별 감소폭',
+        lead: C.waterfallNote,
+        step: { viz: 'waterfall' },
         vizComponent: 'CMWaterfall',
         // data 의 막대 이름(레이어 삭제 · 메시 병합 · Burst 잡 + 네이티브)과
         // 사이클 슬라이드 제목이 서로 달라 대응이 안 잡혔다. 덱 안에서 한 이름으로 맞춘다.
@@ -88,12 +153,6 @@
             { label: ['기준선', '레이어 제거', '렌더러 감축', '프레임 할당 제거'][i] || w.label })),
           unit: 'ms',
         },
-        pairs: C.context.measure.metrics.rows,
-        pairCols: 3,
-        // note 는 하나만 둔다. 막대 라벨이 감소폭을 이미 다 적고 있어 waterfallNote 가
-        // 먼저 버릴 것이고, 조건 장의 담당 범위는 표지 pills 가 대신한다.
-        // 남기는 것은 측정 조건 자체 — 수치를 앞세운 장이 반드시 달아야 하는 줄이다.
-        note: C.context.measure.body.split('. ').slice(0, 3).join('. ') + '.',
       },
 
       // ─── 사이클 셋 ───

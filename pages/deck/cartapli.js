@@ -1,6 +1,11 @@
 // pages/deck/cartapli.js
 // 슬라이드 덱 매니페스트 — Cartapli: Fold Quest (PC · Steam 출시작).
 //
+// ⚠️ 2026-08-12 현재 **엔진 직무 덱에서는 로드하지 않는다** (deck.html 의 script 태그 없음).
+//    사용자 판단 — 이 덱에서 원작은 "출시까지 갔다" 는 사실 이상의 값어치가 없다.
+//    그 사실은 deck/cartapli-mobile.js 의 §00 한 장이 받는다 (원작 · 출시 지표 · 역할 경계).
+//    파일은 남긴다 — 클라이언트 직무 덱에서는 이 6장이 그대로 쓸모 있다. wobble · edu · labs 와 같은 처지다.
+//
 // ⚠️ 사실을 만들지 않는다. pages/cartapli/data.js 를 참조만 한다.
 //
 // 이 프로젝트는 또 다른 모양이다 — meta 에 pills 가 없고(개별 필드), 요점이
