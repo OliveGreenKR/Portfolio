@@ -274,11 +274,14 @@ window.CMJobViz = CMJobViz;
    도형은 실제 알고리즘 그대로다 — 사각 조각에서 사각 덮개를 빼면 왼쪽·위·아래 세 조각이
    나오고, 덮개의 오른쪽 변은 조각 밖이라 아무것도 떼어내지 않는다. */
 function CMConvexViz() {
-  const W = 720, H = 270;
-  const sq = 170, ay = 52;
-  const ax = 40, bx = 500;              // 두 판의 왼쪽 x. bx + sq = 670 < 720
-  const cl = 57, ct = 43, cb = 128;     // 덮개가 조각을 자르는 위치 (조각 좌상단 기준)
-  const coverR = 226;                   // 덮개 오른쪽 — 조각(170) 밖이라 이 변은 아무것도 못 떼어낸다
+  // ⚠️ 가로:세로 비가 이 그림의 실크기를 정한다. 덱은 그림에 폭 1,726px · 세로 300~460px 를
+  //    주므로(비 4~6) 세로로 넉넉한 viewBox 는 세로에 갇혀 글자가 10px 로 찍힌다(실측).
+  //    비 2.9 로 눕혀 두면 사이트·덱 양쪽에서 폭이 배율을 정한다.
+  const W = 640, H = 222;
+  const sq = 140, ay = 46;
+  const ax = 40, bx = 440;              // 두 판의 왼쪽 x. bx + sq = 580 < 640
+  const cl = 47, ct = 35, cb = 105;     // 덮개가 조각을 자르는 위치 (조각 좌상단 기준)
+  const coverR = 186;                   // 덮개 오른쪽 — 조각(140) 밖이라 이 변은 아무것도 못 떼어낸다
 
   const piece = (x, y, w, h, n) => (
     <g key={n}>
@@ -291,10 +294,10 @@ function CMConvexViz() {
     <figure className="cm-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
            aria-label="볼록 덮개를 빼면 덮개의 변마다 볼록 조각이 하나씩 떨어져 나온다">
-        <text x={ax} y="22" className="cm-svg-lbl">조각에서 볼록 덮개를 뺀다</text>
-        <text x={ax} y="40" className="cm-svg-sub">덮개는 반평면 네 개의 교집합</text>
-        <text x={bx} y="22" className="cm-svg-lbl">변마다 한 조각씩 떨어져 나온다</text>
-        <text x={bx} y="40" className="cm-svg-sub">떨어져 나온 조각은 전부 다시 볼록</text>
+        <text x={ax} y="18" className="cm-svg-lbl">조각에서 볼록 덮개를 뺀다</text>
+        <text x={ax} y="35" className="cm-svg-sub">덮개는 반평면 네 개의 교집합</text>
+        <text x={bx} y="18" className="cm-svg-lbl">변마다 한 조각씩 떨어져 나온다</text>
+        <text x={bx} y="35" className="cm-svg-sub">떨어져 나온 조각은 전부 다시 볼록</text>
 
         {/* 왼쪽 — 조각과 덮개가 겹쳐 있는 상태 */}
         <rect x={ax} y={ay} width={sq} height={sq} rx="2" fill="var(--sage-50)" stroke="var(--sage-500)" />
@@ -318,12 +321,11 @@ function CMConvexViz() {
         <text x={bx + cl + (sq - cl) / 2} y={ay + ct + (cb - ct) / 2 + 4} textAnchor="middle"
               className="cm-svg-tag">덮였다</text>
 
-        <text x={ax} y={ay + sq + 26} className="cm-svg-sub">남은 조각이 0이 되면 그 레이어는 빈틈없이 덮인 것이다 — 넓이를 재는 단계가 없다</text>
+        <text x={ax} y={ay + sq + 22} className="cm-svg-sub">남은 조각이 0이 되면 그 레이어는 빈틈없이 덮인 것이다 — 넓이를 재는 단계가 없다</text>
       </svg>
       <figcaption className="cm-figcap">
-        덮개의 변을 하나씩 훑으며 <b>“이번 변 바깥”을 떼어낸다.</b> 덮개의 오른쪽 변은 조각 밖에 있어
-        아무것도 떼어내지 않으므로 조각은 4개가 아니라 3개다.
-        떼어낸 조각이 전부 다시 볼록이라 교차점을 구하거나 링을 조립하는 단계가 필요 없다.
+        덮개의 변을 하나씩 훑으며 <b>“이번 변 바깥”을 떼어낸다</b> — 떼어낸 조각이 전부 다시 볼록이라
+        교차점을 구하거나 링을 조립하는 단계가 없다. 오른쪽 변은 조각 밖이라 아무것도 떼어내지 않으므로 조각은 3개다.
       </figcaption>
     </figure>
   );
