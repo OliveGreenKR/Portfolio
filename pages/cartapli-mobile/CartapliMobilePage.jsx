@@ -196,6 +196,21 @@ function CMCycle({ c, idx }) {
         <div className="cm-row-body">{ri(c.cause)}</div>
       </div>
 
+      {/* 갈래가 있는 사이클은 **고르는 일이 먼저**다. 채택안의 원리·코드를 먼저 펼치면
+          결론을 이미 안 채로 비교를 읽게 되어 무엇을 왜 골랐는지가 안 남는다. */}
+      {c.sub && (
+        <div className="cm-sub cm-cycle-sub">
+          <h4 className="cm-sub-title">{c.sub.title}</h4>
+          <p className="cm-body">{ri(c.sub.body)}</p>
+          {c.sub.viz && <Viz kind={c.sub.viz} />}
+          {c.sub.code && <Code block={c.sub.code} />}
+          <div className="cm-scroll">
+            <window.DataTable headers={c.sub.headers} rows={c.sub.rows} />
+          </div>
+          <p className="cm-note">{ri(c.sub.note)}</p>
+        </div>
+      )}
+
       <div className="cm-how">
         <div className="cm-how-h">{c.howTitle}</div>
         {c.how.map(([h, b], i) => (
@@ -223,21 +238,6 @@ function CMCycle({ c, idx }) {
             {ri(c.callout.title)}
           </div>
           <div className="cm-callout-b">{ri(c.callout.body)}</div>
-        </div>
-      )}
-
-      {/* 사이클 안에서 갈라지는 결정 — 실측이 근거가 되는 자리에만 쓴다.
-          비교는 그림이 먼저다. 표는 그림이 못 담는 축(비용 배분)만 받는다. */}
-      {c.sub && (
-        <div className="cm-sub cm-cycle-sub">
-          <h4 className="cm-sub-title">{c.sub.title}</h4>
-          <p className="cm-body">{ri(c.sub.body)}</p>
-          {c.sub.viz && <Viz kind={c.sub.viz} />}
-          {c.sub.code && <Code block={c.sub.code} />}
-          <div className="cm-scroll">
-            <window.DataTable headers={c.sub.headers} rows={c.sub.rows} />
-          </div>
-          <p className="cm-note">{ri(c.sub.note)}</p>
         </div>
       )}
 
