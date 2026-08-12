@@ -58,29 +58,31 @@
         hero: D.hero,
       },
 
-      // ─── 역할 경계. 규모보다 먼저 온다 — 뭘 직접 짰는지가 안 서면 나머지가 안 읽힌다 ───
-      {
-        layout: 'columns',
-        section: '00 범위',
-        // 제목·라벨은 슬라이드 어법으로 바꾼다. data.js 의 "무엇을 직접 짰고 무엇을
-        // 가져다 썼나" 는 노트 톤이라 웹 본문에서는 맞지만, 스캔하는 매체에서는
-        // 명사구여야 한다. 바꾸는 것은 제목뿐이고 항목(reads/skips)은 원문 그대로다.
-        title: '구현 범위',
-        gist: deref(D.context.scope.lead, '아래 셋은 가져다 썼다', '가져다 쓴 것은 셋뿐이다'),
-        cols: [
-          { kind: 'BUILT', tone: 'sage', title: '자체 구현', items: D.context.scope.reads },
-          { kind: 'EXTERNAL', title: '외부 라이브러리 · API', items: D.context.scope.skips },
-        ],
-      },
-
-      // ─── 만든 것 3칸 ───
+      // ─── 구성과 범위. 원래 두 장이었는데 각각 67% · 65% 로 헐거웠다 ───
+      // 장을 키운다고 밀도가 오르지 않는다. 둘 다 "이 엔진이 무엇으로 되어 있나" 한 질문의
+      // 서로 다른 답(무엇을 만들었나 / 어디까지가 내 것인가)이라 한 장에 다섯 칸으로 접는다.
+      // 위 줄 셋 = 만든 것, 아래 줄 둘 = 직접 짠 것 / 가져다 쓴 것.
       {
         layout: 'columns',
         section: '00 구성',
-        title: '엔진 구성',
+        title: '엔진 구성과 구현 범위',
+        // 제목·라벨은 슬라이드 어법으로 바꾼다. data.js 의 "무엇을 직접 짰고 무엇을
+        // 가져다 썼나" 는 노트 톤이라 웹 본문에서는 맞지만, 스캔하는 매체에서는
+        // 명사구여야 한다. 바꾸는 것은 제목뿐이고 항목(reads/skips)은 원문 그대로다.
+        gist: deref(D.context.scope.lead, '아래 셋은 가져다 썼다', '가져다 쓴 것은 셋뿐이다'),
+        colCount: 3,
         // 세 축은 서로 다른 영역이라 색으로 갈라 둔다
-        cols: D.built.map((b, i) => ({ kind: b.kind, tone: ['sage', 'wheat', 'blue'][i],
-                                       title: b.title, sub: b.sub })),
+        cols: D.built
+          .map((b, i) => ({ kind: b.kind, tone: ['sage', 'wheat', 'blue'][i],
+                            title: b.title, sub: b.sub }))
+          .concat([
+            // reads[0] 의 앞 세 낱말(물리 · 충돌 · 렌더 파이프라인)은 같은 격자의
+            // BOUNDARY · COLLISION · RENDER 카드가 이미 세운다. 나머지만 남긴다.
+            { kind: 'BUILT', mark: '✓', tone: 'sage', title: '자체 구현',
+              items: D.context.scope.reads.map((t, i) => (i === 0
+                ? t.replace(/^물리 · 충돌 · 렌더 파이프라인 · /, '') : t)) },
+            { kind: 'EXTERNAL', mark: '✗', title: '외부 라이브러리 · API', items: D.context.scope.skips },
+          ]),
       },
 
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───

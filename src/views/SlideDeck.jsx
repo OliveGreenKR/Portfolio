@@ -121,6 +121,39 @@
     );
   }
 
+  // ─── toc — 목차. 프로젝트 단위로만 낸다 ───
+  // 장 단위로 40줄을 늘어놓으면 목차가 두 장이 되고, 그때부터는 목차가 아니라 색인이다.
+  // 한 줄에 프로젝트명 · 한 줄 요약 · 태그 · 쪽수 범위를 넣고 통째로 링크를 건다.
+  // 쪽수 범위와 태그는 engine.js 가 조립 시점에 세어 준다 — 여기서 만들지 않는다.
+  function Toc({ s }) {
+    return (
+      <div className="sl-body">
+        <h2 className="sl-h">{s.title}</h2>
+        {s.gist && <p className="sl-gist">{RI(s.gist)}</p>}
+        <ol className="sl-toc">
+          {s.entries.map((e, i) => (
+            <li key={i}>
+              <a className="sl-toc__row" href={e.href}>
+                <span className="sl-toc__no">{e.no}</span>
+                <span className="sl-toc__main">
+                  <span className="sl-toc__t">{e.title}</span>
+                  {e.sub && <span className="sl-toc__s">{RI(e.sub)}</span>}
+                  {e.tags && e.tags.length > 0 && (
+                    <span className="sl-toc__tags">
+                      {e.tags.map((t, j) => <span className="sl-pill" key={j}>{t}</span>)}
+                    </span>
+                  )}
+                </span>
+                <span className="sl-toc__p">{e.from === e.to ? e.from : e.from + '–' + e.to}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
+      </div>
+    );
+  }
+
   // ─── outro — 마지막 링크 정리 ───
   function Outro({ s }) {
     return (
@@ -263,6 +296,14 @@
         <div className="sl-diagram__art">
           {st.mermaid && <Mermaid source={st.mermaid} dir={s.mermaidDir} />}
           {st.viz && <Viz name={st.viz} component={s.vizComponent} props={s.vizProps} />}
+          {/* 게임 화면. 도표와 같은 자리를 쓴다 — 전폭 + 남는 세로 전부.
+              cover 의 히어로는 표지 옆칸이라 절반 폭밖에 못 받는다. */}
+          {st.img && (
+            <figure className="sl-shot">
+              <img src={st.img.src} alt="" />
+              {st.img.caption && <figcaption>{RI(st.img.caption)}</figcaption>}
+            </figure>
+          )}
         </div>
         {pts.length > 0 && (
           <ul className="sl-diagram__pts" style={{ '--pts': pts.length }}>
@@ -330,7 +371,7 @@
     );
   }
 
-  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, outro: Outro };
+  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, toc: Toc, outro: Outro };
 
   function SlideDeck({ deck }) {
     const total = deck.slides.length;
@@ -339,7 +380,9 @@
         {deck.slides.map((s, i) => {
           const Body = LAYOUTS[s.layout];
           return (
-            <section className="slide" key={i} data-screen-label={deck.name + ' · ' + (i + 1)}>
+            // id 는 목차가 거는 앵커다. 쪽 번호와 같은 1-기반 —
+            // 목차에 적힌 숫자를 그대로 #sN 으로 쓴다.
+            <section className="slide" id={'s' + (i + 1)} key={i} data-screen-label={deck.name + ' · ' + (i + 1)}>
               <Chrome section={s.section || deck.name} no={s.no} deck={s.proj || deck.name} page={i + 1} total={total} />
               <Body s={s} />
             </section>

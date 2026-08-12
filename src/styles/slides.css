@@ -192,6 +192,29 @@
 }
 .sl-pill--accent { border-color: var(--sage-400); color: var(--ink); background: var(--sage-100); }
 
+/* ─── toc — 목차 ──────────────────────────────────────
+   프로젝트 단위 네댓 줄이라 한 줄에 세로를 넉넉히 준다. 줄 전체가 링크다 —
+   숫자만 링크로 두면 눌러야 할 곳을 찾아야 한다. */
+.sl-toc { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column;
+          gap: 18px; flex: 1 1 auto; min-height: 0; justify-content: center; }
+.sl-toc__row {
+  display: flex; align-items: baseline; gap: 30px;
+  padding: 22px 26px;
+  border: 1px solid var(--rule); background: var(--paper-2);
+  border-left: 5px solid var(--sage-400);
+  border-radius: 3px;
+  text-decoration: none; color: inherit;
+}
+.sl-toc__no { font-family: var(--font-display); font-size: 40px; font-weight: 700;
+              color: var(--ink-3); letter-spacing: -0.02em; flex: 0 0 auto; }
+.sl-toc__main { display: flex; flex-direction: column; gap: 10px; flex: 1 1 auto; min-width: 0; }
+.sl-toc__t { font-size: 40px; font-weight: 600; line-height: 1.25; }
+.sl-toc__s { font-size: 25px; line-height: 1.45; color: var(--ink-2); }
+.sl-toc__tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 2px; }
+.sl-toc__tags .sl-pill { font-size: 19px; padding: 5px 12px; }
+.sl-toc__p { font-family: var(--font-display); font-size: 30px; font-weight: 600;
+             color: var(--ink-3); flex: 0 0 auto; margin-left: auto; }
+
 /* ─── columns ────────────────────────────────────── */
 .sl-cols { display: grid; gap: 24px 28px; grid-template-columns: repeat(var(--cols, 3), 1fr); flex: 1 1 auto; min-height: 0; align-items: stretch; align-content: center; }
 .sl-col {
@@ -304,6 +327,13 @@
 .sl-diagram__art > * { flex: 1 1 auto; min-height: 0; margin: 0; display: flex; flex-direction: column; }
 .sl-diagram__art svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; }
 .sl-diagram__art figcaption { flex: 0 0 auto; }
+/* 게임 화면. 비율을 지키면서 남는 세로를 다 쓴다 — 늘려서 뭉개지 않는다. */
+.sl-shot { align-items: center; gap: 12px; }
+.sl-shot img {
+  flex: 1 1 auto; min-height: 0; max-width: 100%; object-fit: contain;
+  border: 1px solid var(--rule); border-radius: 3px; background: var(--paper-3);
+}
+.sl-shot figcaption { font-size: 22px; line-height: 1.5; color: var(--ink-3); text-align: center; }
 .sl-diagram__pts {
   margin: 0; padding: 0; list-style: none; flex: 0 0 auto;
   display: grid; grid-template-columns: repeat(var(--pts, 3), 1fr); gap: 0 40px;

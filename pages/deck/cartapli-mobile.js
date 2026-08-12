@@ -44,12 +44,14 @@
   });
 
   // 코드 장 — 실제로 무엇을 짰나. 요점 자리에는 그 결과를 둔다.
+  // did 에 code.intro 를 넣지 않는다 — CodeBlock 이 code.title 과 code.intro 를 이미
+  // 그리므로 같은 문장이 한 화면에 위아래로 두 번 나온다.
   const cycleCode = (c, title) => ({
     layout: 'step',
     section: c.no,
     no: c.tag,
     title,
-    step: { problem: c.howTitle, did: c.code.intro || c.code.title, code: c.code, points: [] },
+    step: { problem: c.howTitle, code: c.code, points: [] },
     points: c.results,
   });
 
