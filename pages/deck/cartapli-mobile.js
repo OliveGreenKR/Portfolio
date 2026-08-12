@@ -11,9 +11,11 @@
 //   how[label,body] → points / tag(−74.4%) → 크롬 번호칸
 //
 // 뺀 것 (지면 경쟁에서 밀린 것):
-//   summary(단계 비교표) · layerCurve(레이어 곡선) · verify(오라클 검증 표)
-//   → 검증 서사는 rigor 카드 한 장이 더 세게 말한다. 표는 면접에서 꺼낸다.
-//   cycles[*].results · callout · next → 감소폭은 §01 워터폴이 이미 다 말한다.
+//   summary(단계 비교표) · layerCurve(레이어 곡선) · verify.rows(측정 대조표)
+//   → 감소폭은 §01 워터폴이 이미 다 말한다. 표는 면접에서 꺼낸다.
+//   cycles[*].results · callout · next → 같은 이유.
+// verify.tests(오라클 대조 400/200/16)는 §04 로 되살렸다 — DX11 '검증 범위' 장이
+//   "Cartapli Mobile 에서 확보" 라고 주장하는데 정작 근거가 덱에 없었다.
 
 (function buildCartapliMobileDeck() {
   const C = window.CM_DATA;
@@ -70,11 +72,13 @@
         // hero 이미지는 페이지에 없다 — cover 가 이미지 없이도 서게 되어 있다
       },
 
-      // ─── 성과. 이 프로젝트는 수치가 주장이므로 맨 앞에 온다 ───
+      // ─── 성과와 측정 조건. 원래 두 장이었다 ───
+      // "수치를 앞세웠으면 조건을 바로 대야 한다" — 그 '바로' 는 다음 장이 아니라 같은 장이다.
+      // 결과 장은 큰 수치 셋 + 막대뿐이었고 조건 장은 지표 셋뿐이라, 둘 다 반 장짜리였다.
       {
         layout: 'stats',
         section: '01 결과',
-        title: '성능 개선 결과',
+        title: '성능 개선 결과와 측정 조건',
         bigs: C.bigs,
         vizComponent: 'CMWaterfall',
         // data 의 막대 이름(레이어 삭제 · 메시 병합 · Burst 잡 + 네이티브)과
@@ -84,20 +88,12 @@
             { label: ['기준선', '레이어 제거', '렌더러 감축', '프레임 할당 제거'][i] || w.label })),
           unit: 'ms',
         },
-        note: C.waterfallNote,
-      },
-
-      // ─── 측정 조건. 수치를 앞세웠으면 조건을 바로 대야 한다 ───
-      {
-        layout: 'list',
-        section: '02 측정',
-        title: C.context.measure.title,
-        // 원문 5문장은 슬라이드에서 텍스트 벽이 된다. 조건을 규정하는 앞 세 문장만 남기고
-        // 나머지(스크립트 자동화 · 마커 3종)는 구두로 넘긴다. 문장을 새로 쓰지는 않는다.
-        gist: C.context.measure.body.split('. ').slice(0, 3).join('. ') + '.',
         pairs: C.context.measure.metrics.rows,
-        pairCols: 1,
-        note: '담당 범위 — ' + C.context.roles.mine,
+        pairCols: 3,
+        // note 는 하나만 둔다. 막대 라벨이 감소폭을 이미 다 적고 있어 waterfallNote 가
+        // 먼저 버릴 것이고, 조건 장의 담당 범위는 표지 pills 가 대신한다.
+        // 남기는 것은 측정 조건 자체 — 수치를 앞세운 장이 반드시 달아야 하는 줄이다.
+        note: C.context.measure.body.split('. ').slice(0, 3).join('. ') + '.',
       },
 
       // ─── 사이클 셋 ───
@@ -121,26 +117,40 @@
         section: '03 검증',
         title: '측정 신뢰 — 기각과 재측정',
         gist: C.rigor.gist,
-        colCount: 2,   // 카드 4장을 한 줄에 넣으면 본문이 잘린다 — 2x2
+        // 카드 넷을 2x2 로 넣으면 산문 700자가 19px 로 눌린다 — 덱에서 코드 없이 가장 빽빽했다.
+        // 둘째(로그가 89.8%)와 셋째(그래서 −27% 철회)는 한 사건의 원인과 결과다. 한 칸으로 합치면
+        // 3칸이 되어 글자가 제 크기로 돌아오고 실린 사실은 그대로다.
+        colCount: 3,
         // 기각·철회는 무엇을 버렸나(terra), 재측정은 무엇을 다시 쟀나(wheat)
         // 제목은 명사구로 덮고 본문은 원문 그대로. 수치는 전부 body 에 있는 값이다.
-        cols: C.rigor.cards.map((c, i) => ({
-          kind: c.badge, tone: /기각|철회/.test(c.badge) ? 'terra' : 'wheat',
-          title: ['스파이크 원인 오진 2회',
-                  '`Renderer.Sync` 비용의 89.8% — `Debug.Log` 한 줄',
-                  '자체 철회 — `Renderer.Sync` −27%',
-                  '기각한 지표 2종 — 회차 시간 · Median/Max'][i] || c.title,
-          sub: c.body,
-        })),
+        cols: [
+          { kind: C.rigor.cards[0].badge, tone: 'terra',
+            title: '스파이크 원인 오진 2회', sub: C.rigor.cards[0].body },
+          { kind: '재측정 · 철회', tone: 'wheat',
+            title: '`Debug.Log` 한 줄이 `Renderer.Sync` 의 89.8%',
+            sub: C.rigor.cards[1].body + ' ' + C.rigor.cards[2].body },
+          { kind: C.rigor.cards[3].badge, tone: 'terra',
+            title: '기각한 지표 2종 — 회차 시간 · Median/Max', sub: C.rigor.cards[3].body },
+        ],
       },
 
-      // ─── 남은 것 ───
+      // ─── 검증과 남은 것 ───
+      // 한계 셋을 pairCols 1 로 두면 큰 글씨 세 줄이 한 장을 삼분해 먹는다.
+      // 같은 지면에 verify.tests 를 나란히 세운다 — DX11 '검증 범위' 장이
+      // "Cartapli Mobile 에서 구현 간 오라클 대조를 확보" 라고 주장하는데,
+      // 정작 CM 절 어디에도 그 근거가 없었다. 400 / 200 / 16 케이스가 그 근거다.
       {
-        layout: 'list',
-        section: '04 남은 것',
-        title: '남은 과제 · 한계',
-        pairs: C.limits,
-        pairCols: 1,
+        layout: 'columns',
+        section: '04 검증 · 남은 것',
+        title: '오라클 대조와 남은 과제',
+        colCount: 2,
+        cols: [
+          { kind: 'VERIFIED', mark: '✓', tone: 'sage', title: C.verify.tests.title,
+            pairs: C.verify.tests.rows.map((r) => [r[0], r[1] + ' · ' + r[2]]) },
+          { kind: 'REMAINING', mark: '✗', tone: 'terra', title: '남은 과제 · 한계',
+            pairs: C.limits },
+        ],
+        note: C.verify.tests.note,
       },
     ],
   };

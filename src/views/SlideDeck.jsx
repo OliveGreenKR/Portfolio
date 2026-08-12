@@ -98,9 +98,16 @@
               {h1}<br />{pre}{mk && <mark className="hl hl--thick">{mk}</mark>}{post}
             </h1>
             {s.stance && <p className="sl-title__stance">{s.stance[0]}<br />{s.stance[1]}</p>}
+            {/* 값이 배열이면 줄바꿈으로 낸다. 이력·학력처럼 항목이 여럿인 줄을
+                가운뎃점으로 이어 붙이면 한 덩이로 보여 훑는 눈이 못 가른다. */}
             <dl className="sl-title__facts">
               {s.facts.map(([k, v], i) => (
-                <React.Fragment key={i}><dt>{k}</dt><dd>{RI(v)}</dd></React.Fragment>
+                <React.Fragment key={i}>
+                  <dt>{k}</dt>
+                  <dd>{Array.isArray(v)
+                    ? v.map((line, j) => <span className="sl-title__line" key={j}>{RI(line)}</span>)
+                    : RI(v)}</dd>
+                </React.Fragment>
               ))}
             </dl>
             <LinkRow items={s.links} />
@@ -144,12 +151,15 @@
                     </span>
                   )}
                 </span>
-                <span className="sl-toc__p">{e.from === e.to ? e.from : e.from + '–' + e.to}</span>
+                {/* 링크라는 사실을 글로 설명하지 않는다 — 버튼이 스스로 말한다. */}
+                <span className="sl-toc__go">
+                  <span className="sl-toc__p">{e.from === e.to ? e.from : e.from + '–' + e.to}</span>
+                  <span className="sl-toc__btn">바로가기 →</span>
+                </span>
               </a>
             </li>
           ))}
         </ol>
-        {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );
   }

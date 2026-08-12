@@ -23,7 +23,13 @@
   // 페이지에서는 맞는 말이지만 슬라이드에는 가리킬 대상이 없다.
   const deref = (text, from, to) => text.replace(from, to);
 
-  const step = (section, st, over) => Object.assign({ layout: 'step', section, no: st.no, step: st }, over);
+  // 코드가 오른쪽에 오는 장은 lead 를 한 줄(did)만 준다. why + did 두 줄이면
+  // 본문 2단 위에서 150px 를 먼저 먹고, 그 두 장이 덱에서 가장 긴 장이 됐다(실측 1220 · 1087자).
+  // codeOf 가 "코드 장은 lead 를 안 준다" 고 규정해 둔 규칙의 연장이다.
+  const step = (section, st, over) => Object.assign(
+    { layout: 'step', section, no: st.no,
+      step: st.code && !st.viz ? Object.assign({}, st, { problem: null }) : st },
+    over);
   // 그림이 주인공인 장. step 의 좌우 2단은 그림에 절반 폭·절반 세로밖에 못 준다.
   const diagram = (section, st, over) => Object.assign({ layout: 'diagram', section, no: st.no, step: st }, over);
   // 코드 장. 그림 장과 나눈 이유는 한 장에 그림 + 코드 + 요점을 다 넣으면 셋 다 작아지고,
@@ -96,13 +102,16 @@
         [D.boundary.steps[0].points[2], D.boundary.steps[0].points[3]]),
       step('01 경계', D.boundary.steps[3], { title: '배치 순회',
         points: D.boundary.steps[3].points.map((p, i) => (i === 2 ? relabel(p, '정적 객체 필터는 루프 안') : p)) }),
-      // compact: 그림이 당겨 채우기와 ID 유지를 보이므로, 그림에 없는 정책 둘만
-      diagram('01 경계', D.boundary.steps[4], { title: '슬롯 압축',
-        points: [relabel(D.boundary.steps[4].points[1], '지연 압축'),
+      // compact: 요점 넷을 전부 싣는다. 원래 이 장(셋) + '무결성 규칙' 코드 장(둘)으로
+      // 나눠 뒀는데, 코드 장의 요점 하나가 이 장과 같은 문장이었고(points[2] ID 재사용 시한)
+      // 코드 블록은 구현이 아니라 헤더 주석 넉 줄 + 선언 둘이었다. 장 하나를 없애고
+      // 이 장이 넷을 다 받는 쪽이 실린 사실이 더 많다.
+      diagram('01 경계', D.boundary.steps[4], { title: '슬롯 압축과 무결성',
+        points: [relabel(D.boundary.steps[4].points[0], '양방향 매핑'),
+                 relabel(D.boundary.steps[4].points[1], '지연 압축'),
                  relabel(D.boundary.steps[4].points[2], 'ID 재사용 시한'),
-                 relabel(D.boundary.steps[4].points[3], 'generation 필드 없음')] }),
-      codeOf('01 경계', D.boundary.steps[4], '무결성 규칙',
-        [D.boundary.steps[4].points[0], D.boundary.steps[4].points[2]]),
+                 relabel(D.boundary.steps[4].points[3], 'generation 필드 없음')],
+        note: D.boundary.steps[4].code.result }),
 
       // ─── §02 프레임 — 통로 넷이 서브스텝 반복 바깥에 있다 ───
       {
@@ -118,7 +127,9 @@
       // tree: 그림이 여유 폭(fat bounds)을 보이므로 '여유 밖으로 나갈 때만' 은 중복이다
       diagram('03 충돌', D.collision.steps[0], { title: '브로드페이즈',
         // points[2]('여유 밖으로 나갈 때만') 는 그림이 이미 보이는 내용이라 뺀다
-        points: [D.collision.steps[0].points[0], D.collision.steps[0].points[1], D.collision.steps[0].points[3]] }),
+        points: [D.collision.steps[0].points[0], D.collision.steps[0].points[1], D.collision.steps[0].points[3]],
+        // 덱은 충돌 네 단계 중 둘만 싣는다. 그 사실을 안 적으면 나머지 둘이 없는 것으로 읽힌다.
+        note: D.collision.gist }),
       // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
       step('03 충돌', D.collision.steps[3], { title: '충돌 응답',
         points: [relabel(D.collision.steps[3].points[0], '제약 셋 분리'),
@@ -127,36 +138,29 @@
                  relabel(D.collision.steps[3].points[3], '얕은 침투 무보정')] }),
 
       // ─── §04 렌더 ───
-      step('04 렌더', D.render.steps[3], { title: '프레임 아레나' }), // arena · code
+      // 렌더 다섯 중 아레나 하나만 싣는다 — gist 가 나머지 넷의 이름을 대 준다.
+      step('04 렌더', D.render.steps[3], { title: '프레임 아레나', gist: D.render.gist }), // arena · code
 
-      // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 두 장.
+      // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 장.
       //     글 목록이 아니라 카드로 간다 — 슬라이드는 읽는 매체가 아니라 스캔하는 매체다.
-      //     카드 제목만 훑어도 성격이 갈려야 한다.
+      //
+      // 원래 '검증 범위' 와 '결함과 한계' 두 장이었다. 둘 다 D.limits 한 배열에서 뽑은
+      // 같은 주제라 나눌 축이 없었고, 각각 카드 둘셋짜리 반 장이었다. 2x2 한 장에 아홉 쌍을 다 싣는다.
+      //
+      // '이후 프로젝트 — Cartapli Mobile 에서 확보' 칸은 뺐다. DX11 한계 장에서 열 장 앞
+      // 프로젝트의 성과를 다시 말하는 자리였다. 그 사실의 제자리는 CM 절의 §04 검증 장이고,
+      // 거기에 verify.tests(400 / 200 / 16 케이스)를 실어 뒀다.
       {
         layout: 'columns',
-        section: '05 검증',
-        title: '검증 범위',
-        gist: '코드로 참·거짓이 갈리는 것만 앞에서 다뤘다. 화면 카운터와 눈으로만 본 것은 이 장에 모았다.',
+        section: '05 검증 · 한계',
+        title: '검증 범위와 한계',
+        gist: '코드로 참·거짓이 갈리는 것만 앞에서 다뤘다. 재지 못한 것과 남은 결함은 이 장에 모았다.',
+        colCount: 2,
         cols: [
           { mark: '✗', tone: 'terra', kind: '계측', title: '측정 도구 없음',
             pairs: [D.limits[0], D.limits[1]] },
           { mark: '✗', tone: 'terra', kind: '검사', title: '자동 검증 없음',
             pairs: [D.limits[3], D.limits[7]] },
-          // 지어낸 계획이 아니라 실제로 한 것이다. 출처 = pages/cartapli-mobile/data.js
-          // (프레임당 CPU 0.643 → 0.040 ms 를 3사이클로 분리 측정 · 측정 조건 명시 ·
-          //  네이티브 구현을 관리형 구현과 오라클로 대조).
-          { mark: '✓', tone: 'sage', kind: '이후 프로젝트', title: 'Cartapli Mobile 에서 확보',
-            pairs: [
-              ['측정 조건 기록', '기기 · 씬 · 로그 배제 여부를 적고, 프레임당 CPU 를 구조 개선분과 Burst 적용분으로 갈라 쟀다.'],
-              ['구현 간 오라클 대조', '네이티브 구현이 관리형 구현과 같은 답을 내는지 확인하고, 쌓임 순서는 파이프라인 테스트로 따로 봤다.'],
-            ] },
-        ],
-      },
-      {
-        layout: 'columns',
-        section: '06 한계',
-        title: '결함과 한계',
-        cols: [
           { kind: '결함', tone: 'terra', title: '코드에 남은 결함',
             pairs: [relabel(D.limits[2], '누적 시간 처리 결함'),
                     relabel(D.limits[6], '바인딩 캐시 초기화 경로 부재')] },
