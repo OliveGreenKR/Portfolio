@@ -13,9 +13,19 @@
 // 뺀 것 (지면 경쟁에서 밀린 것):
 //   summary(단계 비교표) · layerCurve(레이어 곡선) · verify.rows(측정 대조표)
 //   → 감소폭은 §01 워터폴이 이미 다 말한다. 표는 면접에서 꺼낸다.
-//   cycles[*].results · callout · next → 같은 이유.
-// verify.tests(오라클 대조 400/200/16)는 §04 로 되살렸다 — DX11 '검증 범위' 장이
+//   cycles[*].results · callout · next → 같은 이유. 사이클 4 만 예외로 둘을 쓴다(아래).
+// verify.tests(오라클 대조)는 §04 로 되살렸다 — DX11 '검증 범위' 장이
 //   "Cartapli Mobile 에서 확보" 라고 주장하는데 정작 근거가 덱에 없었다.
+//
+// 2026-08-12 사이클 4 추가 (파묻힘 판정을 볼록 뺄셈 잡으로 · 단일 덮개 채택):
+//   그림 장 · 코드 장 · 정책 선택 장 셋을 넣었다. 앞 사이클보다 한 장 많은 이유 —
+//   이 사이클만 **결과가 아니라 결정**을 싣는다. 두 정책의 실측 비교와 되돌리는 조건은
+//   워터폴이 대신 말해 줄 수 없고(총 CPU 는 동률이다), 이 덱에서 "잰 뒤에 골랐다" 를
+//   보여 주는 유일한 장이다.
+//   cycles[3].callout(오류 비대칭)은 코드 장 note 로, cycles[3].sub(정책 표)는
+//   정책 장으로 들어간다. rigor.cards[4](반박당한 추론)도 그 장에 나란히 둔다 —
+//   §03 측정 신뢰 장은 이미 3칸이 꽉 찼고, 그 카드는 정책 결정의 일부라 여기가 제자리다.
+//   rigor.cards[5](기준 구현 자신의 흔들림)는 §04 셋째 칸.
 //
 // 2026-08-12 (사용자 판단): **Cartapli: Fold Quest 절(6장)을 폐지**하고 이 절의
 //   §00 한 장으로 접었다. 원작은 "출시까지 갔다" 는 사실 이상의 값어치가 이 덱에 없다.
@@ -150,7 +160,7 @@
         // 사이클 슬라이드 제목이 서로 달라 대응이 안 잡혔다. 덱 안에서 한 이름으로 맞춘다.
         vizProps: {
           steps: C.waterfall.map((w, i) => Object.assign({}, w,
-            { label: ['기준선', '레이어 제거', '렌더러 감축', '프레임 할당 제거'][i] || w.label })),
+            { label: ['기준선', '레이어 제거', '렌더러 감축', '프레임 할당 제거', '판정 재작성'][i] || w.label })),
           unit: 'ms',
         },
       },
@@ -181,6 +191,45 @@
       // '분할 잡' 은 이 프로젝트 안에서만 통하는 줄임말이다 — 무엇을 분할하는지를 제목이 말한다.
       cycleCode(C.cycles[2], '종이 분할 계산을 병렬 잡으로'),
 
+      // ─── 사이클 4 ───
+      // 그림 장은 알고리즘 셋(넓이 API 제거 · 볼록 불변식 · 분리축)만 싣는다.
+      // how[3](예산 실측) · how[4](가지치기 소유권)는 정책 장과 코드 장이 각각 받는다.
+      Object.assign(cycleViz(C.cycles[3], 'CMConvexViz', [0, 1, 2], '판정 재작성'), {
+        points: [relabel(C.cycles[3].how[0], '넓이 API 제거'),
+                 relabel(C.cycles[3].how[1], '볼록 불변식 활용'),
+                 relabel(C.cycles[3].how[2], '분리축 선별')],
+        // 원문 cause 는 다섯 문장이다. 세 줄이 되면 그림 상자가 그만큼 눌린다(실측: 148px).
+        // 포팅 비용 문장 둘을 빼도 논지는 그대로다 — "출력을 안 읽는데 출력을 만드는 걸 쓰고 있었다".
+        lead: (() => { const s = C.cycles[3].cause.split('. '); return [s[0], s[3]].join('. ') + '.'; })(),
+        // 마지막 한 문장이 이 사이클의 결론이다. 세 줄짜리 lead 로 밀어 넣는 대신 노트로 뗀다.
+        // results[2](Clipper2 9,352줄 제거)는 바로 다음 코드 장의 요점에 그대로 다시 나온다.
+        note: C.cycles[3].cause.split('. ').slice(-1)[0],
+      }),
+      Object.assign(cycleCode(C.cycles[3], '범용 라이브러리 없이 짠 판정 코어'), {
+        // 오류 비대칭. 이 절에서 "왜 덜 지우는 쪽으로 물러서는가" 는 여기서만 나온다.
+        note: C.cycles[3].callout.body.split('. ').slice(0, 2).join('. ') + '.',
+      }),
+      {
+        layout: 'columns',
+        section: C.cycles[3].no,
+        no: C.cycles[3].tag,
+        title: '판정 정책 선택과 되돌리는 조건',
+        // 셋째 문장까지 가져온다 — 거기서 '단일 덮개' 가 무슨 정책인지 처음 정의된다.
+        // 둘에서 끊으면 왼쪽 칸 제목과 표 헤더의 정책 이름이 뜻 없이 먼저 나온다.
+        gist: C.cycles[3].sub.body.split('. ').slice(0, 3).join('. ') + '.',
+        colCount: 2,
+        cols: [
+          // 마지막 행('1~5회차 결과 동일')은 뺀다 — 아래 note 첫 문장이 같은 말을 더 세게 한다.
+          // 여섯 행을 다 넣으면 칸이 상자를 위아래로 29px 씩 넘긴다(실측).
+          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈 ↔ 단일 덮개',
+            pairs: C.cycles[3].sub.rows.slice(0, -1)
+              .map((r) => [r[0], '볼록 뺄셈 ' + r[1] + ' · 단일 덮개 ' + r[2]]) },
+          { kind: C.rigor.cards[4].badge, tone: 'terra',
+            title: '측정 전에 세웠다가 반박당한 추론 둘', sub: C.rigor.cards[4].body },
+        ],
+        note: C.cycles[3].sub.note,
+      },
+
       // ─── 검증 태도. 이 덱에서 가장 희소한 장이다 —
       //     틀린 것을 스스로 찾아 철회한 기록이라 "잰다"는 주장의 증거가 된다 ───
       {
@@ -209,15 +258,19 @@
       // 한계 셋을 pairCols 1 로 두면 큰 글씨 세 줄이 한 장을 삼분해 먹는다.
       // 같은 지면에 verify.tests 를 나란히 세운다 — DX11 '검증 범위' 장이
       // "Cartapli Mobile 에서 구현 간 오라클 대조를 확보" 라고 주장하는데,
-      // 정작 CM 절 어디에도 그 근거가 없었다. 400 / 200 / 16 케이스가 그 근거다.
+      // 정작 CM 절 어디에도 그 근거가 없었다. 400 / 200 케이스와 40시행 대조가 그 근거다.
+      // 가운데 칸은 rigor.cards[5] — 기준 구현 자신이 흔들린다는 사실이 없으면
+      // "불일치 22건" 이 그냥 오답으로 읽힌다.
       {
         layout: 'columns',
         section: '04 검증 · 남은 것',
         title: '오라클 대조와 남은 과제',
-        colCount: 2,
+        colCount: 3,
         cols: [
           { kind: 'VERIFIED', mark: '✓', tone: 'sage', title: C.verify.tests.title,
             pairs: C.verify.tests.rows.map((r) => [r[0], r[1] + ' · ' + r[2]]) },
+          { kind: C.rigor.cards[5].badge, tone: 'wheat',
+            title: '기준 구현 자신의 흔들림', sub: C.rigor.cards[5].body },
           { kind: 'REMAINING', mark: '✗', tone: 'terra', title: '남은 과제 · 한계',
             pairs: C.limits },
         ],
