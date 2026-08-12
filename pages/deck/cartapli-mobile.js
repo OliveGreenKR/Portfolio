@@ -197,34 +197,34 @@
       // '분할 잡' 은 이 프로젝트 안에서만 통하는 줄임말이다 — 무엇을 분할하는지를 제목이 말한다.
       cycleCode(C.cycles[2], '종이 분할 계산을 병렬 잡으로'),
 
-      // ─── 사이클 4 ───
-      // 그림 장은 알고리즘 셋(넓이 API 제거 · 볼록 불변식 · 분리축)만 싣는다.
-      // how[3](예산 실측) · how[4](가지치기 소유권)는 정책 장과 코드 장이 각각 받는다.
-      Object.assign(cycleViz(C.cycles[3], 'CMConvexViz', [0, 1, 2], '판정 재작성'), {
-        points: [relabel(C.cycles[3].how[0], '넓이 API 제거'),
-                 relabel(C.cycles[3].how[1], '볼록 불변식 활용'),
-                 relabel(C.cycles[3].how[2], '분리축 선별')],
-        // 원문 cause 는 다섯 문장이다. 세 줄이 되면 그림 상자가 그만큼 눌린다(실측: 148px).
-        // 포팅 비용 문장 둘을 빼도 논지는 그대로다 — "출력을 안 읽는데 출력을 만드는 걸 쓰고 있었다".
-        lead: (() => { const s = C.cycles[3].cause.split('. '); return [s[0], s[3]].join('. ') + '.'; })(),
-        // 마지막 한 문장이 이 사이클의 결론이다. 세 줄짜리 lead 로 밀어 넣는 대신 노트로 뗀다.
-        // results[2](Clipper2 9,352줄 제거)는 바로 다음 코드 장의 요점에 그대로 다시 나온다.
-        note: C.cycles[3].cause.split('. ').slice(-1)[0],
-      }),
-      Object.assign(cycleCode(C.cycles[3], '정확한 판정 — 반평면 자르기와 관계 판정'), {
-        // 오류 비대칭. 이 절에서 "왜 덜 지우는 쪽으로 물러서는가" 는 여기서만 나온다.
-        note: C.cycles[3].callout.body.split('. ').slice(0, 2).join('. ') + '.',
-      }),
-      // 이 절에서 가장 중요한 한 장이다 — 무엇을 재고 무엇을 골랐는지, 그리고 그 선택이
-      // 왜 하루 만에 뒤집혔는지. 표로 늘어놓던 것을 그림 하나로 바꿨다.
+      // ─── 사이클 4. 세 장으로 간다 — 문제·원인 → 두 방안 비교와 결정 → 채택안 구현 ───
+      // 시행착오("이렇게 했다가 아니었다")는 싣지 않는다. 덱은 빠르게 핵심만 간다 —
+      // 그 기록은 사이트와 마지막 검증 장이 갖는다.
+      // 사이트의 CMConvexViz(볼록 뺄셈 원리)는 덱에서 뺐다. 코드 장의 Relate + 반평면 루프가
+      // 같은 것을 보이고, 이 절에 그림 장을 하나 더 두면 핵심이 늦게 나온다.
+      {
+        layout: 'columns',
+        section: C.cycles[3].no,
+        no: C.cycles[3].tag,
+        title: '확정 프레임 할당 폭발 — 무엇이 내고 있었나',
+        colCount: 2,
+        cols: [
+          { kind: '관측', tone: 'terra', title: '보간은 잡혔는데 확정만 안 움직인다',
+            sub: C.cycles[3].observe },
+          // 원인은 두 겹이다 — 못 옮긴 이유(참조 그래프)와 옮길 필요가 없던 이유(출력을 안 읽는다).
+          { kind: '원인', tone: 'wheat', title: '안 읽는 출력을 만드느라 쓰는 비용',
+            sub: (() => { const s = C.cycles[3].cause.split('. '); return [s[0], s[1], s[2], s[3]].join('. ') + '.'; })() },
+        ],
+        note: C.cycles[3].cause.split('. ').slice(4).join('. '),
+      },
+      // 이 절에서 가장 중요한 한 장 — 무엇을 재고 무엇을 골랐는지.
       {
         layout: 'diagram',
         section: C.cycles[3].no,
         no: C.cycles[3].tag,
-        title: '정책 선택 — 승패를 정한 것은 접기 빈도',
-        // ⚠️ slice(-2) 로 자르면 "…때문이다." 로 시작해 무엇의 이유인지가 잘려 나간다.
-        //    "처음에는 이쪽을 채택했다" 부터 가져와야 뒤집은 이야기가 선다.
-        lead: C.cycles[3].sub.body.split('. ').slice(-3).join('. '),
+        title: '두 방안 비교 — 승패를 정한 것은 접기 빈도',
+        // 앞 두 문장이 ②③ 가 각각 무엇인지를 정의한다. 정의 없이 그래프를 먼저 보이면 안 읽힌다.
+        lead: C.cycles[3].sub.body.split('. ').slice(0, 3).join('. ') + '.',
         step: { viz: 'policy' },
         vizComponent: 'CMPolicyViz',
         points: [
@@ -234,22 +234,10 @@
         ],
         note: '되돌리는 조건 둘 — 접기 상한이 5회 이하로 확정될 때(출력이 같아진다), 또는 접기 간격이 0.3초 아래로 잦아질 때.',
       },
-      // 뒤집은 기록 자체가 이 절에서 가장 희소한 사실이다.
-      // §03 측정 신뢰 장은 이미 3칸이 꽉 차 여기에 둔다.
-      {
-        layout: 'columns',
-        section: C.cycles[3].no,
-        title: '뒤집은 기록과 반박당한 추론',
-        colCount: 2,
-        cols: [
-          { kind: C.rigor.cards[4].badge, tone: 'terra',
-            title: '하루 만에 뒤집은 결정', sub: C.rigor.cards[4].body },
-          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈(채택) ↔ 단일 덮개',
-            pairs: C.cycles[3].sub.rows
-              .map((r) => [r[0], '볼록 뺄셈 ' + r[1] + ' · 단일 덮개 ' + r[2]]) },
-        ],
-        note: C.rigor.cards[5].body.split('. ').slice(0, 2).join('. ') + '.',
-      },
+      Object.assign(cycleCode(C.cycles[3], '채택안 구현 — 관계 판정 뒤 반평면 자르기'), {
+        // 오류 비대칭. 이 절에서 "왜 덜 지우는 쪽으로 물러서는가" 는 여기서만 나온다.
+        note: C.cycles[3].callout.body.split('. ').slice(0, 2).join('. ') + '.',
+      }),
 
       // ─── 검증 태도. 이 덱에서 가장 희소한 장이다 —
       //     틀린 것을 스스로 찾아 철회한 기록이라 "잰다"는 주장의 증거가 된다 ───
@@ -258,10 +246,10 @@
         section: '03 검증',
         title: '측정 신뢰 — 기각과 재측정',
         gist: C.rigor.gist,
-        // 카드 넷을 2x2 로 넣으면 산문 700자가 19px 로 눌린다 — 덱에서 코드 없이 가장 빽빽했다.
-        // 둘째(로그가 89.8%)와 셋째(그래서 −27% 철회)는 한 사건의 원인과 결과다. 한 칸으로 합치면
-        // 3칸이 되어 글자가 제 크기로 돌아오고 실린 사실은 그대로다.
-        colCount: 3,
+        // 자잘한 기각 기록은 본문에 흩지 않고 여기 모아 밀도로 채운다.
+        // 둘째(로그가 89.8%)와 셋째(그래서 −27% 철회)는 한 사건의 원인과 결과라 한 칸으로 합친다.
+        // 2x2 로 두면 산문이 눌리므로 실측 후 colCount 를 정한다.
+        colCount: 2,
         // 기각·철회는 무엇을 버렸나(terra), 재측정은 무엇을 다시 쟀나(wheat)
         // 제목은 명사구로 덮고 본문은 원문 그대로. 수치는 전부 body 에 있는 값이다.
         cols: [
@@ -272,6 +260,10 @@
             sub: C.rigor.cards[1].body + ' ' + C.rigor.cards[2].body },
           { kind: C.rigor.cards[3].badge, tone: 'terra',
             title: '기각한 지표 2종 — 회차 시간 · Median/Max', sub: C.rigor.cards[3].body },
+          // 정책을 고르며 세웠다가 데이터가 반박한 전제들. 결정 장에는 결론만 두고
+          // 그 과정은 여기로 모은다 — 덱 본문이 시행착오로 늘어지지 않게.
+          { kind: C.rigor.cards[4].badge, tone: 'terra',
+            title: '정책 선택의 첫 전제 — 총 CPU 동률', sub: C.rigor.cards[4].body },
         ],
       },
 

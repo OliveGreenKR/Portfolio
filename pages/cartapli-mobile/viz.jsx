@@ -39,7 +39,8 @@ function CMWaterfall({ steps, unit }) {
               <rect x={x} y={top} width={barW} height={padT + ih - top}
                     fill={fill(s.kind)} stroke={stroke(s.kind)} rx="2" />
               <text x={cx(i)} y={top - 9} textAnchor="middle" className="cm-svg-val">{s.t}</text>
-              {s.d && <text x={cx(i)} y={top - 27} textAnchor="middle" className="cm-svg-delta big">{s.d}</text>}
+              {/* 값 라벨(top−9, 13px)과 감소율(17px)의 사각형이 top−27 에서는 1px 차로 붙는다 */}
+              {s.d && <text x={cx(i)} y={top - 31} textAnchor="middle" className="cm-svg-delta big">{s.d}</text>}
               <text x={cx(i)} y={padT + ih + 20} textAnchor="middle" className="cm-svg-ax">{s.k}</text>
               <text x={cx(i)} y={padT + ih + 36} textAnchor="middle" className="cm-svg-sub">{s.label}</text>
             </g>
