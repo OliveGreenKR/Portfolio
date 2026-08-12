@@ -23,12 +23,16 @@
   // 페이지에서는 맞는 말이지만 슬라이드에는 가리킬 대상이 없다.
   const deref = (text, from, to) => text.replace(from, to);
 
-  // 코드가 오른쪽에 오는 장은 lead 를 한 줄(did)만 준다. why + did 두 줄이면
-  // 본문 2단 위에서 150px 를 먼저 먹고, 그 두 장이 덱에서 가장 긴 장이 됐다(실측 1220 · 1087자).
-  // codeOf 가 "코드 장은 lead 를 안 준다" 고 규정해 둔 규칙의 연장이다.
+  // 코드가 오른쪽에 오는 장은 lead 를 **아예 안 준다** — codeOf 와 같은 규칙이다.
+  // did 한 줄만 남겨 두었더니 그 장들이 덱에서 가장 긴 두 장이 됐는데(실측 1187 · 1039자)
+  // 사실은 셋넷뿐이었다. 남은 did 는 셋 다 요점이나 code.intro 가 이미 말한다:
+  //   배치 순회   — points[0](중력→힘→…) + 코드의 batchStart += BatchSize
+  //   충돌 응답   — points[0](제약 셋 분리) + code.intro(반발과 위치 보정이 목표 속도로)
+  //   바인딩 캐시 — points[0] + 코드의 CurrentVB 비교 분기
+  // 34px 짜리 lead 한 줄이 빠진 자리에 사실을 더 싣는다.
   const step = (section, st, over) => Object.assign(
     { layout: 'step', section, no: st.no,
-      step: st.code && !st.viz ? Object.assign({}, st, { problem: null }) : st },
+      step: st.code && !st.viz ? Object.assign({}, st, { problem: null, did: null }) : st },
     over);
   // 그림이 주인공인 장. step 의 좌우 2단은 그림에 절반 폭·절반 세로밖에 못 준다.
   const diagram = (section, st, over) => Object.assign({ layout: 'diagram', section, no: st.no, step: st }, over);
@@ -94,14 +98,20 @@
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
       // 그림이 주인공인 장은 요점을 둘만 남긴다 — 그림이 이미 말하는 것을 글로 또 쓰지 않는다.
       // own: 그림이 소유권 이전을 보이므로, 배열 형태(SoA)와 그래서 열린 것만 남긴다
+      // '상태 배열' 코드 장을 없앴다. 그 코드는 C++ **선언** 22줄인데, 나열하는 배열 이름이
+      // 이 장 points[0] 이 한국어로 주는 목록과 같았다 — 같은 목록을 두 장에 두 언어로 적고 있었다.
+      // 게다가 코드 주석의 PrevWorldPosition 줄은 덱에서 뺀 절(collision.ccd)을 가리킨다.
+      // 고아가 된 사실 하나(충돌 형상도 배열에)를 이 장이 받는다 —
+      // 13번 COLLISION 카드("슬롯 ID 와 형상 데이터만 본다")의 유일한 근거다.
       diagram('01 경계', D.boundary.steps[0], { title: '소유권 이전',
         points: [D.boundary.steps[0].points[0],
                  relabel(D.boundary.steps[0].points[1], '객체의 배열 직접 접근 차단'),
+                 relabel(D.boundary.steps[0].points[3], '충돌 형상도 같은 배열에'),
                  relabel(D.boundary.steps[0].points[4], '이전으로 열린 것')] }),
-      codeOf('01 경계', D.boundary.steps[0], '상태 배열',
-        [D.boundary.steps[0].points[2], D.boundary.steps[0].points[3]]),
       step('01 경계', D.boundary.steps[3], { title: '배치 순회',
-        points: D.boundary.steps[3].points.map((p, i) => (i === 2 ? relabel(p, '정적 객체 필터는 루프 안') : p)) }),
+        points: D.boundary.steps[3].points.map((p, i) => (i === 2 ? relabel(p, '정적 객체 필터는 루프 안') : p)),
+        // CodeBlock 은 code.result 를 안 그린다 — 코드 장의 마무리 사실이 공짜로 버려지고 있었다.
+        note: D.boundary.steps[3].code.result }),
       // compact: 요점 넷을 전부 싣는다. 원래 이 장(셋) + '무결성 규칙' 코드 장(둘)으로
       // 나눠 뒀는데, 코드 장의 요점 하나가 이 장과 같은 문장이었고(points[2] ID 재사용 시한)
       // 코드 블록은 구현이 아니라 헤더 주석 넉 줄 + 선언 둘이었다. 장 하나를 없애고
@@ -114,32 +124,55 @@
         note: D.boundary.steps[4].code.result }),
 
       // ─── §02 프레임 — 통로 넷이 서브스텝 반복 바깥에 있다 ───
+      // 이 장은 제목이 「통로 넷의 위치」인데 목록 어디에도 통로 넷을 대지 않고 있었다.
+      // 덱은 "통로 넷" 을 세 번 주장하면서(표지 hook · 13번 BOUNDARY 카드 · 이 제목)
+      // 넷이 무엇인지는 한 번도 말하지 않았다 — frame.code 주석에 ①②③④ 가 박혀 있고,
+      // 반복 바깥이라는 위치까지 코드가 직접 보인다. 이걸 실으면 매니페스트가 recv/send 를
+      // 뺄 때 댄 이유("§frame 한 장이 통로 전체를 대신한다")도 그제야 참이 된다.
+      //
+      // pairs 는 넷만 남긴다. 뺀 셋(속도·힘 상한 / 쓰기 직전 검사 / 값은 설정에서)은 같은 주제이고
+      // 숫자가 하나도 없다. '쓰기 직전 검사' 는 배치 순회 장의 code.result 가 같은 말을 한다.
       {
-        layout: 'list',
+        layout: 'step',
         section: '02 프레임',
         title: '통로 넷의 위치',
         gist: deref(D.frame.gist, '이 반복', '서브스텝 반복'),
-        pairs: D.frame.points.map((p) => [p[0], deref(p[1], '아래의 최소 시간 하한', '최소 시간 하한')]),
-        pairCols: 2,
+        step: { code: D.frame.code, points: [] },
+        points: D.frame.points.slice(0, 4)
+          .map((p) => [p[0], deref(p[1], '아래의 최소 시간 하한', '최소 시간 하한')]),
+        note: D.frame.code.result,
       },
 
       // ─── §03 충돌 ───
-      // tree: 그림이 여유 폭(fat bounds)을 보이므로 '여유 밖으로 나갈 때만' 은 중복이다
-      diagram('03 충돌', D.collision.steps[0], { title: '브로드페이즈',
-        // points[2]('여유 밖으로 나갈 때만') 는 그림이 이미 보이는 내용이라 뺀다
-        points: [D.collision.steps[0].points[0], D.collision.steps[0].points[1], D.collision.steps[0].points[3]],
-        // 덱은 충돌 네 단계 중 둘만 싣는다. 그 사실을 안 적으면 나머지 둘이 없는 것으로 읽힌다.
-        note: D.collision.gist }),
-      // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
+      // '브로드페이즈' 그림 장을 없앴다. 지면은 그림이 채웠지만 글로 실린 사실 셋 중 둘이
+      // 교과서였다 — 삽입 위치를 표면적 비용으로(SAH) · 높이차가 벌어지면 회전.
+      // data.js 자신의 규칙이 "표준 기법은 쓴 이유와 이 프로젝트에서 정한 것만 적는다" 인데,
+      // 이 프로젝트가 정한 것(여유 밖으로 나갈 때만 재삽입)은 "그림이 보인다" 며 빼 뒀었다.
+      // 꽉 찼는데 내용이 없는 장의 표본이다. 트리의 실물은 표지 hero 캡션이 이미 보인다
+      // (리프 33 · 노드 65). 네 단계로 나눴다는 고지는 아래 gist 가 승계한다.
       step('03 충돌', D.collision.steps[3], { title: '충돌 응답',
+        gist: D.collision.gist,
         points: [relabel(D.collision.steps[3].points[0], '제약 셋 분리'),
                  relabel(D.collision.steps[3].points[1], '누적 충격량 승계'),
                  relabel(D.collision.steps[3].points[2], '마찰 한계 = 법선 누적값'),
-                 relabel(D.collision.steps[3].points[3], '얕은 침투 무보정')] }),
+                 relabel(D.collision.steps[3].points[3], '얕은 침투 무보정'),
+                 relabel(D.collision.steps[3].points[4], '깊게 물리면 위치도 민다')],
+        // 자기 진단이라 §05(검증 · 한계)와 같은 급이다. 면접에서 가장 값이 나가는 종류다.
+        note: D.collision.steps[3].code.result }),
 
       // ─── §04 렌더 ───
-      // 렌더 다섯 중 아레나 하나만 싣는다 — gist 가 나머지 넷의 이름을 대 준다.
-      step('04 렌더', D.render.steps[3], { title: '프레임 아레나', gist: D.render.gist }), // arena · code
+      // 렌더 다섯 중 하나만 싣는다 — gist 가 나머지 넷의 이름을 대 준다.
+      //
+      // 아레나(steps[3]) 대신 바인딩 캐시(steps[4])를 고른다. 아레나의 코드는 AllocateRenderJob 의
+      // **템플릿 시그니처**라 요점 셋 중 하나("타입은 빌드 단에서 거른다")만 보이고 나머지 둘
+      // (포인터 이동 · 소멸자 역순)은 코드에 안 나온다 — 구현이 아니라 선언이다.
+      // 바인딩 캐시는 CurrentVB 비교로 실제 분기를 보이고, 무엇보다 §05 가 이미 실은
+      // 결함(바인딩 캐시 초기화 경로 부재)과 인과가 닿는다. 지금 덱은 그 캐시를 결함으로만
+      // 언급하고 정작 무엇인지는 말하지 않았다.
+      // points[1]('비우는 경로가 없다')은 §05 가 같은 사실을 이미 싣는다 — 여기서는 뺀다.
+      step('04 렌더', D.render.steps[4], { title: '바인딩 캐시', gist: D.render.gist,
+        points: [D.render.steps[4].points[0], D.render.steps[4].points[2]],
+        note: D.render.steps[4].code.result }),
 
       // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 장.
       //     글 목록이 아니라 카드로 간다 — 슬라이드는 읽는 매체가 아니라 스캔하는 매체다.

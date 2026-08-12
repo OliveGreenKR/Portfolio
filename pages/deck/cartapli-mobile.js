@@ -97,13 +97,24 @@
       },
 
       // ─── 사이클 셋 ───
-      Object.assign(cycleViz(C.cycles[0], 'CMBuriedViz', [0, 1, 3], '레이어 제거'),
-        { points: [relabel(C.cycles[0].how[0], '위 → 아래 합집합 누적'),
-                   C.cycles[0].how[1], C.cycles[0].how[3]] }),
-      cycleCode(C.cycles[0], '가시성 판정'),
-      // 사이클 2 는 코드 블록이 없다 — 결과를 마무리 줄로 붙여 한 장을 채운다
+      // 장수는 대칭이 아니라 **새로 실리는 사실 수**를 따른다 (1 – 1 – 2).
+      // 사이클 1 은 결과 셋 중 둘이 이미 §01 에 있다 — results[0](337→57)은 큰 수치와 글자까지
+      // 같고, results[2](−74.4%)는 워터폴 라벨이자 이 장 좌상단 번호칸이다. 그래서 코드 장
+      // '가시성 판정' 을 없애고, 거기 있던 새 사실(역방향 패스 · 렌더러 337→77)을 이 장이 받는다.
+      // 사이클 2 는 data.js 에 code 가 아예 없다 — 없는 코드를 만들지 않는다.
+      Object.assign(cycleViz(C.cycles[0], 'CMBuriedViz', [0, 1, 2, 3], '레이어 제거'), {
+        points: [relabel(C.cycles[0].how[0], '위 → 아래 합집합 누적'),
+                 C.cycles[0].how[1],
+                 relabel(C.cycles[0].how[2], '아래에서 한 번 더 — 위에서 보이면 건너뜀'),
+                 C.cycles[0].how[3]],
+        // 중간 값 77 · 71 이 어느 사이클에서 나왔는지는 여기서만 이어진다.
+        // 코드 장을 없애면서 이 줄이 끊기면 §02 렌더러 감축의 77 → 2 가 근거를 잃는다.
+        note: C.cycles[0].results[1],
+      }),
+      // 사이클 2 는 덱에서 한 장뿐인데 그 장의 유일한 정량 근거(Renderer.Sync −81.2%)가
+      // 덱 전체에서 한 번도 안 나오고 있었다. 결과 두 줄을 이어 붙인다.
       Object.assign(cycleViz(C.cycles[1], 'CMRendererViz', [0, 1, 2], '렌더러 감축'), {
-        note: C.cycles[1].results[0],
+        note: C.cycles[1].results[0] + ' · ' + C.cycles[1].results[1],
         points: [relabel(C.cycles[1].how[0], '기준 상태 — 폴드당 1회 업로드'),
                  C.cycles[1].how[1], relabel(C.cycles[1].how[2], '쌓임 순서 = 정점 z')],
       }),
