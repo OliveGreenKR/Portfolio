@@ -180,6 +180,8 @@ code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 1
 
 /* ─── 검증 카드 ──────────────────────────────────────── */
 .cm-rigor { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* 카드 수가 홀수면 마지막 칸이 반쪽으로 남아 격자가 깨져 보인다 — 폭을 다 쓰게 한다 */
+.cm-rigor-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
 .cm-rigor-card { border: 1px solid var(--rule); border-top-width: 3px; border-radius: 0 0 4px 4px; padding: 18px 20px 20px; background: var(--paper); display: flex; flex-direction: column; gap: 8px; }
 .cm-rigor-card.kill { border-top-color: var(--terra-400); }
 .cm-rigor-card.fix  { border-top-color: var(--ink-3); }
