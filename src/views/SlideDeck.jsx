@@ -69,7 +69,10 @@
     return (
       <div className={'sl-links' + (big ? ' sl-links--big' : '')}>
         {items.map((l, i) => (
-          <a className="sl-link" key={i} href={l.href} data-tone={l.tone} target="_blank" rel="noopener">
+          // hero 는 "이 장의 주인공 링크" 다. 크기·무게를 나머지와 다르게 준다 —
+          // 같은 크기로 늘어놓으면 정작 보여 주려는 곳이 목록에 묻힌다.
+          <a className={'sl-link' + (l.hero ? ' sl-link--hero' : '')}
+             key={i} href={l.href} data-tone={l.tone} target="_blank" rel="noopener">
             <span className="sl-link__k">{l.label}</span>
             {l.v && <span className="sl-link__v">{l.v}</span>}
             <span className="sl-link__go" aria-hidden="true">→</span>
