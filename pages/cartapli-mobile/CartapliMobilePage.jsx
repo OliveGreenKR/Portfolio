@@ -3,7 +3,7 @@
 // 공유: tokens.css · notebook.css 크롬 · notebook-components.jsx (renderInline / AsciiBlock / DataTable)
 // 전용: viz.jsx · page.css
 //
-// 읽는 순서 = 전체 성과 → 이전↔현재 → 왜 그 순서였나(3 사이클) → 검증 → 측정 신뢰 → 다음
+// 읽는 순서 = 전체 성과 → 이전↔현재 → 왜 그 순서였나(4 사이클) → 검증 → 측정 신뢰 → 다음
 // 사이클 카드의 `다음 문제` 배너가 다음 카드의 `관측` 이다.
 
 const { useEffect: useEffectCM, useState: useStateCM } = React;
@@ -168,10 +168,11 @@ function CMSummary({ data }) {
 
 /* ─── §03 사이클 ─────────────────────────────────────── */
 function Viz({ kind }) {
-  const { CMBuriedViz, CMRendererViz, CMJobViz } = window;
+  const { CMBuriedViz, CMRendererViz, CMJobViz, CMConvexViz } = window;
   if (kind === 'buried') return <CMBuriedViz />;
   if (kind === 'renderer') return <CMRendererViz />;
   if (kind === 'job') return <CMJobViz />;
+  if (kind === 'convex') return <CMConvexViz />;
   return null;
 }
 
@@ -224,6 +225,18 @@ function CMCycle({ c, idx }) {
         </div>
       )}
 
+      {/* 사이클 안에서 갈라지는 결정 — 표가 있어야 근거가 서는 자리에만 쓴다 */}
+      {c.sub && (
+        <div className="cm-sub cm-cycle-sub">
+          <h4 className="cm-sub-title">{c.sub.title}</h4>
+          <p className="cm-body">{ri(c.sub.body)}</p>
+          <div className="cm-scroll">
+            <window.DataTable headers={c.sub.headers} rows={c.sub.rows} />
+          </div>
+          <p className="cm-note">{ri(c.sub.note)}</p>
+        </div>
+      )}
+
       <div className="cm-handoff">
         <span className="cm-handoff-k">다음 문제</span>
         <div>
@@ -238,7 +251,7 @@ function CMCycle({ c, idx }) {
 function CMCycles({ data }) {
   return (
     <section id="cycles" className="nb-section">
-      <SectionHead no="03" title="왜 이 순서였나 — 세 사이클" kind="HOW" />
+      <SectionHead no="03" title="왜 이 순서였나 — 네 사이클" kind="HOW" />
       {data.cycles.map((c, i) => <CMCycle key={c.no} c={c} idx={i} />)}
     </section>
   );
