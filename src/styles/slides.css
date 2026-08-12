@@ -78,7 +78,10 @@
 .sl-body {
   flex: 1 1 auto;
   min-height: 0;
-  padding: 44px 0 72px;
+  /* 바닥 여백이 72px 이었다. .sl-foot 은 absolute(bottom:40px) 라 애초에 이 상자와
+     겹치지 않는데, 겹칠까 봐 비워 둔 값이었다 — 31장 전부가 세로 48px 을 버렸다.
+     실측: body 바닥 y1116 · 푸터 윗선 y1121 → 24px 로도 5px 이 남는다. */
+  padding: 44px 0 24px;
   display: flex;
   flex-direction: column;
   gap: 34px;
@@ -176,8 +179,10 @@
 /* ─── cover ──────────────────────────────────────── */
 .sl-cover { flex-direction: row; gap: 56px; align-items: center; }
 .sl-cover__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 26px; }
-.sl-cover__art { flex: 0 0 820px; }
-.sl-cover__art img { width: 100%; border: 1px solid var(--rule); display: block; }
+/* 폭을 820px 로 **고정**하고 img 에 width:100% 를 걸면 원본이 그보다 작은 이미지가
+   확대되어 뭉갠다 (실측: dx11 hero 654px 원본 → 820px, 1.25배). 상한으로 바꾼다. */
+.sl-cover__art { flex: 0 1 auto; max-width: 820px; }
+.sl-cover__art img { max-width: 100%; width: auto; height: auto; border: 1px solid var(--rule); display: block; }
 .sl-cover__name {
   font-size: 26px;
   letter-spacing: 0.06em;
@@ -342,7 +347,14 @@
 .sl-points span { font-size: 23px; line-height: 1.45; color: var(--ink-2); }
 
 /* ─── diagram — 그림이 주인공인 장 ────────────────── */
-.sl-diagram { gap: 18px; }
+/* gap 18px 은 자식 넷~다섯을 가진 이 장에서 54~72px 을 먹었다. 그만큼 그림이 작아진다. */
+.sl-diagram { gap: 12px; }
+/* figure 의 안쪽 여백(page.css 의 cm-figure · dx-figure)은 사이트 문단 사이에서는
+   필요하지만 덱에서는 그림 높이를 세로로 32px 깎는다. 덱에서만 위아래를 없앤다.
+   테두리는 그대로 둔다 — 그림과 요점 목록을 가르는 선이다. */
+.slide .sl-diagram__art > figure,
+.slide .sl-stats__viz > figure,
+.slide .sl-step--viz figure { padding: 0 12px; }
 .sl-diagram__art { flex: 1 1 auto; min-height: 0; display: flex; }
 .sl-diagram__art > * { flex: 1 1 auto; min-height: 0; margin: 0; display: flex; flex-direction: column; }
 .sl-diagram__art svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; }
@@ -429,6 +441,32 @@
   display: grid; grid-template-columns: 1fr 1fr;
   gap: 14px 52px; flex: 0 0 auto;
 }
+
+/* ─── 덱 전용 그림 보정 ──────────────────────────────
+   그림 캡션(cm-figcap · dx-figcap)은 page.css 에서 13px 다. 사이트 본문 폭에서는 맞는 크기지만
+   1920px 슬라이드에서는 못 읽는다 — 덱 그림 여섯 장 전부가 13px 로 나가고 있었다.
+   범례·읽는 법이 여기 적히므로 캡션이 안 읽히면 그림도 반만 전달된다.
+   덱의 다른 보조 글(.sl-note 등)과 같은 급으로 올린다.
+   (게임 화면의 .sl-shot figcaption 은 이미 22px 다 — 손대지 않는다.) */
+.slide .cm-figcap,
+.slide .dx-figcap { font-size: 20px; line-height: 1.55; }
+
+/* 프로젝트 그림은 대개 SVG 라 viewBox 가 상자에 맞춰 알아서 커진다. 예외가 하나 있다 —
+   CMRendererViz(렌더러 감축)는 SVG 가 아니라 순수 div/span 이라(cartapli-mobile/viz.jsx)
+   **상자를 키워도 하나도 안 커진다.** 실측: 상자 344px 중 그림이 146px, 아래 절반이 공백.
+   글자도 11~12px 실픽셀이라 슬라이드에서 못 읽는다.
+   page.css 를 고치면 사이트가 같이 바뀌므로 여기서 덱에서만 약 2배로 덮는다. */
+.slide .cm-rend-side   { padding: 44px 40px; gap: 28px; }
+.slide .cm-rend-h      { font-size: 22px; }
+.slide .cm-rend-grid   { gap: 6px; }
+.slide .cm-rend-dot    { width: 26px; height: 26px; }
+.slide .cm-rend-more   { font-size: 22px; margin-left: 12px; }
+.slide .cm-rend-two    { gap: 16px; }
+.slide .cm-rend-mesh   { font-size: 24px; padding: 44px 16px; }
+.slide .cm-rend-note   { font-size: 23px; }
+.slide .cm-rend-metric { font-size: 24px; }
+.slide .cm-rend-metric b { font-size: 36px; }
+.slide .cm-rend-arrow  { font-size: 34px; padding: 0 30px; }
 
 /* ─── 인쇄 ───────────────────────────────────────── */
 @page { size: 1920px 1200px; margin: 0; }
