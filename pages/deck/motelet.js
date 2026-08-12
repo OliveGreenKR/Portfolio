@@ -82,7 +82,9 @@
         layout: 'columns',
         section: '02 모델',
         no: 'b',
-        title: M.model.scope.title,
+        // 원제('이 모델의 사정거리')는 비유다 — 무엇의 범위를 말하는지가 제목만 보고 안 잡힌다.
+        // 사이트 제목은 그대로 두고 덱에서만 덮는다.
+        title: '모델이 다루는 범위와 한계',
         gist: M.model.scope.lead,
         cols: [
           { kind: 'READS', mark: '✓', tone: 'sage', title: '이 모델이 읽는 것', items: M.model.scope.reads },
@@ -105,7 +107,8 @@
       {
         layout: 'diagram',
         section: '03 도구',
-        title: '스킬트리 에디터에 얹은 시뮬 — ' + M.tool.readTitle,
+        // '얹은 시뮬 — 읽은 것' 은 줄여 쓴 말이라 처음 보면 안 잡힌다. 풀어 쓴다.
+        title: '스킬트리 에디터에 붙인 시뮬레이터 — 화면에서 읽는 값',
         lead: M.tool.loopBody,
         step: { img: M.tool.shots[0] },
         points: M.tool.read,

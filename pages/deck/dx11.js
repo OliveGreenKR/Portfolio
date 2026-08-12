@@ -56,7 +56,10 @@
         layout: 'cover',
         section: 'Main · Engine',
         subtitle: D.meta.subtitle,
-        title: D.meta.title,
+        // data.js 의 제목('물리 상태를 게임 객체 밖으로')은 이 프로젝트의 **설계 결론**이라
+        // 사이트에서는 맞지만, 덱 표지는 처음 보는 사람이 "이게 무슨 프로젝트인가" 를
+        // 먼저 잡아야 하는 자리다. 덱에서만 덮는다 — 사이트 제목은 그대로 둔다.
+        title: '자체 엔진을 만들며 익힌 게임 아키텍처',
         hook: D.hook,
         pills: D.meta.pills,
         // 표지에서 바로 눌리는 링크. data.js 에 있는 것만 쓴다 —
@@ -135,7 +138,10 @@
       {
         layout: 'step',
         section: '02 프레임',
-        title: '통로 넷의 위치',
+        // 제목에 '통로 넷' 을 쓰지 않는다. 이 덱 안에서만 통하는 말이라
+        // 배경을 모르는 사람은 무엇을 세는 것인지조차 못 잡는다. 무엇과 무엇이
+        // 무엇을 주고받는지를 제목이 그대로 말하게 한다.
+        title: '게임과 물리가 값을 주고받는 지점 넷',
         gist: deref(D.frame.gist, '이 반복', '서브스텝 반복'),
         step: { code: D.frame.code, points: [] },
         points: D.frame.points.slice(0, 4)
