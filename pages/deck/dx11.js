@@ -17,6 +17,8 @@
   const D = window.DX11_DATA;
 
   const step = (section, st, over) => Object.assign({ layout: 'step', section, no: st.no, step: st }, over);
+  // 그림이 주인공인 장. step 의 좌우 2단은 그림에 절반 폭·절반 세로밖에 못 준다.
+  const diagram = (section, st, over) => Object.assign({ layout: 'diagram', section, no: st.no, step: st }, over);
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.dx11 = {
@@ -46,7 +48,7 @@
         // 제목·라벨은 슬라이드 어법으로 바꾼다. data.js 의 "무엇을 직접 짰고 무엇을
         // 가져다 썼나" 는 노트 톤이라 웹 본문에서는 맞지만, 스캔하는 매체에서는
         // 명사구여야 한다. 바꾸는 것은 제목뿐이고 항목(reads/skips)은 원문 그대로다.
-        title: '자체 구현과 외부 의존',
+        title: '구현 범위',
         gist: D.context.scope.lead,
         cols: [
           { kind: 'BUILT', tone: 'sage', title: '자체 구현', items: D.context.scope.reads },
@@ -58,7 +60,7 @@
       {
         layout: 'columns',
         section: '00 구성',
-        title: '엔진을 이루는 세 축',
+        title: '엔진 구성',
         // 세 축은 서로 다른 영역이라 색으로 갈라 둔다
         cols: D.built.map((b, i) => ({ kind: b.kind, tone: ['sage', 'wheat', 'blue'][i],
                                        title: b.title, sub: b.sub })),
@@ -67,16 +69,18 @@
       // ─── §01 경계 — 이 페이지에서 유일하게 진짜 인과가 있는 절 ───
       // 그림이 주인공인 장은 요점을 둘만 남긴다 — 그림이 이미 말하는 것을 글로 또 쓰지 않는다.
       // own: 그림이 소유권 이전을 보이므로, 배열 형태(SoA)와 그래서 열린 것만 남긴다
-      step('01 경계', D.boundary.steps[0], { points: [D.boundary.steps[0].points[0], D.boundary.steps[0].points[4]] }),
-      step('01 경계', D.boundary.steps[3]), // batch · code
+      diagram('01 경계', D.boundary.steps[0], { title: '소유권 이전',
+        points: [D.boundary.steps[0].points[0], D.boundary.steps[0].points[1], D.boundary.steps[0].points[4]] }),
+      step('01 경계', D.boundary.steps[3], { title: '배치 순회' }), // batch · code
       // compact: 그림이 당겨 채우기와 ID 유지를 보이므로, 그림에 없는 정책 둘만
-      step('01 경계', D.boundary.steps[4], { points: [D.boundary.steps[4].points[1], D.boundary.steps[4].points[3]] }),
+      diagram('01 경계', D.boundary.steps[4], { title: '슬롯 압축',
+        points: [D.boundary.steps[4].points[1], D.boundary.steps[4].points[2], D.boundary.steps[4].points[3]] }),
 
       // ─── §02 프레임 — 통로 넷이 서브스텝 반복 바깥에 있다 ───
       {
         layout: 'list',
         section: '02 프레임',
-        title: '통로 넷은 서브스텝 바깥에 있다',
+        title: '통로 넷의 위치',
         gist: D.frame.gist,
         pairs: D.frame.points,
         pairCols: 2,
@@ -84,12 +88,12 @@
 
       // ─── §03 충돌 ───
       // tree: 그림이 여유 폭(fat bounds)을 보이므로 '여유 밖으로 나갈 때만' 은 중복이다
-      step('03 충돌', D.collision.steps[0], { points: D.collision.steps[0].points.slice(0, 2) }),
+      diagram('03 충돌', D.collision.steps[0], { title: '브로드페이즈', points: D.collision.steps[0].points.slice(0, 3) }),
       // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
-      step('03 충돌', D.collision.steps[3], { points: D.collision.steps[3].points.slice(0, 4) }),
+      step('03 충돌', D.collision.steps[3], { title: '충돌 응답', points: D.collision.steps[3].points.slice(0, 4) }),
 
       // ─── §04 렌더 ───
-      step('04 렌더', D.render.steps[3]), // arena · code
+      step('04 렌더', D.render.steps[3], { title: '프레임 아레나' }), // arena · code
 
       // ─── §05·06 — 헤드라인("만든 뒤에는 숫자를 봅니다")과 직결되는 두 장.
       //     글 목록이 아니라 카드로 간다 — 슬라이드는 읽는 매체가 아니라 스캔하는 매체다.
@@ -97,7 +101,7 @@
       {
         layout: 'columns',
         section: '05 검증',
-        title: '검증한 것과 측정 밖의 것',
+        title: '검증 범위',
         gist: '코드로 참·거짓이 갈리는 것만 본문에 실었다. 눈과 화면 카운터로만 본 것은 여기 모은다.',
         cols: [
           { mark: '✗', tone: 'terra', kind: '계측', title: '측정 도구 없음',
@@ -117,7 +121,7 @@
       {
         layout: 'columns',
         section: '06 한계',
-        title: '알려진 결함과 한계',
+        title: '결함과 한계',
         cols: [
           { kind: '결함', tone: 'terra', title: '재현 가능',
             pairs: [D.limits[2], D.limits[6]] },

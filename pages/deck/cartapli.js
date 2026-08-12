@@ -18,14 +18,40 @@
   const C = window.CARTAPLI_DATA;
   const sys = (no) => C.systems.find((s) => s.no === no);
 
-  const system = (no, pick) => {
+  // 3.1 은 25노드짜리 의존 그래프다. 슬라이드에서는 어느 방향으로 눕혀도 못 읽는다 —
+  // 실측: TB 1150x1427(세로 초과) · LR 2776x384(가로 초과). 둘 다 글자가 10px 이하로 떨어진다.
+  // 그래서 그림 대신 **계층 카드 셋**으로 낸다. 문장을 새로 쓰지 않고 mermaid 소스의
+  // subgraph 라벨과 노드 이름을 그대로 파싱해 쓴다 — data.js 가 바뀌면 카드도 따라간다.
+  const layersFromMermaid = (src) => {
+    const out = [];
+    let cur = null;
+    src.split(String.fromCharCode(10)).forEach((line) => {
+      const g = line.match(/subgraph\s+\w+\["([^"]+)"\]/);
+      if (g) { const [k, ...rest] = g[1].split(' · '); cur = { kind: k, title: rest.join(' · '), items: [] }; out.push(cur); return; }
+      if (/^\s*end\s*$/.test(line)) { cur = null; return; }
+      const n = line.match(/^\s*\w+\["([^"]+)"\]/);
+      if (n && cur) cur.items.push(n[1].replace(/<br\s*\/?>/g, ' — ').replace(/\(([^)]*)\)/g, '$1'));
+    });
+    // System Layer 처럼 한 단어짜리 노드가 여럿이면 줄마다 한 칸씩 먹어 넘친다.
+    // 짧은 항목만 모여 있으면 한 줄로 합친다 — 이름은 그대로다.
+    return out.map((l) => (l.items.length > 4 && l.items.every((t) => t.length <= 14)
+      ? Object.assign({}, l, { items: [l.items.join(' · ')] })
+      : l));
+  };
+
+  // mermaid 가 있는 절은 그림이 주인공이다. 세로형(graph TB) 은 가로 슬라이드에서
+  // 세로에 맞춰 19% 까지 줄어 글자가 3px 이 된다(실측) — 덱에서만 LR 로 눕힌다.
+  const system = (no, pick, title) => {
     const s = sys(no);
     return {
-      layout: 'step',
+      layout: s.mermaid ? 'diagram' : 'step',
       section: s.kind,
       no: s.no,
-      title: s.title,
-      step: { problem: s.problem, did: s.decision, mermaid: s.mermaid, points: [] },
+      title: title || s.title,
+      // 세로형(graph TB) 은 가로 슬라이드에서 세로에 맞춰 줄어 글자가 3px 이 된다(실측:
+      // TB 1150x1427 -> LR 2700x359). 배치 방향만 눕힌다 — 노드도 간선도 그대로다.
+      step: { problem: s.problem, did: s.decision, points: [],
+        mermaid: s.mermaid ? s.mermaid.replace(/^\s*graph\s+(TB|TD|BT)/m, 'graph LR') : null },
       points: pick ? pick.map((i) => s.results[i]) : s.results,
     };
   };
@@ -55,7 +81,7 @@
       {
         layout: 'stats',
         section: '01 출시',
-        title: '글로벌 출시하고 운영했다',
+        title: '출시와 운영',
         bigs: C.heroMetrics,
         note: '평가는 2026-02 누적, 나머지 셋은 2026-05 둘째주 기준이다.',
       },
@@ -64,7 +90,7 @@
       {
         layout: 'columns',
         section: '02 범위',
-        title: '내가 한 것과 팀원이 한 것',
+        title: '역할',
         cols: [
           { kind: 'MINE', tone: 'sage', title: '본인', sub: C.roles.mine },
           { kind: 'TEAM', title: '팀원 · 원 입안자', sub: C.roles.others },
@@ -72,9 +98,20 @@
       },
 
       // ─── 시스템 셋. 같은 "책임을 나눈다" 주장의 서로 다른 각도 ───
-      system('3.1'),          // 배틀씬 3계층 — 직접 참조 0
-      system('3.2', [0, 1, 2]), // 스킬 시스템 — 확장성
-      system('3.4'),          // Pre / On 2단계 이벤트
+      // ─── 3.1 은 그림 대신 계층 카드 ───
+      {
+        layout: 'columns',
+        section: sys('3.1').kind,
+        no: '3.1',
+        title: '배틀씬 아키텍처',
+        gist: sys('3.1').lede,
+        cols: layersFromMermaid(sys('3.1').mermaid).map((l, i) => ({
+          kind: l.kind, tone: ['wheat', 'sage', 'blue'][i], title: l.title, items: l.items,
+        })),
+        note: sys('3.1').results[0],
+      },
+      system('3.2', [0, 1, 2], '스킬 시스템'),
+      system('3.4', null, '이벤트 패턴'),
     ],
   };
 })();

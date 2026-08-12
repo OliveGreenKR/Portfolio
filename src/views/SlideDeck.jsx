@@ -136,17 +136,18 @@
   // 페이지의 MermaidToggle 은 클릭해서 펼치는 물건이다. 슬라이드는 접힘이 없고,
   // PDF 스냅샷 시점에 이미 그려져 있어야 하므로 마운트 즉시 그린다.
   let mmSeq = 0;
-  function Mermaid({ source }) {
+  function Mermaid({ source, dir }) {
     const host = React.useRef(null);
     React.useEffect(() => {
       const m = window.mermaid;
       if (!m || !host.current) return;
       let dead = false;
-      m.render('sl-mm-' + ++mmSeq, source)
+      const src = dir ? source.replace(/^\s*graph\s+(TB|TD|BT)/m, 'graph ' + dir) : source;
+      m.render('sl-mm-' + ++mmSeq, src)
         .then(({ svg }) => { if (!dead && host.current) host.current.innerHTML = svg; })
         .catch(() => {});
       return () => { dead = true; };
-    }, [source]);
+    }, [source, dir]);
     return <figure className="sl-mermaid" ref={host} />;
   }
 
@@ -204,6 +205,7 @@
             </div>
           ))}
         </div>
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );
   }
@@ -238,6 +240,33 @@
             </div>
           )}
         </div>
+      </div>
+    );
+  }
+
+  // ─── diagram — 그림이 주인공인 장 ──────────────────
+  // step 의 좌우 2단으로는 그림이 절반 폭·절반 세로밖에 못 받는다.
+  // 세로로 긴 도표는 거기서 19% 까지 줄어 글자가 3px 이 된다(실측).
+  // 여기서는 그림이 전폭 + 남는 세로 전부를 갖고, 요점은 아래로 가로 배치한다.
+  function Diagram({ s }) {
+    const st = s.step || {};
+    const pts = s.points || st.points || [];
+    return (
+      <div className="sl-body sl-diagram">
+        <h2 className="sl-h">{s.title || st.title}</h2>
+        {(s.lead || st.did) && <p className="sl-lead__did">{RI(s.lead || st.did)}</p>}
+        <div className="sl-diagram__art">
+          {st.mermaid && <Mermaid source={st.mermaid} dir={s.mermaidDir} />}
+          {st.viz && <Viz name={st.viz} component={s.vizComponent} props={s.vizProps} />}
+        </div>
+        {pts.length > 0 && (
+          <ul className="sl-diagram__pts" style={{ '--pts': pts.length }}>
+            {pts.map((p, i) => {
+              const [k, v] = Array.isArray(p) ? p : [null, p];
+              return <li key={i}>{k && <b>{RI(k)}</b>}<span>{RI(v)}</span></li>;
+            })}
+          </ul>
+        )}
       </div>
     );
   }
@@ -283,7 +312,7 @@
     );
   }
 
-  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, list: List, stats: Stats, outro: Outro };
+  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, outro: Outro };
 
   function SlideDeck({ deck }) {
     const total = deck.slides.length;

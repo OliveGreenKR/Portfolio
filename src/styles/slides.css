@@ -298,6 +298,21 @@
 .sl-points b { display: block; font-size: 27px; font-weight: 600; margin-bottom: 2px; }
 .sl-points span { font-size: 24px; line-height: 1.5; color: var(--ink-2); }
 
+/* ─── diagram — 그림이 주인공인 장 ────────────────── */
+.sl-diagram { gap: 18px; }
+.sl-diagram__art { flex: 1 1 auto; min-height: 0; display: flex; }
+.sl-diagram__art > * { flex: 1 1 auto; min-height: 0; margin: 0; display: flex; flex-direction: column; }
+.sl-diagram__art svg { flex: 1 1 auto; min-height: 0; width: 100%; height: 100%; }
+.sl-diagram__art figcaption { flex: 0 0 auto; }
+.sl-diagram__pts {
+  margin: 0; padding: 0; list-style: none; flex: 0 0 auto;
+  display: grid; grid-template-columns: repeat(var(--pts, 3), 1fr); gap: 0 40px;
+  border-top: 1px solid var(--rule); padding-top: 16px;
+}
+.sl-diagram__pts li { border-left: 2px solid var(--sage-300); padding-left: 14px; }
+.sl-diagram__pts b { display: block; font-size: 23px; font-weight: 600; margin-bottom: 2px; }
+.sl-diagram__pts span { font-size: 20px; line-height: 1.45; color: var(--ink-2); }
+
 /* ─── code ───────────────────────────────────────── */
 .sl-code { border: 1px solid var(--rule); background: var(--paper-2); overflow: hidden; }
 .sl-code__t {

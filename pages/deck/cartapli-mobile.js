@@ -20,12 +20,14 @@
 
   // 사이클 하나를 step 슬라이드로 옮긴다. viz 키는 프로젝트마다 겹칠 수 있어
   // 컴포넌트 이름을 직접 준다.
-  const cycle = (c, vizComponent, pickHow) => ({
-    layout: 'step',
+  // 사이클마다 그림이 주인공이다 — diagram 으로 전폭을 준다.
+  const cycle = (c, vizComponent, pickHow, title) => ({
+    layout: 'diagram',
     section: c.no,
     no: c.tag,
     vizComponent,
-    title: c.title,
+    // data 제목이 종결형("레이어를 적게 만든다")이라 명사구로 덮는다. 사실은 그대로다.
+    title: title || c.title,
     step: { problem: c.observe, did: c.cause, viz: c.viz, points: [] },
     points: pickHow.map((i) => c.how[i]),
   });
@@ -49,7 +51,7 @@
       {
         layout: 'stats',
         section: '01 결과',
-        title: '세 사이클로 나눠 재고 줄였다',
+        title: '성능 개선 결과',
         bigs: C.bigs,
         vizComponent: 'CMWaterfall',
         vizProps: { steps: C.waterfall, unit: 'ms' },
@@ -68,16 +70,16 @@
       },
 
       // ─── 사이클 셋 ───
-      cycle(C.cycles[0], 'CMBuriedViz', [0, 3]),
-      cycle(C.cycles[1], 'CMRendererViz', [0, 1]),
-      cycle(C.cycles[2], 'CMJobViz', [0, 1]),
+      cycle(C.cycles[0], 'CMBuriedViz', [0, 1, 3], '레이어 제거'),
+      cycle(C.cycles[1], 'CMRendererViz', [0, 1, 2], '렌더러 감축'),
+      cycle(C.cycles[2], 'CMJobViz', [0, 1, 2], '프레임 할당 제거'),
 
       // ─── 검증 태도. 이 덱에서 가장 희소한 장이다 —
       //     틀린 것을 스스로 찾아 철회한 기록이라 "잰다"는 주장의 증거가 된다 ───
       {
         layout: 'columns',
         section: '03 검증',
-        title: '틀린 것을 스스로 걷어낸 기록',
+        title: '폐기한 판단',
         gist: C.rigor.gist,
         colCount: 2,   // 카드 4장을 한 줄에 넣으면 본문이 잘린다 — 2x2
         // 기각·철회는 무엇을 버렸나(terra), 재측정은 무엇을 다시 쟀나(wheat)
@@ -91,7 +93,7 @@
       {
         layout: 'list',
         section: '04 남은 것',
-        title: '아직 재지 못한 것',
+        title: '미측정 항목',
         pairs: C.limits,
         pairCols: 1,
       },
