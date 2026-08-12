@@ -23,7 +23,7 @@ window.LANDING_DATA = {
     // ⚠️ 98% 는 Cartapli 것이다. 출시 2종 전체에 붙이지 않는다.
     stats: [
       { n: '137', label: 'DirectX 11 엔진',  sub: '1인 8개월 · C++17 · 커밋 586' },
-      { n: '−93.8%', label: '모바일 CPU 개선', sub: '0.643 → 0.040 ms · 드로우콜 298 → 1' },
+      { n: '−94.4%', label: '모바일 CPU 개선', sub: '0.643 → 0.036 ms · 드로우콜 298 → 1' },
       { n: '02', label: 'Steam 글로벌 출시',  sub: 'Cartapli 매우 긍정 98% · Wobble Wobble' },
       { n: '05', label: 'PoC labs',          sub: '1일 ~ 8주 · GPU 유체 · 볼류메트릭 · 재사용 시스템' },
     ],
@@ -34,20 +34,20 @@ window.LANDING_DATA = {
     {
       idx: '01',
       code: 'MAIN · 01',
-      date: '2026.07',
+      date: '2026.07 – 08',
       slug: 'cartapli-mobile',
       href: '../pages/cartapli-mobile.html',
       title: 'Cartapli Mobile — 종이접기 최적화',
-      oneLine: 'PC 출시작의 종이접기 코어를 모바일로 이식하며 5단계로 나눠 고치고 단계마다 따로 측정. "DOTS 를 쓰면 빨라진다" 가 아니라 구조로 얼마 · DOTS 로 얼마를 갈라 말한다.',
+      oneLine: 'PC 출시작의 종이접기 코어를 모바일로 이식하며 네 사이클로 나눠 고치고 단계마다 따로 측정. "DOTS 를 쓰면 빨라진다" 가 아니라 구조로 얼마 · DOTS 로 얼마를 갈라 말한다.',
       meta: [
         { kind: 'accent', text: '진행 중 · 모바일 이식 + 리메이크' },
         { kind: 'role',   text: '구조 · 렌더링 · 성능 전부' },
       ],
       thumb: null,
       metrics: [
-        { n: '−93.8%', label: '프레임당 CPU (0.643 → 0.040 ms)' },
+        { n: '−94.4%', label: '프레임당 CPU (0.643 → 0.036 ms)' },
         { n: '298 → 1', label: '드로우콜 — 앞/뒤 2메시 병합' },
-        { n: '5.9×',   label: '레이어 감소 — 파묻힌 레이어 삭제 + Burst 잡 분할' },
+        { n: '−97.6%', label: '확정 프레임 할당 — 범용 폴리곤 불리언을 걷어냄' },
       ],
     },
     {

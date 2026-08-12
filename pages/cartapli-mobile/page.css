@@ -38,10 +38,11 @@ code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 1
 .cm-hook { font-size: 19px; line-height: 1.65; color: var(--ink-2); margin: 20px 0 28px; max-width: 800px; text-wrap: pretty; }
 .cm-hook strong { color: var(--ink); font-weight: 600; }
 
-.cm-bigs { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
-.cm-big { padding: 22px 24px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
+/* 3칸 → 4칸. 셀이 좁아져 40px 숫자('337 → 57')가 두 줄로 접히므로 34px 로 내렸다 */
+.cm-bigs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
+.cm-big { padding: 22px 20px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
 .cm-big:last-child { border-right: none; }
-.cm-big-n { font-family: var(--font-display); font-size: 40px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
+.cm-big-n { font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
 .cm-big-l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra-500); font-weight: 600; }
 .cm-big-s { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); line-height: 1.5; }
 
@@ -149,6 +150,12 @@ code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 1
 .cm-result li:last-child { margin-bottom: 0; }
 .cm-result li strong { font-weight: 700; }
 
+/* 사이클 안에서 갈라지는 결정. 한 카드에 색면이 이미 넷(how·result·callout·handoff)이라
+   여기에 다섯 번째 면을 얹으면 층이 뭉갠다 — 배경 없이 윗줄 하나로만 떼어 놓는다. */
+.cm-cycle-sub { margin-top: 26px; padding-top: 22px; border-top: 1px dashed var(--rule-2); }
+.cm-cycle-sub .cm-body:last-of-type { margin-bottom: 14px; }
+.cm-cycle-sub .nb-table { background: var(--paper); }
+
 /* 다음 문제 — 다음 카드의 관측으로 잇는 고리 */
 .cm-handoff { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; margin: 24px 0 4px; padding: 16px 20px; background: var(--ink); color: var(--paper); border-radius: 4px; }
 .cm-handoff-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5); border-radius: 3px; padding: 4px 8px; white-space: nowrap; }
@@ -223,6 +230,9 @@ code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 1
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 1100px) {
   .cm-rigor, .cm-roles { grid-template-columns: 1fr; }
+  .cm-bigs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cm-big:nth-child(2n) { border-right: none; }
+  .cm-big:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
 }
 @media (max-width: 720px) {
   .cm-hero { padding: 36px 0 32px; }
@@ -241,4 +251,16 @@ code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 1
   .cm-cycle-title { grid-column: 1 / -1; font-size: 22px; }
   .cm-handoff { grid-template-columns: 1fr; }
   .cm-figure { padding: 12px 12px 10px; }
+
+  /* 공유 .nb-nav 는 좁은 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
+     레일과 crumb 이 같은 목적지를 가지므로 여기서는 감춘다. */
+  .nb-header .nb-nav { display: none; }
+
+  /* 코드 줄이 길면 pre 가 페이지를 가로로 민다 — 블록 안에서만 스크롤시킨다 */
+  .nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; }
+
+  /* viewBox 720 이 375px 폭으로 눌리면 배율 0.42 — 10px 라벨이 4.2px 로 유실된다.
+     그림만 가로로 스와이프시켜 배율을 0.78 까지 올린다. 세로는 잠근다. */
+  .cm-figure { overflow-x: auto; overflow-y: hidden; }
+  .cm-figure .cm-svg { min-width: 560px; }
 }

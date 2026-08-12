@@ -268,7 +268,69 @@ function CMJobViz() {
 }
 window.CMJobViz = CMJobViz;
 
-/* ─── 큰 숫자 3칸 ────────────────────────────────────── */
+/* ─── 볼록 뺄셈 — 반평면 자르기 ──────────────────────── */
+/* 대신하는 문장: "볼록 덮개를 빼는 일은 덮개의 변마다 한 조각씩 떼어내는 일이고,
+   떼어낸 조각은 전부 다시 볼록이다."
+   도형은 실제 알고리즘 그대로다 — 사각 조각에서 사각 덮개를 빼면 왼쪽·위·아래 세 조각이
+   나오고, 덮개의 오른쪽 변은 조각 밖이라 아무것도 떼어내지 않는다. */
+function CMConvexViz() {
+  const W = 720, H = 270;
+  const sq = 170, ay = 52;
+  const ax = 40, bx = 500;              // 두 판의 왼쪽 x. bx + sq = 670 < 720
+  const cl = 57, ct = 43, cb = 128;     // 덮개가 조각을 자르는 위치 (조각 좌상단 기준)
+  const coverR = 226;                   // 덮개 오른쪽 — 조각(170) 밖이라 이 변은 아무것도 못 떼어낸다
+
+  const piece = (x, y, w, h, n) => (
+    <g key={n}>
+      <rect x={x} y={y} width={w} height={h} rx="2" fill="var(--sage-100)" stroke="var(--sage-500)" />
+      <text x={x + w / 2} y={y + h / 2 + 4} textAnchor="middle" className="cm-svg-ax">{n}</text>
+    </g>
+  );
+
+  return (
+    <figure className="cm-figure">
+      <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
+           aria-label="볼록 덮개를 빼면 덮개의 변마다 볼록 조각이 하나씩 떨어져 나온다">
+        <text x={ax} y="22" className="cm-svg-lbl">조각에서 볼록 덮개를 뺀다</text>
+        <text x={ax} y="40" className="cm-svg-sub">덮개는 반평면 네 개의 교집합</text>
+        <text x={bx} y="22" className="cm-svg-lbl">변마다 한 조각씩 떨어져 나온다</text>
+        <text x={bx} y="40" className="cm-svg-sub">떨어져 나온 조각은 전부 다시 볼록</text>
+
+        {/* 왼쪽 — 조각과 덮개가 겹쳐 있는 상태 */}
+        <rect x={ax} y={ay} width={sq} height={sq} rx="2" fill="var(--sage-50)" stroke="var(--sage-500)" />
+        <rect x={ax + cl} y={ay + ct} width={coverR - cl} height={cb - ct} rx="2"
+              fill="var(--terra-50)" stroke="var(--terra-400)" strokeDasharray="5 3" strokeWidth="1.6" />
+        <text x={ax + 8} y={ay + 16} className="cm-svg-sub">조각</text>
+        <text x={ax + coverR - 40} y={ay + ct - 6} className="cm-svg-tag">덮개</text>
+
+        {/* 화살표 */}
+        <line x1={ax + coverR + 20} x2={bx - 26} y1={ay + sq / 2} y2={ay + sq / 2}
+              stroke="var(--ink-3)" strokeWidth="1.5" />
+        <polygon points={`${bx - 26},${ay + sq / 2 - 5} ${bx - 26},${ay + sq / 2 + 5} ${bx - 14},${ay + sq / 2}`}
+                 fill="var(--ink-3)" />
+
+        {/* 오른쪽 — 남은 조각 세 개 + 덮인 부분 */}
+        {piece(bx, ay, cl, sq, '1')}
+        {piece(bx + cl, ay, sq - cl, ct, '2')}
+        {piece(bx + cl, ay + cb, sq - cl, sq - cb, '3')}
+        <rect x={bx + cl} y={ay + ct} width={sq - cl} height={cb - ct}
+              fill="var(--terra-50)" stroke="var(--terra-400)" strokeDasharray="4 3" />
+        <text x={bx + cl + (sq - cl) / 2} y={ay + ct + (cb - ct) / 2 + 4} textAnchor="middle"
+              className="cm-svg-tag">덮였다</text>
+
+        <text x={ax} y={ay + sq + 26} className="cm-svg-sub">남은 조각이 0이 되면 그 레이어는 빈틈없이 덮인 것이다 — 넓이를 재는 단계가 없다</text>
+      </svg>
+      <figcaption className="cm-figcap">
+        덮개의 변을 하나씩 훑으며 <b>“이번 변 바깥”을 떼어낸다.</b> 덮개의 오른쪽 변은 조각 밖에 있어
+        아무것도 떼어내지 않으므로 조각은 4개가 아니라 3개다.
+        떼어낸 조각이 전부 다시 볼록이라 교차점을 구하거나 링을 조립하는 단계가 필요 없다.
+      </figcaption>
+    </figure>
+  );
+}
+window.CMConvexViz = CMConvexViz;
+
+/* ─── 큰 숫자 칸 ─────────────────────────────────────── */
 function CMBigDelta({ items }) {
   return (
     <div className="cm-bigs">
