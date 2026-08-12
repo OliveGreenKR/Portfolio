@@ -23,7 +23,7 @@ window.LANDING_DATA = {
     // ⚠️ 98% 는 Cartapli 것이다. 출시 2종 전체에 붙이지 않는다.
     stats: [
       { n: '137', label: 'DirectX 11 엔진',  sub: '1인 8개월 · C++17 · 커밋 586' },
-      { n: '−94.4%', label: '모바일 CPU 개선', sub: '0.643 → 0.036 ms · 드로우콜 298 → 1' },
+      { n: '−94.9%', label: '모바일 CPU 개선', sub: '0.643 → 0.033 ms · 드로우콜 298 → 1' },
       { n: '02', label: 'Steam 글로벌 출시',  sub: 'Cartapli 매우 긍정 98% · Wobble Wobble' },
       { n: '05', label: 'PoC labs',          sub: '1일 ~ 8주 · GPU 유체 · 볼류메트릭 · 재사용 시스템' },
     ],
@@ -45,7 +45,7 @@ window.LANDING_DATA = {
       ],
       thumb: null,
       metrics: [
-        { n: '−94.4%', label: '프레임당 CPU (0.643 → 0.036 ms)' },
+        { n: '−94.9%', label: '프레임당 CPU (0.643 → 0.033 ms)' },
         { n: '298 → 1', label: '드로우콜 — 앞/뒤 2메시 병합' },
         { n: '−97.6%', label: '확정 프레임 할당 — 범용 폴리곤 불리언을 걷어냄' },
       ],

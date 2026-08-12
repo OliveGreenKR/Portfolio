@@ -23,9 +23,15 @@
 //   워터폴이 대신 말해 줄 수 없고(총 CPU 는 동률이다), 이 덱에서 "잰 뒤에 골랐다" 를
 //   보여 주는 유일한 장이다.
 //   cycles[3].callout(오류 비대칭)은 코드 장 note 로, cycles[3].sub(정책 표)는
-//   정책 장으로 들어간다. rigor.cards[4](반박당한 추론)도 그 장에 나란히 둔다 —
-//   §03 측정 신뢰 장은 이미 3칸이 꽉 찼고, 그 카드는 정책 결정의 일부라 여기가 제자리다.
-//   rigor.cards[5](기준 구현 자신의 흔들림)는 §04 셋째 칸.
+//   정책 장으로 들어간다.
+//
+// 2026-08-13 결정 번복 (③ 단일 덮개 -> ② 볼록 뺄셈, SingleCoverPolicy = false):
+//   승패가 접기 빈도의 함수였다. 정책 장을 columns 에서 diagram 으로 바꾸고
+//   CMPolicyViz(손익분기 + 회차별 레이어)를 주인공으로 세웠다. 뒤집은 기록 자체가
+//   이 절에서 가장 희소한 사실이라 다음 장 한 칸을 통째로 준다.
+//   ⚠️ rigor.cards 배열에 '결정 번복' 이 4번으로 끼면서 뒤가 한 칸씩 밀렸다 —
+//     [4] 결정 번복 · [5] 추론 기각(복리·자기잠식) · [6] 기준 구현 흔들림.
+//     마지막 카드는 인덱스를 박지 말고 length-1 로 센다.
 //
 // 2026-08-12 (사용자 판단): **Cartapli: Fold Quest 절(6장)을 폐지**하고 이 절의
 //   §00 한 장으로 접었다. 원작은 "출시까지 갔다" 는 사실 이상의 값어치가 이 덱에 없다.
@@ -209,38 +215,40 @@
         // 오류 비대칭. 이 절에서 "왜 덜 지우는 쪽으로 물러서는가" 는 여기서만 나온다.
         note: C.cycles[3].callout.body.split('. ').slice(0, 2).join('. ') + '.',
       }),
-      // 이 절에서 가장 중요한 한 장이다 — 실제로 런타임에 남긴 판정이 무엇이고
-      // 무엇을 재고 그걸 골랐는지. 표로 늘어놓던 것을 그림 하나로 바꿨다.
+      // 이 절에서 가장 중요한 한 장이다 — 무엇을 재고 무엇을 골랐는지, 그리고 그 선택이
+      // 왜 하루 만에 뒤집혔는지. 표로 늘어놓던 것을 그림 하나로 바꿨다.
       {
         layout: 'diagram',
         section: C.cycles[3].no,
         no: C.cycles[3].tag,
-        title: '실제로 남긴 판정 — 한 장 덮개로 축소',
-        lead: C.cycles[3].sub.body.split('. ').slice(0, 2).join('. ') + '.',
+        title: '정책 선택 — 승패를 정한 것은 접기 빈도',
+        // ⚠️ slice(-2) 로 자르면 "…때문이다." 로 시작해 무엇의 이유인지가 잘려 나간다.
+        //    "처음에는 이쪽을 채택했다" 부터 가져와야 뒤집은 이야기가 선다.
+        lead: C.cycles[3].sub.body.split('. ').slice(-3).join('. '),
         step: { viz: 'policy' },
         vizComponent: 'CMPolicyViz',
         points: [
-          ['잃는 것', '여러 장이 나눠 덮는 경우를 놓친다 — 16회차 레이어 41 → 57(+39%), 정점 평균 98.5 → 138.4'],
-          ['얻는 것', '확정 프레임 한 장에 몰리던 판정 스파이크 0.247 → 0.083 ms. 총 CPU 는 동률이다'],
-          ['되돌리는 조건', '접기 상한이 6회를 넘게 설계되고 레이어 수·메모리가 압박이 될 때. 스위치 하나로 볼록 뺄셈으로 돌아간다'],
+          ['두 비용의 성격', '마커는 드래그 중 **매 프레임**, 판정은 확정 순간 **한 번**. 한 칸에 더하려면 접기 빈도가 있어야 한다'],
+          ['손익분기', '19프레임 = 0.32초. 벤치는 0.16초 간격이라 단일 덮개 쪽에 서 있었다'],
+          ['설계값', '분당 2~3회 = 손익분기보다 60~100배 뜸하다. 확정 스파이크가 소멸하고 **볼록 뺄셈이 16% 싸다**'],
         ],
-        note: '실제 플레이의 접기 횟수가 5회 이하라는 게임 설계 사실이 이 선택의 근거다.',
+        note: '되돌리는 조건 둘 — 접기 상한이 5회 이하로 확정될 때(출력이 같아진다), 또는 접기 간격이 0.3초 아래로 잦아질 때.',
       },
-      // 반박당한 추론 두 개는 정책 결정의 일부라 바로 다음에 둔다.
-      // §03 측정 신뢰 장은 이미 3칸이 꽉 찼다.
+      // 뒤집은 기록 자체가 이 절에서 가장 희소한 사실이다.
+      // §03 측정 신뢰 장은 이미 3칸이 꽉 차 여기에 둔다.
       {
         layout: 'columns',
         section: C.cycles[3].no,
-        title: '정책을 고르기 전에 세웠던 추론 둘',
+        title: '뒤집은 기록과 반박당한 추론',
         colCount: 2,
         cols: [
           { kind: C.rigor.cards[4].badge, tone: 'terra',
-            title: '측정 전 추론 — 복리와 자기 잠식', sub: C.rigor.cards[4].body },
-          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈 ↔ 단일 덮개',
+            title: '하루 만에 뒤집은 결정', sub: C.rigor.cards[4].body },
+          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈(채택) ↔ 단일 덮개',
             pairs: C.cycles[3].sub.rows
               .map((r) => [r[0], '볼록 뺄셈 ' + r[1] + ' · 단일 덮개 ' + r[2]]) },
         ],
-        note: C.cycles[3].sub.note.split('. ').slice(0, 2).join('. ') + '.',
+        note: C.rigor.cards[5].body.split('. ').slice(0, 2).join('. ') + '.',
       },
 
       // ─── 검증 태도. 이 덱에서 가장 희소한 장이다 —
@@ -282,10 +290,14 @@
         cols: [
           { kind: 'VERIFIED', mark: '✓', tone: 'sage', title: C.verify.tests.title,
             pairs: C.verify.tests.rows.map((r) => [r[0], r[1] + ' · ' + r[2]]) },
-          { kind: C.rigor.cards[5].badge, tone: 'wheat',
-            title: '기준 구현 자신의 흔들림', sub: C.rigor.cards[5].body },
+          // ⚠️ rigor.cards 는 '결정 번복' 이 4번으로 끼면서 뒤가 한 칸씩 밀렸다.
+          //    기준 구현 흔들림은 마지막 카드다 — 인덱스를 박지 말고 끝에서 센다.
+          { kind: C.rigor.cards[C.rigor.cards.length - 1].badge, tone: 'wheat',
+            title: '기준 구현 자신의 흔들림', sub: C.rigor.cards[C.rigor.cards.length - 1].body },
+          // limits 여섯 개를 다 넣으면 칸이 상자를 위아래 130px 씩 넘긴다(실측).
+          // 헤드라인 수치를 실제로 한정하는 셋만 남긴다 — 나머지는 사이트가 갖는다.
           { kind: 'REMAINING', mark: '✗', tone: 'terra', title: '남은 과제 · 한계',
-            pairs: C.limits },
+            pairs: C.limits.filter((l) => /기기 실측|벤치 궤적|오버드로우/.test(l[0])) },
         ],
         note: C.verify.tests.note,
       },

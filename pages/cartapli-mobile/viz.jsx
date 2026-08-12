@@ -77,7 +77,8 @@ function CMLineChart({ series, yMax, xLabel, yLabel, caption }) {
           <text key={r} x={x(r - 1)} y={padT + ih + 20} textAnchor="middle" className="cm-svg-ax">{r}</text>
         ))}
         <text x={padL + iw / 2} y={H - 6} textAnchor="middle" className="cm-svg-sub">{xLabel}</text>
-        <text x={padL - 40} y={padT - 8} className="cm-svg-sub">{yLabel}</text>
+        {/* 축 제목을 padT−8 에 두면 맨 위 눈금 라벨(padT+4)과 사각형이 겹친다 — 한 줄 위로 뺀다 */}
+        <text x={padL - 46} y={padT - 14} className="cm-svg-sub">{yLabel}</text>
 
         {series.map(s => {
           const pts = s.values.map((v, i) => `${x(i)},${y(v)}`).join(' ');
@@ -332,29 +333,35 @@ function CMConvexViz() {
 }
 window.CMConvexViz = CMConvexViz;
 
-/* ─── 판정 3종 실측 비교 ─────────────────────────────── */
-/* 대신하는 문장: "정확한 판정은 12~23배 비싸고, 값싼 판정은 5회차까지 결과가 같다."
-   글로 쓰면 표 두 개가 필요한 자리라 그림 하나로 합쳤다 — 두 패널이 한 결정의 두 축이다.
-     왼쪽  판정 비용. 배수가 44~72배라 선형 축으로는 ②③ 막대가 사라진다 → 로그 축 + 눈금 표기
-     오른쪽 회차별 레이어. 정책을 바꿨을 때 실제로 무엇을 잃는가
-   ⚠️ 총폭 = pbX(410) + pbW(300) + 라벨 여유 = 730 < 760. 좌 패널은 30 + 300 = 330. */
+/* ─── 정책 비교 — 손익분기와 잃는 것 ─────────────────── */
+/* 대신하는 문장: "두 정책의 승패는 접기 빈도가 정하고, 설계값은 손익분기보다 60~100배 뜸하다."
+   두 패널이 한 결정의 두 축이다.
+     왼쪽  프레임당 평균 비용을 접기 간격의 함수로. 두 선이 실제로 교차한다
+     오른쪽 그래서 ②를 골랐을 때 회차별 레이어가 어떻게 되는가
+   ⚠️ 이 그림이 성립하는 이유 — 마커는 드래그 중 **매 프레임**, 판정은 확정 **한 번**이다.
+      성격이 다른 두 비용이라 한 칸에 더할 수 없고, 더하려면 빈도가 필요하다.
+   ⚠️ 총폭 = pbX(424) + pbW(272) + 라벨 여유 = 710 < 760. */
 function CMPolicyViz() {
   const W = 760, H = 232;
 
-  // 왼쪽 — 판정 비용 (확정 프레임 한 장, 16회차)
-  const cost = [
-    { k: '① 유니온',    v: 5.96, lo: 3.67, t: '3.67 ~ 5.96 ms', tone: 'terra' },
-    { k: '② 볼록 뺄셈', v: 0.247, t: '0.247 ms', tone: 'ink' },
-    { k: '③ 단일 덮개', v: 0.083, t: '0.083 ms', tone: 'sage' },
-  ];
-  const LO = 0.05, HI = 10;                       // 로그 축 양끝
-  const paX = 118, paW = 206;                     // 막대 시작 x, 최대 길이
+  // ── 왼쪽 — 손익분기 (16회차 실측에서 나온 두 상수) ──
+  //   ② 38.3 µs/프레임 + 256 µs/확정   ③ 45.8 µs/프레임 + 114 µs/확정
+  //   교차 N = 142 / 7.5 = 18.9 프레임
+  const F2 = 38.3, J2 = 256, F3 = 45.8, J3 = 114;
+  const c2 = (n) => F2 + J2 / n;
+  const c3 = (n) => F3 + J3 / n;
+  const N0 = 8, N1 = 2000, yTop = 75;
+  const laX = 72, laW = 272, laY = 42, laH = 124;
   const lg = (v) => Math.log10(v);
-  const bar = (v) => ((lg(v) - lg(LO)) / (lg(HI) - lg(LO))) * paW;
-  const fill = { terra: 'var(--terra-100)', ink: 'var(--paper-3)', sage: 'var(--sage-300)' };
-  const line = { terra: 'var(--terra-400)', ink: 'var(--ink-3)', sage: 'var(--sage-500)' };
+  const nx = (n) => laX + ((lg(n) - lg(N0)) / (lg(N1) - lg(N0))) * laW;
+  const vy = (v) => laY + laH - (Math.min(v, yTop) / yTop) * laH;
+  const curve = (f) => Array.from({ length: 61 }, (_, i) => {
+    const n = N0 * Math.pow(N1 / N0, i / 60);
+    return `${nx(n)},${vy(f(n))}`;
+  }).join(' ');
+  const CROSS = 18.9, BENCH = 9.7, DESIGN = 1200;
 
-  // 오른쪽 — 회차별 레이어 (docs/perf S2-c · S2-d CSV 의 Paper.LayerCount)
+  // ── 오른쪽 — 회차별 레이어 (docs/perf S2-c · S2-d CSV 의 Paper.LayerCount) ──
   const conv = [2, 4, 7, 10, 11, 13, 17, 21, 25, 29, 28, 35, 41, 42, 43, 41];
   const sing = [2, 4, 7, 10, 11, 16, 20, 27, 31, 43, 43, 51, 60, 60, 62, 57];
   const pbX = 424, pbW = 272, pbY = 52, pbH = 122, yMax = 70;
@@ -365,31 +372,34 @@ function CMPolicyViz() {
   return (
     <figure className="cm-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
-           aria-label="판정 세 방식의 비용과 회차별 레이어 수 비교">
+           aria-label="접기 간격에 따른 두 정책의 프레임당 비용과 회차별 레이어 수">
         {/* ── 왼쪽 패널 ── */}
-        <text x="30" y="18" className="cm-svg-lbl">판정 비용 — 확정 프레임 한 장, 16회차</text>
-        {[0.05, 0.5, 5].map((t) => (
+        <text x="30" y="18" className="cm-svg-lbl">프레임당 평균 비용 — 접기 간격의 함수 (16회차)</text>
+        {[0, 25, 50, 75].map((t) => (
           <g key={t}>
-            <line x1={paX + bar(t)} x2={paX + bar(t)} y1="30" y2="152" stroke="var(--rule)" strokeDasharray="3 4" />
-            <text x={paX + bar(t)} y="168" textAnchor="middle" className="cm-svg-sub">{t}</text>
+            <line x1={laX} x2={laX + laW} y1={vy(t)} y2={vy(t)} stroke="var(--rule)" strokeDasharray={t ? '3 4' : ''} />
+            <text x={laX - 8} y={vy(t) + 4} textAnchor="end" className="cm-svg-sub">{t}</text>
           </g>
         ))}
-        <text x={paX + paW / 2} y="184" textAnchor="middle" className="cm-svg-sub">ms · 로그 축</text>
-        {cost.map((c, i) => {
-          const y = 42 + i * 36;
-          return (
-            <g key={c.k}>
-              <text x="30" y={y + 15} className="cm-svg-ax">{c.k}</text>
-              <rect x={paX} y={y} width={bar(c.v)} height="20" rx="2" fill={fill[c.tone]} stroke={line[c.tone]} />
-              {c.lo && <line x1={paX + bar(c.lo)} x2={paX + bar(c.lo)} y1={y + 3} y2={y + 17}
-                             stroke="var(--terra-500)" strokeWidth="1.5" />}
-              {/* 막대가 길면 값을 안쪽에 넣는다 — 바깥에 두면 오른쪽 패널의 y축 라벨과 겹친다 */}
-              {bar(c.v) > 150
-                ? <text x={paX + bar(c.v) - 8} y={y + 15} textAnchor="end" className="cm-svg-val" style={{ fontSize: 11 }}>{c.t}</text>
-                : <text x={paX + bar(c.v) + 7} y={y + 15} className="cm-svg-val" style={{ fontSize: 11 }}>{c.t}</text>}
-            </g>
-          );
-        })}
+        <text x={laX - 46} y={laY - 8} className="cm-svg-sub">µs</text>
+        {/* 손익분기 오른쪽 = ② 가 이기는 구간. 실제 설계가 여기 있다 */}
+        <rect x={nx(CROSS)} y={laY} width={laX + laW - nx(CROSS)} height={laH} fill="var(--sage-100)" opacity="0.5" />
+        <polyline points={curve(c3)} fill="none" stroke="var(--ink-3)" strokeWidth="2" strokeDasharray="5 3" />
+        <polyline points={curve(c2)} fill="none" stroke="var(--sage-500)" strokeWidth="2.5" />
+        <circle cx={nx(CROSS)} cy={vy(c2(CROSS))} r="4.5" fill="var(--paper)" stroke="var(--terra-500)" strokeWidth="2" />
+        <text x={nx(CROSS) + 8} y={vy(c2(CROSS)) - 8} className="cm-svg-tag">손익분기 19프레임 · 0.32초</text>
+        {[[BENCH, '벤치'], [DESIGN, '설계']].map(([n, lbl]) => (
+          <g key={lbl}>
+            <line x1={nx(n)} x2={nx(n)} y1={laY} y2={laY + laH} stroke="var(--terra-400)" strokeDasharray="2 3" />
+            <text x={nx(n)} y={laY - 4} textAnchor="middle" className="cm-svg-tag">{lbl}</text>
+          </g>
+        ))}
+        <text x={nx(1400)} y={vy(c2(1400)) + 16} textAnchor="end" className="cm-svg-end" fill="var(--sage-700)">② 38.5</text>
+        <text x={nx(1400)} y={vy(c3(1400)) - 8} textAnchor="end" className="cm-svg-end" fill="var(--ink-3)">③ 45.9</text>
+        {[[10, '0.17초'], [100, '1.7초'], [1000, '17초']].map(([n, s]) => (
+          <text key={n} x={nx(n)} y={laY + laH + 16} textAnchor="middle" className="cm-svg-sub">{s}</text>
+        ))}
+        <text x={laX + laW / 2} y={laY + laH + 32} textAnchor="middle" className="cm-svg-sub">접기 간격 · 로그 축</text>
 
         <line x1="382" x2="382" y1="14" y2={H - 14} stroke="var(--rule)" strokeDasharray="4 4" />
 
@@ -404,20 +414,21 @@ function CMPolicyViz() {
         {/* 1~5회차는 두 정책의 값이 같다 — 그 구간을 면으로 덮어 "여기까지는 같다" 를 보인다 */}
         <rect x={pbX} y={pbY} width={px(4) - pbX} height={pbH} fill="var(--sage-100)" opacity="0.55" />
         <text x={(pbX + px(4)) / 2} y={pbY + 14} textAnchor="middle" className="cm-svg-sub">한 장도 안 다름</text>
-        <polyline points={poly(conv)} fill="none" stroke="var(--ink-3)" strokeWidth="2" strokeDasharray="5 3" />
-        <polyline points={poly(sing)} fill="none" stroke="var(--sage-500)" strokeWidth="2.5" />
+        <polyline points={poly(sing)} fill="none" stroke="var(--ink-3)" strokeWidth="2" strokeDasharray="5 3" />
+        <polyline points={poly(conv)} fill="none" stroke="var(--sage-500)" strokeWidth="2.5" />
         <circle cx={px(5)} cy={py(sing[5])} r="4" fill="none" stroke="var(--terra-500)" strokeWidth="1.6" />
         <text x={px(5) + 8} y={py(sing[5]) - 6} className="cm-svg-tag">6회차부터 갈림</text>
-        <text x={px(15) - 4} y={py(sing[15]) - 8} textAnchor="end" className="cm-svg-end" fill="var(--sage-700)">③ 57</text>
-        <text x={px(15) - 4} y={py(conv[15]) + 16} textAnchor="end" className="cm-svg-end" fill="var(--ink-3)">② 41</text>
+        <text x={px(15) - 4} y={py(sing[15]) - 8} textAnchor="end" className="cm-svg-end" fill="var(--ink-3)">③ 57</text>
+        <text x={px(15) - 4} y={py(conv[15]) + 16} textAnchor="end" className="cm-svg-end" fill="var(--sage-700)">② 41</text>
         {[1, 5, 10, 16].map((r) => (
           <text key={r} x={px(r - 1)} y={pbY + pbH + 16} textAnchor="middle" className="cm-svg-sub">{r}</text>
         ))}
         <text x={pbX + pbW / 2} y={pbY + pbH + 32} textAnchor="middle" className="cm-svg-sub">접기 회차</text>
       </svg>
       <figcaption className="cm-figcap">
-        <b>정확한 판정(②)은 5회차까지 값싼 판정(③)과 한 장도 다른 답을 내지 않는다.</b> 실제 플레이가 그 구간이다.
-        ①은 같은 자리에서 12~23배 느리고 지운 장수는 오히려 적다.
+        <b>② 볼록 뺄셈(채택)과 ③ 단일 덮개 — 승패는 접기가 얼마나 잦은가가 정한다.</b> ③이 아끼는 것은 확정 순간 한 프레임뿐이고,
+        그 대가로 매 프레임 비용을 더 문다. 접기가 뜸할수록 불리해진다는 뜻이다. 벤치는 0.16초 간격이라 ③ 쪽에 서 있었고,
+        실제 설계는 분당 2~3회 — 손익분기보다 60~100배 뜸하다. 대신 ②는 5회차까지 ③과 한 장도 다른 답을 내지 않는다.
       </figcaption>
     </figure>
   );
