@@ -217,14 +217,19 @@
   function Step({ s }) {
     const st = s.step;
     const hasRight = st.viz || st.code || st.mermaid;
+    // 코드 장은 lead 를 안 쓴다 — 코드 블록이 제 제목과 소개를 갖고 있어서
+    // 여기에 또 쓰면 같은 문장이 한 화면에 두 번 나온다 (실측: 3장).
+    const hasLead = st.problem || st.did;
     return (
       <div className="sl-body">
         {s.gist && <p className="sl-secgist">{RI(s.gist)}</p>}
         <h2 className="sl-h">{s.title || st.title}</h2>
-        <div className="sl-lead">
-          <p className="sl-lead__why">{RI(st.problem)}</p>
-          <p className="sl-lead__did">{RI(st.did)}</p>
-        </div>
+        {hasLead && (
+          <div className="sl-lead">
+            {st.problem && <p className="sl-lead__why">{RI(st.problem)}</p>}
+            {st.did && <p className="sl-lead__did">{RI(st.did)}</p>}
+          </div>
+        )}
         <div className={'sl-step' + (hasRight ? (st.viz || st.mermaid ? ' sl-step--viz' : ' sl-step--code') : ' sl-step--wide')}>
           <ul className="sl-points">
             {(s.points || st.points).map((p, i) => {
@@ -291,6 +296,10 @@
   // ─── stats ────────────────────────────────────────
   // 수치가 주장인 장. 큰 숫자 3칸이 먼저 오고 그 아래 차트가 근거를 댄다.
   // columns 로는 안 된다 — 카드 제목이 아니라 **수치 자체**가 시선을 먼저 받아야 한다.
+  //
+  // 차트가 없는 프로젝트(출시 실적만 있는 것)는 큰 숫자 넉 줄로 끝나 세로가 남는다 —
+  // 실측 42%. 그 자리를 pairs(= list 장과 같은 격자)와 links 가 받는다.
+  // 새 레이아웃을 만들지 않는 이유: 주장은 그대로 **수치**고, 밑에 붙는 건 근거일 뿐이다.
   function Stats({ s }) {
     return (
       <div className="sl-body">
@@ -308,6 +317,14 @@
         {s.vizComponent && (
           <div className="sl-stats__viz"><Viz component={s.vizComponent} props={s.vizProps} /></div>
         )}
+        {s.pairs && (
+          <ul className="sl-pairs" style={{ '--pair-cols': s.pairCols || 2 }}>
+            {s.pairs.map(([k, v], i) => (
+              <li key={i}><b>{RI(k)}</b><span>{RI(v)}</span></li>
+            ))}
+          </ul>
+        )}
+        <LinkRow items={s.links} />
         {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );

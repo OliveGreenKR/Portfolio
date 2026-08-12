@@ -41,6 +41,9 @@
 
   // mermaid 가 있는 절은 그림이 주인공이다. 세로형(graph TB) 은 가로 슬라이드에서
   // 세로에 맞춰 19% 까지 줄어 글자가 3px 이 된다(실측) — 덱에서만 LR 로 눕힌다.
+  //
+  // ⚠️ 그림이 있는 절에서는 code 를 오른쪽에 붙이지 않는다. Step 은 viz/mermaid 를
+  //    code 보다 먼저 고르므로 코드가 조용히 사라진다 — 코드 장(codeOf)으로 따로 낸다.
   const system = (no, pick, title) => {
     const s = sys(no);
     return {
@@ -52,8 +55,23 @@
       // 세로형(graph TB) 은 가로 슬라이드에서 세로에 맞춰 줄어 글자가 3px 이 된다(실측:
       // TB 1150x1427 -> LR 2700x359). 배치 방향만 눕힌다 — 노드도 간선도 그대로다.
       step: { problem: s.problem, did: s.decision, points: [],
-        mermaid: s.mermaid ? s.mermaid.replace(/^\s*graph\s+(TB|TD|BT)/m, 'graph LR') : null },
+        mermaid: s.mermaid ? s.mermaid.replace(/^\s*graph\s+(TB|TD|BT)/m, 'graph LR') : null,
+        code: s.mermaid ? null : s.code },
       points: pick ? pick.map((i) => s.results[i]) : s.results,
+    };
+  };
+
+  // 코드 장. 그림 장과 나누는 이유는 DX11 과 같다 — 한 장에 그림 + 코드 + 요점을
+  // 다 넣으면 셋 다 작아지고, 무엇보다 설계 설명만 있고 코드가 없는 장이 남는다.
+  // 코드는 실제 레포(D:/UnityProjects/Cartapli)에서 뜬 것이고 data.js 가 갖는다.
+  // lead(problem/did)를 안 준다 — 이유는 deck/dx11.js 의 같은 헬퍼 주석과 같다.
+  // 절 요약(lede)도 안 준다. 바로 앞 그림 장이 같은 문장을 이미 머리에 달고 있다.
+  const codeOf = (no, title, pick) => {
+    const s = sys(no);
+    return {
+      layout: 'step', section: s.kind, no: s.no, title,
+      step: { code: s.code, points: [] },
+      points: pick.map((i) => s.results[i]),
     };
   };
 
@@ -81,11 +99,29 @@
       },
 
       // ─── 출시 결과. 이 프로젝트는 "끝까지 갔다" 가 주장이다 ───
+      // 큰 수치 넷만 두면 세로가 절반 남는다(실측 42% — 덱 최저). heroMetrics 가
+      // 안 쓴 metrics 행 둘과 규모 fact 를 아래 격자로 받고, Steam 링크를 붙인다.
+      // 전부 data.js 가 이미 가진 값이다 — 새로 쓴 것은 없다.
       {
         layout: 'stats',
         section: '01 출시',
         title: '출시와 운영',
         bigs: C.heroMetrics,
+        // 표의 라벨(영문)과 큰 수치의 라벨(국문)이 서로 달라 이름으로는 못 짝짓는다.
+        // 값으로 짝짓는다 — 큰 수치에 이미 나온 행은 아래에 또 쓰지 않는다.
+        // 기준일(r[2])은 안 붙인다 — 노트가 "그 외 지표 2026-05 둘째주 기준" 이라고
+        // 한 번에 말한다. 행마다 붙이면 한 장에 같은 날짜가 여섯 번 찍힌다.
+        pairs: [
+          ...C.metrics.rows
+            .filter((r) => !C.heroMetrics.some((b) => r[1].includes(b.n)))
+            .map((r) => [r[0], r[1]]),
+          C.facts.find((f) => f[0] === '규모'),
+          C.facts.find((f) => f[0] === '스택'),
+        ].filter(Boolean),
+        // 라벨이 이미 Steam 이다. platform 을 그대로 쓰면 칩 하나에 Steam 이 두 번 —
+        // 앞의 'Steam' 과 괄호만 벗겨 쓴다.
+        links: [{ label: 'Steam', v: C.meta.platform.replace(/^Steam\s*\(?/, '').replace(/\)$/, ''),
+                  href: C.meta.steam, tone: 'sage' }],
         note: '평가 2026-02 누적 · 그 외 지표 2026-05 둘째주 기준',
       },
 
@@ -115,8 +151,7 @@
         })),
         note: sys('3.1').results[0],
       },
-      // ⚠️ Cartapli 는 data.js 에 code 블록이 하나도 없다 (systems 7절 전부).
-      // 사이트 페이지에도 코드가 없어 덱에서 만들어 낼 수 없다 — 대신 3.1 의 싱글톤 표를
+      // 3.1 에는 코드가 없다 — 아키텍처 절이라 인용할 단일 파일이 없다. 대신 싱글톤 표를
       // 싣는다. 실행 순서까지 박힌 구현 사실이라 설계 설명만 있는 장을 메운다.
       {
         layout: 'list',
@@ -127,8 +162,15 @@
         pairs: sys('3.1').table.rows.map((r) => [r[0], r[1] + '  ·  ExecutionOrder ' + r[2]]),
         pairCols: 2,
       },
-      system('3.2', [0, 1, 2], '스킬 시스템'),
-      system('3.4', null, '이벤트 패턴'),
+      // 3.2 는 그림 장 + 코드 장으로 나뉜다. 그림은 개발/추가 두 흐름을 보이고,
+      // 코드는 그 흐름이 딛는 계약(불변 컨텍스트 · 오버라이드 한 점)을 보인다.
+      system('3.2', [0, 1], '스킬 시스템'),
+      codeOf('3.2', '실행 컨텍스트와 확장점', [2, 3]),
+      // 3.4 는 mermaid 가 없어 오른쪽이 비어 있었다 — 코드가 그 자리를 받는다.
+      // 제목은 data.js 원제목을 그대로 쓴다. '이벤트 패턴' 으로 줄이면 주제만 남고
+      // 주장(2단계로 갈랐다)이 사라져, 제목만 훑어서는 무슨 얘긴지 모른다.
+      // 요점 0("같은 프레임 충돌 해소")은 뺀다 — 절 요약 · 한 것 · 코드 소개가 이미 세 번 말했다.
+      system('3.4', [1, 2], 'Pre / On 2단계 이벤트 패턴'),
     ],
   };
 })();
