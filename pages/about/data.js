@@ -18,6 +18,7 @@ window.ABOUT_DATA = {
   facts: [
     ['이름',     '정철 (Chul Jeong) · JCH'],
     ['직무',     '클라이언트 프로그래머 · 시스템 / 도구 / 시뮬레이션'],
+    ['학력',     '서울시립대학교 기계정보공학 (2017.03 – 2024.08 졸업) · 크래프톤 게임랩 4기 (2025.07 – 2026.02)'],
     ['엔진',     'Unity 6 · Unreal 5 · DirectX 11 (커스텀 엔진)'],
     ['언어',     'C++17 (중급 이상) · C# (초급) · HLSL · Python (기초)'],
     ['도구',     'Claude Code · MCP · Odin Inspector · Google Apps Script · Git · ImGui · SIMD'],
