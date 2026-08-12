@@ -45,6 +45,7 @@
     const s = sys(no);
     return {
       layout: s.mermaid ? 'diagram' : 'step',
+      gist: s.lede,
       section: s.kind,
       no: s.no,
       title: title || s.title,
@@ -66,7 +67,9 @@
         section: 'Main · Shipped',
         subtitle: C.meta.title,
         title: C.meta.oneLine,
-        hook: C.roles.mine,
+        // roles.mine 전문은 항목 7개짜리 목록이라 표지에 안 맞고, 뒤 '역할 경계' 장과
+        // 완전히 겹쳤다. 표지는 한 줄로 줄이고 전문은 그 장에서 쪼개 보인다.
+        hook: '배틀씬 전체 시스템 설계·구현 — 턴 · 스킬 · AI · 스폰 · 데미지',
         pills: [
           { kind: 'accent', text: C.meta.period + ' · ' + C.meta.weeks },
           { kind: 'plain', text: C.meta.team },
@@ -83,17 +86,19 @@
         section: '01 출시',
         title: '출시와 운영',
         bigs: C.heroMetrics,
-        note: '평가는 2026-02 누적, 나머지 셋은 2026-05 둘째주 기준이다.',
+        note: '평가 2026-02 누적 · 그 외 지표 2026-05 둘째주 기준',
       },
 
       // ─── 역할 경계. 출시작이라 팀 작업이고, 무엇이 내 것인지 먼저 밝힌다 ───
       {
         layout: 'columns',
         section: '02 범위',
-        title: '역할',
+        title: '역할 경계 — 본인 / 팀원',
         cols: [
-          { kind: 'MINE', tone: 'sage', title: '본인', sub: C.roles.mine },
-          { kind: 'TEAM', title: '팀원 · 원 입안자', sub: C.roles.others },
+          // 중점으로 이어붙인 줄글은 훑는 눈에 덩어리 하나로 보인다. 항목으로 끊는다.
+          { kind: 'MINE', tone: 'sage', title: '본인',
+            items: C.roles.mine.split(' · ').map((t) => t.replace(/\.$/, '')) },
+          { kind: 'TEAM', title: '팀원 — 종이접기 PoC 입안자', sub: C.roles.others },
         ],
       },
 
@@ -109,6 +114,18 @@
           kind: l.kind, tone: ['wheat', 'sage', 'blue'][i], title: l.title, items: l.items,
         })),
         note: sys('3.1').results[0],
+      },
+      // ⚠️ Cartapli 는 data.js 에 code 블록이 하나도 없다 (systems 7절 전부).
+      // 사이트 페이지에도 코드가 없어 덱에서 만들어 낼 수 없다 — 대신 3.1 의 싱글톤 표를
+      // 싣는다. 실행 순서까지 박힌 구현 사실이라 설계 설명만 있는 장을 메운다.
+      {
+        layout: 'list',
+        section: sys('3.1').kind,
+        no: '3.1',
+        title: '싱글톤 실행 순서',
+        gist: sys('3.1').tableTitle || '초기화 순서를 ExecutionOrder 로 고정해 참조 시점을 보장한다.',
+        pairs: sys('3.1').table.rows.map((r) => [r[0], r[1] + '  ·  ExecutionOrder ' + r[2]]),
+        pairCols: 2,
       },
       system('3.2', [0, 1, 2], '스킬 시스템'),
       system('3.4', null, '이벤트 패턴'),

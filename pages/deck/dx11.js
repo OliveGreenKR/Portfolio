@@ -16,9 +16,23 @@
 (function buildDeck() {
   const D = window.DX11_DATA;
 
+  // 라벨만 명사구로 덮는다. 본문은 원문 그대로.
+  // 사이트는 노트 톤이라 서술형 라벨이 맞지만, 슬라이드 라벨이 종결형이면 스캔이 끊긴다.
+  const relabel = (pair, label) => [label, pair[1]];
+  // 덱에 없는 것을 가리키는 지시어를 지운다 ("아래 셋" · "이 반복").
+  // 페이지에서는 맞는 말이지만 슬라이드에는 가리킬 대상이 없다.
+  const deref = (text, from, to) => text.replace(from, to);
+
   const step = (section, st, over) => Object.assign({ layout: 'step', section, no: st.no, step: st }, over);
   // 그림이 주인공인 장. step 의 좌우 2단은 그림에 절반 폭·절반 세로밖에 못 준다.
   const diagram = (section, st, over) => Object.assign({ layout: 'diagram', section, no: st.no, step: st }, over);
+  // 코드 장. 그림 장과 나눈 이유는 한 장에 그림 + 코드 + 요점을 다 넣으면 셋 다 작아지고,
+  // 무엇보다 **설계 설명만 있고 코드가 없는 장**이 남기 때문이다.
+  const codeOf = (section, st, title, points) => ({
+    layout: 'step', section, no: st.no, title,
+    step: { problem: st.code.title, did: st.code.intro || st.did, code: st.code, points: [] },
+    points,
+  });
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.dx11 = {
@@ -49,7 +63,7 @@
         // 가져다 썼나" 는 노트 톤이라 웹 본문에서는 맞지만, 스캔하는 매체에서는
         // 명사구여야 한다. 바꾸는 것은 제목뿐이고 항목(reads/skips)은 원문 그대로다.
         title: '구현 범위',
-        gist: D.context.scope.lead,
+        gist: deref(D.context.scope.lead, '아래 셋은 가져다 썼다', '가져다 쓴 것은 셋뿐이다'),
         cols: [
           { kind: 'BUILT', tone: 'sage', title: '자체 구현', items: D.context.scope.reads },
           { kind: 'EXTERNAL', title: '외부 라이브러리 · API', items: D.context.scope.skips },
@@ -70,27 +84,42 @@
       // 그림이 주인공인 장은 요점을 둘만 남긴다 — 그림이 이미 말하는 것을 글로 또 쓰지 않는다.
       // own: 그림이 소유권 이전을 보이므로, 배열 형태(SoA)와 그래서 열린 것만 남긴다
       diagram('01 경계', D.boundary.steps[0], { title: '소유권 이전',
-        points: [D.boundary.steps[0].points[0], D.boundary.steps[0].points[1], D.boundary.steps[0].points[4]] }),
-      step('01 경계', D.boundary.steps[3], { title: '배치 순회' }), // batch · code
+        points: [D.boundary.steps[0].points[0],
+                 relabel(D.boundary.steps[0].points[1], '객체의 배열 직접 접근 차단'),
+                 relabel(D.boundary.steps[0].points[4], '이전으로 열린 것')] }),
+      codeOf('01 경계', D.boundary.steps[0], '상태 배열',
+        [D.boundary.steps[0].points[2], D.boundary.steps[0].points[3]]),
+      step('01 경계', D.boundary.steps[3], { title: '배치 순회',
+        points: D.boundary.steps[3].points.map((p, i) => (i === 2 ? relabel(p, '정적 객체 필터는 루프 안') : p)) }),
       // compact: 그림이 당겨 채우기와 ID 유지를 보이므로, 그림에 없는 정책 둘만
       diagram('01 경계', D.boundary.steps[4], { title: '슬롯 압축',
-        points: [D.boundary.steps[4].points[1], D.boundary.steps[4].points[2], D.boundary.steps[4].points[3]] }),
+        points: [relabel(D.boundary.steps[4].points[1], '지연 압축'),
+                 relabel(D.boundary.steps[4].points[2], 'ID 재사용 시한'),
+                 relabel(D.boundary.steps[4].points[3], 'generation 필드 없음')] }),
+      codeOf('01 경계', D.boundary.steps[4], '무결성 규칙',
+        [D.boundary.steps[4].points[0], D.boundary.steps[4].points[2]]),
 
       // ─── §02 프레임 — 통로 넷이 서브스텝 반복 바깥에 있다 ───
       {
         layout: 'list',
         section: '02 프레임',
         title: '통로 넷의 위치',
-        gist: D.frame.gist,
-        pairs: D.frame.points,
+        gist: deref(D.frame.gist, '이 반복', '서브스텝 반복'),
+        pairs: D.frame.points.map((p) => [p[0], deref(p[1], '아래의 최소 시간 하한', '최소 시간 하한')]),
         pairCols: 2,
       },
 
       // ─── §03 충돌 ───
       // tree: 그림이 여유 폭(fat bounds)을 보이므로 '여유 밖으로 나갈 때만' 은 중복이다
-      diagram('03 충돌', D.collision.steps[0], { title: '브로드페이즈', points: D.collision.steps[0].points.slice(0, 3) }),
+      diagram('03 충돌', D.collision.steps[0], { title: '브로드페이즈',
+        // points[2]('여유 밖으로 나갈 때만') 는 그림이 이미 보이는 내용이라 뺀다
+        points: [D.collision.steps[0].points[0], D.collision.steps[0].points[1], D.collision.steps[0].points[3]] }),
       // 응답 단계는 요점이 6개라 한 장에 안 들어간다 — 솔버 자체를 말하는 앞 4개만 남긴다
-      step('03 충돌', D.collision.steps[3], { title: '충돌 응답', points: D.collision.steps[3].points.slice(0, 4) }),
+      step('03 충돌', D.collision.steps[3], { title: '충돌 응답',
+        points: [relabel(D.collision.steps[3].points[0], '제약 셋 분리'),
+                 relabel(D.collision.steps[3].points[1], '누적 충격량 승계'),
+                 relabel(D.collision.steps[3].points[2], '마찰 한계 = 법선 누적값'),
+                 relabel(D.collision.steps[3].points[3], '얕은 침투 무보정')] }),
 
       // ─── §04 렌더 ───
       step('04 렌더', D.render.steps[3], { title: '프레임 아레나' }), // arena · code
@@ -102,7 +131,7 @@
         layout: 'columns',
         section: '05 검증',
         title: '검증 범위',
-        gist: '코드로 참·거짓이 갈리는 것만 본문에 실었다. 눈과 화면 카운터로만 본 것은 여기 모은다.',
+        gist: '코드로 참·거짓이 갈리는 것만 앞에서 다뤘다. 화면 카운터와 눈으로만 본 것은 이 장에 모았다.',
         cols: [
           { mark: '✗', tone: 'terra', kind: '계측', title: '측정 도구 없음',
             pairs: [D.limits[0], D.limits[1]] },
@@ -113,8 +142,8 @@
           //  네이티브 구현을 관리형 구현과 오라클로 대조).
           { mark: '✓', tone: 'sage', kind: '이후 프로젝트', title: 'Cartapli Mobile 에서 확보',
             pairs: [
-              ['측정 조건을 남긴다', '기기 · 씬 · 로그 배제 여부를 적고 프레임당 CPU 를 세 사이클로 갈라 잰다 — 구조로 얼마, Burst 로 얼마.'],
-              ['구현끼리 대조한다', '네이티브 구현이 관리형 구현과 같은 답을 내는지 오라클로 확인하고, 쌓임 순서는 파이프라인 테스트로 따로 본다.'],
+              ['측정 조건 기록', '기기 · 씬 · 로그 배제 여부를 적고, 프레임당 CPU 를 구조 개선분과 Burst 적용분으로 갈라 쟀다.'],
+              ['구현 간 오라클 대조', '네이티브 구현이 관리형 구현과 같은 답을 내는지 확인하고, 쌓임 순서는 파이프라인 테스트로 따로 봤다.'],
             ] },
         ],
       },
@@ -123,10 +152,13 @@
         section: '06 한계',
         title: '결함과 한계',
         cols: [
-          { kind: '결함', tone: 'terra', title: '재현 가능',
-            pairs: [D.limits[2], D.limits[6]] },
-          { kind: '범위 배제', title: '애초에 넣지 않음',
-            pairs: [D.limits[4], D.limits[5], D.limits[8]] },
+          { kind: '결함', tone: 'terra', title: '코드에 남은 결함',
+            pairs: [relabel(D.limits[2], '누적 시간 처리 결함'),
+                    relabel(D.limits[6], '바인딩 캐시 초기화 경로 부재')] },
+          { kind: '범위 배제', title: '범위 밖',
+            pairs: [relabel(D.limits[4], '볼록 형상 미지원 — 상자 · 구만'),
+                    relabel(D.limits[5], '멀티스레드 구조만'),
+                    relabel(D.limits[8], '렌더 경로 Forward 하나')] },
         ],
       },
     ],
