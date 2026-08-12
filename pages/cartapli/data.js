@@ -127,7 +127,7 @@ window.CARTAPLI_DATA = {
         '분신 스킬(MirrorImageExecutor) 추가 = OnExecute 오버라이드 1개 + 프리팹 조립 / 기존 시스템 수정 0',
         '6종 스킬 실행기 상호 영향 0',
         'SkillSystemContext 독립 생성으로 싱글톤 없는 단위 테스트 가능 (Immediate / Delayed / Failing 더미 3종)',
-        '출시 시점 스킬 유물화 (스킬 → 보상 시스템 연동) 까지 확장 완료',
+        '출시 시점 스킬 유물화(스킬 → 보상 시스템 연동)까지 확장 완료',
       ],
       mermaid: `graph LR
     subgraph DEV["스킬 개발 (구현 흐름)"]
@@ -151,6 +151,30 @@ window.CARTAPLI_DATA = {
     class D1,D2,D3 dev
     class A1,A2,A3 add`,
       stack: ['GlobalSkillManager · 씬 간 슬롯/쿨다운', 'SkillSystemContext · 독립 생성 가능', 'SkillExecutorPool · 풀링', 'SkillExecutorBase · 템플릿 메서드 6종'],
+      code: {
+        title: 'SkillExecutionContext — 불변 구조체 + Fluent API (발췌)',
+        lang: 'csharp',
+        intro: '실행에 필요한 것은 값 형식 스냅샷 하나로 넘어간다. 실행기는 컨텍스트를 고칠 수 없고, 바꾸려면 새 구조체를 받는다.',
+        code: `// ISkillExecutor.cs
+public readonly struct SkillExecutionContext
+{
+    public GameObject Owner          { get; }
+    public Vector3    TargetPosition { get; }
+    public GameObject TargetEntity   { get; }
+    public float?     Range          { get; }
+    public float?     Damage         { get; }
+
+    // struct 는 자신을 못 고친다 — 복사된 새 구조체를 반환
+    public SkillExecutionContext SetTarget(GameObject target)
+        => new SkillExecutionContext(Owner, TargetPosition,
+                                     target, Range, Damage);
+    // SetDamage · SetRange 도 같은 꼴이다
+}
+
+// MD_SkillExecutorBase.cs — 스킬 하나 추가 = 이 하나
+protected abstract bool OnExecute(
+    SkillExecutionContext context);`,
+      },
     },
 
     {
@@ -182,7 +206,7 @@ window.CARTAPLI_DATA = {
       no: '3.4',
       kind: 'EVENT',
       title: 'Pre / On 2단계 이벤트 패턴',
-      lede: '같은 프레임 충돌을 1프레임 간격 으로 풀어낸다.',
+      lede: '같은 프레임 충돌을 1프레임 간격으로 풀어낸다.',
       problem: '같은 프레임에 다수 구독자가 초기화와 실행을 동시에 시도해 순서가 충돌한다. 구독 순서에 따라 결과가 달라진다.',
       decision: '이벤트를 Pre / On 2단계로 분리 + `yield return null` 로 1프레임 간격 보장. Pre 단계 = 준비 (UI 갱신 · 상태 초기화) / On 단계 = 실제 실행 (액터 행동 시작 · 턴 완료 처리).',
       results: [
@@ -190,6 +214,30 @@ window.CARTAPLI_DATA = {
         '업적 시스템을 OnBattleEnd 단일 이벤트로 통합 (전투 코드 수정 0)',
         '새 시스템 추가 시 구독할 이벤트와 단계(Pre / On)를 즉시 결정',
       ],
+      code: {
+        title: '라운드 시작 전이 — 발행 사이에 한 프레임 (발췌)',
+        lang: 'csharp',
+        intro: '이벤트를 코루틴에서 발행하고 사이마다 `yield return null` 을 둔다. 앞 단계 구독자가 전부 돌고 난 다음 프레임에 다음 단계가 나간다.',
+        code: `// MD_BattleSceneSingleton.cs
+private IEnumerator TransitionToRoundStartCoroutine()
+{
+    PreRoundStart?.Invoke();     // 준비 단계
+    yield return null;           // 한 프레임 벌린다
+
+    // … 종이 스폰 애니메이션 완료 대기 …
+    OnPaperReady?.Invoke();
+    yield return null;
+
+    OnPlayerReady?.Invoke();
+    OnEnemyReady?.Invoke();
+    yield return null;
+
+    OnSpawnComplete?.Invoke();
+    yield return new WaitUntil(
+        () => _isAllSpawnProcessComplete);
+    OnAllSpawnProcessComplete?.Invoke();
+}`,
+      },
     },
 
     {

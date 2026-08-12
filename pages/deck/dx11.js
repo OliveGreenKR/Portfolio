@@ -28,9 +28,12 @@
   const diagram = (section, st, over) => Object.assign({ layout: 'diagram', section, no: st.no, step: st }, over);
   // 코드 장. 그림 장과 나눈 이유는 한 장에 그림 + 코드 + 요점을 다 넣으면 셋 다 작아지고,
   // 무엇보다 **설계 설명만 있고 코드가 없는 장**이 남기 때문이다.
+  //
+  // lead(problem/did)를 안 준다. 코드 블록이 제 제목(code.title)과 소개(code.intro)를
+  // 이미 그리므로, 여기 넣으면 같은 문장이 한 화면에 위아래로 두 번 나온다.
   const codeOf = (section, st, title, points) => ({
     layout: 'step', section, no: st.no, title,
-    step: { problem: st.code.title, did: st.code.intro || st.did, code: st.code, points: [] },
+    step: { code: st.code, points: [] },
     points,
   });
 
