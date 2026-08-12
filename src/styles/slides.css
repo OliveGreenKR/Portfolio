@@ -145,6 +145,25 @@
 .sl-links--big .sl-link__v { font-size: 25px; }
 .sl-links--big .sl-link__go { font-size: 27px; margin-left: auto; }
 
+/* hero 링크 — 이 장이 실제로 보내려는 곳. 나머지(GitHub · Steam · 메일)는 부속이다.
+   같은 크기로 늘어놓으면 목록의 첫 줄일 뿐이라 눈이 안 멈춘다.
+   색을 새로 만들지 않는다 — tone(sage)을 배경·테두리까지 확장하고 크기만 키운다. */
+.sl-links--big .sl-link--hero {
+  padding: 32px 34px;
+  border-width: 2px; border-left-width: 12px; border-radius: 5px;
+  background: var(--sage-50);
+  box-shadow: 0 2px 0 var(--rule-2);
+  margin-bottom: 10px;
+}
+.sl-links--big .sl-link--hero .sl-link__k { font-size: 34px; flex: 0 0 300px; }
+.sl-links--big .sl-link--hero .sl-link__v { font-size: 34px; font-weight: 600; color: var(--ink); }
+.sl-links--big .sl-link--hero .sl-link__go { font-size: 38px; }
+/* tone 규칙(위)이 세 변을 rule-2 로 못 박는다 — hero 는 그 위에 다시 얹는다 */
+.sl-links--big .sl-link--hero[data-tone] {
+  background: var(--sage-50);
+  border-top-color: var(--sage-300); border-right-color: var(--sage-300); border-bottom-color: var(--sage-300);
+}
+
 /* ─── title — 문서 표제지 ──────────────────────────
    소개는 한 장이다. 항목마다 사실 한 줄씩만 두고, 설명 문장을 붙이지 않는다. */
 .sl-title { gap: 30px; }

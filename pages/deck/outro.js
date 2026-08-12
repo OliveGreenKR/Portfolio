@@ -18,10 +18,12 @@
         layout: 'outro',
         section: 'Links',
         title: '링크',
-        gist: '각 프로젝트의 상세 서술 · 코드 스니펫 · 다이어그램은 공개 사이트에 있다. 이 문서는 그중 엔진 직군에 맞는 것만 뽑은 것이다.',
+        // 직무를 말하지 않는다. 어느 직무로 내든 같은 문장이어야 한다.
+        gist: '각 프로젝트의 상세 서술 · 코드 스니펫 · 다이어그램은 홈페이지 참고',
+        // 사이트가 이 장의 주인공이다 — 나머지 링크와 같은 크기로 두면 목록에 묻힌다.
         links: [
           { label: '포트폴리오 사이트', v: 'olivegreenkr.github.io/Portfolio',
-            href: 'https://olivegreenkr.github.io/Portfolio/', tone: 'sage' },
+            href: 'https://olivegreenkr.github.io/Portfolio/', tone: 'sage', hero: true },
         ].concat(A.links.items.map((l) => Object.assign({}, l, {
           tone: l.label === 'GitHub' ? 'blue' : l.label === 'Steam' ? 'sage' : undefined,
         }))),
