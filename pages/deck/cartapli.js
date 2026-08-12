@@ -79,6 +79,22 @@
     };
   };
 
+  // 괄호 **밖**의 가운뎃점에서만 자른다. roles.mine 은 "…시스템(턴 · 스킬 · AI) · 사운드…"
+  // 처럼 괄호 안에도 가운뎃점을 쓴다 — 그냥 split 하면 "…시스템(턴" / "스킬" / … / "데미지)"
+  // 로 조각난다 (실측에서 그대로 렌더되고 있었다).
+  const splitTop = (text) => {
+    const out = [];
+    let depth = 0, buf = '';
+    for (const ch of text) {
+      if (ch === '(') depth++;
+      else if (ch === ')') depth--;
+      if (ch === '·' && depth === 0) { out.push(buf.trim()); buf = ''; continue; }
+      buf += ch;
+    }
+    if (buf.trim()) out.push(buf.trim());
+    return out;
+  };
+
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.cartapli = {
     proj: 'Cartapli: Fold Quest',
@@ -100,6 +116,29 @@
         ],
         links: [{ label: 'Steam', v: C.meta.platform, href: C.meta.steam, tone: 'sage' }],
         hero: { img: C.heroImage, caption: C.meta.title + ' — ' + C.meta.oneLine },
+      },
+
+      // ─── 게임 화면. **표지 바로 다음**이다 ───
+      // 뒤로 밀면 수치와 역할을 무슨 게임인지 모르는 채로 읽게 된다. 표지 히어로는
+      // 키 아트라 전투 화면이 아니고, cover 옆칸이라 절반 폭밖에 못 받는다 — 전폭 한 장을 쓴다.
+      {
+        layout: 'diagram',
+        section: '00 게임',
+        title: '전투 한 장면',
+        lead: C.meta.oneLine,
+        step: { img: C.screenshots[0] },
+        // 그림 밑 캡션이 이미 screenshots[0] 을 말한다 — 요점에서 되풀이하지 않는다.
+        // 나머지는 덱에 없는 스크린샷의 캡션이라 '전투 —' · '지도 —' 같은 접두사가
+        // 가리킬 대상이 없다. 접두사만 떼고 구분자를 덱 표기(가운뎃점)에 맞춘다.
+        //
+        // 넷을 다 싣는다. 둘만 두면 "로그라이크" 라는 말이 그림으로 안 선다 —
+        // 전투 · 상점 · 휴식 · 지도가 한 런의 네 마디다.
+        points: [[1, '전투 연출'], [3, '상점'], [4, '휴식'], [5, '런 구조']].map(([i, label]) => [
+          label,
+          C.screenshots[i].caption
+            .replace(/^(전투|상점|휴식|지도) — /, '')
+            .replace(/\(([^)]+)\)/, (m, g) => '— ' + g.split('/').join(' · ')),
+        ]),
       },
 
       // ─── 출시 결과. 이 프로젝트는 "끝까지 갔다" 가 주장이다 ───
@@ -129,54 +168,43 @@
         note: '평가 2026-02 누적 · 그 외 지표 2026-05 둘째주 기준',
       },
 
-      // ─── 역할 경계. 출시작이라 팀 작업이고, 무엇이 내 것인지 먼저 밝힌다 ───
+      // ─── 구조와 역할. 원래 두 장이었다 ───
+      // '역할 경계'(카드 둘)와 '배틀씬 아키텍처'(카드 셋)는 "어디까지가 내 것인가" 와
+      // "그게 어떤 구조인가" 라는 한 쌍의 질문이다. 각각 반 장짜리였다.
+      // DX11 이 §00 에서 이미 한 장으로 접어 둔 배치를 그대로 쓴다 —
+      // 위 줄 셋 = 계층, 아래 줄 둘 = 본인 / 팀원.
       {
         layout: 'columns',
-        section: '02 범위',
-        title: '역할 경계 — 본인 / 팀원',
-        cols: [
-          // 중점으로 이어붙인 줄글은 훑는 눈에 덩어리 하나로 보인다. 항목으로 끊는다.
-          { kind: 'MINE', tone: 'sage', title: '본인',
-            items: C.roles.mine.split(' · ').map((t) => t.replace(/\.$/, '')) },
-          { kind: 'TEAM', title: '팀원 — 종이접기 PoC 입안자', sub: C.roles.others },
-        ],
-      },
-
-      // ─── 게임 화면. 아키텍처 장 바로 앞에 둔다 ───
-      // 앞 장들은 수치와 역할만 말해서 **무슨 게임인지**가 안 선다. 그 상태로 배틀씬
-      // 구조를 보이면 무엇의 구조인지 모르는 채로 읽는다. 표지 히어로는 키 아트라
-      // 전투 화면이 아니고, cover 옆칸이라 절반 폭밖에 못 받는다 — 전폭 한 장을 쓴다.
-      {
-        layout: 'diagram',
-        section: '03 배틀씬',
-        title: '전투 한 장면',
-        lead: C.meta.oneLine,
-        step: { img: C.screenshots[0] },
-        // 그림 밑 캡션이 이미 screenshots[0] 을 말한다 — 요점에서 되풀이하지 않는다.
-        // 나머지 둘은 덱에 없는 스크린샷의 캡션이라 '전투 —' · '지도 —' 접두사가
-        // 가리킬 대상이 없다. 접두사만 떼고 구분자를 덱 표기(가운뎃점)에 맞춘다.
-        points: [
-          ['전투 연출', C.screenshots[1].caption.replace(/^전투 — /, '')],
-          ['런 구조', C.screenshots[5].caption.replace(/^지도 — /, '').replace(/\(([^)]+)\)/, (m, g) => '— ' + g.split('/').join(' · '))],
-        ],
-      },
-
-      // ─── 시스템 셋. 같은 "책임을 나눈다" 주장의 서로 다른 각도 ───
-      // ─── 3.1 은 그림 대신 계층 카드 ───
-      {
-        layout: 'columns',
-        section: sys('3.1').kind,
+        section: '01 구조 · 역할',
         no: '3.1',
-        title: '배틀씬 아키텍처',
+        title: '배틀씬 아키텍처와 역할 경계',
         gist: sys('3.1').lede,
-        cols: layersFromMermaid(sys('3.1').mermaid).map((l, i) => ({
-          kind: l.kind, tone: ['wheat', 'sage', 'blue'][i], title: l.title, items: l.items,
-        })),
+        colCount: 3,
+        cols: layersFromMermaid(sys('3.1').mermaid)
+          .map((l, i) => ({ kind: l.kind, tone: ['wheat', 'sage', 'blue'][i], title: l.title, items: l.items }))
+          .concat([
+            // 짧은 항목이 줄마다 한 칸씩 먹어 카드가 넘쳤다(실측 71px). 짧은 것들은
+            // 한 줄로 합친다 — 3.1 계층 카드가 쓰는 규칙과 같다. 이름은 그대로다.
+            { kind: 'MINE', mark: '✓', tone: 'sage', title: '본인',
+              items: (() => {
+                const all = splitTop(C.roles.mine).map((t) => t.replace(/\.$/, ''));
+                const long = all.filter((t) => t.length > 24);
+                const short = all.filter((t) => t.length <= 24);
+                return short.length > 1 ? long.concat([short.join(' · ')]) : all;
+              })() },
+            { kind: 'TEAM', mark: '✗', title: '팀원 — 종이접기 PoC 입안자', sub: C.roles.others },
+          ]),
         note: sys('3.1').results[0],
       },
+
       // 3.2 는 그림 장 + 코드 장으로 나뉜다. 그림은 개발/추가 두 흐름을 보이고,
       // 코드는 그 흐름이 딛는 계약(불변 컨텍스트 · 오버라이드 한 점)을 보인다.
-      system('3.2', [0, 1], '스킬 시스템'),
+      // stack 은 덱에서 한 번도 안 실린 필드다. 그림이 보이는 두 흐름의 실제 구성물
+      // 이름이라 그림 장의 요점 자리에 맞는다 — 한 줄로 묶어 요점 셋을 만든다.
+      Object.assign(system('3.2', [0, 1], '스킬 시스템'), {
+        points: [sys('3.2').results[0], sys('3.2').results[1],
+                 ['구성', sys('3.2').stack.join('  ·  ')]],
+      }),
       codeOf('3.2', '실행 컨텍스트와 확장점', [2, 3]),
     ],
   };
