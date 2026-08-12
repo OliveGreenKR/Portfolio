@@ -334,12 +334,12 @@
 .sl-points {
   margin: 0; padding: 0; list-style: none;
   display: flex; flex-direction: column;
-  gap: 10px; justify-content: space-evenly;
+  gap: 8px; justify-content: space-evenly;
   flex: 1 1 auto; min-height: 0;
 }
 .sl-points li { border-left: 2px solid var(--sage-300); padding-left: 16px; }
 .sl-points b { display: block; font-size: 27px; font-weight: 600; margin-bottom: 2px; }
-.sl-points span { font-size: 24px; line-height: 1.5; color: var(--ink-2); }
+.sl-points span { font-size: 23px; line-height: 1.45; color: var(--ink-2); }
 
 /* ─── diagram — 그림이 주인공인 장 ────────────────── */
 .sl-diagram { gap: 18px; }
@@ -373,7 +373,7 @@
 }
 .sl-code pre {
   margin: 0;
-  padding: 18px;
+  padding: 13px 16px;
   font-family: var(--font-mono);
   font-size: 16px;
   line-height: 1.4;

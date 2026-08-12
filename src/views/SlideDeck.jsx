@@ -288,6 +288,9 @@
             </div>
           )}
         </div>
+        {/* code.result 는 CodeBlock 이 안 그린다. 코드 장의 마무리 사실이 통째로 버려지던 것을
+            나머지 넷(columns · list · diagram · stats)과 같은 자리로 받는다. */}
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );
   }
