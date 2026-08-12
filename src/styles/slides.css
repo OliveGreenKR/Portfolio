@@ -284,7 +284,7 @@
 .sl-step { display: grid; grid-template-columns: 1fr 1fr; gap: 48px; flex: 1 1 auto; min-height: 0; }
 .sl-step--wide { grid-template-columns: 1fr; }
 /* 코드는 89열까지 간다 — 잘리면 읽을 수 없으므로 코드 쪽을 더 넓게 준다 */
-.sl-step--code { grid-template-columns: 0.78fr 1.22fr; }
+.sl-step--code { grid-template-columns: 0.72fr 1.28fr; }
 .sl-step__right { min-width: 0; display: flex; flex-direction: column; gap: 14px; justify-content: center; }
 
 /* 말로 된 근거. 그림과 같은 층에 나란히 선다 */

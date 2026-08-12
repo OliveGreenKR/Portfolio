@@ -190,7 +190,7 @@
             <div className="sl-col" key={i} data-tone={c.tone}>
               {c.mark && <div className={'sl-col__mark sl-col__mark--' + (c.mark === '✓' ? 'yes' : 'no')}>{c.mark}</div>}
               {c.kind && <div className="sl-col__kind">{c.kind}</div>}
-              <h3 className="sl-col__title">{c.title}</h3>
+              <h3 className="sl-col__title">{RI(c.title)}</h3>
               {c.sub && <p className="sl-col__sub">{RI(c.sub)}</p>}
               {c.items && (
                 <ul className="sl-col__list">
@@ -267,6 +267,7 @@
             })}
           </ul>
         )}
+        {s.note && <p className="sl-note">{RI(s.note)}</p>}
       </div>
     );
   }

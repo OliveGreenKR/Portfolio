@@ -12,9 +12,8 @@
   const L = window.LANDING_DATA;
 
   const fact = (k) => (A.facts.find((f) => f[0] === k) || [k, ''])[1];
-  // background.rows 는 연도순 이력이다. 학력 한 줄만 뽑아 쓴다 — 나머지는
-  // 프로젝트 장들이 직접 말하므로 표제지에서 되풀이하지 않는다.
-  const edu = A.background.rows.find((r) => /대학교/.test(r.t));
+  // 학력은 about/data.js 의 facts 가 갖는다 (대학 + 게임랩 4기).
+  // 나머지 이력은 프로젝트 장들이 직접 말하므로 표제지에서 되풀이하지 않는다.
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.intro = {
@@ -30,7 +29,7 @@
         facts: [
           ['이름', fact('이름')],
           ['지원 직무', window.DECK_ROLE || fact('직무')],
-          ['학력', edu ? edu.y + ' · ' + edu.t.split('.')[0] : fact('어학')],
+          ['학력', fact('학력')],
           ['엔진', fact('엔진')],
           ['언어', fact('언어')],
         ],
