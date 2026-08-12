@@ -269,7 +269,7 @@ public struct PaperSplitLayersJob : IJobParallelFor
 
     {
       no: '사이클 4',
-      title: '폴리곤을 만들지 않고 판정한다',
+      title: '가장 싼 판정만 남긴다',
       tag: '−8.8%',
       observe:
         '보간 프레임의 할당은 −87% 로 줄었는데 확정 프레임만 안 움직인다. ' +
@@ -316,18 +316,8 @@ if (relation == Relation.Inside) return true;
 if (relation == Relation.Disjoint)
     return Emit(scratch, outPool, ref outCount, scratch.Buffer, pieceStart, pieceCount);
 
-for (int e = 0; e < coverCount; e++)
-{
-    if (!EdgeNormal(coverVertices, coverStart, coverCount, e, coverSign,
-                    out float2 a, out float2 normal))
-        continue;
-
-    // 자를 자리가 남았는지 먼저 본다. 자르고 나서 알면 이미 남의 칸에 쓴 뒤다
-    if (outCount >= MaxPieces) return false;
-
-    // 이번 변 바깥 = 떨어져 나가는 조각
-    int outsideCount = ClipHalfPlane(...);
-}`,
+// 걸친다 — 덮개의 변마다 "이번 변 바깥" 을 한 조각씩 떼어낸다
+for (int e = 0; e < coverCount; e++) { ... }`,
         result: '남은 조각이 0이 되면 빈틈없이 덮였다는 뜻이다. 폴리곤을 만들어 넓이를 재는 단계가 없다.',
       },
       results: [
@@ -346,28 +336,45 @@ for (int e = 0; e < coverCount; e++)
           '**덜 지우는 쪽이 언제나 싼 실수다.**',
       },
       sub: {
-        title: '정책 선택 — 그 비대칭을 정책까지 밀면',
+        title: '실제로 남긴 판정 — 한 장 덮개로 축소',
         body:
-          '질문이 하나 남는다. 아예 덜 지우는 쪽을 기본으로 두면 어떤가. ' +
+          '정확한 볼록 뺄셈까지 만들어 놓고, **런타임 기본값은 그보다 못한 판정으로 뒀다.** ' +
           '"한 장이 통째로 덮는 경우만 지운다" 는 단순안은 한 번 기각했었다 — 접기는 조각을 반사해 자리를 옮기므로 ' +
           '**한 번도 같은 선으로 잘린 적 없는 두 조각이 나란히 놓여 위층을 함께 덮는 배치**가 실제로 나오고, 테스트로 재현해 확인했다. ' +
-          '볼록 뺄셈은 그 경우까지 잡는다. 그런데 판정 자체가 싸지고 나니 그 정확함이 값을 하는지가 다시 물어볼 만한 문제가 됐다. ' +
-          '6회차부터는 지워지는 레이어가 갈려 이후 접기의 출발 모양 자체가 정책마다 다른 길을 간다. ' +
-          '그래서 **각자의 궤적 위에서** 쟀다 — 남의 궤적에서 재면 조각이 적은 쪽이 부당하게 유리하다.',
+          '볼록 뺄셈은 그 경우까지 잡는다. 그런데 정확함의 값을 실제로 재 보니 이랬다.',
+        viz: 'policy',
+        code: {
+          title: 'PaperCoverage.IsCoveredBySingle — 런타임이 실제로 도는 판정',
+          code: `// 정확한 판정은 "어디가 덮였나" 를 들고 다녀야 해서 조각이 쪼개지고
+// 비용이 조각 수의 제곱을 탄다. 이쪽은 쌍마다 반평면 검사 한 번이라
+// 훨씬 싸고 스크래치도 예산도 필요 없다.
+for (int j = first; j != last + step; j += step)
+{
+    int2 coverRange = ranges[j];
+    if (coverRange.y < 3) continue;
+    if (!Overlaps(targetBounds, bounds[j])) continue;
+
+    if (Relate(vertices, targetRange.x, targetRange.y, targetSign,
+               vertices, coverRange.x, coverRange.y, signs[j]) == Relation.Inside)
+        return true;
+}
+
+return false;`,
+          result: '조각을 쪼개지 않으므로 스크래치도 예산도 필요 없다. 여러 장이 나눠 덮는 경우는 놓치고, 그 대가는 레이어 41 대 57 이다.',
+        },
         headers: ['', '볼록 뺄셈', '단일 덮개'],
         rows: [
-          ['판정 최대 (확정 한 프레임, 16회차)', '0.247 ms',  '**0.083 ms**'],
-          ['마커 3개 합 (프레임당)',             '0.0328 ms', '0.0362 ms'],
-          ['총 CPU (마커 + 판정)',               '0.0457 ms', '**0.0438 ms**'],
-          ['최종 레이어 @16회차',               '**41**',    '57'],
-          ['정점 평균',                         '**98.5**',  '138.4'],
-          ['1~5회차 결과',                      '동일',      '동일'],
+          ['마커 3개 합 (프레임당)', '0.0328 ms', '0.0362 ms'],
+          ['총 CPU (마커 + 판정)',   '0.0457 ms', '**0.0438 ms**'],
+          ['정점 평균',             '**98.5**',  '138.4'],
         ],
         note:
-          '판정 행은 확정 프레임에만 몰리는 비용이고, 총 CPU 의 판정 몫은 그것을 전체 프레임에 고르게 편 값이다. ' +
-          '**1~5회차는 레이어도 정점도 할당도 한 장 다르지 않다.** 갈라지는 것은 6회차부터이고, 그 전까지 다른 것은 판정 시간뿐이다(2.7배). ' +
-          '실제 플레이의 접기 횟수가 5회 이하라는 게임 설계 사실에 근거해 **단일 덮개를 채택**했다. ' +
-          '되돌리는 조건은 수치로 남겼다 — 접기 상한이 6회를 넘게 설계되고 레이어 수·메모리가 압박이 될 때, ' +
+          '레이어가 39% 늘어 `Split` 이 그만큼 비싸지므로 **16회차 총 CPU 는 동률**이다. 바뀌는 것은 그 비용이 어디에 실리느냐다 — ' +
+          '확정 프레임 한 장에 몰리던 스파이크가 0.247 → 0.083 ms 로 내려간다. ' +
+          '두 정책은 6회차부터 지워지는 레이어가 갈려 이후 접기의 출발 모양 자체가 달라지므로 **각자의 궤적 위에서** 쟀다 — ' +
+          '남의 궤적에서 재면 조각이 적은 쪽이 부당하게 유리하다. ' +
+          '실제 플레이의 접기 횟수가 5회 이하라는 게임 설계 사실에 근거해 **단일 덮개를 채택**했고, ' +
+          '되돌리는 조건을 수치로 남겼다 — 접기 상한이 6회를 넘게 설계되고 레이어 수·메모리가 압박이 될 때, ' +
           '`PaperBuried.SingleCoverPolicy` 를 거짓으로 두면 볼록 뺄셈으로 돌아간다.',
       },
       next: {
