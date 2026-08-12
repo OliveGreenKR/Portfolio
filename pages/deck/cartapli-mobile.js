@@ -205,29 +205,42 @@
         // results[2](Clipper2 9,352줄 제거)는 바로 다음 코드 장의 요점에 그대로 다시 나온다.
         note: C.cycles[3].cause.split('. ').slice(-1)[0],
       }),
-      Object.assign(cycleCode(C.cycles[3], '범용 라이브러리 없이 짠 판정 코어'), {
+      Object.assign(cycleCode(C.cycles[3], '정확한 판정 — 반평면 자르기와 관계 판정'), {
         // 오류 비대칭. 이 절에서 "왜 덜 지우는 쪽으로 물러서는가" 는 여기서만 나온다.
         note: C.cycles[3].callout.body.split('. ').slice(0, 2).join('. ') + '.',
       }),
+      // 이 절에서 가장 중요한 한 장이다 — 실제로 런타임에 남긴 판정이 무엇이고
+      // 무엇을 재고 그걸 골랐는지. 표로 늘어놓던 것을 그림 하나로 바꿨다.
+      {
+        layout: 'diagram',
+        section: C.cycles[3].no,
+        no: C.cycles[3].tag,
+        title: '실제로 남긴 판정 — 한 장 덮개로 축소',
+        lead: C.cycles[3].sub.body.split('. ').slice(0, 2).join('. ') + '.',
+        step: { viz: 'policy' },
+        vizComponent: 'CMPolicyViz',
+        points: [
+          ['잃는 것', '여러 장이 나눠 덮는 경우를 놓친다 — 16회차 레이어 41 → 57(+39%), 정점 평균 98.5 → 138.4'],
+          ['얻는 것', '확정 프레임 한 장에 몰리던 판정 스파이크 0.247 → 0.083 ms. 총 CPU 는 동률이다'],
+          ['되돌리는 조건', '접기 상한이 6회를 넘게 설계되고 레이어 수·메모리가 압박이 될 때. 스위치 하나로 볼록 뺄셈으로 돌아간다'],
+        ],
+        note: '실제 플레이의 접기 횟수가 5회 이하라는 게임 설계 사실이 이 선택의 근거다.',
+      },
+      // 반박당한 추론 두 개는 정책 결정의 일부라 바로 다음에 둔다.
+      // §03 측정 신뢰 장은 이미 3칸이 꽉 찼다.
       {
         layout: 'columns',
         section: C.cycles[3].no,
-        no: C.cycles[3].tag,
-        title: '판정 정책 선택과 되돌리는 조건',
-        // 셋째 문장까지 가져온다 — 거기서 '단일 덮개' 가 무슨 정책인지 처음 정의된다.
-        // 둘에서 끊으면 왼쪽 칸 제목과 표 헤더의 정책 이름이 뜻 없이 먼저 나온다.
-        gist: C.cycles[3].sub.body.split('. ').slice(0, 3).join('. ') + '.',
+        title: '정책을 고르기 전에 세웠던 추론 둘',
         colCount: 2,
         cols: [
-          // 마지막 행('1~5회차 결과 동일')은 뺀다 — 아래 note 첫 문장이 같은 말을 더 세게 한다.
-          // 여섯 행을 다 넣으면 칸이 상자를 위아래로 29px 씩 넘긴다(실측).
-          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈 ↔ 단일 덮개',
-            pairs: C.cycles[3].sub.rows.slice(0, -1)
-              .map((r) => [r[0], '볼록 뺄셈 ' + r[1] + ' · 단일 덮개 ' + r[2]]) },
           { kind: C.rigor.cards[4].badge, tone: 'terra',
-            title: '측정 전에 세웠다가 반박당한 추론 둘', sub: C.rigor.cards[4].body },
+            title: '측정 전 추론 — 복리와 자기 잠식', sub: C.rigor.cards[4].body },
+          { kind: '실측 비교', tone: 'wheat', title: '볼록 뺄셈 ↔ 단일 덮개',
+            pairs: C.cycles[3].sub.rows
+              .map((r) => [r[0], '볼록 뺄셈 ' + r[1] + ' · 단일 덮개 ' + r[2]]) },
         ],
-        note: C.cycles[3].sub.note,
+        note: C.cycles[3].sub.note.split('. ').slice(0, 2).join('. ') + '.',
       },
 
       // ─── 검증 태도. 이 덱에서 가장 희소한 장이다 —

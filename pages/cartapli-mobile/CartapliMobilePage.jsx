@@ -168,11 +168,12 @@ function CMSummary({ data }) {
 
 /* ─── §03 사이클 ─────────────────────────────────────── */
 function Viz({ kind }) {
-  const { CMBuriedViz, CMRendererViz, CMJobViz, CMConvexViz } = window;
+  const { CMBuriedViz, CMRendererViz, CMJobViz, CMConvexViz, CMPolicyViz } = window;
   if (kind === 'buried') return <CMBuriedViz />;
   if (kind === 'renderer') return <CMRendererViz />;
   if (kind === 'job') return <CMJobViz />;
   if (kind === 'convex') return <CMConvexViz />;
+  if (kind === 'policy') return <CMPolicyViz />;
   return null;
 }
 
@@ -225,11 +226,14 @@ function CMCycle({ c, idx }) {
         </div>
       )}
 
-      {/* 사이클 안에서 갈라지는 결정 — 표가 있어야 근거가 서는 자리에만 쓴다 */}
+      {/* 사이클 안에서 갈라지는 결정 — 실측이 근거가 되는 자리에만 쓴다.
+          비교는 그림이 먼저다. 표는 그림이 못 담는 축(비용 배분)만 받는다. */}
       {c.sub && (
         <div className="cm-sub cm-cycle-sub">
           <h4 className="cm-sub-title">{c.sub.title}</h4>
           <p className="cm-body">{ri(c.sub.body)}</p>
+          {c.sub.viz && <Viz kind={c.sub.viz} />}
+          {c.sub.code && <Code block={c.sub.code} />}
           <div className="cm-scroll">
             <window.DataTable headers={c.sub.headers} rows={c.sub.rows} />
           </div>

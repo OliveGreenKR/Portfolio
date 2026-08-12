@@ -332,6 +332,98 @@ function CMConvexViz() {
 }
 window.CMConvexViz = CMConvexViz;
 
+/* ─── 판정 3종 실측 비교 ─────────────────────────────── */
+/* 대신하는 문장: "정확한 판정은 12~23배 비싸고, 값싼 판정은 5회차까지 결과가 같다."
+   글로 쓰면 표 두 개가 필요한 자리라 그림 하나로 합쳤다 — 두 패널이 한 결정의 두 축이다.
+     왼쪽  판정 비용. 배수가 44~72배라 선형 축으로는 ②③ 막대가 사라진다 → 로그 축 + 눈금 표기
+     오른쪽 회차별 레이어. 정책을 바꿨을 때 실제로 무엇을 잃는가
+   ⚠️ 총폭 = pbX(410) + pbW(300) + 라벨 여유 = 730 < 760. 좌 패널은 30 + 300 = 330. */
+function CMPolicyViz() {
+  const W = 760, H = 232;
+
+  // 왼쪽 — 판정 비용 (확정 프레임 한 장, 16회차)
+  const cost = [
+    { k: '① 유니온',    v: 5.96, lo: 3.67, t: '3.67 ~ 5.96 ms', tone: 'terra' },
+    { k: '② 볼록 뺄셈', v: 0.247, t: '0.247 ms', tone: 'ink' },
+    { k: '③ 단일 덮개', v: 0.083, t: '0.083 ms', tone: 'sage' },
+  ];
+  const LO = 0.05, HI = 10;                       // 로그 축 양끝
+  const paX = 118, paW = 206;                     // 막대 시작 x, 최대 길이
+  const lg = (v) => Math.log10(v);
+  const bar = (v) => ((lg(v) - lg(LO)) / (lg(HI) - lg(LO))) * paW;
+  const fill = { terra: 'var(--terra-100)', ink: 'var(--paper-3)', sage: 'var(--sage-300)' };
+  const line = { terra: 'var(--terra-400)', ink: 'var(--ink-3)', sage: 'var(--sage-500)' };
+
+  // 오른쪽 — 회차별 레이어 (docs/perf S2-c · S2-d CSV 의 Paper.LayerCount)
+  const conv = [2, 4, 7, 10, 11, 13, 17, 21, 25, 29, 28, 35, 41, 42, 43, 41];
+  const sing = [2, 4, 7, 10, 11, 16, 20, 27, 31, 43, 43, 51, 60, 60, 62, 57];
+  const pbX = 424, pbW = 272, pbY = 52, pbH = 122, yMax = 70;
+  const px = (i) => pbX + (i / 15) * pbW;
+  const py = (v) => pbY + pbH - (v / yMax) * pbH;
+  const poly = (a) => a.map((v, i) => `${px(i)},${py(v)}`).join(' ');
+
+  return (
+    <figure className="cm-figure">
+      <svg viewBox={`0 0 ${W} ${H}`} className="cm-svg" role="img"
+           aria-label="판정 세 방식의 비용과 회차별 레이어 수 비교">
+        {/* ── 왼쪽 패널 ── */}
+        <text x="30" y="18" className="cm-svg-lbl">판정 비용 — 확정 프레임 한 장, 16회차</text>
+        {[0.05, 0.5, 5].map((t) => (
+          <g key={t}>
+            <line x1={paX + bar(t)} x2={paX + bar(t)} y1="30" y2="152" stroke="var(--rule)" strokeDasharray="3 4" />
+            <text x={paX + bar(t)} y="168" textAnchor="middle" className="cm-svg-sub">{t}</text>
+          </g>
+        ))}
+        <text x={paX + paW / 2} y="184" textAnchor="middle" className="cm-svg-sub">ms · 로그 축</text>
+        {cost.map((c, i) => {
+          const y = 42 + i * 36;
+          return (
+            <g key={c.k}>
+              <text x="30" y={y + 15} className="cm-svg-ax">{c.k}</text>
+              <rect x={paX} y={y} width={bar(c.v)} height="20" rx="2" fill={fill[c.tone]} stroke={line[c.tone]} />
+              {c.lo && <line x1={paX + bar(c.lo)} x2={paX + bar(c.lo)} y1={y + 3} y2={y + 17}
+                             stroke="var(--terra-500)" strokeWidth="1.5" />}
+              {/* 막대가 길면 값을 안쪽에 넣는다 — 바깥에 두면 오른쪽 패널의 y축 라벨과 겹친다 */}
+              {bar(c.v) > 150
+                ? <text x={paX + bar(c.v) - 8} y={y + 15} textAnchor="end" className="cm-svg-val" style={{ fontSize: 11 }}>{c.t}</text>
+                : <text x={paX + bar(c.v) + 7} y={y + 15} className="cm-svg-val" style={{ fontSize: 11 }}>{c.t}</text>}
+            </g>
+          );
+        })}
+
+        <line x1="382" x2="382" y1="14" y2={H - 14} stroke="var(--rule)" strokeDasharray="4 4" />
+
+        {/* ── 오른쪽 패널 ── */}
+        <text x={pbX} y="18" className="cm-svg-lbl">회차별 레이어 — 두 정책이 갈라지는 자리</text>
+        {[0, 35, 70].map((t) => (
+          <g key={t}>
+            <line x1={pbX} x2={pbX + pbW} y1={py(t)} y2={py(t)} stroke="var(--rule)" strokeDasharray={t ? '3 4' : ''} />
+            <text x={pbX - 8} y={py(t) + 4} textAnchor="end" className="cm-svg-sub">{t}</text>
+          </g>
+        ))}
+        {/* 1~5회차는 두 정책의 값이 같다 — 그 구간을 면으로 덮어 "여기까지는 같다" 를 보인다 */}
+        <rect x={pbX} y={pbY} width={px(4) - pbX} height={pbH} fill="var(--sage-100)" opacity="0.55" />
+        <text x={(pbX + px(4)) / 2} y={pbY + 14} textAnchor="middle" className="cm-svg-sub">한 장도 안 다름</text>
+        <polyline points={poly(conv)} fill="none" stroke="var(--ink-3)" strokeWidth="2" strokeDasharray="5 3" />
+        <polyline points={poly(sing)} fill="none" stroke="var(--sage-500)" strokeWidth="2.5" />
+        <circle cx={px(5)} cy={py(sing[5])} r="4" fill="none" stroke="var(--terra-500)" strokeWidth="1.6" />
+        <text x={px(5) + 8} y={py(sing[5]) - 6} className="cm-svg-tag">6회차부터 갈림</text>
+        <text x={px(15) - 4} y={py(sing[15]) - 8} textAnchor="end" className="cm-svg-end" fill="var(--sage-700)">③ 57</text>
+        <text x={px(15) - 4} y={py(conv[15]) + 16} textAnchor="end" className="cm-svg-end" fill="var(--ink-3)">② 41</text>
+        {[1, 5, 10, 16].map((r) => (
+          <text key={r} x={px(r - 1)} y={pbY + pbH + 16} textAnchor="middle" className="cm-svg-sub">{r}</text>
+        ))}
+        <text x={pbX + pbW / 2} y={pbY + pbH + 32} textAnchor="middle" className="cm-svg-sub">접기 회차</text>
+      </svg>
+      <figcaption className="cm-figcap">
+        <b>정확한 판정(②)은 5회차까지 값싼 판정(③)과 한 장도 다른 답을 내지 않는다.</b> 실제 플레이가 그 구간이다.
+        ①은 같은 자리에서 12~23배 느리고 지운 장수는 오히려 적다.
+      </figcaption>
+    </figure>
+  );
+}
+window.CMPolicyViz = CMPolicyViz;
+
 /* ─── 큰 숫자 칸 ─────────────────────────────────────── */
 function CMBigDelta({ items }) {
   return (
