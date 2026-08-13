@@ -3,25 +3,45 @@
 // 공유: tokens.css · notebook.css 크롬 · notebook-components.jsx (renderInline / AsciiBlock / DataTable)
 // 전용: viz.jsx · page.css
 //
-// 읽는 순서 = 전체 성과 → 이전↔현재 → 왜 그 순서였나(4 사이클) → 검증 → 측정 신뢰 → 다음
-// 사이클 카드의 `다음 문제` 배너가 다음 카드의 `관측` 이다.
+// 섹션 목록·순서·LEVEL 은 §03 섹션 계약이 정한다. 여기서 바꾸지 않는다.
+//   knowledge_base/projects/cartapli_mobile/research/portfolio-flow.md · §03
+//
+//   S1 히어로 (L1) → S2 배경·저작 경계 (L3) → S3 병목의 위치 (L2)
+//   → S4 구조 변경 (L2) → S5 판정 정책 (L3) → S6 병렬화 (L3)
+//   → S7 측정 신뢰 (L2) → S8 단계별 기여 (L2) → S9 결과 동치 (L4) → S10 한계 (L4)
+//
+// 순서를 잠그는 것: S4 의 삭제가 S5 의 비용을 만들고, S5(확정 때) → S6(매 프레임) 은 빈도 축이며,
+// S7 이 S8 보다 먼저 와야 −93.8% 가 자기 신고 숫자가 되지 않는다.
 
 const { useEffect: useEffectCM, useState: useStateCM } = React;
 
-const CM_NAV = [
-  { id: 'hero',    label: '전체 성과' },
-  { id: 'context', label: '01 · 배경 · 측정 조건' },
-  { id: 'summary', label: '02 · 이전 ↔ 현재' },
-];
-const CM_NAV2 = [
-  { id: 'verify', label: '04 · 검증' },
-  { id: 'rigor',  label: '05 · 측정 신뢰' },
-  { id: 'limits', label: '06 · 남은 것' },
+const CM_RAIL = [
+  { head: 'page' },
+  { id: 'hero', label: 'hero' },
+  { id: 'context', label: '01 · 경계' },
+  { head: '실측이 정한 것' },
+  { id: 'bottleneck', label: '02 · 오진' },
+  { id: 'structure', label: '03 · 구조' },
+  { id: 'policy', label: '04 · 정책' },
+  { id: 'parallel', label: '05 · 병렬' },
+  { head: '그 측정의 신뢰' },
+  { id: 'rigor', label: '06 · 측정' },
+  { id: 'stages', label: '07 · 기여' },
+  { id: 'oracle', label: '08 · 검증' },
+  { id: 'limits', label: '09 · 한계' },
 ];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
 function Gist({ children }) {
   return <p className="cm-gist">{window.renderInline(children)}</p>;
+}
+
+function Body({ children, className = '' }) {
+  return <p className={`cm-body ${className}`}>{window.renderInline(children)}</p>;
+}
+
+function Cond() {
+  return <p className="cm-cond">측정 조건 — {window.CM_DATA.cond}</p>;
 }
 
 function SectionHead({ no, title, kind }) {
@@ -34,8 +54,12 @@ function SectionHead({ no, title, kind }) {
   );
 }
 
-function Code({ block }) {
-  return <window.AsciiBlock title={block.title} intro={block.intro} code={block.code} result={block.result} />;
+function Table({ t }) {
+  return (
+    <div className="cm-scroll">
+      <window.DataTable headers={t.headers} rows={t.rows} />
+    </div>
+  );
 }
 
 /* ─── Chrome ─────────────────────────────────────────── */
@@ -48,19 +72,20 @@ function CMHeader({ indexHref }) {
         <span className="cur">projects / cartapli-mobile</span>
       </div>
       <nav className="nb-nav">
-        <a href="#summary">Summary</a>
-        <a href="#cycles">How</a>
+        <a href="#bottleneck">Findings</a>
         <a href="#rigor">Rigor</a>
+        <a href="#limits">Limits</a>
       </nav>
     </header>
   );
 }
 
-function CMRail({ cycles }) {
+function CMRail() {
   const [active, setActive] = useStateCM('hero');
   useEffectCM(() => {
-    const ids = [...CM_NAV.map(s => s.id), 'cycles', ...cycles.map((c, i) => `cy-${i}`), ...CM_NAV2.map(s => s.id)];
-    const els = ids.map(id => document.getElementById(id)).filter(Boolean);
+    const els = CM_RAIL.filter(s => s.id)
+      .map(s => document.getElementById(s.id))
+      .filter(Boolean);
     if (!els.length) return;
     const io = new IntersectionObserver(entries => {
       const vis = entries.filter(e => e.isIntersecting);
@@ -70,35 +95,28 @@ function CMRail({ cycles }) {
     }, { rootMargin: '-88px 0px -60% 0px', threshold: [0, 0.2, 0.5] });
     els.forEach(el => io.observe(el));
     return () => io.disconnect();
-  }, [cycles]);
-
-  const link = (id, label) => (
-    <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{label}</a>
-  );
+  }, []);
 
   return (
     <aside className="nb-rail" aria-label="On-page navigation">
-      <span className="nb-rail-section">page</span>
-      {CM_NAV.map(s => link(s.id, s.label))}
-      <span className="nb-rail-section">03 · 왜 이 순서</span>
-      {cycles.map((c, i) => link(`cy-${i}`, `${c.no} · ${c.title}`))}
-      <span className="nb-rail-section">wrap-up</span>
-      {CM_NAV2.map(s => link(s.id, s.label))}
+      {CM_RAIL.map((s, i) => s.head
+        ? <span key={`h${i}`} className="nb-rail-section">{s.head}</span>
+        : <a key={s.id} href={`#${s.id}`} className={active === s.id ? 'active' : ''}>{s.label}</a>
+      )}
     </aside>
   );
 }
 
-/* ─── Hero — 전체 성과 ───────────────────────────────── */
+/* ─── S1 히어로 (Level 1) ────────────────────────────── */
 function CMHero({ data }) {
-  const ri = window.renderInline;
-  const { CMWaterfall, CMBigDelta } = window;
   const m = data.meta;
+  const g = data.hero;
   return (
     <section id="hero" className="cm-hero">
       <div className="nb-eyebrow">{m.eyebrow}</div>
-      <p className="cm-hero-sub">{m.subtitle}</p>
       <h1 className="nb-title">{m.title}</h1>
-      <p className="cm-hook">{ri(data.hook)}</p>
+      <p className="cm-hero-sub">{m.subtitle}</p>
+      <p className="cm-core">{m.core}</p>
 
       <div className="nb-metarow">
         {m.pills.map((p, i) => (
@@ -106,214 +124,193 @@ function CMHero({ data }) {
         ))}
       </div>
 
-      <CMBigDelta items={data.bigs} />
-      <CMWaterfall steps={data.waterfall} unit="ms" />
-      <p className="cm-note">{ri(data.waterfallNote)}</p>
+      <figure className="cm-fig cm-fig-hero">
+        <img src={g.src} width={g.w} height={g.h} alt={g.alt} />
+        <figcaption className="cm-figcap">{window.renderInline(g.caption)}</figcaption>
+      </figure>
     </section>
   );
 }
 
-/* ─── §01 배경 · 측정 방법 ───────────────────────────── */
+/* ─── S2 배경 · 저작 경계 (Level 3) ──────────────────── */
 function CMContext({ data }) {
   const ri = window.renderInline;
-  const { DataTable } = window;
-  const c = data.context;
-  const me = c.measure;
+  const s = data.s2;
   return (
-    <section id="context" className="nb-section">
-      <SectionHead no="01" title="배경 · 측정 조건" kind="CONTEXT" />
+    <section id="context" className="nb-section lv3">
+      <SectionHead no="01" title="배경 — 프로젝트와 저작 경계" kind="CONTEXT" />
       <dl className="nb-facts">
-        {c.facts.map(([k, v]) => (
+        {s.facts.map(([k, v]) => (
           <React.Fragment key={k}><dt>{k}</dt><dd>{ri(v)}</dd></React.Fragment>
         ))}
       </dl>
-
       <div className="cm-roles">
         <div className="cm-role">
-          <div className="cm-role-h"><span className="glyph">✓</span> 본인 작업</div>
-          <p>{ri(c.roles.mine)}</p>
+          <div className="cm-role-h"><span className="glyph">✓</span> 이 프로젝트에서 내가 만든 것</div>
+          <p>{ri(s.mine)}</p>
         </div>
         <div className="cm-role warn">
-          <div className="cm-role-h"><span className="glyph">⚠</span> 본인 작업 아님</div>
-          <p>{ri(c.roles.others)}</p>
+          <div className="cm-role-h"><span className="glyph">⚠️</span> 내 작업이 아닌 것</div>
+          <p>{ri(s.others)}</p>
         </div>
-      </div>
-
-      <div className="cm-sub">
-        <h3 className="cm-sub-title">{me.title}</h3>
-        <p className="cm-body">{ri(me.body)}</p>
-        <div className="cm-scroll">
-          <DataTable headers={me.metrics.headers} rows={me.metrics.rows} />
-        </div>
-        <p className="cm-note">{ri(me.metrics.note)}</p>
       </div>
     </section>
   );
 }
 
-/* ─── §02 이전 ↔ 현재 ────────────────────────────────── */
-function CMSummary({ data }) {
-  const ri = window.renderInline;
-  const { CMCompare, CMLineChart } = window;
-  const lc = data.layerCurve;
+/* ─── S3 병목의 위치 (Level 2) ───────────────────────── */
+function CMBottleneck({ data }) {
+  const s = data.s3;
   return (
-    <section id="summary" className="nb-section">
-      <SectionHead no="02" title="무엇을 바꿨나 — 이전 ↔ 현재" kind="SUMMARY" />
-      <Gist>{data.summary.gist}</Gist>
-      <CMCompare rows={data.summary.rows} />
-      <CMLineChart series={lc.series} yMax={lc.yMax} xLabel="접기 회차" yLabel="레이어 수" caption={lc.caption} />
+    <section id="bottleneck" className="nb-section lv2">
+      <SectionHead no="02" title="병목의 위치 — 예상과 실측" kind="DIAGNOSIS" />
+      <Gist>{s.gist}</Gist>
+      <Body>{s.body}</Body>
+      <Table t={s.table} />
+      <p className="cm-tablecap">{window.renderInline(s.caption)}</p>
+      <Cond />
+      <Body>{s.after}</Body>
     </section>
   );
 }
 
-/* ─── §03 사이클 ─────────────────────────────────────── */
-function Viz({ kind }) {
-  const { CMBuriedViz, CMRendererViz, CMJobViz, CMConvexViz, CMPolicyViz } = window;
-  if (kind === 'buried') return <CMBuriedViz />;
-  if (kind === 'renderer') return <CMRendererViz />;
-  if (kind === 'job') return <CMJobViz />;
-  if (kind === 'convex') return <CMConvexViz />;
-  if (kind === 'policy') return <CMPolicyViz />;
-  return null;
-}
-
-function CMCycle({ c, idx }) {
+/* ─── S4 구조 변경 (Level 2) ─────────────────────────── */
+function CMStructure({ data }) {
   const ri = window.renderInline;
+  const s = data.s4;
   return (
-    <article id={`cy-${idx}`} className="cm-cycle">
-      <div className="cm-cycle-head">
-        <span className="cm-cycle-no">{c.no}</span>
-        <h3 className="cm-cycle-title">{c.title}</h3>
-        <span className="cm-cycle-tag">{c.tag}</span>
-      </div>
-
-      <div className="cm-row observe">
-        <span className="cm-row-lbl">관측</span>
-        <div className="cm-row-body">{ri(c.observe)}</div>
-      </div>
-      <div className="cm-row cause">
-        <span className="cm-row-lbl">원인</span>
-        <div className="cm-row-body">{ri(c.cause)}</div>
-      </div>
-
-      {/* 갈래가 있는 사이클은 **고르는 일이 먼저**다. 채택안의 원리·코드를 먼저 펼치면
-          결론을 이미 안 채로 비교를 읽게 되어 무엇을 왜 골랐는지가 안 남는다. */}
-      {c.sub && (
-        <div className="cm-sub cm-cycle-sub">
-          <h4 className="cm-sub-title">{c.sub.title}</h4>
-          <p className="cm-body">{ri(c.sub.body)}</p>
-          {c.sub.viz && <Viz kind={c.sub.viz} />}
-          {c.sub.code && <Code block={c.sub.code} />}
-          <div className="cm-scroll">
-            <window.DataTable headers={c.sub.headers} rows={c.sub.rows} />
-          </div>
-          <p className="cm-note">{ri(c.sub.note)}</p>
-        </div>
-      )}
-
-      <div className="cm-how">
-        <div className="cm-how-h">{c.howTitle}</div>
-        {c.how.map(([h, b], i) => (
-          <div className="cm-how-step" key={h}>
-            <span className="cm-how-n">{i + 1}</span>
+    <section id="structure" className="nb-section lv2">
+      <SectionHead no="03" title="구조 변경 — 레이어 수와 무관한 렌더 비용" kind="DECISION" />
+      <Gist>{s.gist}</Gist>
+      <Body className="cm-bg">{s.kernel}</Body>
+      <div className="cm-steps">
+        {s.changes.map(([h, b], i) => (
+          <div className="cm-step" key={h}>
+            <span className="cm-step-n">{i + 1}</span>
             <div>
-              <div className="cm-how-k">{ri(h)}</div>
-              <div className="cm-how-v">{ri(b)}</div>
+              <div className="cm-step-k">{ri(h)}</div>
+              <div className="cm-step-v">{ri(b)}</div>
             </div>
           </div>
         ))}
       </div>
-
-      {c.viz && <Viz kind={c.viz} />}
-      {c.code && <Code block={c.code} />}
-
-      <div className="cm-result">
-        <ul>{c.results.map((r, i) => <li key={i}>{ri(r)}</li>)}</ul>
-      </div>
-
-      {c.callout && (
-        <div className={`cm-callout ${c.callout.kind}`}>
-          <div className="cm-callout-h">
-            <span className="glyph">{c.callout.kind === 'ok' ? '◆' : '⚠'}</span>
-            {ri(c.callout.title)}
-          </div>
-          <div className="cm-callout-b">{ri(c.callout.body)}</div>
-        </div>
-      )}
-
-      <div className="cm-handoff">
-        <span className="cm-handoff-k">다음 문제</span>
-        <div>
-          <div className="cm-handoff-q">{ri(c.next.q)}</div>
-          <div className="cm-handoff-a">{ri(c.next.a)}</div>
-        </div>
-      </div>
-    </article>
-  );
-}
-
-function CMCycles({ data }) {
-  return (
-    <section id="cycles" className="nb-section">
-      <SectionHead no="03" title="왜 이 순서였나 — 네 사이클" kind="HOW" />
-      {data.cycles.map((c, i) => <CMCycle key={c.no} c={c} idx={i} />)}
+      <Body>{s.alt}</Body>
+      <Table t={s.table} />
+      <p className="cm-tablecap">{ri(s.reconcile)}</p>
+      <Body className="cm-tradeoff">{s.tradeoff}</Body>
     </section>
   );
 }
 
-/* ─── §04 검증 ───────────────────────────────────────── */
-function CMVerify({ data }) {
+/* ─── S5 판정 정책 (Level 3) ─────────────────────────── */
+function CMPolicy({ data }) {
   const ri = window.renderInline;
-  const { DataTable } = window;
-  const v = data.verify;
+  const s = data.s5;
   return (
-    <section id="verify" className="nb-section">
-      <SectionHead no="04" title="검증 — 빨라진 것이 같은 결과인가" kind="VERIFICATION" />
-      <Gist>{v.gist}</Gist>
-      <p className="cm-body">{ri(v.body)}</p>
-      <div className="cm-scroll">
-        <DataTable headers={v.headers} rows={v.rows} />
-      </div>
-      <div className="cm-sub">
-        <h3 className="cm-sub-title">{v.tests.title}</h3>
-        <div className="cm-scroll">
-          <DataTable headers={['검사', '대조 대상', '케이스']} rows={v.tests.rows} />
-        </div>
-        <p className="cm-note">{ri(v.tests.note)}</p>
+    <section id="policy" className="nb-section lv3">
+      <SectionHead no="04" title="가려진 레이어 판정의 선택" kind="TRADE-OFF" />
+      <Body>{s.intro}</Body>
+      <Table t={s.table} />
+      <Cond />
+      <Body>{s.decide}</Body>
+      <Body className="cm-tradeoff">{s.tradeoff}</Body>
+      <div className="cm-callout">
+        <div className="cm-callout-h">{s.revert.title}</div>
+        <div className="cm-callout-b">{ri(s.revert.body)}</div>
       </div>
     </section>
   );
 }
 
-/* ─── §05 측정 신뢰 ──────────────────────────────────── */
+/* ─── S6 병렬화 (Level 3) ────────────────────────────── */
+function CMParallel({ data }) {
+  const s = data.s6;
+  return (
+    <section id="parallel" className="nb-section lv3">
+      <SectionHead no="05" title="분할의 병렬화와 결과 순서" kind="IMPLEMENTATION" />
+      <Body>{s.intro}</Body>
+      <Body>{s.decision}</Body>
+      <window.CMSlotViz />
+      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
+      <Body>{s.compose}</Body>
+      <Body>{s.alt}</Body>
+      <ul className="cm-results">
+        {s.results.map((r, i) => <li key={i}>{window.renderInline(r)}</li>)}
+      </ul>
+      <Cond />
+    </section>
+  );
+}
+
+/* ─── S7 측정 신뢰 (Level 2) ─────────────────────────── */
 function CMRigor({ data }) {
   const ri = window.renderInline;
-  const r = data.rigor;
+  const s = data.s7;
   return (
-    <section id="rigor" className="nb-section">
-      <SectionHead no="05" title="측정 신뢰 — 내가 틀린 것들" kind="RIGOR" />
-      <Gist>{r.gist}</Gist>
-      <div className="cm-rigor">
-        {r.cards.map(c => (
-          <div key={c.badge} className={`cm-rigor-card ${c.kind}`}>
-            <span className="cm-rigor-badge">{c.badge}</span>
-            <span className="cm-rigor-title">{ri(c.title)}</span>
-            <span className="cm-rigor-b">{ri(c.body)}</span>
+    <section id="rigor" className="nb-section lv2">
+      <SectionHead no="06" title="측정 자체의 신뢰" kind="RIGOR" />
+      <Gist>{s.gist}</Gist>
+      <Body>{s.split}</Body>
+      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
+      <Body>{s.remeasure}</Body>
+      <window.CMDelta d={s.delta} />
+      <div className="cm-rules">
+        {s.rules.map(([h, b]) => (
+          <div className="cm-rule" key={h}>
+            <div className="cm-rule-k">{ri(h)}</div>
+            <div className="cm-rule-v">{ri(b)}</div>
           </div>
         ))}
       </div>
+      <Cond />
     </section>
   );
 }
 
-/* ─── §06 다음 ───────────────────────────────────────── */
+/* ─── S8 단계별 기여 (Level 2) ───────────────────────── */
+function CMStages({ data }) {
+  const s = data.s8;
+  return (
+    <section id="stages" className="nb-section lv2">
+      <SectionHead no="07" title="단계별 기여의 분리" kind="RESULT" />
+      <Gist>{s.gist}</Gist>
+      <window.CMStageBars />
+      <p className="cm-note">{window.renderInline(s.note)}</p>
+      <Cond />
+    </section>
+  );
+}
+
+/* ─── S9 결과 동치 (Level 4) ─────────────────────────── */
+function CMOracle({ data }) {
+  const ri = window.renderInline;
+  const s = data.s9;
+  return (
+    <section id="oracle" className="nb-section lv4">
+      <SectionHead no="08" title="결과 동치의 검증" kind="APPENDIX" />
+      <Body>{s.body}</Body>
+      <ul className="cm-tests">
+        {s.tests.map(([n, d, c]) => (
+          <li key={n}>
+            <span className="cm-test-n">{ri(n)}</span>
+            <span className="cm-test-d">{ri(d)}</span>
+            <span className="cm-test-c">{c}</span>
+          </li>
+        ))}
+      </ul>
+      <Body>{s.why}</Body>
+    </section>
+  );
+}
+
+/* ─── S10 한계 (Level 4) ─────────────────────────────── */
 function CMLimits({ data }) {
   const ri = window.renderInline;
   return (
-    <section id="limits" className="nb-section">
-      <SectionHead no="06" title="남은 것 — 다음 대상과 아직 못 잰 것" kind="OPEN" />
+    <section id="limits" className="nb-section lv4">
+      <SectionHead no="09" title="한계와 다음" kind="APPENDIX" />
       <div className="cm-limits">
-        {data.limits.map(([k, v]) => (
+        {data.s10.map(([k, v]) => (
           <div className="cm-limit" key={k}>
             <span className="cm-limit-k">{ri(k)}</span>
             <span className="cm-limit-v">{ri(v)}</span>
@@ -331,14 +328,17 @@ function CartapliMobilePage({ indexHref = 'landing.html' }) {
     <div className="nb-page">
       <CMHeader indexHref={indexHref} />
       <div className="nb-body">
-        <CMRail cycles={data.cycles} />
+        <CMRail />
         <main>
           <CMHero data={data} />
           <CMContext data={data} />
-          <CMSummary data={data} />
-          <CMCycles data={data} />
-          <CMVerify data={data} />
+          <CMBottleneck data={data} />
+          <CMStructure data={data} />
+          <CMPolicy data={data} />
+          <CMParallel data={data} />
           <CMRigor data={data} />
+          <CMStages data={data} />
+          <CMOracle data={data} />
           <CMLimits data={data} />
           <footer className="nb-footer">
             <span>JCH · 2026 · projects / cartapli-mobile</span>

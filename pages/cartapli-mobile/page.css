@@ -1,268 +1,215 @@
 /* pages/cartapli-mobile/page.css
-   페이지 전용 블록. 색·타이포·간격은 전부 tokens.css 변수 — 새 색을 만들지 않는다.
-   레이아웃 크롬(nb-header / nb-body / nb-rail / nb-section / nb-table)은 notebook.css 공유. */
+   전용 블록만 둔다. 색·타이포·간격 토큰은 tokens.css, 크롬은 notebook.css 가 원본이다.
 
-/* ─── 레이아웃 보정 ──────────────────────────────────── */
-/* grid 자식은 min-width:auto 라 넓은 표가 컬럼을 밀어낸다. overflow-x 만으로는 안 줄어든다. */
-.nb-body > main { min-width: 0; }
-.cm-scroll { overflow-x: auto; min-width: 0; }
-/* notebook.css 는 표 마지막 열을 "수치 칸" 으로 보고 우측정렬 모노로 만든다.
-   이 페이지 표의 마지막 열은 한글 산문이라 그대로 두면 못 읽는다. */
-.cm-scroll .nb-table td:last-child {
-  text-align: left; font-family: var(--font-sans); font-size: 14px; color: var(--ink-2); line-height: 1.65;
+   시각 계층 4단 (§03) — CSS 로 실제로 갈라져 있어야 한다.
+     L1  .cm-hero          제목 60px / CORE 26px · 유일한 sage 색면
+     L2  .nb-section.lv2   제목 32px · 요지 줄(.cm-gist) 있음 · 표·그림이 붙는 층
+     L3  .nb-section.lv3   제목 23px · 요지 줄 없음 · 본문 한 단 아래
+     L4  .nb-section.lv4   제목 18px · 폭 720px · ink-2 대비
+
+   색면은 한 종류(.cm-core)뿐이다. 나머지 강조는 좌측선과 중립 면으로 낸다.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+/* ── 공유 CSS 가 이 페이지를 깨는 자리 (portfolio-page §2 함정표) ─────────── */
+.nb-page main { min-width: 0; }
+.nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; font-size: 13px; }
+.nb-page .nb-ascii-result { background: var(--paper-2); color: var(--ink-2); }
+.nb-page .nb-table { font-size: 14.5px; }
+.nb-page .nb-table th { font-size: 11.5px; }
+.nb-page .nb-table td:last-child {                        /* 마지막 열이 한글 산문이라 우측정렬 모노가 안 읽힌다 */
+  text-align: left; font-family: var(--font-sans); font-size: 14.5px;
 }
-@media (max-width: 1100px) { .nb-body { grid-template-columns: minmax(0, 1fr); } }
+.nb-page .nb-facts dt, .nb-page .nb-facts dd { font-size: 15px; }
+.nb-page code { font-size: 0.92em; overflow-wrap: anywhere; }   /* 긴 식별자가 320px 에서 줄을 넘긴다 */
 
-/* ─── 공통 본문 ──────────────────────────────────────── */
-.cm-body { font-size: 15.5px; line-height: 1.75; color: var(--ink-2); margin: 0 0 18px; max-width: 800px; text-wrap: pretty; }
-.cm-body strong { color: var(--ink); font-weight: 600; }
-.cm-note { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin-top: 16px; padding-left: 14px; border-left: 2px solid var(--rule-2); text-wrap: pretty; }
-.cm-note strong { color: var(--ink); font-weight: 600; }
-.cm-sub { margin-top: 40px; }
-.cm-sub-title { font-size: 17px; font-weight: 600; color: var(--ink); margin: 0 0 14px; display: flex; align-items: baseline; gap: 10px; }
-.cm-sub-title::before { content: ''; width: 14px; height: 2px; background: var(--terra-300); display: inline-block; flex: none; }
-code, .cm-body code, .cm-note code { font-family: var(--font-mono); font-size: 12.5px; background: var(--paper-2); border: 1px solid var(--rule); border-radius: 3px; padding: 0 5px; }
-
-/* 섹션 요지 한 줄 */
-.cm-gist {
-  margin: 0 0 26px; padding: 15px 20px;
-  background: var(--sage-50); border-left: 3px solid var(--sage-500); border-radius: 0 4px 4px 0;
-  font-size: 16.5px; line-height: 1.6; color: var(--sage-900); text-wrap: pretty;
-}
-.cm-gist strong { font-weight: 700; }
-.cm-gist code { background: var(--paper); border-color: var(--sage-200); }
-
-/* ─── Hero ───────────────────────────────────────────── */
-.cm-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
-.cm-hero-sub { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-500); margin: 0 0 10px; font-weight: 600; }
-.cm-hook { font-size: 19px; line-height: 1.65; color: var(--ink-2); margin: 20px 0 28px; max-width: 800px; text-wrap: pretty; }
-.cm-hook strong { color: var(--ink); font-weight: 600; }
-
-/* 3칸 → 4칸. 셀이 좁아져 40px 숫자('337 → 57')가 두 줄로 접히므로 34px 로 내렸다 */
-.cm-bigs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
-.cm-big { padding: 22px 20px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 6px; }
-.cm-big:last-child { border-right: none; }
-.cm-big-n { font-family: var(--font-display); font-size: 34px; font-weight: 700; letter-spacing: -0.025em; color: var(--ink); line-height: 1; font-variant-numeric: tabular-nums; }
-.cm-big-l { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--terra-500); font-weight: 600; }
-.cm-big-s { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-3); line-height: 1.5; }
-
-/* ─── SVG figure ─────────────────────────────────────── */
-/* overflow:hidden — SVG 라벨이 viewBox 밖으로 나가면 페이지 가로 스크롤이 생긴다 */
-.cm-figure { margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); padding: 18px 20px 14px; overflow: hidden; }
-.cm-svg { width: 100%; height: auto; display: block; overflow: visible; }
-.cm-figcap { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--rule); font-size: 13px; line-height: 1.6; color: var(--ink-3); text-wrap: pretty; }
-.cm-figcap b { color: var(--ink); font-weight: 600; }
-
-.cm-svg-ax    { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-3); }
-.cm-svg-sub   { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-3); }
-.cm-svg-lbl   { font-family: var(--font-mono); font-size: 11px; fill: var(--ink-2); font-weight: 600; }
-.cm-svg-tag   { font-family: var(--font-mono); font-size: 10px; fill: var(--terra-500); }
-.cm-svg-val   { font-family: var(--font-mono); font-size: 13px; font-weight: 700; fill: var(--ink); }
-.cm-svg-end   { font-family: var(--font-mono); font-size: 12px; font-weight: 700; }
-.cm-svg-delta { font-family: var(--font-mono); font-size: 12px; font-weight: 700; fill: var(--sage-700); }
-/* 감소율은 막대 높이와 무관하게 읽혀야 한다 — 뒤 사이클의 막대가 작아도 성과는 크다 */
-.cm-svg-delta.big { font-size: 17px; fill: var(--sage-700); }
-
-/* ─── 이전 ↔ 현재 비교 ──────────────────────────────── */
-.cm-cmp { border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
-.cm-cmp-head, .cm-cmp-row { display: grid; grid-template-columns: 118px minmax(0, 1fr) minmax(0, 1fr); }
-.cm-cmp-head > span {
-  padding: 10px 16px; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em;
-  text-transform: uppercase; font-weight: 700; color: var(--ink-3);
-  background: var(--paper-2); border-bottom: 1px solid var(--rule-2);
-}
-.cm-cmp-head > span:nth-child(2) { color: var(--terra-500); }
-.cm-cmp-head > span:nth-child(3) { color: var(--sage-700); }
-.cm-cmp-row > span { padding: 16px; border-bottom: 1px solid var(--rule); font-size: 14.5px; line-height: 1.65; text-wrap: pretty; }
-.cm-cmp-k   { font-weight: 700; color: var(--ink); background: var(--paper-2); font-size: 14px !important; }
-.cm-cmp-cy  {
-  display: block; margin-top: 6px; font-family: var(--font-mono); font-size: 10px;
-  letter-spacing: 0.12em; color: var(--paper); background: var(--ink);
-  border-radius: 3px; padding: 3px 7px; width: max-content; font-weight: 700;
-}
-.cm-cmp-was { color: var(--ink-3); background: var(--terra-50); }
-.cm-cmp-is  { color: var(--ink); background: var(--sage-50); }
-.cm-cmp-was strong { color: var(--terra-700); font-weight: 600; }
-.cm-cmp-is strong  { color: var(--sage-900); font-weight: 700; }
-
-/* ─── 사이클 카드 ────────────────────────────────────── */
-.cm-cycle { border-top: 2px solid var(--rule-2); padding: 40px 0 8px; scroll-margin-top: 88px; }
-.cm-cycle:first-of-type { border-top: none; padding-top: 8px; }
-.cm-cycle-head { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 14px; margin-bottom: 22px; }
-.cm-cycle-no { font-family: var(--font-mono); font-size: 11px; font-weight: 700; letter-spacing: 0.12em; color: var(--paper); background: var(--ink); padding: 5px 10px; border-radius: 3px; white-space: nowrap; }
-.cm-cycle-title { font-family: var(--font-display); font-size: 27px; font-weight: 600; letter-spacing: -0.014em; color: var(--ink); margin: 0; line-height: 1.25; }
-.cm-cycle-tag {
-  font-family: var(--font-mono); font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums;
-  color: var(--sage-900); background: var(--sage-100); border: 1px solid var(--sage-300);
-  border-radius: 999px; padding: 5px 13px; white-space: nowrap;
-}
-
-/* 관측 / 원인 행 */
-.cm-row { display: grid; grid-template-columns: 62px minmax(0, 1fr); gap: 18px; padding: 14px 0; border-top: 1px solid var(--rule); align-items: start; }
-.cm-row:first-of-type { border-top: none; padding-top: 0; }
-.cm-row-lbl { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700; padding-top: 4px; }
-.cm-row.observe .cm-row-lbl { color: var(--terra-500); }
-.cm-row.cause   .cm-row-lbl { color: var(--terra-700); }
-.cm-row-body { font-size: 15.5px; line-height: 1.75; color: var(--ink); text-wrap: pretty; }
-.cm-row-body strong { font-weight: 600; }
-
-/* 해결 — 단계 목록 */
-.cm-how { margin-top: 22px; border: 1px solid var(--sage-300); border-radius: 4px; background: var(--sage-50); overflow: hidden; }
-.cm-how-h {
-  padding: 12px 18px; background: var(--sage-100); border-bottom: 1px solid var(--sage-300);
-  font-size: 15px; font-weight: 700; color: var(--sage-900);
-}
-.cm-how-step { display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 14px; padding: 14px 18px; border-bottom: 1px dashed var(--sage-200); }
-.cm-how-step:last-child { border-bottom: none; }
-.cm-how-n {
-  width: 22px; height: 22px; border-radius: 50%; background: var(--sage-500); color: var(--paper);
-  font-family: var(--font-mono); font-size: 11px; font-weight: 700;
-  display: flex; align-items: center; justify-content: center;
-}
-.cm-how-k { font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 4px; }
-.cm-how-v { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.cm-how-v strong { color: var(--ink); font-weight: 600; }
-.cm-how-v code, .cm-how-k code { background: var(--paper); border-color: var(--sage-200); }
-
-/* 정의 각주 — 용어 첫 등장에 붙는 한 줄 */
-.cm-defnote {
-  margin: 14px 0 0; padding: 10px 14px; border: 1px dashed var(--rule-2); border-radius: 4px;
-  background: var(--paper-2); font-size: 13.5px; line-height: 1.6; color: var(--ink-2); max-width: 800px;
-}
-.cm-defnote strong { color: var(--ink); font-weight: 700; }
-
-/* 결과 — 사이클 안에서 가장 강한 블록.
-   .cm-how(sage 색면)와 색이 겹치면 위계가 안 갈리므로 흰 바탕 + 굵은 좌측 바로 분리한다. */
-.cm-result {
-  margin-top: 22px; padding: 20px 24px;
-  background: var(--paper); border: 1px solid var(--rule);
-  border-left: 5px solid var(--sage-500); border-radius: 0 4px 4px 0;
-  box-shadow: var(--shadow-2);
-}
-.cm-result::before {
-  content: '결과'; display: block; font-size: 14px; font-weight: 700;
-  color: var(--sage-700); letter-spacing: 0.02em; margin-bottom: 12px;
-}
-.cm-result ul { margin: 0; padding-left: 18px; }
-.cm-result li { font-size: 15.5px; line-height: 1.7; color: var(--ink); margin-bottom: 8px; }
-.cm-result li:first-child { font-size: 17px; font-weight: 500; }
-.cm-result li:first-child strong { font-weight: 700; }
-.cm-result li:last-child { margin-bottom: 0; }
-.cm-result li strong { font-weight: 700; }
-
-/* 사이클 안에서 갈라지는 결정. 한 카드에 색면이 이미 넷(how·result·callout·handoff)이라
-   여기에 다섯 번째 면을 얹으면 층이 뭉갠다 — 배경 없이 윗줄 하나로만 떼어 놓는다. */
-.cm-cycle-sub { margin-top: 26px; padding-top: 22px; border-top: 1px dashed var(--rule-2); }
-.cm-cycle-sub .cm-body:last-of-type { margin-bottom: 14px; }
-.cm-cycle-sub .nb-table { background: var(--paper); }
-
-/* 다음 문제 — 다음 카드의 관측으로 잇는 고리 */
-.cm-handoff { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px; align-items: start; margin: 24px 0 4px; padding: 16px 20px; background: var(--ink); color: var(--paper); border-radius: 4px; }
-.cm-handoff-k { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; font-weight: 700; color: var(--terra-300); border: 1px solid rgba(224,138,117,0.5); border-radius: 3px; padding: 4px 8px; white-space: nowrap; }
-.cm-handoff-q { font-size: 14px; color: rgba(251,249,245,0.66); margin-bottom: 5px; }
-.cm-handoff-a { font-size: 15.5px; line-height: 1.65; color: var(--paper); text-wrap: pretty; }
-.cm-handoff-a strong { color: var(--sage-300); font-weight: 700; }
-.cm-handoff-a code, .cm-handoff-q code { background: rgba(251,249,245,0.12); border: none; color: var(--paper); }
-
-/* ─── Callout ────────────────────────────────────────── */
-.cm-callout { margin: 22px 0 6px; border: 1px solid var(--rule); border-left-width: 3px; border-radius: 0 4px 4px 0; padding: 16px 20px; background: var(--paper); }
-.cm-callout.ok   { border-left-color: var(--sage-500);  background: var(--sage-50); }
-.cm-callout.warn { border-left-color: var(--terra-400); background: var(--terra-50); }
-/* note — 곁가지 이야기. 사이클 안에서 결과보다 약해야 하므로 무채색으로 둔다 */
-.cm-callout.note { border-left-color: var(--rule-2); background: var(--paper-2); }
-.cm-callout.note .cm-callout-h { color: var(--ink-2); }
-.cm-callout.note .cm-callout-h .glyph { color: var(--ink-3); }
-.cm-callout-h { display: flex; align-items: center; gap: 9px; font-size: 14.5px; font-weight: 700; color: var(--ink); margin-bottom: 8px; }
-.cm-callout.ok .cm-callout-h .glyph { color: var(--sage-500); }
-.cm-callout.warn .cm-callout-h .glyph { color: var(--terra-400); }
-.cm-callout-b { font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.cm-callout-b strong { color: var(--ink); font-weight: 600; }
-
-/* ─── 검증 카드 ──────────────────────────────────────── */
-.cm-rigor { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-/* 카드 수가 홀수면 마지막 칸이 반쪽으로 남아 격자가 깨져 보인다 — 폭을 다 쓰게 한다 */
-.cm-rigor-card:last-child:nth-child(odd) { grid-column: 1 / -1; }
-.cm-rigor-card { border: 1px solid var(--rule); border-top-width: 3px; border-radius: 0 0 4px 4px; padding: 18px 20px 20px; background: var(--paper); display: flex; flex-direction: column; gap: 8px; }
-.cm-rigor-card.kill { border-top-color: var(--terra-400); }
-.cm-rigor-card.fix  { border-top-color: var(--ink-3); }
-.cm-rigor-badge { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; font-weight: 700; align-self: flex-start; }
-.cm-rigor-card.kill .cm-rigor-badge { color: var(--terra-500); }
-.cm-rigor-card.fix  .cm-rigor-badge { color: var(--ink-3); }
-.cm-rigor-title { font-size: 15.5px; font-weight: 700; color: var(--ink); line-height: 1.4; }
-.cm-rigor-card.kill .cm-rigor-title { text-decoration: line-through; text-decoration-color: var(--terra-300); text-decoration-thickness: 2px; }
-.cm-rigor-b { font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.cm-rigor-b strong { color: var(--ink); font-weight: 600; }
-
-/* ─── 다음 ───────────────────────────────────────────── */
-.cm-limits { border-top: 1px solid var(--rule); }
-.cm-limit { display: grid; grid-template-columns: 210px minmax(0, 1fr); gap: 20px; padding: 16px 0; border-bottom: 1px solid var(--rule); align-items: start; }
-.cm-limit-k { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.45; }
-.cm-limit-v { font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.cm-limit-v strong { color: var(--ink); font-weight: 600; }
-
-/* ─── 역할 ───────────────────────────────────────────── */
-.cm-roles { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 26px; }
-.cm-role { border: 1px solid var(--rule); border-radius: 4px; padding: 16px 18px; background: var(--paper); }
-.cm-role.warn { background: var(--terra-50); border-color: var(--terra-200); }
-.cm-role-h { display: flex; align-items: center; gap: 8px; font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-3); font-weight: 700; margin-bottom: 10px; }
-.cm-role .glyph { color: var(--sage-500); }
-.cm-role.warn .glyph { color: var(--terra-400); }
-.cm-role p { margin: 0; font-size: 14px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.cm-role p strong { color: var(--ink); font-weight: 600; }
-
-/* ─── 화면 객체 수 비교 ──────────────────────────────── */
-.cm-figure.plain { padding: 0 0 14px; }
-.cm-figure.plain .cm-figcap { margin: 0 20px; padding-top: 12px; }
-.cm-rend { display: grid; grid-template-columns: 1fr auto 1fr; border-bottom: 1px solid var(--rule); overflow: hidden; }
-.cm-rend-side { padding: 18px 20px; display: flex; flex-direction: column; gap: 12px; background: var(--terra-50); }
-.cm-rend-side.to { background: var(--sage-50); }
-.cm-rend-h { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--ink-2); font-weight: 700; }
-.cm-rend-grid { display: flex; flex-wrap: wrap; gap: 3px; align-items: center; }
-.cm-rend-dot { width: 13px; height: 13px; border: 1px solid var(--terra-400); background: var(--terra-100); border-radius: 1px; display: inline-block; }
-.cm-rend-more { font-family: var(--font-mono); font-size: 11px; color: var(--terra-500); margin-left: 6px; font-weight: 700; }
-.cm-rend-two { display: flex; gap: 8px; }
-.cm-rend-mesh { flex: 1; text-align: center; padding: 18px 8px; border-radius: 2px; font-family: var(--font-mono); font-size: 12px; font-weight: 700; border: 1px solid var(--sage-500); background: var(--sage-100); color: var(--sage-900); }
-.cm-rend-mesh.back { background: var(--paper); }
-.cm-rend-note { font-size: 12.5px; line-height: 1.6; color: var(--ink-3); }
-.cm-rend-metric { margin-top: auto; font-family: var(--font-mono); font-size: 12px; color: var(--ink-2); }
-.cm-rend-metric b { font-size: 18px; color: var(--terra-500); }
-.cm-rend-metric.ok b { color: var(--sage-700); }
-.cm-rend-arrow { display: flex; align-items: center; padding: 0 16px; background: var(--paper); color: var(--terra-400); font-family: var(--font-mono); font-size: 18px; border-left: 1px solid var(--rule); border-right: 1px solid var(--rule); }
-
-/* ─── Responsive ─────────────────────────────────────── */
+/* .nb-body 가 1100px 이하에서 minmax 아닌 1fr 이라 넓은 표가 컬럼을 밀어낸다 */
 @media (max-width: 1100px) {
-  .cm-rigor, .cm-roles { grid-template-columns: 1fr; }
-  .cm-bigs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .cm-big:nth-child(2n) { border-right: none; }
-  .cm-big:nth-child(-n+2) { border-bottom: 1px solid var(--rule); }
+  .nb-page .nb-body { grid-template-columns: minmax(0, 1fr); }
 }
+
 @media (max-width: 720px) {
-  .cm-hero { padding: 36px 0 32px; }
-  .cm-hook { font-size: 17px; }
-  .cm-bigs { grid-template-columns: 1fr; }
-  .cm-big { border-right: none; border-bottom: 1px solid var(--rule); }
-  .cm-big:last-child { border-bottom: none; }
-  .cm-cmp-head { display: none; }
-  .cm-cmp-row { grid-template-columns: 1fr; }
-  .cm-cmp-was::before { content: '이전 · '; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--terra-500); }
-  .cm-cmp-is::before  { content: '현재 · '; font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; color: var(--sage-700); }
-      .cm-rend { grid-template-columns: 1fr; }
-  .cm-rend-arrow { padding: 8px 20px; border: none; border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); }
-  .cm-row, .cm-limit,
-  .cm-cycle-head { grid-template-columns: auto auto; }
-  .cm-cycle-title { grid-column: 1 / -1; font-size: 22px; }
-  .cm-handoff { grid-template-columns: 1fr; }
-  .cm-figure { padding: 12px 12px 10px; }
-
-  /* 공유 .nb-nav 는 좁은 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
-     레일과 crumb 이 같은 목적지를 가지므로 여기서는 감춘다. */
-  .nb-header .nb-nav { display: none; }
-
-  /* 코드 줄이 길면 pre 가 페이지를 가로로 민다 — 블록 안에서만 스크롤시킨다 */
-  .nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; }
-
-  /* viewBox 720 이 375px 폭으로 눌리면 배율 0.42 — 10px 라벨이 4.2px 로 유실된다.
-     그림만 가로로 스와이프시켜 배율을 0.78 까지 올린다. 세로는 잠근다. */
-  .cm-figure { overflow-x: auto; overflow-y: hidden; }
-  .cm-figure .cm-svg { min-width: 560px; }
+  .nb-page .nb-header .nb-nav { display: none; }          /* 헤더 밖으로 밀려 가로 스크롤을 만든다 */
+  .nb-page .nb-crumbs a, .nb-page .nb-crumbs .sep { display: none; }  /* 320px 에서 헤더 폭 초과 */
+  .nb-page .nb-facts { grid-template-columns: 1fr; }
+  .nb-page .nb-facts dt { padding-bottom: 0; border-bottom: 0; }
 }
+
+/* 표는 폰에서만 가로 스크롤. 첫 열이 길어 min-content 이하로 안 줄어든다 */
+.cm-scroll { min-width: 0; }
+@media (max-width: 720px) {
+  .cm-scroll .nb-tablewrap { overflow-x: auto; }
+  .cm-scroll .nb-table { min-width: 560px; }
+}
+
+/* ── L1 히어로 ───────────────────────────────────────────────────────────── */
+.cm-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
+.cm-hero .nb-title { font-size: 60px; margin-bottom: 8px; }
+.cm-hero-sub {
+  font-size: 17px; font-weight: 500; color: var(--ink-2);
+  margin: 0 0 28px; letter-spacing: -0.005em;
+}
+.cm-core {                        /* 이 페이지의 유일한 색면 */
+  font-size: 26px; line-height: 1.5; font-weight: 600; color: var(--ink);
+  background: var(--sage-50);
+  border-left: 3px solid var(--sage-500);
+  padding: 22px 26px; margin: 0 0 28px; border-radius: 0 4px 4px 0;
+  letter-spacing: -0.01em;
+}
+.cm-hero .nb-metarow { margin-bottom: 36px; }
+
+/* ── L2 / L3 / L4 섹션 ───────────────────────────────────────────────────── */
+.nb-section.lv3 .nb-section-title { font-size: 23px; color: var(--ink); }
+.nb-section.lv4 { padding: 44px 0; }
+.nb-section.lv4 .nb-section-title { font-size: 18px; color: var(--ink-2); font-weight: 600; }
+.nb-section.lv4 .nb-section-head { margin-bottom: 20px; }
+.nb-section.lv4 > * { max-width: 760px; }
+.nb-section.lv4 .cm-body { color: var(--ink-3); }
+
+.cm-gist {                        /* L2 만 갖는다 — 요지 한 줄 */
+  font-size: 19px; line-height: 1.6; font-weight: 600; color: var(--ink);
+  border-left: 3px solid var(--sage-400);
+  padding: 2px 0 2px 18px; margin: 0 0 24px;
+}
+
+.cm-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 76ch; }
+.cm-body strong { color: var(--ink); font-weight: 600; }
+.cm-body.cm-bg { color: var(--ink-3); font-size: 15px; }        /* 배경 진술 — 본문보다 한 단 뒤 */
+.cm-body.cm-tradeoff {
+  border-left: 2px solid var(--rule-2); padding-left: 16px;
+  color: var(--ink-3); font-size: 15px;
+}
+
+.cm-note { font-size: 14px; line-height: 1.7; color: var(--ink-3); margin: 14px 0 0; max-width: 76ch; }
+.cm-tablecap { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin: 12px 0 0; max-width: 76ch; }
+.cm-cond {
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  color: var(--ink-3); margin: 10px 0 22px;
+}
+
+/* ── S2 역할 카드 ────────────────────────────────────────────────────────── */
+.cm-roles { margin-top: 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.cm-role { border: 1px solid var(--rule); background: var(--paper-2); padding: 20px 22px; border-radius: 4px; }
+.cm-role.warn { border-color: var(--terra-200); background: var(--paper); }
+.cm-role-h {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500; margin-bottom: 12px;
+  display: flex; align-items: center; gap: 8px;
+}
+.cm-role.warn .cm-role-h { color: var(--terra-500); }
+.cm-role p { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin: 0; }
+@media (max-width: 720px) { .cm-roles { grid-template-columns: 1fr; } }
+
+/* ── S4 변경 두 가지 ─────────────────────────────────────────────────────── */
+.cm-steps { margin: 4px 0 20px; }
+.cm-step { display: flex; gap: 16px; padding: 16px 0; border-top: 1px solid var(--rule); }
+.cm-step:last-child { border-bottom: 1px solid var(--rule); }
+.cm-step-n {
+  font-family: var(--font-mono); font-size: 13px; color: var(--ink-3);
+  flex: 0 0 24px; padding-top: 2px;
+}
+.cm-step-k { font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.5; margin-bottom: 6px; }
+.cm-step-v { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
+
+/* ── S5 되돌리는 조건 ────────────────────────────────────────────────────── */
+.cm-callout {
+  border: 1px solid var(--terra-200); border-left-width: 3px;
+  background: var(--paper); padding: 18px 22px; border-radius: 0 4px 4px 0; margin: 22px 0 0;
+}
+.cm-callout-h {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--terra-500); font-weight: 500; margin-bottom: 10px;
+}
+.cm-callout-b { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
+
+/* ── S6 결과 목록 ────────────────────────────────────────────────────────── */
+.cm-results { margin: 6px 0 0; padding-left: 20px; }
+.cm-results li { font-size: 15.5px; line-height: 1.75; color: var(--ink-2); margin-bottom: 8px; }
+.cm-results li strong { color: var(--ink); font-weight: 600; }
+
+/* ── S7 재측정 전후 · 규율 ───────────────────────────────────────────────── */
+.cm-delta { border: 1px solid var(--rule); border-radius: 4px; padding: 20px 24px; margin: 4px 0 26px; }
+.cm-delta-lbl {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500; margin-bottom: 14px;
+}
+.cm-delta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.cm-delta-cell { display: flex; flex-direction: column; gap: 4px; }
+.cm-delta-cell b { font-family: var(--font-mono); font-size: 28px; font-weight: 500; letter-spacing: -0.01em; }
+.cm-delta-cell i { font-style: normal; font-size: 13px; color: var(--ink-3); }
+.cm-delta-cell.was b { color: var(--ink-3); }
+.cm-delta-cell.now b { color: var(--sage-700); }
+.cm-delta-ar { font-size: 20px; color: var(--ink-3); }
+.cm-delta-note { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); margin: 16px 0 0; }
+
+.cm-rules { margin-top: 8px; }
+.cm-rule { padding: 16px 0; border-top: 1px solid var(--rule); }
+.cm-rule:last-child { border-bottom: 1px solid var(--rule); }
+.cm-rule-k { font-size: 15.5px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
+.cm-rule-v { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
+
+/* ── S9 테스트 목록 (L4) ─────────────────────────────────────────────────── */
+.cm-tests { list-style: none; margin: 4px 0 20px; padding: 0; }
+.cm-tests li {
+  display: grid; grid-template-columns: 260px 1fr 92px; gap: 16px;
+  padding: 12px 0; border-top: 1px solid var(--rule); align-items: baseline;
+}
+.cm-tests li:last-child { border-bottom: 1px solid var(--rule); }
+.cm-test-n { font-size: 14px; color: var(--ink-2); }
+.cm-test-d { font-size: 14.5px; color: var(--ink-3); line-height: 1.6; }
+.cm-test-c { font-family: var(--font-mono); font-size: 13px; color: var(--ink-3); text-align: right; }
+@media (max-width: 720px) {
+  .cm-tests li { grid-template-columns: 1fr; gap: 4px; }
+  .cm-test-c { text-align: left; }
+}
+
+/* ── S10 한계 (L4) ───────────────────────────────────────────────────────── */
+.cm-limits { border-top: 1px solid var(--rule); }
+.cm-limit { display: grid; grid-template-columns: 160px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
+.cm-limit-k {
+  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  color: var(--ink-3); font-weight: 500; padding-top: 3px;
+}
+.cm-limit-v { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+@media (max-width: 720px) { .cm-limit { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ── 그림 ────────────────────────────────────────────────────────────────── */
+.cm-fig { margin: 8px 0 24px; }
+.cm-fig > svg {
+  display: block; width: 100%; min-width: 560px; height: auto;   /* 폰에서 글자가 4~5px 로 죽는 것을 막는다 */
+  background: var(--paper-2); border: 1px solid var(--rule); border-radius: 4px; padding: 18px 20px;
+  box-sizing: border-box;
+}
+.cm-fig:has(> svg) { overflow-x: auto; overflow-y: hidden; }      /* 그림만 스와이프. 세로는 잠근다 */
+.cm-figcap { font-size: 13.5px; line-height: 1.7; color: var(--ink-3); margin: 12px 0 0; max-width: 76ch; }
+.cm-figcap strong { color: var(--ink-2); font-weight: 600; }
+
+.cm-fig-hero { margin: 0; }
+.cm-fig-hero img {
+  display: block; max-width: 100%; height: auto;                  /* width:100% 를 주면 원본 폭을 넘어 뭉갠다 */
+  border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2);
+}
+
+/* SVG 안 글자 — 12px 아래로 내리지 않는다 */
+.cm-svg-txt   { font-family: var(--font-sans); font-size: 13px; fill: var(--ink); }
+.cm-svg-lbl   { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-3); letter-spacing: 0.06em; }
+.cm-svg-cap   { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-3); }
+.cm-svg-cap.dim { fill: var(--ink-3); opacity: 0.75; }
+.cm-svg-slot  { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-3); }
+.cm-svg-stage { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-3); }
+.cm-svg-val   { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-2); }
+.cm-svg-pct   { font-size: 15px; fill: var(--ink); font-weight: 500; }
+.cm-svg-delta { font-size: 13px; fill: var(--ink-3); }
+
+.cm-svg-box    { fill: var(--paper); stroke: var(--rule-2); stroke-width: 1; }
+.cm-svg-cell   { stroke: var(--rule-2); stroke-width: 1; }
+.cm-svg-cell.fixed { fill: var(--sage-100); }
+.cm-svg-cell.flip  { fill: var(--paper-3); }
+.cm-svg-bufline { fill: none; stroke: var(--ink-3); stroke-width: 1.5; }
+.cm-svg-sep    { stroke: var(--ink-3); stroke-width: 1.5; }
+.cm-svg-arrow  { stroke: var(--ink-3); stroke-width: 1.2; }
+.cm-svg-span   { stroke: var(--rule-2); stroke-width: 1; }
+.cm-svg-base   { stroke: var(--rule); stroke-width: 1; }
+
+.cm-bar.base   { fill: var(--rule-2); }
+.cm-bar.struct { fill: var(--sage-300); }
+.cm-bar.burst  { fill: var(--terra-300); }
