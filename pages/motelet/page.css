@@ -186,7 +186,7 @@
 
 /* 전체 창 캡처 — 세로는 잠그고 가로만 스와이프 */
 .mt-shot-wide .mt-shot-scroll { overflow-x: auto; overflow-y: hidden; }
-.mt-shot-wide .mt-shot-scroll img { max-width: none; width: 1000px; display: block; }
+.mt-shot-wide .mt-shot-scroll img { max-width: none; display: block; }
 
 /* 대가 — 색면을 쓰지 않는다 */
 .mt-costgrp { margin: 24px 0 0; }
@@ -225,7 +225,7 @@
   .mt-figure { overflow-x: auto; overflow-y: hidden; }
   .mt-figure .mt-svg { min-width: 660px; }
   .mt-cost { grid-template-columns: 1fr; gap: 6px; }
-  .mt-shot-wide .mt-shot-scroll img { width: 860px; }
+
   /* 코드는 읽는 순서가 줄에 고정돼 가로 스크롤이 읽기를 끊는다. 좁은 폭에서는 접는다. */
   .nb-page .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; }
   .nb-tablewrap { overflow-x: auto; }
@@ -261,3 +261,12 @@
   .mt-defn-rows { grid-template-columns: minmax(0, 1fr); gap: 2px 0; }
   .mt-defn-rows dd { margin-bottom: 8px; }
 }
+
+/* §06 이 LEVEL 3 인데 페이지 최장 절이었다(2,872px, 그 중 그림이 1,444px = 50%).
+   원인은 텍스트가 아니라 그림 세로 길이라, 두 컷에 높이 상한을 건다. */
+.mt-shot-wide .mt-shot-scroll { max-height: 340px; }
+.mt-shot-wide .mt-shot-scroll img { max-height: 340px; width: auto; }
+.mt-shot-zoom img { max-height: 360px; width: auto; }
+
+/* 데스크톱에서는 범례가 그림 안에 이미 있다 — 캡션의 범례 재진술은 좁은 폭 전용. */
+@media (min-width: 721px) { .mt-cap-legend { display: none; } }

@@ -136,14 +136,15 @@ function MTDensityViz() {
       </svg>
       <figcaption className="mt-figcap">
         점 13개 중 검사에 들어가는 것은 3×3 안의 <b>8개</b>, 그중 원에 드는 것은 <b>5개</b>다.
-        주황 = 원을 놓아 본 후보 중심 · 초록 = 세는 대상 · 흰색 = 봤지만 안 셈 · 회색 = 격자가 걸러 낸 것.
+        <span className="mt-cap-legend">주황 = 원을 놓아 본 후보 중심 · 초록 = 세는 대상 ·
+        흰색 = 봤지만 안 셈 · 회색 = 격자가 걸러 낸 것.</span>
       </figcaption>
     </figure>
   );
 }
 window.MTDensityViz = MTDensityViz;
 
-/* ─── 여유 지점 질의 — 격자는 후보 샘플러다 ──────────── */
+/* ─── 여유 질의 — 격자는 후보 샘플러다 ──────────── */
 /* 위 그림과 같은 격자 치수를 쓴다. 같은 모양인데 역할이 다르다는 것이
    이 절의 요점이라, 치수를 맞춰야 대비가 산다.
    장애물 반지름과 배치 반지름은 실제 판정과 무관한 임의값 — 원리도다. */
@@ -179,7 +180,7 @@ function MTClearanceViz() {
     <figure className="mt-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
            aria-label="칸마다 랜덤 한 점을 후보로 뽑고 여유로 점수를 매긴다">
-        <text x={gx} y="22" className="mt-svg-lbl">가장 널널한 지점 — 칸마다 후보 1개</text>
+        <text x={gx} y="22" className="mt-svg-lbl">여유가 가장 큰 자리 — 칸마다 후보 1개</text>
 
         {/* 격자 — 여기서는 가속 구조가 아니라 후보 샘플러다 */}
         {Array.from({ length: cols + 1 }).map((_, i) => (
@@ -226,8 +227,7 @@ function MTClearanceViz() {
       </svg>
       <figcaption className="mt-figcap">
         후보 20개 중 기준을 넘은 것은 <b>4개</b>, 그중 하나가 균등하게 뽑힌다.
-        가장 널널한 곳을 고르면 늘 같은 구석이 나오므로 <b>고르지 않는다</b>.
-        장애물은 외접원으로 보는데, 그 근사는 항상 더 떨어뜨리는 쪽이다.
+        여유가 최대인 곳만 고르면 늘 같은 구석이 나오므로 <b>고르지 않는다</b>.
       </figcaption>
     </figure>
   );
