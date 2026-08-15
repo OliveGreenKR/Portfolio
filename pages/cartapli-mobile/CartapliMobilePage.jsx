@@ -3,32 +3,46 @@
 // 공유: tokens.css · notebook.css 크롬 · notebook-components.jsx (renderInline / AsciiBlock / DataTable)
 // 전용: viz.jsx · page.css
 //
-// 섹션 목록·순서·LEVEL 은 §03 섹션 계약이 정한다. 여기서 바꾸지 않는다.
+// 절 목록·순서·LEVEL 은 §03 섹션 계약(2026-08-15 재작성)이 정한다. 여기서 바꾸지 않는다.
 //   knowledge_base/projects/cartapli_mobile/research/portfolio-flow.md · §03
 //
-//   S1 히어로 (L1) → S2 배경·저작 경계 (L3) → S3 병목의 위치 (L2)
-//   → S4 구조 변경 (L2) → S5 판정 정책 (L3) → S6 병렬화 (L3)
-//   → S7 측정 신뢰 (L2) → S8 단계별 기여 (L2) → S9 결과 동치 (L4) → S10 한계 (L4)
+//   S1 히어로(L1) → S2 개요·경계(L3) → S3 최종결과(L2) → S4 지도(L2) → S5 진단(L2)
+//   → S6 ①재사용(L3) → S7 ②삭제(L3) → S8 ③병합(L3) → S9 ④Burst(L3)
+//   → S10 ⑤재측정(L3) → S11 ⑥판정(L3) → S12 검증·한계(L4)
 //
-// 순서를 잠그는 것: S4 의 삭제가 S5 의 비용을 만들고, S5(확정 때) → S6(매 프레임) 은 빈도 축이며,
-// S7 이 S8 보다 먼저 와야 −93.8% 가 자기 신고 숫자가 되지 않는다.
+// 순서를 잠그는 것은 **커밋 날짜**다 — S6~S11 이 385fd68(7/22) · 992c50a(7/23) ·
+// 792bb3a(7/24) · cafa4ae(7/24) · f920035(7/24) · 0d73c39(8/12) 순이다.
+// 순서를 바꾸면 날짜가 어긋난다. 그리고 각 절 첫 줄(`link`)이 앞 절을 명시적으로 가리킨다 —
+// 잠금이 설계에만 있고 지면에 안 적혀 있으면 독자에게는 안 잠긴다(직전 회차 G2 미통과 원인).
+//
+// S6~S11 은 고정 리듬이다 — [기존→개선 그림] → [코드 쌍] → [설명 3줄].
+// 전부 Level 3 인 것도 리듬의 일부다. 어느 방식이 더 중요해 보이면 리듬이 깨진다.
 
 const { useEffect: useEffectCM, useState: useStateCM } = React;
 
+// 레일 그룹 — 각 그룹 = 질문 하나 + 그 답. 이름이 그 절들에 대해 문자 그대로 참이어야 한다.
+// 폐기한 이름: '네 방식'(⑤⑥이 어느 그룹에도 안 붙는다) · '측정의 신뢰'(⑥은 신뢰 문제가 아니다)
+//              '결과와 범위'(02·03 은 범위가 아니다)
 const CM_RAIL = [
   { head: 'page' },
   { id: 'hero', label: 'hero' },
+  { head: '배경' },
   { id: 'context', label: '01 · 경계' },
-  { head: '실측이 정한 것' },
-  { id: 'bottleneck', label: '02 · 오진' },
-  { id: 'structure', label: '03 · 구조' },
-  { id: 'policy', label: '04 · 정책' },
-  { id: 'parallel', label: '05 · 병렬' },
-  { head: '그 측정의 신뢰' },
-  { id: 'rigor', label: '06 · 측정' },
-  { id: 'stages', label: '07 · 기여' },
-  { id: 'oracle', label: '08 · 검증' },
-  { id: 'limits', label: '09 · 한계' },
+  { head: '무엇을 벌었나' },
+  { id: 'result', label: '02 · 최종' },
+  { id: 'map', label: '03 · 지도' },
+  { head: '어디가 비쌌나' },
+  { id: 'diagnose', label: '04 · 병목' },
+  { head: '무엇을 고쳤나' },
+  { id: 'reuse', label: '05 · 재사용' },
+  { id: 'prune', label: '06 · 삭제' },
+  { id: 'merge', label: '07 · 병합' },
+  { id: 'burst', label: '08 · Burst' },
+  { head: '다시 잰 것' },
+  { id: 'remeasure', label: '09 · 계측' },
+  { id: 'policy', label: '10 · 판정' },
+  { head: '어디까지 맞나' },
+  { id: 'verify', label: '11 · 검증' },
 ];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
@@ -38,6 +52,11 @@ function Gist({ children }) {
 
 function Body({ children, className = '' }) {
   return <p className={`cm-body ${className}`}>{window.renderInline(children)}</p>;
+}
+
+// 절의 첫 줄 — 앞 절을 명시적으로 가리켜 순서를 지면에 잠근다.
+function Link({ children }) {
+  return <p className="cm-link">{window.renderInline(children)}</p>;
 }
 
 function Cond() {
@@ -62,6 +81,16 @@ function Table({ t }) {
   );
 }
 
+// 설명 3줄 — 방식 절의 고정 리듬 마지막 칸. 세 줄을 넘기지 않는다(§02 REMOVE: 구구절절).
+function Notes({ items }) {
+  const ri = window.renderInline;
+  return (
+    <ul className="cm-notes">
+      {items.map((t, i) => <li key={i}>{ri(t)}</li>)}
+    </ul>
+  );
+}
+
 /* ─── Chrome ─────────────────────────────────────────── */
 function CMHeader({ indexHref }) {
   return (
@@ -72,9 +101,9 @@ function CMHeader({ indexHref }) {
         <span className="cur">projects / cartapli-mobile</span>
       </div>
       <nav className="nb-nav">
-        <a href="#bottleneck">Findings</a>
-        <a href="#rigor">Rigor</a>
-        <a href="#limits">Limits</a>
+        <a href="#result">Result</a>
+        <a href="#diagnose">Findings</a>
+        <a href="#verify">Limits</a>
       </nav>
     </header>
   );
@@ -118,9 +147,15 @@ function CMHero({ data }) {
       <p className="cm-hero-sub">{m.subtitle}</p>
       <p className="cm-core">{m.core}</p>
 
+      <div className="cm-headline">
+        <b className="cm-headline-v">{m.headline.v}</b>
+        <span className="cm-headline-k">{m.headline.k}</span>
+        <a className="cm-headline-a" href={m.headline.href}>{m.headline.hrefLabel}</a>
+      </div>
+
       <div className="nb-metarow">
         {m.pills.map((p, i) => (
-          <span key={i} className={`nb-metapill ${p.kind === 'accent' ? 'accent' : ''}`}><b>{p.text}</b></span>
+          <span key={i} className="nb-metapill"><b>{p.text}</b></span>
         ))}
       </div>
 
@@ -132,13 +167,13 @@ function CMHero({ data }) {
   );
 }
 
-/* ─── S2 배경 · 저작 경계 (Level 3) ──────────────────── */
+/* ─── S2 개요 · 저작 경계 (Level 3) ──────────────────── */
 function CMContext({ data }) {
   const ri = window.renderInline;
   const s = data.s2;
   return (
     <section id="context" className="nb-section lv3">
-      <SectionHead no="01" title="배경 — 프로젝트와 저작 경계" kind="CONTEXT" />
+      <SectionHead no="01" title="개요와 저작 경계" kind="CONTEXT" />
       <dl className="nb-facts">
         {s.facts.map(([k, v]) => (
           <React.Fragment key={k}><dt>{k}</dt><dd>{ri(v)}</dd></React.Fragment>
@@ -146,11 +181,11 @@ function CMContext({ data }) {
       </dl>
       <div className="cm-roles">
         <div className="cm-role">
-          <div className="cm-role-h"><span className="glyph">✓</span> 이 프로젝트에서 내가 만든 것</div>
+          <div className="cm-role-h"><span className="glyph" aria-hidden="true">✓</span> 이 프로젝트에서 내가 만든 것</div>
           <p>{ri(s.mine)}</p>
         </div>
         <div className="cm-role warn">
-          <div className="cm-role-h"><span className="glyph">⚠️</span> 내 작업이 아닌 것</div>
+          <div className="cm-role-h"><span className="glyph" aria-hidden="true">⚠️</span> 내 작업이 아닌 것</div>
           <p>{ri(s.others)}</p>
         </div>
       </div>
@@ -158,82 +193,112 @@ function CMContext({ data }) {
   );
 }
 
-/* ─── S3 병목의 위치 (Level 2) ───────────────────────── */
-function CMBottleneck({ data }) {
+/* ─── S3 최종 결과 (Level 2) ─────────────────────────── */
+function CMResult({ data }) {
   const s = data.s3;
   return (
-    <section id="bottleneck" className="nb-section lv2">
-      <SectionHead no="02" title="병목의 위치 — 예상과 실측" kind="DIAGNOSIS" />
+    <section id="result" className="nb-section lv2">
+      <SectionHead no="02" title="최종 결과 — 어느 단계가 얼마를 벌었나" kind="RESULT" />
       <Gist>{s.gist}</Gist>
-      <Body>{s.body}</Body>
-      <Table t={s.table} />
-      <p className="cm-tablecap">{window.renderInline(s.caption)}</p>
+      <Body>{s.lead}</Body>
+      <window.CMStageBars />
       <Cond />
+      <Notes items={s.notes} />
+    </section>
+  );
+}
+
+/* ─── S4 네 방식 한눈에 (Level 2) ────────────────────── */
+function CMMap({ data }) {
+  const s = data.s4;
+  return (
+    <section id="map" className="nb-section lv2">
+      <SectionHead no="03" title="네 방식 한눈에" kind="MAP" />
+      <Gist>{s.gist}</Gist>
+      <Body>{s.lead}</Body>
+      <window.CMMapViz />
       <Body>{s.after}</Body>
     </section>
   );
 }
 
-/* ─── S4 구조 변경 (Level 2) ─────────────────────────── */
-function CMStructure({ data }) {
-  const ri = window.renderInline;
-  const s = data.s4;
-  return (
-    <section id="structure" className="nb-section lv2">
-      <SectionHead no="03" title="구조 변경 — 레이어 수와 무관한 렌더 비용" kind="DECISION" />
-      <Gist>{s.gist}</Gist>
-      <Body className="cm-bg">{s.kernel}</Body>
-      <div className="cm-steps">
-        {s.changes.map(([h, b], i) => (
-          <div className="cm-step" key={h}>
-            <span className="cm-step-n">{i + 1}</span>
-            <div>
-              <div className="cm-step-k">{ri(h)}</div>
-              <div className="cm-step-v">{ri(b)}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-      <Body>{s.alt}</Body>
-      <Table t={s.table} />
-      <p className="cm-tablecap">{ri(s.reconcile)}</p>
-      <Body className="cm-tradeoff">{s.tradeoff}</Body>
-    </section>
-  );
-}
-
-/* ─── S5 판정 정책 (Level 3) ─────────────────────────── */
-function CMPolicy({ data }) {
-  const ri = window.renderInline;
+/* ─── S5 진단 (Level 2) ──────────────────────────────── */
+function CMDiagnose({ data }) {
   const s = data.s5;
   return (
-    <section id="policy" className="nb-section lv3">
-      <SectionHead no="04" title="가려진 레이어 판정의 선택" kind="TRADE-OFF" />
-      <Body>{s.intro}</Body>
+    <section id="diagnose" className="nb-section lv2">
+      <SectionHead no="04" title="진단 — 예상과 실측" kind="DIAGNOSIS" />
+      <Gist>{s.gist}</Gist>
+      <Body>{s.body}</Body>
+      <window.CMDiagnoseViz />
       <Table t={s.table} />
+      <p className="cm-tablecap">{window.renderInline(s.caption)}</p>
       <Cond />
-      <Body>{s.decide}</Body>
-      <Body className="cm-tradeoff">{s.tradeoff}</Body>
-      <div className="cm-callout">
-        <div className="cm-callout-h">{s.revert.title}</div>
-        <div className="cm-callout-b">{ri(s.revert.body)}</div>
-      </div>
+      <Body className="cm-revised">{s.revised}</Body>
+      <Body>{s.after}</Body>
+      <Body className="cm-bg">{s.kernel}</Body>
     </section>
   );
 }
 
-/* ─── S6 병렬화 (Level 3) ────────────────────────────── */
-function CMParallel({ data }) {
+/* ─── S6 ① 재사용 (Level 3) ─────────────────────────── */
+function CMReuse({ data }) {
   const s = data.s6;
   return (
-    <section id="parallel" className="nb-section lv3">
-      <SectionHead no="05" title="분할의 병렬화와 결과 순서" kind="IMPLEMENTATION" />
+    <section id="reuse" className="nb-section lv3">
+      <SectionHead no="05" title="① 안 바뀐 레이어는 다시 만들지 않는다" kind="2026-07-22" />
+      <Link>{s.link}</Link>
+      <window.CMReuseViz />
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
+    </section>
+  );
+}
+
+/* ─── S7 ② 삭제 (Level 3) ───────────────────────────── */
+function CMPrune({ data }) {
+  const s = data.s7;
+  return (
+    <section id="prune" className="nb-section lv3">
+      <SectionHead no="06" title="② 가려진 레이어는 확정 때 버린다" kind="2026-07-23" />
+      <Link>{s.link}</Link>
+      <window.CMPruneViz />
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
+    </section>
+  );
+}
+
+/* ─── S8 ③ 병합 (Level 3) ───────────────────────────── */
+function CMMerge({ data }) {
+  const ri = window.renderInline;
+  const s = data.s8;
+  return (
+    <section id="merge" className="nb-section lv3">
+      <SectionHead no="07" title="③ 레이어당 렌더 오브젝트를 버리고 앞뒤 2메시로" kind="2026-07-24" />
+      <Link>{s.link}</Link>
+      <window.CMRenderStructViz />
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
+      <Table t={s.table} />
+      <p className="cm-tablecap">{ri(s.reconcile)}</p>
+      <p className="cm-note">{ri(s.policyNote)}</p>
+    </section>
+  );
+}
+
+/* ─── S9 ④ Burst (Level 3) ──────────────────────────── */
+function CMBurst({ data }) {
+  const s = data.s9;
+  return (
+    <section id="burst" className="nb-section lv3">
+      <SectionHead no="08" title="④ 분할을 Burst 잡과 네이티브 버퍼로" kind="2026-07-24" />
+      <Link>{s.link}</Link>
       <Body>{s.intro}</Body>
-      <Body>{s.decision}</Body>
       <window.CMSlotViz />
-      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
-      <Body>{s.compose}</Body>
-      <Body>{s.alt}</Body>
+      <window.AsciiBlock title={s.slot.title} intro={s.slot.intro} code={s.slot.code} result={s.slot.result} />
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
       <ul className="cm-results">
         {s.results.map((r, i) => <li key={i}>{window.renderInline(r)}</li>)}
       </ul>
@@ -242,17 +307,17 @@ function CMParallel({ data }) {
   );
 }
 
-/* ─── S7 측정 신뢰 (Level 2) ─────────────────────────── */
-function CMRigor({ data }) {
+/* ─── S10 ⑤ 재측정 (Level 3) ────────────────────────── */
+function CMRemeasure({ data }) {
   const ri = window.renderInline;
-  const s = data.s7;
+  const s = data.s10;
   return (
-    <section id="rigor" className="nb-section lv2">
-      <SectionHead no="06" title="측정 자체의 신뢰" kind="RIGOR" />
-      <Gist>{s.gist}</Gist>
+    <section id="remeasure" className="nb-section lv3">
+      <SectionHead no="09" title="⑤ 재기 전에 계측을 의심했다" kind="2026-07-24" />
+      <Link>{s.link}</Link>
       <Body>{s.split}</Body>
-      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
-      <Body>{s.remeasure}</Body>
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
       <window.CMDelta d={s.delta} />
       <div className="cm-rules">
         {s.rules.map(([h, b]) => (
@@ -262,32 +327,45 @@ function CMRigor({ data }) {
           </div>
         ))}
       </div>
+      <Body className="cm-tradeoff">{s.cost}</Body>
       <Cond />
     </section>
   );
 }
 
-/* ─── S8 단계별 기여 (Level 2) ───────────────────────── */
-function CMStages({ data }) {
-  const s = data.s8;
-  return (
-    <section id="stages" className="nb-section lv2">
-      <SectionHead no="07" title="단계별 기여의 분리" kind="RESULT" />
-      <Gist>{s.gist}</Gist>
-      <window.CMStageBars />
-      <p className="cm-note">{window.renderInline(s.note)}</p>
-      <Cond />
-    </section>
-  );
-}
-
-/* ─── S9 결과 동치 (Level 4) ─────────────────────────── */
-function CMOracle({ data }) {
+/* ─── S11 ⑥ 판정 교체 (Level 3) ─────────────────────── */
+function CMPolicy({ data }) {
   const ri = window.renderInline;
-  const s = data.s9;
+  const s = data.s11;
   return (
-    <section id="oracle" className="nb-section lv4">
-      <SectionHead no="08" title="결과 동치의 검증" kind="APPENDIX" />
+    <section id="policy" className="nb-section lv3">
+      <SectionHead no="10" title="⑥ 가려짐 판정 방식을 다시 골랐다" kind="2026-08-12" />
+      <Link>{s.link}</Link>
+      <window.CMConvexSubViz />
+      <window.CMCodePair p={s.pair} />
+      <Notes items={s.notes} />
+      <Table t={s.table} />
+      <p className="cm-tablecap">{ri(s.tablecap)}</p>
+      <Cond />
+      <Body>{s.decide}</Body>
+      <Body className="cm-tradeoff">{s.tradeoff}</Body>
+      <p className="cm-note">{ri(s.timing)}</p>
+      <div className="cm-callout">
+        <div className="cm-callout-h">{s.revert.title}</div>
+        <div className="cm-callout-b">{ri(s.revert.body)}</div>
+      </div>
+    </section>
+  );
+}
+
+/* ─── S12 검증과 한계 (Level 4) ─────────────────────── */
+function CMVerify({ data }) {
+  const ri = window.renderInline;
+  const s = data.s12;
+  return (
+    <section id="verify" className="nb-section lv4">
+      <SectionHead no="11" title="검증과 한계" kind="APPENDIX" />
+      <Body>{s.lead}</Body>
       <Body>{s.body}</Body>
       <ul className="cm-tests">
         {s.tests.map(([n, d, c]) => (
@@ -299,18 +377,10 @@ function CMOracle({ data }) {
         ))}
       </ul>
       <Body>{s.why}</Body>
-    </section>
-  );
-}
-
-/* ─── S10 한계 (Level 4) ─────────────────────────────── */
-function CMLimits({ data }) {
-  const ri = window.renderInline;
-  return (
-    <section id="limits" className="nb-section lv4">
-      <SectionHead no="09" title="한계와 다음" kind="APPENDIX" />
+      <hr className="cm-hr" />
+      <Body>{s.limitsLead}</Body>
       <div className="cm-limits">
-        {data.s10.map(([k, v]) => (
+        {s.limits.map(([k, v]) => (
           <div className="cm-limit" key={k}>
             <span className="cm-limit-k">{ri(k)}</span>
             <span className="cm-limit-v">{ri(v)}</span>
@@ -332,14 +402,16 @@ function CartapliMobilePage({ indexHref = 'landing.html' }) {
         <main>
           <CMHero data={data} />
           <CMContext data={data} />
-          <CMBottleneck data={data} />
-          <CMStructure data={data} />
+          <CMResult data={data} />
+          <CMMap data={data} />
+          <CMDiagnose data={data} />
+          <CMReuse data={data} />
+          <CMPrune data={data} />
+          <CMMerge data={data} />
+          <CMBurst data={data} />
+          <CMRemeasure data={data} />
           <CMPolicy data={data} />
-          <CMParallel data={data} />
-          <CMRigor data={data} />
-          <CMStages data={data} />
-          <CMOracle data={data} />
-          <CMLimits data={data} />
+          <CMVerify data={data} />
           <footer className="nb-footer">
             <span>JCH · 2026 · projects / cartapli-mobile</span>
             <span>about / resume / contact</span>

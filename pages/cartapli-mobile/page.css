@@ -1,11 +1,19 @@
 /* pages/cartapli-mobile/page.css
    전용 블록만 둔다. 색·타이포·간격 토큰은 tokens.css, 크롬은 notebook.css 가 원본이다.
 
-   시각 계층 4단 (§03) — CSS 로 실제로 갈라져 있어야 한다.
-     L1  .cm-hero          제목 60px / CORE 26px · 유일한 sage 색면
-     L2  .nb-section.lv2   제목 32px · 요지 줄(.cm-gist) 있음 · 표·그림이 붙는 층
-     L3  .nb-section.lv3   제목 23px · 요지 줄 없음 · 본문 한 단 아래
-     L4  .nb-section.lv4   제목 18px · 폭 720px · ink-2 대비
+   시각 계층 4단 (§03, 2026-08-15 재작성) — CSS 로 실제로 갈라져 있어야 한다.
+   ⚠️ 옛 주석은 L3 를 "본문 한 단 아래"로 적었는데 그 CSS 가 없었다(05 렌즈0).
+      본문 크기로 가르는 방식은 폐기했다 — 15.5 → 15px 는 0.5px 차라 화면에서 구분이 안 된다.
+      대신 **제목 색 3단 램프**로 가른다. 이건 실측 가능하고 실제로 갈라진다.
+     L1  .cm-hero          S1            제목 60px  ink   · CORE 26px · 유일한 sage 색면
+     L2  .nb-section.lv2   S3 · S4 · S5  제목 32px  ink   · 요지 줄(.cm-gist) 있음
+     L3  .nb-section.lv3   S2 · S6~S11   제목 23px  ink-2 · 요지 줄 없음
+     L4  .nb-section.lv4   S12           제목 18px  ink-3 · 폭 760px · 본문 ink-3
+   ⚠️ 방식 6절(S6~S11)은 **전부 L3 다.** 고정 리듬은 시각 계층에도 적용된다 —
+      어느 방식이 더 중요해 보이면 리듬이 깨진다. lv2 를 주지 마라.
+
+   본문급은 세 단만 쓴다 — 15.5(본문) / 15(보조본문) / 13.5(캡션).
+   14 · 14.5px 은 쓰지 않는다. 0.5px 차는 계층 신호가 아니라 노이즈다(05 렌즈0 Major).
 
    색면은 한 종류(.cm-core)뿐이다. 나머지 강조는 좌측선과 중립 면으로 낸다.
    ─────────────────────────────────────────────────────────────────────────── */
@@ -14,13 +22,27 @@
 .nb-page main { min-width: 0; }
 .nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; font-size: 13px; }
 .nb-page .nb-ascii-result { background: var(--paper-2); color: var(--ink-2); }
-.nb-page .nb-table { font-size: 14.5px; }
-.nb-page .nb-table th { font-size: 11.5px; }
+.nb-page .nb-ascii-intro { font-size: 15px; }
+.nb-page .nb-table { font-size: 15px; }
+.nb-page .nb-table th {                                   /* 헤더가 전부 한글이라 uppercase 는 효과 0 이고 */
+  font-size: 13px; text-transform: none; letter-spacing: 0.02em;  /* 넓은 자간은 표 폭만 늘려 폰에서 넘침을 키운다 */
+}
 .nb-page .nb-table td:last-child {                        /* 마지막 열이 한글 산문이라 우측정렬 모노가 안 읽힌다 */
-  text-align: left; font-family: var(--font-sans); font-size: 14.5px;
+  text-align: left; font-family: var(--font-sans); font-size: 15px;
 }
 .nb-page .nb-facts dt, .nb-page .nb-facts dd { font-size: 15px; }
 .nb-page code { font-size: 0.92em; overflow-wrap: anywhere; }   /* 긴 식별자가 320px 에서 줄을 넘긴다 */
+
+/* 코드 블록 헤더 — 320px 에서 파일명이 min-content 를 넘겨 공유 overflow:hidden 에 잘렸다.
+   잘린 글자는 스크롤로 닿을 수 없으므로 영구 소실이다 (05 렌즈0 Major). */
+.nb-page .nb-ascii-head { flex-wrap: wrap; }
+.nb-page .nb-ascii-head .lbl { min-width: 0; overflow-wrap: anywhere; letter-spacing: 0.06em; }
+
+/* 코드 가로 넘침 — 폰에서 최장 줄의 절반 이상이 시야 밖이었다. 코드는 줄 단위로 읽는
+   매체라 가로 스크롤이 읽기를 끊는다. 좁은 폭에서는 스크롤 대신 접어서 전부 보이게 한다. */
+@media (max-width: 720px) {
+  .nb-page .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+}
 
 /* .nb-body 가 1100px 이하에서 minmax 아닌 1fr 이라 넓은 표가 컬럼을 밀어낸다 */
 @media (max-width: 1100px) {
@@ -57,10 +79,21 @@
 }
 .cm-hero .nb-metarow { margin-bottom: 36px; }
 
+/* 대표 수치 한 쌍 — §03 S1 REMOVE 개정. 색면을 쓰지 않는다(.cm-core 가 유일). */
+.cm-headline {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
+  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
+  padding: 16px 0; margin: 0 0 28px;
+}
+.cm-headline-v { font-family: var(--font-mono); font-size: 30px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
+.cm-headline-k { font-size: 15px; color: var(--ink-2); }
+.cm-headline-a { font-size: 13.5px; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
+@media (max-width: 720px) { .cm-headline-a { margin-left: 0; white-space: normal; } }
+
 /* ── L2 / L3 / L4 섹션 ───────────────────────────────────────────────────── */
-.nb-section.lv3 .nb-section-title { font-size: 23px; color: var(--ink); }
+.nb-section.lv3 .nb-section-title { font-size: 23px; color: var(--ink-2); }
 .nb-section.lv4 { padding: 44px 0; }
-.nb-section.lv4 .nb-section-title { font-size: 18px; color: var(--ink-2); font-weight: 600; }
+.nb-section.lv4 .nb-section-title { font-size: 18px; color: var(--ink-3); font-weight: 600; }
 .nb-section.lv4 .nb-section-head { margin-bottom: 20px; }
 .nb-section.lv4 > * { max-width: 760px; }
 .nb-section.lv4 .cm-body { color: var(--ink-3); }
@@ -79,8 +112,11 @@
   color: var(--ink-3); font-size: 15px;
 }
 
-.cm-note { font-size: 14px; line-height: 1.7; color: var(--ink-3); margin: 14px 0 0; max-width: 76ch; }
-.cm-tablecap { font-size: 14px; line-height: 1.7; color: var(--ink-2); margin: 12px 0 0; max-width: 76ch; }
+.cm-body.cm-revised {             /* "진단 당시엔 8배로 보였다" — 틀렸던 값을 되짚는 자리 */
+  border-left: 2px solid var(--rule-2); padding-left: 16px; margin-top: 4px;
+}
+.cm-note { font-size: 13.5px; line-height: 1.7; color: var(--ink-3); margin: 14px 0 0; max-width: 76ch; }
+.cm-tablecap { font-size: 13.5px; line-height: 1.7; color: var(--ink-2); margin: 12px 0 0; max-width: 76ch; }
 .cm-cond {
   font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
   color: var(--ink-3); margin: 10px 0 22px;
@@ -91,7 +127,7 @@
 .cm-role { border: 1px solid var(--rule); background: var(--paper-2); padding: 20px 22px; border-radius: 4px; }
 .cm-role.warn { border-color: var(--terra-200); background: var(--paper); }
 .cm-role-h {
-  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--ink-3); font-weight: 500; margin-bottom: 12px;
   display: flex; align-items: center; gap: 8px;
 }
@@ -99,37 +135,97 @@
 .cm-role p { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin: 0; }
 @media (max-width: 720px) { .cm-roles { grid-template-columns: 1fr; } }
 
-/* ── S4 변경 두 가지 ─────────────────────────────────────────────────────── */
-.cm-steps { margin: 4px 0 20px; }
-.cm-step { display: flex; gap: 16px; padding: 16px 0; border-top: 1px solid var(--rule); }
-.cm-step:last-child { border-bottom: 1px solid var(--rule); }
-.cm-step-n {
-  font-family: var(--font-mono); font-size: 13px; color: var(--ink-3);
-  flex: 0 0 24px; padding-top: 2px;
+/* ── 방식 절(S6~S11) 고정 리듬 ───────────────────────────────────────────── */
+/* 첫 줄 — 앞 절을 가리켜 순서를 지면에 잠근다. 본문보다 앞선 층이라 좌측선으로 이탈시킨다.
+   색면을 쓰지 않는다(.cm-core 가 유일). */
+.cm-link {
+  font-size: 15.5px; line-height: 1.75; color: var(--ink);
+  border-left: 2px solid var(--ink-3); padding: 0 0 0 16px;
+  margin: 0 0 22px; max-width: 76ch;
 }
-.cm-step-k { font-size: 16px; font-weight: 600; color: var(--ink); line-height: 1.5; margin-bottom: 6px; }
-.cm-step-v { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
+.cm-link strong { font-weight: 600; }
 
-/* ── S5 되돌리는 조건 ────────────────────────────────────────────────────── */
+/* 마지막 칸 — 설명 3줄. 세 줄을 넘기지 않는다(§02 REMOVE: 구구절절) */
+.cm-notes { margin: 20px 0 0; padding: 0; list-style: none; }
+.cm-notes li {
+  font-size: 15px; line-height: 1.75; color: var(--ink-2);
+  padding: 12px 0 12px 22px; border-top: 1px solid var(--rule);
+  max-width: 76ch; position: relative;
+}
+.cm-notes li:last-child { border-bottom: 1px solid var(--rule); }
+.cm-notes li::before {
+  content: '—'; position: absolute; left: 0; top: 12px;
+  color: var(--ink-3); font-family: var(--font-mono); font-size: 13px;
+}
+.cm-notes li strong { color: var(--ink); font-weight: 600; }
+
+/* ── 코드 쌍 (before / after) ─────────────────────────────────────────────── */
+/* 위아래로 쌓는다 — 좌우 2열이면 한 칸이 36ch 로 좁아져 긴 식별자가 가로 스크롤을 만든다.
+   위아래면 폭이 공유 AsciiBlock 과 같고 읽는 순서도 시간 순과 맞는다. */
+.cm-pair {
+  margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px;
+  background: var(--paper-2); overflow: hidden;
+}
+.cm-pair-head {
+  padding: 12px 16px; border-bottom: 1px dashed var(--rule); background: var(--paper);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
+  text-transform: uppercase; color: var(--ink-3);
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px;
+}
+.cm-pair-head .lbl { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
+.cm-pair-head .commit { margin-left: auto; color: var(--ink-3); letter-spacing: 0.02em; }
+.cm-pair-intro {
+  padding: 14px 18px; font-size: 15px; line-height: 1.7; color: var(--ink-2);
+  border-bottom: 1px solid var(--rule); background: var(--paper);
+}
+.cm-pair-panel { border-bottom: 1px solid var(--rule); }
+.cm-pair-lbl {
+  display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
+  padding: 10px 18px; background: var(--paper-2);
+}
+.cm-pair-lbl .tag {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
+  padding: 2px 7px; border-radius: 2px; border: 1px solid var(--rule-2); color: var(--ink-3);
+}
+.cm-pair-panel.now .cm-pair-lbl .tag { border-color: var(--sage-500); color: var(--sage-700); }
+.cm-pair-lbl .ref { font-size: 13.5px; color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
+.cm-pair-panel pre {
+  margin: 0; padding: 16px 20px 18px;
+  font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
+  color: var(--ink); background: var(--paper);
+  overflow-x: auto; max-width: 100%;
+}
+/* 이전 판은 한 단 뒤로 물린다 — 지금 코드가 아니다 */
+.cm-pair-panel.was pre { color: var(--ink-2); }
+.cm-pair-result {
+  padding: 14px 18px; border-top: 1px solid var(--rule); background: var(--paper-2);
+  font-family: var(--font-mono); font-size: 13.5px; color: var(--ink-2); letter-spacing: 0.02em;
+}
+@media (max-width: 720px) {
+  .cm-pair-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .cm-pair-head .commit { margin-left: 0; }
+}
+
+/* ── S11 되돌리는 조건 ───────────────────────────────────────────────────── */
 .cm-callout {
   border: 1px solid var(--terra-200); border-left-width: 3px;
   background: var(--paper); padding: 18px 22px; border-radius: 0 4px 4px 0; margin: 22px 0 0;
 }
 .cm-callout-h {
-  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--terra-500); font-weight: 500; margin-bottom: 10px;
 }
 .cm-callout-b { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
 
-/* ── S6 결과 목록 ────────────────────────────────────────────────────────── */
+/* ── S9 결과 목록 ────────────────────────────────────────────────────────── */
 .cm-results { margin: 6px 0 0; padding-left: 20px; }
 .cm-results li { font-size: 15.5px; line-height: 1.75; color: var(--ink-2); margin-bottom: 8px; }
 .cm-results li strong { color: var(--ink); font-weight: 600; }
 
-/* ── S7 재측정 전후 · 규율 ───────────────────────────────────────────────── */
+/* ── S10 재측정 전후 · 규율 ───────────────────────────────────────────────── */
 .cm-delta { border: 1px solid var(--rule); border-radius: 4px; padding: 20px 24px; margin: 4px 0 26px; }
 .cm-delta-lbl {
-  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--ink-3); font-weight: 500; margin-bottom: 14px;
 }
 .cm-delta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
@@ -139,7 +235,7 @@
 .cm-delta-cell.was b { color: var(--ink-3); }
 .cm-delta-cell.now b { color: var(--sage-700); }
 .cm-delta-ar { font-size: 20px; color: var(--ink-3); }
-.cm-delta-note { font-size: 14.5px; line-height: 1.7; color: var(--ink-2); margin: 16px 0 0; }
+.cm-delta-note { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin: 16px 0 0; }
 
 .cm-rules { margin-top: 8px; }
 .cm-rule { padding: 16px 0; border-top: 1px solid var(--rule); }
@@ -147,26 +243,28 @@
 .cm-rule-k { font-size: 15.5px; font-weight: 600; color: var(--ink); margin-bottom: 5px; }
 .cm-rule-v { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
 
-/* ── S9 테스트 목록 (L4) ─────────────────────────────────────────────────── */
+/* ── S12 테스트 목록 (L4) ─────────────────────────────────────────────────── */
 .cm-tests { list-style: none; margin: 4px 0 20px; padding: 0; }
 .cm-tests li {
   display: grid; grid-template-columns: 260px 1fr 92px; gap: 16px;
   padding: 12px 0; border-top: 1px solid var(--rule); align-items: baseline;
 }
 .cm-tests li:last-child { border-bottom: 1px solid var(--rule); }
-.cm-test-n { font-size: 14px; color: var(--ink-2); }
-.cm-test-d { font-size: 14.5px; color: var(--ink-3); line-height: 1.6; }
-.cm-test-c { font-family: var(--font-mono); font-size: 13px; color: var(--ink-3); text-align: right; }
+.cm-test-n { font-size: 15px; color: var(--ink-2); }
+.cm-test-d { font-size: 15px; color: var(--ink-3); line-height: 1.6; }
+.cm-test-c { font-family: var(--font-mono); font-size: 13.5px; color: var(--ink-3); text-align: right; }
 @media (max-width: 720px) {
   .cm-tests li { grid-template-columns: 1fr; gap: 4px; }
   .cm-test-c { text-align: left; }
 }
 
-/* ── S10 한계 (L4) ───────────────────────────────────────────────────────── */
+.cm-hr { border: 0; border-top: 1px solid var(--rule); margin: 30px 0 24px; max-width: 760px; }
+
+/* ── S12 한계 (L4) ───────────────────────────────────────────────────────── */
 .cm-limits { border-top: 1px solid var(--rule); }
 .cm-limit { display: grid; grid-template-columns: 160px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
 .cm-limit-k {
-  font-family: var(--font-mono); font-size: 11.5px; letter-spacing: 0.12em; text-transform: uppercase;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
   color: var(--ink-3); font-weight: 500; padding-top: 3px;
 }
 .cm-limit-v { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
@@ -195,6 +293,7 @@
 .cm-svg-cap   { font-family: var(--font-sans); font-size: 12px; fill: var(--ink-3); }
 .cm-svg-cap.dim { fill: var(--ink-3); opacity: 0.75; }
 .cm-svg-slot  { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-3); }
+.cm-svg-num   { font-family: var(--font-sans); font-size: 15px; fill: var(--ink-2); }
 .cm-svg-stage { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-3); }
 .cm-svg-val   { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-2); }
 .cm-svg-pct   { font-size: 15px; fill: var(--ink); font-weight: 500; }
@@ -202,13 +301,25 @@
 
 .cm-svg-box    { fill: var(--paper); stroke: var(--rule-2); stroke-width: 1; }
 .cm-svg-cell   { stroke: var(--rule-2); stroke-width: 1; }
-.cm-svg-cell.fixed { fill: var(--sage-100); }
-.cm-svg-cell.flip  { fill: var(--paper-3); }
+.cm-svg-cell.fixed { fill: var(--paper-3); }
+.cm-svg-cell.flip  { fill: var(--paper); }
 .cm-svg-bufline { fill: none; stroke: var(--ink-3); stroke-width: 1.5; }
 .cm-svg-sep    { stroke: var(--ink-3); stroke-width: 1.5; }
 .cm-svg-arrow  { stroke: var(--ink-3); stroke-width: 1.2; }
 .cm-svg-span   { stroke: var(--rule-2); stroke-width: 1; }
 .cm-svg-base   { stroke: var(--rule); stroke-width: 1; }
+
+/* 그림 ① 렌더 구조 — z 에 굽는 쌓임 */
+.cm-svg-zslab  { fill: var(--paper-3); stroke: var(--rule-2); stroke-width: 1; }
+
+/* 그림 ② 볼록 뺄셈 — 색이 정보를 나른다(남은 것 / 떼어 낸 것 / 이미 뗀 것 / 덮개).
+   페이지 색면 규칙(.cm-core 하나)은 크롬에 걸린 것이고, 그림 안은 별개 축이다. */
+.cm-svg-piece  { fill: var(--paper-2); stroke: var(--ink-3); stroke-width: 1.2; }
+.cm-svg-cut    { fill: var(--sage-100); stroke: var(--sage-500); stroke-width: 1.2; }
+.cm-svg-done   { fill: var(--paper-3); stroke: var(--rule-2); stroke-width: 1; stroke-dasharray: 3 3; }
+.cm-svg-cover  { fill: var(--paper); stroke: var(--terra-500); stroke-width: 1.3; }
+.cm-svg-hole   { fill: var(--paper); stroke: var(--terra-500); stroke-width: 1.2; stroke-dasharray: 3 2; }
+.cm-svg-half   { stroke: var(--terra-500); stroke-width: 1.4; }
 
 .cm-bar.base   { fill: var(--rule-2); }
 .cm-bar.struct { fill: var(--sage-300); }
