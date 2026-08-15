@@ -27,10 +27,9 @@ function MTGeoArchViz({ caption }) {
   const top = 44, boxH = 176;
 
   return (
-    /* 네 열의 항목 글자가 이 그림의 본체라 720px 이하에서 숨길 수가 없다.
-       viewBox 가 폭에 맞춰 줄면 8.5px 가 3.2px 로 떨어져 유실되므로(320px 실측),
-       그림만 가로 스와이프로 돌린다 — 세로는 잠근다. */
-    <figure className="mt-figure mt-figure-scroll">
+    /* 좁은 폭 처리는 page.css 의 .mt-figure 가 공통으로 맡는다 —
+       viewBox 를 폭에 맞춰 줄이면 글자가 3.2px 로 유실되므로 그림만 가로 스와이프. */
+    <figure className="mt-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
            aria-label="물리 엔진 자리에 들어간 것은 질의 4종과 커널 7함수뿐이다">
         <text x={16} y="22" className="mt-svg-lbl">물리 엔진 없이 — 실제로 들어간 것</text>
@@ -61,14 +60,8 @@ function MTGeoArchViz({ caption }) {
           );
         })}
 
-        <text x={16} y={H - 8} className="mt-svg-sub mt-svg-note">
-          상태를 갖는 것은 등록된 바디 집합 하나뿐 — 커널은 순수 함수다
-        </text>
       </svg>
-      <figcaption className="mt-figcap">
-        {window.renderInline(caption)} 상태를 갖는 것은 <b>등록된 바디 집합 하나뿐</b>이고,
-        커널은 인자만 받는 순수 함수다.
-      </figcaption>
+      <figcaption className="mt-figcap">{window.renderInline(caption)}</figcaption>
     </figure>
   );
 }
