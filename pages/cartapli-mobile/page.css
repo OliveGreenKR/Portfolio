@@ -106,19 +106,13 @@
 
 .cm-body { font-size: 15.5px; line-height: 1.78; color: var(--ink-2); margin: 0 0 18px; max-width: 76ch; }
 .cm-body strong { color: var(--ink); font-weight: 600; }
-.cm-body.cm-bg { color: var(--ink-3); font-size: 15px; }        /* 배경 진술 — 본문보다 한 단 뒤 */
-.cm-body.cm-tradeoff {
-  border-left: 2px solid var(--rule-2); padding-left: 16px;
-  color: var(--ink-3); font-size: 15px;
-}
 
 .cm-body.cm-revised {             /* "진단 당시엔 8배로 보였다" — 틀렸던 값을 되짚는 자리 */
   border-left: 2px solid var(--rule-2); padding-left: 16px; margin-top: 4px;
 }
-.cm-note { font-size: 13.5px; line-height: 1.7; color: var(--ink-3); margin: 14px 0 0; max-width: 76ch; }
 .cm-tablecap { font-size: 13.5px; line-height: 1.7; color: var(--ink-2); margin: 12px 0 0; max-width: 76ch; }
 .cm-cond {
-  font-family: var(--font-mono); font-size: 13px; line-height: 1.6;
+  font-family: var(--font-mono); font-size: 13.5px; line-height: 1.6;
   color: var(--ink-3); margin: 10px 0 22px;
 }
 
@@ -206,17 +200,6 @@
   .cm-pair-head .commit { margin-left: 0; }
 }
 
-/* ── S11 되돌리는 조건 ───────────────────────────────────────────────────── */
-.cm-callout {
-  border: 1px solid var(--terra-200); border-left-width: 3px;
-  background: var(--paper); padding: 18px 22px; border-radius: 0 4px 4px 0; margin: 22px 0 0;
-}
-.cm-callout-h {
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--terra-500); font-weight: 500; margin-bottom: 10px;
-}
-.cm-callout-b { font-size: 15px; line-height: 1.72; color: var(--ink-2); }
-
 /* ── S9 결과 목록 ────────────────────────────────────────────────────────── */
 .cm-results { margin: 6px 0 0; padding-left: 20px; }
 .cm-results li { font-size: 15.5px; line-height: 1.75; color: var(--ink-2); margin-bottom: 8px; }
@@ -230,11 +213,11 @@
 }
 .cm-delta-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
 .cm-delta-cell { display: flex; flex-direction: column; gap: 4px; }
-.cm-delta-cell b { font-family: var(--font-mono); font-size: 28px; font-weight: 500; letter-spacing: -0.01em; }
+.cm-delta-cell b { font-family: var(--font-mono); font-size: 20px; font-weight: 500; letter-spacing: -0.01em; }
 .cm-delta-cell i { font-style: normal; font-size: 13px; color: var(--ink-3); }
 .cm-delta-cell.was b { color: var(--ink-3); }
 .cm-delta-cell.now b { color: var(--sage-700); }
-.cm-delta-ar { font-size: 20px; color: var(--ink-3); }
+.cm-delta-ar { font-size: 16px; color: var(--ink-3); }
 .cm-delta-note { font-size: 15px; line-height: 1.7; color: var(--ink-2); margin: 16px 0 0; }
 
 .cm-rules { margin-top: 8px; }
@@ -270,6 +253,9 @@
 .cm-limit-v { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
 @media (max-width: 720px) { .cm-limit { grid-template-columns: 1fr; gap: 4px; } }
 
+/* 페이지를 각주로 끝내지 않는다 — 한계 목록 뒤 닫는 한 줄 */
+.cm-body.cm-close { margin-top: 22px; color: var(--ink-2); }
+
 /* ── 그림 ────────────────────────────────────────────────────────────────── */
 .cm-fig { margin: 8px 0 24px; }
 .cm-fig > svg {
@@ -294,6 +280,8 @@
 .cm-svg-cap.dim { fill: var(--ink-3); opacity: 0.75; }
 .cm-svg-slot  { font-family: var(--font-mono); font-size: 12px; fill: var(--ink-3); }
 .cm-svg-num   { font-family: var(--font-sans); font-size: 15px; fill: var(--ink-2); }
+.cm-svg-num.dim { fill: var(--ink-3); }
+.cm-svg-box.dim { fill: var(--paper); stroke-dasharray: 4 3; }
 .cm-svg-stage { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-3); }
 .cm-svg-val   { font-family: var(--font-mono); font-size: 13px; fill: var(--ink-2); }
 .cm-svg-pct   { font-size: 15px; fill: var(--ink); font-weight: 500; }
@@ -324,3 +312,6 @@
 .cm-bar.base   { fill: var(--rule-2); }
 .cm-bar.struct { fill: var(--sage-300); }
 .cm-bar.burst  { fill: var(--terra-300); }
+/* 진단(04) 전용 — .burst 를 재사용하면 02 범례가 정의한 "Burst 잡" 뜻이 두 절 뒤에서 뒤집힌다 */
+.cm-bar.hot     { fill: var(--ink-3); }
+.cm-bar.neutral { fill: var(--rule-2); }
