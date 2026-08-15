@@ -44,8 +44,8 @@ const CM_RAIL = [
   { head: '다시 재고, 고른 것' },
   { id: 'remeasure', label: '09 · 계측' },
   { id: 'policy', label: '10 · 판정' },
-  { head: '어디까지 맞나' },
-  { id: 'verify', label: '11 · 검증·한계' },
+  { head: '결과가 같은가' },
+  { id: 'verify', label: '11 · 검증' },
 ];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
@@ -106,7 +106,7 @@ function CMHeader({ indexHref }) {
       <nav className="nb-nav">
         <a href="#result">Result</a>
         <a href="#diagnose">Findings</a>
-        <a href="#verify">Limits</a>
+        <a href="#verify">Verify</a>
       </nav>
     </header>
   );
@@ -151,9 +151,17 @@ function CMHero({ data }) {
       <p className="cm-core">{m.core}</p>
 
       <div className="cm-headline">
-        <b className="cm-headline-v">{m.headline.v}</b>
-        <span className="cm-headline-k">{m.headline.k}</span>
-        <a className="cm-headline-a" href={m.headline.href}>{m.headline.hrefLabel}</a>
+        <div className="cm-headline-hd"><span>고치기 전</span><span>지금</span></div>
+        {m.headline.rows.map(r => (
+          <div className="cm-headline-row" key={r.k}>
+            <span className="cm-headline-k">{r.k}</span>
+            <span className="cm-headline-a0">{r.a}</span>
+            <span className="cm-headline-ar">→</span>
+            <span className="cm-headline-v">{r.b}</span>
+            <span className="cm-headline-d">{r.d}</span>
+          </div>
+        ))}
+        <a className="cm-headline-lnk" href={m.headline.href}>{m.headline.hrefLabel}</a>
       </div>
 
       <div className="nb-metarow">
@@ -313,7 +321,7 @@ function CMRemeasure({ data }) {
   const s = data.s10;
   return (
     <section id="remeasure" className="nb-section lv3">
-      <SectionHead no="09" title="⑤ 재기 전에 계측을 의심했다" kind="2026-07-24" />
+      <SectionHead no="09" title="⑤ 측정 환경의 변인을 통제했다" kind="2026-07-24" />
       <Link>{s.link}</Link>
       <Body>{s.split}</Body>
       <window.CMCodePair p={s.pair} />
@@ -338,8 +346,18 @@ function CMPolicy({ data }) {
   const s = data.s11;
   return (
     <section id="policy" className="nb-section lv3">
-      <SectionHead no="10" title="⑥ 가려짐 판정 방식을 다시 골랐다" kind="2026-08-12" />
+      <SectionHead no="10" title="⑥ 가려짐을 어떻게 계산할지 다시 골랐다" kind="2026-08-12" />
       <Link>{s.link}</Link>
+      <ul className="cm-ways">
+        {s.ways.map(([n, d, v]) => (
+          <li key={n}>
+            <span className="cm-way-n">{n}</span>
+            <span className="cm-way-d">{ri(d)}</span>
+            <span className="cm-way-v">{ri(v)}</span>
+          </li>
+        ))}
+      </ul>
+      <window.CMPolicyCompareViz />
       <window.CMConvexSubViz />
       <window.CMCodePair p={s.pair} />
       <Notes items={s.notes} />
@@ -358,7 +376,7 @@ function CMVerify({ data }) {
   const s = data.s12;
   return (
     <section id="verify" className="nb-section lv4">
-      <SectionHead no="11" title="검증과 한계" kind="APPENDIX" />
+      <SectionHead no="11" title="결과가 같은지 검증했다" kind="APPENDIX" />
       <Body>{s.lead}</Body>
       <Body>{s.body}</Body>
       <ul className="cm-tests">
@@ -371,16 +389,6 @@ function CMVerify({ data }) {
         ))}
       </ul>
       <Body>{s.why}</Body>
-      <hr className="cm-hr" />
-      <Body>{s.limitsLead}</Body>
-      <div className="cm-limits">
-        {s.limits.map(([k, v]) => (
-          <div className="cm-limit" key={k}>
-            <span className="cm-limit-k">{ri(k)}</span>
-            <span className="cm-limit-v">{ri(v)}</span>
-          </div>
-        ))}
-      </div>
       <Body className="cm-close">{s.close}</Body>
     </section>
   );

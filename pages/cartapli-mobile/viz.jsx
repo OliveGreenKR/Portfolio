@@ -7,7 +7,8 @@
 //   5 CMPruneViz       ② 버리기 (S7)        · s7.vizCaption
 //   6 CMRenderStructViz ③ 병합 (S8)       · s8.vizCaption
 //   7 CMSlotViz        ④ 슬롯 배정 (S9)   · s9.vizCaption
-//   8 CMConvexSubViz   ⑥ 볼록 뺄셈 (S11)  · s11.vizCaption
+//   8 CMPolicyCompareViz ⑥ 세 방식 비교 (S11) · s11.compareCaption
+//   9 CMConvexSubViz   ⑥ 채택한 방식의 기전 (S11) · s11.vizCaption
 // S10(⑤ 재측정)에는 그림이 없다 — 고친 것이 계측기라 기존→개선으로 그릴 형상이 없다(§03 결정).
 //
 // 그림이 아닌 것 — CMCodePair(코드 쌍) · CMDelta(재측정 전후 수치 쌍).
@@ -51,6 +52,7 @@ window.CMCodePair = CMCodePair;
 
 /* ── 1. 단계별 기여 (S3) ─────────────────────────────────────────────────── */
 // 배치 상수 — 총폭 검산: BAR_MAX(600) + 값 라벨 폭(≈108) = 708 ≤ viewBox 720 ✓
+// 범례 슬롯은 150 — 가장 긴 "Burst 잡으로 옮긴 몫"(≈130px)이 다음 색칩을 안 덮어야 한다
 const CM_BAR_MAX = 600;
 const CM_ROW_H = 64;
 const CM_ROW_TOP = 34;
@@ -64,8 +66,8 @@ function CMStageBars() {
         {/* 범례 — 항목당 96px 슬롯 */}
         {legend.map((l, i) => (
           <g key={l.group}>
-            <rect className={`cm-bar ${l.group}`} x={i * 96} y="6" width="12" height="12" />
-            <text className="cm-svg-cap" x={i * 96 + 18} y="16">{l.label}</text>
+            <rect className={`cm-bar ${l.group}`} x={i * 150} y="6" width="12" height="12" />
+            <text className="cm-svg-cap" x={i * 150 + 18} y="16">{l.label}</text>
           </g>
         ))}
         <text className="cm-svg-cap dim" x="612" y="16">{unitNote}</text>
@@ -99,59 +101,50 @@ window.CMStageBars = CMStageBars;
 /* ── 2. 네 방식 지도 (S4) ────────────────────────────────────────────────── */
 // 가로축이 프레임 두 종류를 겸한다 — 별도 타임라인 그림 한 칸을 여기서 흡수했다(§03 결정).
 // 배치 검산: 확정 영역 462 + 242 = 704 ≤ viewBox 720 ✓
-const CM_MAP_LERP_X = 48, CM_MAP_LERP_W = 382;
-const CM_MAP_CMT_X = 462, CM_MAP_CMT_W = 242;
-const CM_MAP_ROW_TOP = 84, CM_MAP_ROW_H = 48;
+// ⚠️ 2026-08-15 축 교체 — 옛 축(보간/확정 프레임)은 **사실이 아니었다.**
+//    ④는 확정에서도 같은 잡을 쓰고, ②는 확정 때 일어나지만 효과가 그 뒤 모든 프레임에 걸린다.
+// 배치 검산: 변경 상자 266 + 438 = 704 ≤ viewBox 720 ✓
+const CM_MAP_AXIS_X = 26, CM_MAP_BOX_X = 266, CM_MAP_BOX_W = 438;
+const CM_MAP_TOP = 40, CM_MAP_ROW_H = 54;
 
 function CMMapViz() {
   const m = window.CM_DATA.s4.map;
   const rows = m.rows, after = m.after;
-  const gridBottom = CM_MAP_ROW_TOP + rows.length * CM_MAP_ROW_H;
-  const afterTop = gridBottom + 34;                       // 구분선 + 라벨 자리
-  const h = afterTop + after.length * 40 + 6;             // 검산: 84+192+34+80+6 = 396
+  const gridBottom = CM_MAP_TOP + rows.length * CM_MAP_ROW_H;
+  const afterTop = gridBottom + 32;
+  const h = afterTop + after.length * 40 + 6;      // 검산: 40+216+32+80+6 = 374
   return (
     <figure className="cm-fig">
       <svg viewBox={`0 0 720 ${h}`} role="img"
-           aria-label="네 방식을 프레임 두 종류 위에 놓은 지도. 재사용·병합·Burst 는 보간 프레임 쪽에, 버리기만 확정 프레임 쪽에 놓인다. 아래 두 칸은 단계가 아닌 후속이다">
-        <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y="14">{m.lerpLabel}</text>
-        <text className="cm-svg-lbl" x={CM_MAP_CMT_X} y="14">{m.commitLabel}</text>
-
-        {/* 프레임 스트립 — 보간 여러 장 / 확정 한 장 */}
-        {Array.from({ length: 13 }, (_, i) => CM_MAP_LERP_X + i * 29).map(x => (
-          <rect key={x} className="cm-svg-cell fixed" x={x} y="28" width="20" height="26" />
-        ))}
-        <rect className="cm-svg-cell flip" x={CM_MAP_CMT_X} y="24" width="30" height="34" />
-        <text className="cm-svg-cap" x={CM_MAP_CMT_X + 40} y="45">한 장에 몰린다</text>
-
-        <line className="cm-svg-sep" x1="446" y1="8" x2="446" y2={gridBottom + 4} />
+           aria-label="네 변경이 각각 무엇을 줄였는지 — 같은 일을 다시 하기, 레이어 장수, 레이어당 유니티 객체, 프레임마다 새로 만들던 관리형 객체. 아래 두 칸은 단계가 아닌 후속이다">
+        <text className="cm-svg-lbl" x={CM_MAP_AXIS_X} y="16">{m.axisLabel}</text>
+        <text className="cm-svg-lbl" x={CM_MAP_BOX_X} y="16">그래서 무엇을 했나</text>
+        <line className="cm-svg-base" x1="0" y1="24" x2="704" y2="24" />
 
         {rows.map((r, i) => {
-          const top = CM_MAP_ROW_TOP + i * CM_MAP_ROW_H;
-          const isLerp = r.side === 'lerp';
-          const x = isLerp ? CM_MAP_LERP_X : CM_MAP_CMT_X;
-          const w = isLerp ? CM_MAP_LERP_W : CM_MAP_CMT_W;
+          const top = CM_MAP_TOP + i * CM_MAP_ROW_H;
           return (
             <g key={r.n}>
-              <text className="cm-svg-num" x="4" y={top + 24}>{r.n}</text>
-              <line className="cm-svg-base" x1="0" y1={top - 6} x2="704" y2={top - 6} />
-              <rect className="cm-svg-box" x={x} y={top} width={w} height="38" rx="3" />
-              <text className="cm-svg-txt" x={x + 12} y={top + 16}>{r.title}</text>
-              <text className="cm-svg-cap" x={x + 12} y={top + 32}>{r.what}</text>
+              <text className="cm-svg-num" x="0" y={top + 26}>{r.n}</text>
+              <text className="cm-svg-txt" x={CM_MAP_AXIS_X} y={top + 26}>{r.axis}</text>
+              <rect className="cm-svg-box" x={CM_MAP_BOX_X} y={top} width={CM_MAP_BOX_W} height="44" rx="3" />
+              <text className="cm-svg-txt" x={CM_MAP_BOX_X + 14} y={top + 19}>{r.title}</text>
+              <text className="cm-svg-cap" x={CM_MAP_BOX_X + 14} y={top + 36}>{r.what}</text>
+              {i < rows.length - 1 && <line className="cm-svg-span" x1="0" y1={top + 48} x2="704" y2={top + 48} />}
             </g>
           );
         })}
 
-        {/* 후속 — 프레임 축 밖이라 전폭으로 두고 점선으로 격을 내린다 */}
-        <line className="cm-svg-span" x1="0" y1={gridBottom + 12} x2="704" y2={gridBottom + 12} strokeDasharray="4 4" />
-        <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y={gridBottom + 26}>{m.afterLabel}</text>
+        <line className="cm-svg-span" x1="0" y1={gridBottom + 10} x2="704" y2={gridBottom + 10} strokeDasharray="4 4" />
+        <text className="cm-svg-lbl" x={CM_MAP_AXIS_X} y={gridBottom + 26}>{m.afterLabel}</text>
         {after.map((r, i) => {
           const top = afterTop + i * 40;
           return (
             <g key={r.n}>
-              <text className="cm-svg-num dim" x="4" y={top + 21}>{r.n}</text>
-              <rect className="cm-svg-box dim" x={CM_MAP_LERP_X} y={top} width={656} height="32" rx="3" />
-              <text className="cm-svg-cap" x={CM_MAP_LERP_X + 12} y={top + 20}>{r.title}</text>
-              <text className="cm-svg-cap dim" x={CM_MAP_LERP_X + 400} y={top + 20}>{r.what}</text>
+              <text className="cm-svg-num dim" x="0" y={top + 21}>{r.n}</text>
+              <rect className="cm-svg-box dim" x={CM_MAP_AXIS_X} y={top} width={704 - CM_MAP_AXIS_X} height="32" rx="3" />
+              <text className="cm-svg-cap" x={CM_MAP_AXIS_X + 14} y={top + 20}>{r.title}</text>
+              <text className="cm-svg-cap dim" x={CM_MAP_BOX_X + 14} y={top + 20}>{r.what}</text>
             </g>
           );
         })}
@@ -433,7 +426,60 @@ function CMSlotViz() {
 }
 window.CMSlotViz = CMSlotViz;
 
-/* ── 8. ⑥ 볼록 뺄셈 기전 (S11) ──────────────────────────────────────────── */
+/* ── 8. ⑥ 세 방식 비교 (S11) ────────────────────────────────────────────── */
+// 같은 상황(위 두 장이 걸쳐 있고 둘이 합쳐야 아래를 다 가린다)에서 셋이 무엇을 하는지.
+// 라벨은 전부 도형 **밖**(y=28 · y≥110)에 둔다 — 안에 두면 상자 테두리가 글자를 관통한다.
+// 배치 검산: 마지막 패널 488 + 216 = 704 ≤ viewBox 720 ✓
+const CM_PC_W = 216, CM_PC_GAP = 244;
+function CMPolicyCompareViz() {
+  const P = i => i * CM_PC_GAP;
+  const shapes = (p, kind) => (
+    <g>
+      <text className="cm-svg-cap" x={p + 44} y="32">위 레이어 A</text>
+      <text className="cm-svg-cap" x={p + 140} y="32">B</text>
+      <rect className={kind === 'miss' ? 'cm-svg-piece' : 'cm-svg-done'} x={p + 6} y="40" width="204" height="58" rx="2" />
+      <rect className="cm-svg-cover" x={p + 6} y="40" width="120" height="58" />
+      <rect className="cm-svg-cover" x={p + 90} y="40" width="120" height="58" />
+      {kind === 'union' && <rect className="cm-svg-union" x={p + 2} y="36" width="212" height="66" rx="3" />}
+      {kind === 'step' && <line className="cm-svg-half" x1={p + 90} y1="36" x2={p + 90} y2="102" />}
+      {kind === 'miss' && <text className="cm-svg-cap" x={p + 24} y="116">A 만으로도, B 만으로도 못 덮는다</text>}
+    </g>
+  );
+  return (
+    <figure className="cm-fig">
+      <svg viewBox="0 0 720 206" role="img"
+           aria-label="위에 두 장이 걸쳐 있고 둘이 합쳐야 아래 조각을 다 가리는 상황에서 세 방식이 각각 무엇을 하는지. 한 장씩만 보는 방식만 이 경우를 놓친다">
+        <g>
+          <text className="cm-svg-lbl" x={P(0)} y="14">합쳐서 빼기</text>
+          {shapes(P(0), 'union')}
+          <text className="cm-svg-cap" x={P(0)} y="138">A 와 B 를 먼저 하나로 합치고</text>
+          <text className="cm-svg-cap" x={P(0)} y="156">그 합집합을 아래에서 뺀다</text>
+          <text className="cm-svg-txt" x={P(0)} y="186">가려짐 → 버린다</text>
+        </g>
+        <line className="cm-svg-sep" x1="228" y1="8" x2="228" y2="198" />
+        <g>
+          <text className="cm-svg-lbl" x={P(1)} y="14">한 장씩 빼기 · 채택</text>
+          {shapes(P(1), 'step')}
+          <text className="cm-svg-cap" x={P(1)} y="138">A 를 빼고, 남은 데서 B 를 뺀다</text>
+          <text className="cm-svg-cap" x={P(1)} y="156">합치는 단계가 없다</text>
+          <text className="cm-svg-txt" x={P(1)} y="186">가려짐 → 버린다</text>
+        </g>
+        <line className="cm-svg-sep" x1="472" y1="8" x2="472" y2="198" />
+        <g>
+          <text className="cm-svg-lbl" x={P(2)} y="14">한 장씩만 본다</text>
+          {shapes(P(2), 'miss')}
+          <text className="cm-svg-cap" x={P(2)} y="138">한 장이 통째로 품는 경우만 본다</text>
+          <text className="cm-svg-cap" x={P(2)} y="156">둘이 나눠 가리면 못 잡는다</text>
+          <text className="cm-svg-txt" x={P(2)} y="186">못 잡는다 → 남긴다</text>
+        </g>
+      </svg>
+      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s11.compareCaption)}</figcaption>
+    </figure>
+  );
+}
+window.CMPolicyCompareViz = CMPolicyCompareViz;
+
+/* ── 9. ⑥ 채택한 방식이 어떻게 도는가 (S11) ─────────────────────────────── */
 // 배치 검산: 4패널 × 176 = 704 ≤ viewBox 720 ✓
 const CM_SUB_PANEL = 176;
 function CMConvexSubViz() {

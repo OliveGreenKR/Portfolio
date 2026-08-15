@@ -77,16 +77,47 @@
 }
 .cm-hero .nb-metarow { margin-bottom: 36px; }
 
-/* 대표 수치 한 쌍 — §03 S1 REMOVE 개정. 색면을 쓰지 않는다(.cm-core 가 유일). */
+/* 최종 성과 네 줄 — 고치기 전 → 지금. 색면을 쓰지 않는다(.cm-core 가 유일) */
 .cm-headline {
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px;
   border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  padding: 16px 0; margin: 0 0 28px;
+  padding: 6px 0 14px; margin: 0 0 28px;
 }
-.cm-headline-v { font-family: var(--font-mono); font-size: 30px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
+.cm-headline-hd, .cm-headline-row {
+  display: grid; grid-template-columns: minmax(0,1fr) 88px 16px 96px 132px;
+  gap: 0 12px; align-items: baseline;
+}
+.cm-headline-hd {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-3); padding: 8px 0 6px;
+}
+.cm-headline-hd span:first-child { grid-column: 2; }
+.cm-headline-hd span:last-child { grid-column: 4; }
+.cm-headline-row { padding: 9px 0; border-top: 1px solid var(--rule); }
 .cm-headline-k { font-size: 15px; color: var(--ink-2); }
-.cm-headline-a { font-size: 13.5px; color: var(--ink-3); margin-left: auto; white-space: nowrap; }
-@media (max-width: 720px) { .cm-headline-a { margin-left: 0; white-space: normal; } }
+.cm-headline-a0 { font-family: var(--font-mono); font-size: 15px; color: var(--ink-3); text-align: right; }
+.cm-headline-ar { color: var(--ink-3); font-size: 13px; text-align: center; }
+.cm-headline-v { font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
+.cm-headline-d { font-size: 13.5px; color: var(--ink-3); }
+.cm-headline-lnk { display: inline-block; font-size: 13.5px; color: var(--ink-3); margin-top: 14px; }
+@media (max-width: 720px) {
+  .cm-headline-hd { display: none; }
+  .cm-headline-row { grid-template-columns: 1fr auto; gap: 2px 10px; }
+  .cm-headline-k { grid-column: 1 / -1; }
+  .cm-headline-ar { text-align: left; }
+  .cm-headline-a0, .cm-headline-ar, .cm-headline-v, .cm-headline-d { text-align: left; }
+}
+
+/* §10 세 방식 목록 — 표보다 앞에 와서 "무엇을 비교하는가" 를 먼저 준다 */
+.cm-ways { list-style: none; margin: 4px 0 22px; padding: 0; }
+.cm-ways li {
+  display: grid; grid-template-columns: 132px minmax(0,1fr) 128px; gap: 16px;
+  padding: 14px 0; border-top: 1px solid var(--rule); align-items: baseline;
+}
+.cm-ways li:last-child { border-bottom: 1px solid var(--rule); }
+.cm-way-n { font-size: 15.5px; font-weight: 600; color: var(--ink); }
+.cm-way-d { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
+.cm-way-v { font-size: 13.5px; color: var(--ink-3); }
+@media (max-width: 720px) { .cm-ways li { grid-template-columns: 1fr; gap: 4px; } }
 
 /* ── L2 / L3 / L4 섹션 ───────────────────────────────────────────────────── */
 .nb-section.lv3 .nb-section-title { font-size: 23px; color: var(--ink-2); }
@@ -239,21 +270,6 @@
   .cm-test-c { text-align: left; }
 }
 
-.cm-hr { border: 0; border-top: 1px solid var(--rule); margin: 30px 0 24px; max-width: 760px; }
-
-/* ── S12 한계 (L4) ───────────────────────────────────────────────────────── */
-.cm-limits { border-top: 1px solid var(--rule); }
-.cm-limit { display: grid; grid-template-columns: 160px 1fr; gap: 20px; padding: 14px 0; border-bottom: 1px solid var(--rule); }
-.cm-limit-k {
-  font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--ink-3); font-weight: 500; padding-top: 3px;
-}
-.cm-limit-v { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
-@media (max-width: 720px) { .cm-limit { grid-template-columns: 1fr; gap: 4px; } }
-
-/* 페이지를 각주로 끝내지 않는다 — 한계 목록 뒤 닫는 한 줄 */
-.cm-body.cm-close { margin-top: 22px; color: var(--ink-2); }
-
 /* ── 그림 ────────────────────────────────────────────────────────────────── */
 .cm-fig { margin: 8px 0 24px; }
 .cm-fig > svg {
@@ -308,6 +324,8 @@
 .cm-svg-cover  { fill: var(--paper); stroke: var(--terra-500); stroke-width: 1.3; }
 .cm-svg-hole   { fill: var(--paper); stroke: var(--terra-500); stroke-width: 1.2; stroke-dasharray: 3 2; }
 .cm-svg-half   { stroke: var(--terra-500); stroke-width: 1.4; }
+/* 세 방식 비교 — "먼저 합친다" 를 감싸는 테두리 */
+.cm-svg-union  { fill: none; stroke: var(--ink); stroke-width: 1.6; }
 
 .cm-bar.base   { fill: var(--rule-2); }
 .cm-bar.struct { fill: var(--sage-300); }
