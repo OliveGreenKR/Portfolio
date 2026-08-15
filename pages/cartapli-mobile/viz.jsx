@@ -81,10 +81,11 @@ function CMStageBars() {
               </text>
               <line className="cm-svg-base" x1="0" y1={top + 44} x2={CM_BAR_MAX} y2={top + 44} />
               <rect className={`cm-bar ${b.group}`} x="0" y={top + 22} width={w} height="22" />
-              <text className="cm-svg-val" x="612" y={top + 39}>
+              <text className="cm-svg-val" x="612" y={top + 33}>
                 <tspan className="cm-svg-pct">{b.pct}</tspan>
                 <tspan dx="8" className="cm-svg-delta">{b.delta}</tspan>
               </text>
+              <text className="cm-svg-cap" x="612" y={top + 50}>{b.ms} ms</text>
             </g>
           );
         })}
@@ -104,13 +105,14 @@ const CM_MAP_ROW_TOP = 84, CM_MAP_ROW_H = 48;
 
 function CMMapViz() {
   const m = window.CM_DATA.s4.map;
-  const rows = m.rows;
-  const h = CM_MAP_ROW_TOP + rows.length * CM_MAP_ROW_H + 6;
+  const rows = m.rows, after = m.after;
+  const gridBottom = CM_MAP_ROW_TOP + rows.length * CM_MAP_ROW_H;
+  const afterTop = gridBottom + 34;                       // 구분선 + 라벨 자리
+  const h = afterTop + after.length * 40 + 6;             // 검산: 84+192+34+80+6 = 396
   return (
     <figure className="cm-fig">
       <svg viewBox={`0 0 720 ${h}`} role="img"
-           aria-label="네 방식을 프레임 두 종류 위에 놓은 지도. 재사용·병합·Burst 는 보간 프레임 쪽에, 삭제만 확정 프레임 쪽에 놓인다">
-        {/* 축 라벨 */}
+           aria-label="네 방식을 프레임 두 종류 위에 놓은 지도. 재사용·병합·Burst 는 보간 프레임 쪽에, 버리기만 확정 프레임 쪽에 놓인다. 아래 두 칸은 단계가 아닌 후속이다">
         <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y="14">{m.lerpLabel}</text>
         <text className="cm-svg-lbl" x={CM_MAP_CMT_X} y="14">{m.commitLabel}</text>
 
@@ -121,8 +123,7 @@ function CMMapViz() {
         <rect className="cm-svg-cell flip" x={CM_MAP_CMT_X} y="24" width="30" height="34" />
         <text className="cm-svg-cap" x={CM_MAP_CMT_X + 40} y="45">한 장에 몰린다</text>
 
-        {/* 영역 구분 */}
-        <line className="cm-svg-sep" x1="446" y1="8" x2="446" y2={h - 12} />
+        <line className="cm-svg-sep" x1="446" y1="8" x2="446" y2={gridBottom + 4} />
 
         {rows.map((r, i) => {
           const top = CM_MAP_ROW_TOP + i * CM_MAP_ROW_H;
@@ -136,6 +137,21 @@ function CMMapViz() {
               <rect className="cm-svg-box" x={x} y={top} width={w} height="38" rx="3" />
               <text className="cm-svg-txt" x={x + 12} y={top + 16}>{r.title}</text>
               <text className="cm-svg-cap" x={x + 12} y={top + 32}>{r.what}</text>
+            </g>
+          );
+        })}
+
+        {/* 후속 — 프레임 축 밖이라 전폭으로 두고 점선으로 격을 내린다 */}
+        <line className="cm-svg-span" x1="0" y1={gridBottom + 12} x2="704" y2={gridBottom + 12} strokeDasharray="4 4" />
+        <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y={gridBottom + 30}>{m.afterLabel}</text>
+        {after.map((r, i) => {
+          const top = afterTop + i * 40;
+          return (
+            <g key={r.n}>
+              <text className="cm-svg-num dim" x="4" y={top + 21}>{r.n}</text>
+              <rect className="cm-svg-box dim" x={CM_MAP_LERP_X} y={top} width={656} height="32" rx="3" />
+              <text className="cm-svg-cap" x={CM_MAP_LERP_X + 12} y={top + 20}>{r.title}</text>
+              <text className="cm-svg-cap dim" x={CM_MAP_LERP_X + 400} y={top + 20}>{r.what}</text>
             </g>
           );
         })}
@@ -181,7 +197,9 @@ function CMDiagnoseViz() {
               {i < 2 && (
                 <line className="cm-svg-arrow" x1={s.x + 196} y1="62" x2={s.x + 224} y2="62" markerEnd="url(#cmArrow)" />
               )}
-              <rect className={`cm-bar ${i === 2 ? 'burst' : 'struct'}`} x={cx - 33} y={CM_DG_BASE - h} width="66" height={h} />
+              {/* ⚠️ .cm-bar.burst 를 쓰지 않는다 — 02 의 범례가 그 색을 "Burst 잡"으로 정의했다.
+                  두 절 뒤에서 같은 색이 "렌더링 준비"를 뜻하면 색이 거짓말을 한다(05 렌즈0·2 일치). */}
+              <rect className={`cm-bar ${i === 2 ? 'hot' : 'neutral'}`} x={cx - 33} y={CM_DG_BASE - h} width="66" height={h} />
               <text className="cm-svg-val" x={cx} y={CM_DG_BASE - h - 9} textAnchor="middle">{s.label}</text>
             </g>
           );
@@ -257,34 +275,36 @@ window.CMReuseViz = CMReuseViz;
 // 배치 검산: 우측 패널 380 + 40 + 200 = 620 ≤ viewBox 720 ✓
 const CM_PR_BEFORE = [0, 1, 1, 0, 1, 1, 1, 0, 0];   // 1 = 위·아래 다 가려짐
 const CM_PR_AFTER = [0, 0, 0, 0];
+const CM_PR_SLAB_X = 44, CM_PR_SLAB_W = 190, CM_PR_SLAB_H = 11, CM_PR_STEP = 15;
 
 function CMPruneViz() {
-  const panel = (px, title, slabs, count, note) => (
-    <g>
-      <text className="cm-svg-lbl" x={px} y="14">{title}</text>
-      <line className="cm-svg-arrow" x1={px + 20} y1="24" x2={px + 20} y2="40" markerEnd="url(#cmArrow2)" />
-      {slabs.map((buried, i) => {
-        const y = 30 + i * 16;
-        return (
+  const panel = (px, title, slabs, count, note) => {
+    const bottom = 34 + slabs.length * CM_PR_STEP;
+    return (
+      <g>
+        <text className="cm-svg-lbl" x={px} y="14">{title}</text>
+        {/* 화살표는 x=px+22 한 열에만 있다 — 카운트를 슬래브 열(px+44)에 두어 x 가 안 겹친다 */}
+        <line className="cm-svg-arrow" x1={px + 22} y1="22" x2={px + 22} y2="34" markerEnd="url(#cmArrow2)" />
+        {slabs.map((buried, i) => (
           <rect key={i} className={buried ? 'cm-svg-done' : 'cm-svg-piece'}
-                x={px + 40} y={y} width="200" height="12" rx="1" />
-        );
-      })}
-      <line className="cm-svg-arrow" x1={px + 20} y1={30 + slabs.length * 16 + 14}
-            x2={px + 20} y2={30 + slabs.length * 16 - 2} markerEnd="url(#cmArrow2)" />
-      <text className="cm-svg-pct" x={px} y="190">{count}</text>
-      <text className="cm-svg-cap" x={px + 62} y="190">{note}</text>
-    </g>
-  );
+                x={px + CM_PR_SLAB_X} y={34 + i * CM_PR_STEP} width={CM_PR_SLAB_W} height={CM_PR_SLAB_H} rx="1" />
+        ))}
+        <line className="cm-svg-arrow" x1={px + 22} y1={bottom + 12} x2={px + 22} y2={bottom} markerEnd="url(#cmArrow2)" />
+        <text className="cm-svg-pct" x={px + CM_PR_SLAB_X} y="196">{count}</text>
+        <text className="cm-svg-cap" x={px + CM_PR_SLAB_X + 46} y="196">{note}</text>
+      </g>
+    );
+  };
   return (
     <figure className="cm-fig">
-      <svg viewBox="0 0 720 206" role="img"
-           aria-label="이전에는 위아래 양쪽에서 가려진 레이어까지 계속 쌓였고, 이후에는 확정할 때 그것들을 지워 회차 16 기준 337장이 57장으로 줄었다">
+      <svg viewBox="0 0 720 210" role="img"
+           aria-label="이전에는 위아래 양쪽에서 가려진 레이어까지 계속 쌓였고, 이후에는 확정할 때 그것들을 버려 회차 16 기준 337장이 57장으로 줄었다">
         {panel(0, '이전 — 가려진 것도 쌓인다', CM_PR_BEFORE, '337장', '회차 16')}
-        <text className="cm-svg-cap" x="252" y="44">위에서 안 보이고</text>
-        <text className="cm-svg-cap" x="252" y="176">아래에서도 안 보인다</text>
-        <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="198" />
-        {panel(380, '이후 — 확정할 때 걷어낸다', CM_PR_AFTER, '57장', '같은 화면')}
+        {/* 두 주석은 구분선(x=350) 안쪽에 머물러야 한다 — 1회차에 366 까지 뻗어 뚫었다 */}
+        <text className="cm-svg-cap" x="240" y="54">위에서 안 보임</text>
+        <text className="cm-svg-cap" x="240" y="160">아래에서도 안 보임</text>
+        <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="202" />
+        {panel(380, '이후 — 확정할 때 버린다', CM_PR_AFTER, '57장', '같은 화면')}
 
         <defs>
           <marker id="cmArrow2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
@@ -305,7 +325,9 @@ function CMRenderStructViz() {
   return (
     <figure className="cm-fig">
       <svg viewBox="0 0 720 230" role="img"
-           aria-label="이전에는 레이어마다 GameObject와 Mesh를 뒀고, 이후에는 앞뒤 메시 두 개에 전 레이어를 이어붙여 렌더 오브젝트가 2개로 고정된다">
+           aria-label="가려진 레이어를 버린 뒤에도 남아 있던 렌더 오브젝트 77개를, 앞뒤 메시 두 개에 전 레이어를 이어붙여 2개로 고정한다">
+        {/* ⚠️ 여기에 337 을 쓰면 337→2 를 병합의 몫으로 귀속하게 된다 —
+            버리기(②)가 이미 337→77 을 했다. §01 F04 정정이 명시 금지한 자리다. */}
         <text className="cm-svg-lbl" x="0" y="14">이전 — 레이어마다 렌더 오브젝트</text>
         {stack.map(i => (
           <g key={i}>
@@ -316,8 +338,8 @@ function CMRenderStructViz() {
         <text className="cm-svg-cap" x="22" y={30 + 3 * 26 + 16}>⋮</text>
         <rect className="cm-svg-box" x="28" y="130" width="196" height="22" rx="2" />
         <text className="cm-svg-cap" x="36" y="145">GameObject + MeshFilter + Mesh</text>
-        <text className="cm-svg-pct" x="0" y="180">337개</text>
-        <text className="cm-svg-cap" x="58" y="180">회차 16</text>
+        <text className="cm-svg-pct" x="0" y="180">77개</text>
+        <text className="cm-svg-cap" x="46" y="180">②가 버린 뒤 · 회차 16</text>
 
         <line className="cm-svg-arrow" x1="252" y1="96" x2="304" y2="96" markerEnd="url(#cmArrow3)" />
 

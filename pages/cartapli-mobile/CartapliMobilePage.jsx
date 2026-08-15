@@ -35,14 +35,14 @@ const CM_RAIL = [
   { id: 'diagnose', label: '04 · 병목' },
   { head: '무엇을 고쳤나' },
   { id: 'reuse', label: '05 · 재사용' },
-  { id: 'prune', label: '06 · 삭제' },
+  { id: 'prune', label: '06 · 버리기' },
   { id: 'merge', label: '07 · 병합' },
   { id: 'burst', label: '08 · Burst' },
-  { head: '다시 잰 것' },
+  { head: '다시 재고, 고른 것' },
   { id: 'remeasure', label: '09 · 계측' },
   { id: 'policy', label: '10 · 판정' },
   { head: '어디까지 맞나' },
-  { id: 'verify', label: '11 · 검증' },
+  { id: 'verify', label: '11 · 검증·한계' },
 ];
 
 /* ─── 공통 조각 ──────────────────────────────────────── */
@@ -174,11 +174,7 @@ function CMContext({ data }) {
   return (
     <section id="context" className="nb-section lv3">
       <SectionHead no="01" title="개요와 저작 경계" kind="CONTEXT" />
-      <dl className="nb-facts">
-        {s.facts.map(([k, v]) => (
-          <React.Fragment key={k}><dt>{k}</dt><dd>{ri(v)}</dd></React.Fragment>
-        ))}
-      </dl>
+      {/* 경계가 정의표보다 먼저 온다 — 뒤에 두면 독자는 이미 전부를 내 작업으로 읽은 뒤다 */}
       <div className="cm-roles">
         <div className="cm-role">
           <div className="cm-role-h"><span className="glyph" aria-hidden="true">✓</span> 이 프로젝트에서 내가 만든 것</div>
@@ -189,6 +185,11 @@ function CMContext({ data }) {
           <p>{ri(s.others)}</p>
         </div>
       </div>
+      <dl className="nb-facts">
+        {s.facts.map(([k, v]) => (
+          <React.Fragment key={k}><dt>{k}</dt><dd>{ri(v)}</dd></React.Fragment>
+        ))}
+      </dl>
     </section>
   );
 }
@@ -217,7 +218,6 @@ function CMMap({ data }) {
       <Gist>{s.gist}</Gist>
       <Body>{s.lead}</Body>
       <window.CMMapViz />
-      <Body>{s.after}</Body>
     </section>
   );
 }
@@ -236,7 +236,6 @@ function CMDiagnose({ data }) {
       <Cond />
       <Body className="cm-revised">{s.revised}</Body>
       <Body>{s.after}</Body>
-      <Body className="cm-bg">{s.kernel}</Body>
     </section>
   );
 }
@@ -260,7 +259,7 @@ function CMPrune({ data }) {
   const s = data.s7;
   return (
     <section id="prune" className="nb-section lv3">
-      <SectionHead no="06" title="② 가려진 레이어는 확정 때 버린다" kind="2026-07-23" />
+      <SectionHead no="06" title="② 가려진 레이어를 확정 때 버린다" kind="2026-07-23" />
       <Link>{s.link}</Link>
       <window.CMPruneViz />
       <window.CMCodePair p={s.pair} />
@@ -275,14 +274,13 @@ function CMMerge({ data }) {
   const s = data.s8;
   return (
     <section id="merge" className="nb-section lv3">
-      <SectionHead no="07" title="③ 레이어당 렌더 오브젝트를 버리고 앞뒤 2메시로" kind="2026-07-24" />
+      <SectionHead no="07" title="③ 레이어당 렌더 오브젝트를 없애고 앞뒤 2메시로" kind="2026-07-24" />
       <Link>{s.link}</Link>
       <window.CMRenderStructViz />
       <window.CMCodePair p={s.pair} />
       <Notes items={s.notes} />
       <Table t={s.table} />
       <p className="cm-tablecap">{ri(s.reconcile)}</p>
-      <p className="cm-note">{ri(s.policyNote)}</p>
     </section>
   );
 }
@@ -294,9 +292,8 @@ function CMBurst({ data }) {
     <section id="burst" className="nb-section lv3">
       <SectionHead no="08" title="④ 분할을 Burst 잡과 네이티브 버퍼로" kind="2026-07-24" />
       <Link>{s.link}</Link>
-      <Body>{s.intro}</Body>
       <window.CMSlotViz />
-      <window.AsciiBlock title={s.slot.title} intro={s.slot.intro} code={s.slot.code} result={s.slot.result} />
+      <window.AsciiBlock title={s.slot.title} code={s.slot.code} />
       <window.CMCodePair p={s.pair} />
       <Notes items={s.notes} />
       <ul className="cm-results">
@@ -327,7 +324,6 @@ function CMRemeasure({ data }) {
           </div>
         ))}
       </div>
-      <Body className="cm-tradeoff">{s.cost}</Body>
       <Cond />
     </section>
   );
@@ -346,14 +342,9 @@ function CMPolicy({ data }) {
       <Notes items={s.notes} />
       <Table t={s.table} />
       <p className="cm-tablecap">{ri(s.tablecap)}</p>
-      <Cond />
+      {/* 공통 Cond 를 쓰지 않는다 — 이 표는 세 방식을 따로 돌린 별도 하네스다 */}
+      <p className="cm-cond">측정 조건 — {data.condPolicy}</p>
       <Body>{s.decide}</Body>
-      <Body className="cm-tradeoff">{s.tradeoff}</Body>
-      <p className="cm-note">{ri(s.timing)}</p>
-      <div className="cm-callout">
-        <div className="cm-callout-h">{s.revert.title}</div>
-        <div className="cm-callout-b">{ri(s.revert.body)}</div>
-      </div>
     </section>
   );
 }
@@ -387,6 +378,7 @@ function CMVerify({ data }) {
           </div>
         ))}
       </div>
+      <Body className="cm-close">{s.close}</Body>
     </section>
   );
 }
