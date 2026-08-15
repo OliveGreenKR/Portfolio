@@ -427,51 +427,89 @@ function CMSlotViz() {
 window.CMSlotViz = CMSlotViz;
 
 /* ── 8. ⑥ 세 방식 비교 (S11) ────────────────────────────────────────────── */
-// 같은 상황(위 두 장이 걸쳐 있고 둘이 합쳐야 아래를 다 가린다)에서 셋이 무엇을 하는지.
-// 라벨은 전부 도형 **밖**(y=28 · y≥110)에 둔다 — 안에 두면 상자 테두리가 글자를 관통한다.
-// 배치 검산: 마지막 패널 488 + 216 = 704 ≤ viewBox 720 ✓
-const CM_PC_W = 216, CM_PC_GAP = 244;
+// 사용자 지적(2026-08-15): 셋이 각각 무엇을 하는지가 안 보였다 — 같은 그림에 표시만 달랐다.
+// 방식마다 **자기 단계**를 보인다. 셋 다 같은 상황을 받고, 셋째만 빼는 계산을 아예 안 한다.
+// 배치 검산: 마지막 단계 504 + 104 = 608 ≤ viewBox 720 ✓ (캡션 최장 ≈ 92px → 596)
+// 라벨은 전부 상자 **밖**(왼쪽 이름 열 · 상자 아래 캡션)에 둔다 — 안에 두면 테두리가 글자를 관통한다.
+const CM_PC_STEP = [168, 336, 504], CM_PC_W = 104, CM_PC_H = 50;
+
 function CMPolicyCompareViz() {
-  const P = i => i * CM_PC_GAP;
-  const shapes = (p, kind) => (
-    <g>
-      <text className="cm-svg-cap" x={p + 44} y="32">위 레이어 A</text>
-      <text className="cm-svg-cap" x={p + 140} y="32">B</text>
-      <rect className={kind === 'miss' ? 'cm-svg-piece' : 'cm-svg-done'} x={p + 6} y="40" width="204" height="58" rx="2" />
-      <rect className="cm-svg-cover" x={p + 6} y="40" width="120" height="58" />
-      <rect className="cm-svg-cover" x={p + 90} y="40" width="120" height="58" />
-      {kind === 'union' && <rect className="cm-svg-union" x={p + 2} y="36" width="212" height="66" rx="3" />}
-      {kind === 'step' && <line className="cm-svg-half" x1={p + 90} y1="36" x2={p + 90} y2="102" />}
-      {kind === 'miss' && <text className="cm-svg-cap" x={p + 24} y="116">A 만으로도, B 만으로도 못 덮는다</text>}
-    </g>
-  );
+  // 한 단계 상자. kind 가 그 단계에서 무엇이 남았는지를 정한다
+  const step = (x, y, kind) => {
+    const w = CM_PC_W, bx = x + 6, by = y + 10, bw = 92, bh = 30, half = 46;
+    switch (kind) {
+      case 'twoCovers':   // 위 두 장이 따로 있다
+        return (<g>
+          <rect className="cm-svg-cover" x={bx} y={by} width={half} height={bh} />
+          <rect className="cm-svg-cover" x={bx + half} y={by} width={half} height={bh} />
+        </g>);
+      case 'merged':      // 둘을 하나로 합쳤다
+        return <rect className="cm-svg-union" x={bx - 3} y={by - 3} width={bw + 6} height={bh + 6} rx="2" />;
+      case 'piece':       // 아래 조각이 그대로 남아 있다
+        return <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />;
+      case 'gone':        // 남는 것이 없다
+        return <rect className="cm-svg-done" x={bx} y={by} width={bw} height={bh} rx="2" />;
+      case 'halfGone':    // 왼쪽만 깎였다
+        return (<g>
+          <rect className="cm-svg-done" x={bx} y={by} width={half} height={bh} />
+          <rect className="cm-svg-piece" x={bx + half} y={by} width={half} height={bh} />
+        </g>);
+      case 'pieceA':      // 조각 위에 한 장만 올려 본다
+        return (<g>
+          <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />
+          <rect className="cm-svg-cover" x={bx} y={by} width={half} height={bh} />
+        </g>);
+      case 'pieceB':
+        return (<g>
+          <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />
+          <rect className="cm-svg-cover" x={bx + half} y={by} width={half} height={bh} />
+        </g>);
+      default: return null;
+    }
+  };
+
+  const rows = [
+    { name: '합쳐서 뺀다', out: '가려짐 → 버린다',
+      steps: [['twoCovers', '위 두 장'], ['merged', '먼저 하나로 합치고'], ['gone', '한 번에 빼면 없다']] },
+    { name: '차례로 깎아낸다 · 채택', out: '가려짐 → 버린다',
+      steps: [['piece', '아래 조각'], ['halfGone', 'A 를 깎고'], ['gone', 'B 를 깎으면 끝']] },
+    { name: '덮였는지만 본다', out: '못 잡는다 → 남긴다',
+      steps: [['pieceA', 'A 하나로 덮나 — 아니오'], ['pieceB', 'B 하나로 덮나 — 아니오'], ['piece', '그대로 남는다']] },
+  ];
+
   return (
     <figure className="cm-fig">
-      <svg viewBox="0 0 720 206" role="img"
-           aria-label="위에 두 장이 걸쳐 있고 둘이 합쳐야 아래 조각을 다 가리는 상황에서 세 방식이 각각 무엇을 하는지. 한 장씩만 보는 방식만 이 경우를 놓친다">
-        <g>
-          <text className="cm-svg-lbl" x={P(0)} y="14">합쳐서 빼기</text>
-          {shapes(P(0), 'union')}
-          <text className="cm-svg-cap" x={P(0)} y="138">A 와 B 를 먼저 하나로 합치고</text>
-          <text className="cm-svg-cap" x={P(0)} y="156">그 합집합을 아래에서 뺀다</text>
-          <text className="cm-svg-txt" x={P(0)} y="186">가려짐 → 버린다</text>
-        </g>
-        <line className="cm-svg-sep" x1="228" y1="8" x2="228" y2="198" />
-        <g>
-          <text className="cm-svg-lbl" x={P(1)} y="14">한 장씩 빼기 · 채택</text>
-          {shapes(P(1), 'step')}
-          <text className="cm-svg-cap" x={P(1)} y="138">A 를 빼고, 남은 데서 B 를 뺀다</text>
-          <text className="cm-svg-cap" x={P(1)} y="156">합치는 단계가 없다</text>
-          <text className="cm-svg-txt" x={P(1)} y="186">가려짐 → 버린다</text>
-        </g>
-        <line className="cm-svg-sep" x1="472" y1="8" x2="472" y2="198" />
-        <g>
-          <text className="cm-svg-lbl" x={P(2)} y="14">한 장씩만 본다</text>
-          {shapes(P(2), 'miss')}
-          <text className="cm-svg-cap" x={P(2)} y="138">한 장이 통째로 품는 경우만 본다</text>
-          <text className="cm-svg-cap" x={P(2)} y="156">둘이 나눠 가리면 못 잡는다</text>
-          <text className="cm-svg-txt" x={P(2)} y="186">못 잡는다 → 남긴다</text>
-        </g>
+      <svg viewBox="0 0 720 320" role="img"
+           aria-label="세 방식이 같은 상황에서 각각 어떤 단계를 밟는지. 합쳐서 뺀다는 위 두 장을 먼저 합친 뒤 한 번에 빼고, 차례로 깎아낸다는 합치지 않고 한 장씩 깎으며, 덮였는지만 본다는 빼지 않고 한 장이 통째로 덮는지만 확인해 이 경우를 놓친다">
+        <text className="cm-svg-lbl" x="0" y="16">같은 상황 — 위 두 장이 걸쳐 있고, 둘이 합쳐야 아래 조각을 다 가린다</text>
+
+        {rows.map((r, ri) => {
+          const top = 34 + ri * 94;
+          return (
+            <g key={r.name}>
+              <text className="cm-svg-txt" x="0" y={top + 20}>{r.name}</text>
+              <text className="cm-svg-cap" x="0" y={top + 40}>{r.out}</text>
+              {r.steps.map(([kind, cap], si) => (
+                <g key={si}>
+                  <rect className="cm-svg-box" x={CM_PC_STEP[si]} y={top + 2} width={CM_PC_W} height={CM_PC_H} rx="3" />
+                  {step(CM_PC_STEP[si], top + 2, kind)}
+                  <text className="cm-svg-cap" x={CM_PC_STEP[si]} y={top + 68}>{cap}</text>
+                  {si < 2 && (
+                    <line className="cm-svg-arrow" x1={CM_PC_STEP[si] + CM_PC_W + 8} y1={top + 27}
+                          x2={CM_PC_STEP[si + 1] - 10} y2={top + 27} markerEnd="url(#cmArrow5)" />
+                  )}
+                </g>
+              ))}
+              {ri < 2 && <line className="cm-svg-span" x1="0" y1={top + 86} x2="704" y2={top + 86} />}
+            </g>
+          );
+        })}
+
+        <defs>
+          <marker id="cmArrow5" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
+            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
+          </marker>
+        </defs>
       </svg>
       <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s11.compareCaption)}</figcaption>
     </figure>
