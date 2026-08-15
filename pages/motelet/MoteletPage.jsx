@@ -60,8 +60,25 @@ function MTPoints({ points, title }) {
 function MTSub({ title, body }) {
   return (
     <div className="mt-sub">
-      <h4 className="mt-sub-title">{title}</h4>
+      <h3 className="mt-sub-title">{title}</h3>
       <p className="mt-body">{window.renderInline(body)}</p>
+    </div>
+  );
+}
+
+// 정의 강조 — 코드가 아닌 것에 CODE 라벨을 붙이지 않는다.
+function MTDefn({ title, intro, lines, result }) {
+  const ri = window.renderInline;
+  return (
+    <div className="mt-defn">
+      <div className="mt-defn-h">{ri(title)}</div>
+      {intro && <p className="mt-defn-intro">{ri(intro)}</p>}
+      <dl className="mt-defn-rows">
+        {lines.map(([k, v]) => (
+          <React.Fragment key={k}><dt>{ri(k)}</dt><dd>{ri(v)}</dd></React.Fragment>
+        ))}
+      </dl>
+      {result && <p className="mt-defn-note">{ri(result)}</p>}
     </div>
   );
 }
@@ -148,17 +165,12 @@ function MTHero({ data }) {
       <div className="nb-eyebrow">{m.eyebrow}</div>
       <p className="mt-hero-sub">{m.subtitle}</p>
       <h1 className="nb-title">{m.title}</h1>
+      <p className="mt-what">{ri(data.what)}</p>
       <p className="mt-hook">{ri(data.hook)}</p>
-
-      <div className="nb-metarow">
-        {m.pills.map((p, i) => (
-          <span key={i} className={`nb-metapill ${p.kind === 'accent' ? 'accent' : ''}`}><b>{p.text}</b></span>
-        ))}
-      </div>
 
       {/* 이 그림은 장식이 아니라 §04 의 문제 그 자체다. 캡션은 질문만 던진다. */}
       <figure className="mt-shot">
-        <img src={data.hero.img} alt={data.hero.caption} />
+        <img src={data.hero.img} alt="전투 화면 — 플레이어 하나와 화면을 덮은 적, 블랙홀과 밀대 효과가 동시에 돌고 있다" />
         <figcaption>{ri(data.hero.caption)}</figcaption>
       </figure>
 
@@ -172,7 +184,7 @@ function MTBoundary({ data }) {
   const b = data.boundary;
   return (
     <section id="boundary" className="nb-section">
-      <MTSectionHead no="01" title="무엇을 맡았고 무엇을 안 맡았는가" kind="SCOPE" />
+      <MTSectionHead no="01" title="맡은 것과 맡지 않은 것" kind="SCOPE" />
       <MTGist>{b.gist}</MTGist>
       <MTBody>{b.body}</MTBody>
 
@@ -182,7 +194,7 @@ function MTBoundary({ data }) {
       </div>
       <p className="mt-note">{window.renderInline(b.note)}</p>
 
-      <MTFold label="나머지 영역까지 — 코드 규모 전체">
+      <MTFold label={b.scaleMore.title}>
         <window.DataTable headers={b.scaleMore.headers} rows={b.scaleMore.rows} />
       </MTFold>
 
@@ -196,7 +208,7 @@ function MTGeo({ data }) {
   const g = data.geo;
   return (
     <section id="geo" className="nb-section">
-      <MTSectionHead no="02" title="물리 엔진을 빼고 그 자리에 무엇을 뒀는가" kind="RUNTIME" />
+      <MTSectionHead no="02" title="물리 엔진 자리에 들어간 것" kind="RUNTIME" />
       <MTGist>{g.gist}</MTGist>
       <MTBody>{g.problem}</MTBody>
       <MTBody>{g.decision}</MTBody>
@@ -216,7 +228,7 @@ function MTQueryCol({ q }) {
   return (
     <div className="mt-qcol">
       <div className="mt-qtag">{q.tag}</div>
-      <h4 className="mt-qtitle">{q.title}</h4>
+      <h3 className="mt-qtitle">{q.title}</h3>
       <p className="mt-body">{ri(q.why)}</p>
       <p className="mt-body">{ri(q.how)}</p>
       <p className="mt-qfall"><span className="mt-qfall-k">물러설 자리</span>{ri(q.fallback)}</p>
@@ -275,14 +287,12 @@ function MTDefine({ data }) {
       <MTGist>{d.gist}</MTGist>
       <MTBody>{d.problem}</MTBody>
 
-      <window.AsciiBlock title={d.formula.title} intro={d.formula.intro} code={d.formula.code} result={d.formula.result} />
+      <MTDefn title={d.formula.title} intro={d.formula.intro} lines={d.formula.lines} result={d.formula.result} />
 
       <MTBody>{d.whyNotDps}</MTBody>
       <window.AsciiBlock title={d.code.title} intro={d.code.intro} code={d.code.code} result={d.code.result} />
 
-      <MTFold label={d.policy.title}>
-        <p className="mt-body">{window.renderInline(d.policy.body)}</p>
-      </MTFold>
+      <MTSub title={d.policy.title} body={d.policy.body} />
 
       <MTBridge>{d.bridge}</MTBridge>
     </section>
@@ -295,7 +305,7 @@ function MTSearch({ data }) {
   const s = data.search;
   return (
     <section id="search" className="nb-section">
-      <MTSectionHead no="06" title="목표 곡선을 주면 값을 맞추는 것까지" kind="BALANCE" />
+      <MTSectionHead no="06" title="목표 곡선을 주면 값을 맞춘다" kind="BALANCE" />
       <MTGist>{s.gist}</MTGist>
       <MTBody>{s.body}</MTBody>
 
@@ -305,13 +315,23 @@ function MTSearch({ data }) {
       {/* 코드와 화면이 같은 것을 말하는 자리. 전체 창이라 가로 스와이프로 둔다. */}
       <figure className="mt-shot mt-shot-wide">
         <div className="mt-shot-scroll">
-          <img src={s.shot.img} alt={s.shot.caption} />
+          <img src={s.shot.img} alt="스킬트리 에디터 전체 창 — 가운데 그래프 캔버스, 좌우에 탐색 패널과 모델 노브" />
         </div>
         <figcaption>{ri(s.shot.caption)}</figcaption>
-        <p className="mt-note">{ri(s.shot.note)}</p>
       </figure>
+      <figure className="mt-shot mt-shot-zoom">
+        <img src={s.shot.zoom} alt="에디터 왼쪽 패널 확대 — 탐색 설정과 로그 성장률 산점도" />
+        <figcaption>{ri(s.shot.zoomCaption)}</figcaption>
+      </figure>
+      <p className="mt-note">{ri(s.shot.note)}</p>
 
       <MTSub title={s.host.title} body={s.host.body} />
+
+      <MTFold label={s.fold.title}>
+        <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
+      </MTFold>
+
+      <MTBridge>{s.bridge}</MTBridge>
     </section>
   );
 }
@@ -328,7 +348,7 @@ function MTCost({ data }) {
       {/* 색면을 쓰지 않는다 — 한계 목록이 섹션 요지와 같은 톤이 되면 층이 뭉갠다. */}
       {c.groups.map(g => (
         <div className="mt-costgrp" key={g.head}>
-          <h4 className="mt-costgrp-h">{g.head}</h4>
+          <h3 className="mt-costgrp-h">{g.head}</h3>
           <div className="mt-costs">
             {g.items.map(([k, v]) => (
               <div className="mt-cost" key={k}>
@@ -364,7 +384,7 @@ function MoteletPage({ indexHref = 'landing.html' }) {
           <MTCost data={data} />
           <footer className="nb-footer">
             <span>JCH · 2026 · projects / motelet</span>
-            <span>about / resume / contact</span>
+            <a href={indexHref}>index</a>
           </footer>
         </main>
         <div></div>
