@@ -3,28 +3,34 @@
 //
 // ⚠️ 사실을 만들지 않는다. pages/motelet/data.js 를 참조만 한다.
 //
-// 2026-08-12: 한 장짜리 요약에서 **메인급**으로 올렸다. 이 덱의 다른 세 프로젝트는
-// "구조를 나눴다 / 재서 고쳤다" 축인데, Motelet 만 **게임을 식으로 옮겨 계산으로 판단한**
-// 축이다. 한 장으로 누르면 그 축이 통째로 사라진다.
+// 2026-08-15 전면 재조립. 페이지가 갈아엎히면서 이 파일이 참조하던 키
+// (model · tool · runtime · limits · context)가 통째로 사라졌다 — 덱이 깨져 있었다.
 //
-// 서사 순서: 모델(무엇을 계산으로 바꿨나) → 도구(그 식으로 무엇을 봤나) → 런타임(직접 짠 것).
-//   02   모델 — 최종식 한 벌 + 항별 분해 (원래 '용어 넷' 과 '실제 식' 두 장이었다)
-//   03   모델의 사정거리 — 읽는 것 / 안 읽는 것 / 재지 않은 것
-//   04   도구 — 에디터 통합 화면 + 시뮬이 읽어 낸 다섯
-//   05   자동 수치 탐색기 — 만들고 결정에는 안 씀
-//   06   배틀 런타임 다섯
+// ■ 왜 다시 잘랐나
+//   구판 덱의 축은 "게임을 식으로 옮겨 계산으로 판단했다" 였다. 그건 페이지의 옛 순서
+//   (모델 → 시뮬 → 탐색 → 런타임)를 그대로 물려받은 것이고, 그 순서는 페이지 스스로
+//   "절끼리 인과가 없다" 고 적어 놓은 배치였다.
+//   새 축 = CORE: **무엇이 정답인지부터 정의하고, 정확해가 필요한 자리와 근사로 충분한
+//   자리를 갈라 비용을 그쪽에만 냈다.** 이건 런타임에서 세 번, 도구에서 한 번 반복된다.
 //
-// ⚠️ 밀도는 지면을 채우는 게 아니라 **내용**이다 (2026-08-12 사용자 지적).
-//    항목 넷을 큰 글씨로 늘려 한 장을 채우면 채움률만 오르고 읽을 것은 그대로다.
-//    같은 주제를 두 장에 나눠 담고 있으면 합쳐서 한 장에 사실을 두 배로 싣는다.
+// ■ 5장의 일 (표지 포함)
+//   01 표지     — CORE 한 문장
+//   02 정의     — 정답을 두 번 다시 정의했다 (물리 기각 / 상한을 면적으로)
+//   03 가름     — 정확해가 필요한 자리 vs 근사로 충분한 자리 (코드는 한 벌 — 아래 ⚠️)
+//   04 도구     — 같은 순서를 런타임 밖에서 (체감의 정의 → 미분 없음 → 근사 탐색)
+//   05 대가     — 갈라서 낸 값
 //
-// 뺀 것:
-//   model.handoff · tool.handoff — 롱스크롤에서 다음 절로 넘기는 이음말. 덱에는 이을 대상이 없다
-//   model.body — 첫 문장은 제목·gist 와 같은 말이고, 뒷 문장은 gist 에 붙였다
-//   tool.shots[1] (곡선 그림) — 에디터 화면 한 장이 도구를 이미 보인다. 두 장 쓸 일이 아니다
-//   runtime.steps[*].code · viz — 다섯을 한 장에 목록으로 낸다. 코드까지 실으면 다섯 장이 되고,
-//     런타임은 이 프로젝트의 주장(계산으로 판단했다)의 곁가지다. 상세는 사이트에 있다
-//   limits[2..3] — 모델 사정거리 장의 '재지 않은 것' 칸이 limits[0..1] 로 이미 정면에서 말한다
+// ■ 밀도는 지면을 채우는 게 아니라 내용이다 (2026-08-12 사용자 지적).
+//   항목 넷을 큰 글씨로 벌려 한 장을 채우면 채움률만 오르고 읽을 것은 그대로다.
+//
+// ■ 뺀 것
+//   §01 경계 절 전체 — 표를 덱 한 장에 넣으면 숫자만 남고 판단이 안 보인다.
+//     역할 경계는 05 장 note 한 줄로 받는다(빼면 안 되는 제약이라 자리는 유지).
+//   geo.problem · cap.recall — hero 로 되짚는 문장이다. 덱에는 되짚을 스크롤이 없다.
+//   define.formula / search.fold — 정의식과 목적함수 4항. 03·04 장이 이미 꽉 찼다.
+//   bridge 6개 — 다음 절로 넘기는 이음말. 덱에는 이을 대상이 없다.
+//   에디터 전체 창 컷 — 확대 컷 하나가 코드-차트 대응을 더 잘 보인다(덱은 폭이 좁다).
+//   여유 질의 코드 — columns 가 code 를 안 그려 step 한 장으로 눌렀고, 코드는 한 벌만 들어간다.
 
 (function buildMoteletDeck() {
   const M = window.MOTELET_DATA;
@@ -36,113 +42,115 @@
   window.DECK_PARTS.motelet = {
     proj: 'Motelet',
     slides: [
-      // ─── 표지 ───
+      // ─── 01 표지 ───
       {
         layout: 'cover',
         section: 'Main · In progress',
-        // eyebrow 는 "MAIN · 02 ─ …" 로 시작한다 — 사이트 색인 번호다. 덱에서 Motelet 은
-        // 04 번이라 번호가 충돌하고, 다른 표지들은 이 자리에 프로젝트명이 온다.
         subtitle: M.meta.subtitle,
-        // data.js 제목("스킬 트리 밸런싱을 계산으로")은 조사로 끝나 헤딩 자리에서 문장이
-        // 잘린 것처럼 읽힌다. 이 프로젝트가 한 일을 명사구로 그대로 옮긴다.
-        title: '수학적 모델링을 통한 밸런싱',
+        title: M.meta.title,
+        // hook 은 "**그 가름을** 기하 판정에서 한 번…" 으로 시작한다. 페이지에서는 바로 위
+        // 제목이 선행사이고 덱 표지도 같은 배치라 그대로 둔다.
         hook: M.hook,
-        pills: M.meta.pills,
-        // 원문 캡션("배틀 화면. 광역 능력 두 개가 적이 몰린 지점에서 열린다.")은 사이트에서
-        // 능력 발동 위치 절을 받는 말이다. 표지에는 그 절이 없어 가리킬 대상이 없다.
-        hero: { img: M.hero.img, caption: '인게임 화면' },
-      },
-
-      // ─── 02 모델 — 최종식 한 벌과 항별 분해 ───
-      // 원래 '용어 넷'(list) 과 '실제 식'(code) 두 장이었다. 둘 다 같은 식을 말하는데
-      // 한쪽은 항의 뜻만, 한쪽은 식만 실어 장마다 읽을 것이 절반이었다.
-      // 식을 오른쪽에 두고 왼쪽에 항을 풀면 한 장에서 식과 뜻이 서로를 받는다.
-      {
-        layout: 'step',
-        section: '02 모델',
-        no: 'a',
-        title: '한 판의 골드 — 최종식과 항별 분해',
-        gist: M.model.gist + ' ' + M.model.body.split('. ').slice(1).join('. '),
-        // 코드 블록이 formula.title · intro 를 제 안에서 그리므로 lead 에 되풀이하지 않는다.
-        // 대신 lead 자리에는 코드가 안 말하는 것 — 값을 어디서 읽어 오는지 — 를 둔다.
-        // 원문의 "위의 계산" 은 롱스크롤에서 식이 위에 있던 흔적이다 (여기서는 오른쪽).
-        step: {
-          problem: M.model.source.title + ' — '
-            + deref(M.model.source.body, '위의 계산은', '이 식은'),
-          code: M.model.formula,
-          points: [],
-        },
-        points: M.model.terms.concat([['공격력의 자리', M.model.formula.result]]),
-      },
-
-      // ─── 03 모델 — 사정거리 ───
-      // 도구를 자랑하는 장 사이에 **안 읽는 것**을 먼저 박는다. 모델을 파는 사람과
-      // 모델의 한계를 아는 사람은 다르게 읽힌다.
-      {
-        layout: 'columns',
-        section: '02 모델',
-        no: 'b',
-        // 원제('이 모델의 사정거리')는 비유다 — 무엇의 범위를 말하는지가 제목만 보고 안 잡힌다.
-        // 사이트 제목은 그대로 두고 덱에서만 덮는다.
-        title: '모델이 다루는 범위와 한계',
-        gist: M.model.scope.lead,
-        cols: [
-          { kind: 'READS', mark: '✓', tone: 'sage', title: '이 모델이 읽는 것', items: M.model.scope.reads },
-          { kind: 'SKIPS', mark: '✗', tone: 'terra', title: '읽지 않는 것', items: M.model.scope.skips },
-          // 셋째 칸. scope 는 모델의 **입력** 범위만 말하는데, 안 잰 것은 그것 말고 또 있다.
-          // limits 에 이미 적혀 있는 것을 여기로 끌어온다 — 두 장 쓸 일이 아니다.
-          { kind: 'UNVERIFIED', mark: '✗', tone: 'terra', title: '재지 않은 것',
-            pairs: [M.limits[0], M.limits[1]] },
+        // ⚠️ 표지 pills 는 덱 로컬이다. 페이지에서는 바로 아래 built 카드 3장과 같은 말이라
+        //    뺐는데(05 렌즈2), 표지에는 그 카드가 없어 중복이 아니다.
+        //    공유 Cover 렌더러가 pills 를 무조건 map 한다 — 없으면 덱 전체가 깨진다.
+        pills: [
+          { text: '배틀 런타임', kind: 'accent' },
+          { text: '기하 판정' },
+          { text: '공간 질의' },
+          { text: '밸런싱 모델' },
+          { text: '에디터 도구' },
         ],
-        colCount: 3,
-        // why 는 두 문장 170자다. 앞 문장("환산 계수는 손으로 정했다")은 새 셋째 칸이
-        // 이미 말하므로, 그래서 어떻게 쓰느냐는 결론 문장만 남긴다.
-        note: M.model.scope.why.split('. ').slice(1).join('. '),
+        // 이 그림은 장식이 아니라 04 장이 답하는 질문이다. 캡션이 그 질문을 그대로 진다.
+        hero: { img: M.hero.img, caption: M.hero.caption },
       },
 
-      // ─── 04 도구 — 에디터 통합 화면 + 읽어 낸 것 다섯 ───
-      // 원래 화면 한 장 + 목록 한 장이었다. 목록 장은 항목 다섯을 큰 글씨로 벌려
-      // 지면만 채웠고(실측 79%) 화면 장은 요점이 둘뿐이었다. 합치면 한 장에서
-      // "이렇게 생겼고, 이걸 읽는다" 가 같이 선다.
-      {
-        layout: 'diagram',
-        section: '03 도구',
-        // 제목은 화면 설명이 아니라 **이 장에서 한 일**을 적는다 — 도구를 만들었다는 것.
-        // 그 도구로 무엇을 읽는지는 요점 다섯이 댄다.
-        title: '스킬트리 밸런싱 에디터 툴 제작',
-        lead: M.tool.loopBody,
-        step: { img: M.tool.shots[0] },
-        points: M.tool.read,
-        // 원문 라벨은 의문형이고, 끝 문장("밸런싱은 이 결과를 참고해 손으로 했다")은
-        // 도구가 답을 정하지 않았다는 이 장의 결론이라 노트로 받는다.
-        note: M.tool.purpose.body,
-      },
-
-      // ─── 04 그 외 만든 것 — 자동 탐색기와 배틀 런타임 ───
-      // 원래 두 장이었다. 둘 다 pairs 다섯짜리 목록 하나뿐인 반 장이었고, 성격도 같다 —
-      // 이 절의 주장(계산으로 판단했다)에 직접 쓰이지는 않은 구현물이다.
-      // 탐색기는 만들고 결정에 안 썼고, 런타임은 엔진이 안 정해 주는 것을 직접 정한 것이다.
-      // 두 칸으로 세우면 한 장에 열 쌍이 들어간다.
+      // ─── 02 정의 — 정답을 두 번 다시 정의했다 ───
+      // 구판에는 없던 장이다. CORE 의 전반부("정답을 먼저 정의")를 런타임 사례 둘로 세운다.
+      // 물리 기각은 "무엇을 안 쓰기로 했나" 형이고, 스폰 상한은 "정답 자체를 다시 정의" 형이라
+      // 둘을 나란히 놓아야 두 번째가 무엇이 다른지 보인다.
       {
         layout: 'columns',
-        section: '04 그 외',
-        title: '그 외 만든 것 — 자동 탐색기 · 배틀 런타임',
+        section: '02 정의',
+        title: '정답을 먼저 정의한다 — 런타임에서 두 번',
+        gist: M.geo.gist,
         colCount: 2,
         cols: [
-          { kind: 'SEARCH', mark: '✗', tone: 'terra',
-            title: '자동 수치 탐색기 — 만들고 결정에는 안 씀',
-            // 원문 라벨은 의문형이라 sub 로 내리며 서술문으로 받는다.
-            sub: M.search.notUsed.body,
-            // 원문 마지막 항목은 "…아래 이유와 겹친다" 로 끝난다 — 페이지에서는 notUsed 절이
-            // 아래에 있지만 이 카드에서는 sub 로 **위에** 있다. 가리킬 아래가 없다.
-            pairs: M.search.built.map((p) => [p[0], deref(p[1], '이고, 아래 이유와 겹친다.', '이다.')]) },
-          { kind: 'RUNTIME', mark: '✓', tone: 'sage',
-            title: '배틀 런타임 — 엔진이 안 정해 주는 것 다섯',
-            sub: M.runtime.gist,
-            pairs: M.runtime.steps.map((s) => [s.title, s.did]) },
+          { kind: 'REJECT', mark: '✗', tone: 'terra',
+            title: '물리 엔진을 안 쓴다',
+            sub: M.geo.decision,
+            pairs: M.geo.points },
+          { kind: 'REDEFINE', mark: '✓', tone: 'sage',
+            title: '상한을 개수가 아니라 면적으로',
+            sub: M.cap.decision,
+            pairs: M.cap.points },
         ],
-        // 원문은 "…기반은 **팀원 작업**이다" 로 끝난다. 앞에 라벨을 붙이면 한 줄에 두 번이다.
-        note: '팀원 — ' + M.context.roles.others.replace('은 **팀원 작업**이다 ', ' '),
+        note: M.queries.pattern,
+      },
+
+      // ─── 03 가름 — 정확해 / 근사 ───
+      // 이 덱에서 CORE 의 양쪽 절반이 한 화면에서 대비되는 유일한 장이다.
+      // ⚠️ columns 레이아웃은 code 를 안 그린다(공유 렌더러 SlideDeck.jsx — 수정 금지 대상).
+      //    그래서 step 으로 세우고 코드는 한 벌만 싣는다. 고른 것은 밀집 질의 쪽 —
+      //    "근사가 아니다" 가 이 장에서 유일하게 증명이 필요한 주장이고,
+      //    루프 범위(-1..1)가 그 주장의 증거 전부다. 여유 질의의 "최대를 안 고른다" 는
+      //    문장으로 전달된다(코드가 없어도 반박당하지 않는다).
+      {
+        layout: 'step',
+        section: '03 가름',
+        title: '정확해가 필요한 자리와 근사로 충분한 자리',
+        gist: M.queries.vizCaption,
+        step: {
+          problem: M.queries.left.tag + ' — ' + M.queries.left.how,
+          code: M.queries.left.code,
+          points: [],
+        },
+        points: [
+          [M.queries.left.title + ' · 물러설 자리', M.queries.left.fallback],
+          [M.queries.right.tag + ' — ' + M.queries.right.title, M.queries.right.how],
+          [M.queries.right.title + ' · 물러설 자리', M.queries.right.fallback],
+        ],
+      },
+
+      // ─── 04 도구 — 같은 순서를 런타임 밖에서 ───
+      // 페이지의 §05+§06 을 한 장으로 누른다. 둘을 쪼개면 "정의 → 미분 없음 → 근사 탐색"
+      // 이라는 사슬이 장 경계에서 끊긴다 — 이 장의 값어치가 정확히 그 사슬이다.
+      // 그림은 확대 컷 하나만 쓴다. 전체 창은 덱 폭에서 아무것도 안 읽힌다.
+      {
+        layout: 'diagram',
+        section: '04 도구',
+        title: '같은 순서를 도구에서 한 번 더',
+        lead: M.define.gist + ' ' + M.search.gist,
+        step: { img: { src: M.search.shot.zoom, caption: M.search.shot.zoomCaption } },
+        points: [
+          ['DPS 를 기준으로 안 삼았다',
+            deref(M.define.whyNotDps.split('. ').slice(1).join('. '),
+                  '그래서 모델이 두 항 중 **작은 쪽**을 취하고,',
+                  '모델이 두 항 중 **작은 쪽**을 취하고,')],
+          ['곡선은 구매 정책의 함수다', M.define.policy.body.split('. ')[0] + '.'],
+        ].concat(M.search.points),
+        note: M.search.shot.note,
+      },
+
+      // ─── 05 대가 ───
+      // 구판은 한계를 '모델 사정거리' 장에 섞어 넣었다. 이번엔 독립 장이다 —
+      // 이 페이지·덱에 성능 수치가 하나도 없다는 것을 듣는 쪽이 눈치채기 전에 먼저 말한다.
+      {
+        layout: 'columns',
+        section: '05 대가',
+        title: '갈라서 낸 대가',
+        gist: M.cost.gist,
+        colCount: 3,
+        cols: M.cost.groups.map((g, i) => ({
+          kind: ['STRUCT', 'MODEL', 'UNMEASURED'][i],
+          mark: '✗',
+          tone: 'terra',
+          title: g.head,
+          pairs: g.items,
+        })),
+        // 역할 경계는 덱에서 뺄 수 없는 제약이다. 표를 실을 자리가 없으므로 한 줄로 받는다.
+        note: '역할 경계 — ' + M.boundary.gist.replace(/\*\*/g, '')
+              + ' 담당 경계는 디렉터리별 커밋 표로 사이트에 있다.',
       },
     ],
   };
