@@ -198,7 +198,7 @@ function CMDiagnoseViz() {
               {i < 2 && (
                 <line className="cm-svg-arrow" x1={s.x + 196} y1="62" x2={s.x + 224} y2="62" markerEnd="url(#cmArrow)" />
               )}
-              {/* ⚠️ .cm-bar.burst 를 쓰지 않는다 — 02 의 범례가 그 색을 "Burst 잡"으로 정의했다.
+              {/* ⚠️ .cm-bar.burst 를 쓰지 않는다 — §02 의 범례가 그 색을 "Burst 잡"으로 정의했다.
                   두 절 뒤에서 같은 색이 "렌더링 준비"를 뜻하면 색이 거짓말을 한다(05 렌즈0·2 일치). */}
               <rect className={`cm-bar ${i === 2 ? 'hot' : 'neutral'}`} x={cx - 33} y={CM_DG_BASE - h} width="66" height={h} />
               <text className="cm-svg-val" x={cx} y={CM_DG_BASE - h - 9} textAnchor="middle">{s.label}</text>
@@ -273,7 +273,7 @@ function CMReuseViz() {
 }
 window.CMReuseViz = CMReuseViz;
 
-/* ── 5. ② 삭제 before/after (S7) ─────────────────────────────────────────── */
+/* ── 5. ② 버리기 before/after (S7) ─────────────────────────────────────────── */
 // 종이 단면. 위·아래 양쪽에서 가려진 슬래브는 어떻게 접어도 드러나지 않는다.
 // 배치 검산: 우측 패널 380 + 40 + 200 = 620 ≤ viewBox 720 ✓
 // 가려짐 표시 수는 캡션의 감소율과 맞아야 한다 — 9장 중 7장을 버려 2장(−78%)이 337→57(−83%)에 가장 가깝다
@@ -282,18 +282,18 @@ const CM_PR_AFTER = [0, 0];
 const CM_PR_SLAB_X = 44, CM_PR_SLAB_W = 190, CM_PR_SLAB_H = 11, CM_PR_STEP = 15;
 
 function CMPruneViz() {
-  const panel = (px, title, slabs, count, note) => {
+  const panel = (px, title, slabs, count, note, arrows) => {
     const bottom = 34 + slabs.length * CM_PR_STEP;
     return (
       <g>
         <text className="cm-svg-lbl" x={px} y="14">{title}</text>
         {/* 화살표는 x=px+22 한 열에만 있다 — 카운트를 슬래브 열(px+44)에 두어 x 가 안 겹친다 */}
-        <line className="cm-svg-arrow" x1={px + 22} y1="22" x2={px + 22} y2="34" markerEnd="url(#cmArrow2)" />
+        {arrows && <line className="cm-svg-arrow" x1={px + 22} y1="22" x2={px + 22} y2="34" markerEnd="url(#cmArrow2)" />}
         {slabs.map((buried, i) => (
           <rect key={i} className={buried ? 'cm-svg-done' : 'cm-svg-piece'}
                 x={px + CM_PR_SLAB_X} y={34 + i * CM_PR_STEP} width={CM_PR_SLAB_W} height={CM_PR_SLAB_H} rx="1" />
         ))}
-        <line className="cm-svg-arrow" x1={px + 22} y1={bottom + 12} x2={px + 22} y2={bottom} markerEnd="url(#cmArrow2)" />
+        {arrows && <line className="cm-svg-arrow" x1={px + 22} y1={bottom + 12} x2={px + 22} y2={bottom} markerEnd="url(#cmArrow2)" />}
         <text className="cm-svg-pct" x={px + CM_PR_SLAB_X} y="196">{count}</text>
         <text className="cm-svg-cap" x={px + CM_PR_SLAB_X + 46} y="196">{note}</text>
       </g>
@@ -303,12 +303,12 @@ function CMPruneViz() {
     <figure className="cm-fig">
       <svg viewBox="0 0 720 210" role="img"
            aria-label="이전에는 위아래 양쪽에서 가려진 레이어까지 계속 쌓였고, 이후에는 확정할 때 그것들을 버려 회차 16 기준 337장이 57장으로 줄었다">
-        {panel(0, '이전 — 가려진 것도 쌓인다', CM_PR_BEFORE, '337장', '회차 16')}
+        {panel(0, '이전 — 가려진 것도 쌓인다', CM_PR_BEFORE, '337장', '회차 16', true)}
         {/* 두 주석은 구분선(x=350) 안쪽에 머물러야 한다 — 1회차에 366 까지 뻗어 뚫었다 */}
         <text className="cm-svg-cap" x="248" y="54">위에서 안 보임</text>
         <text className="cm-svg-cap" x="248" y="160">아래에서도 안 보임</text>
         <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="202" />
-        {panel(380, '이후 — 확정할 때 버린다', CM_PR_AFTER, '57장', '같은 화면')}
+        {panel(380, '이후 — 확정할 때 버린다', CM_PR_AFTER, '57장', '같은 화면', false)}
 
         <defs>
           <marker id="cmArrow2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
