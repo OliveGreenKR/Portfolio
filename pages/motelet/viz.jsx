@@ -5,63 +5,74 @@
 // 규칙 1: 그림 하나는 문장 하나를 대신한다. 그 문장이 캡션이다.
 //         캡션에 본문 문장을 복붙하지 않는다 — 캡션은 그림만 줄 수 있는 것을 말한다.
 // 규칙 2: 없는 데이터를 그리지 않는다. 이 페이지에는 계측본이 없으므로
-//         "측정 결과처럼 보이는 그림" 을 만들지 않는다. 여기 있는 넷은 전부 원리도다 —
-//         골드 분해 · 밀집 질의 · 점유 상한 · 노드 값 재는 법. 눈금도 값도 없다.
-//         실제 곡선과 히트맵은 에디터 스크린샷으로만 보인다.
+//         "측정 결과처럼 보이는 그림" 을 만들지 않는다. 여기 셋은 전부 원리도다 —
+//         대체 범위 · 밀집 질의 · 여유 질의. 눈금도 값도 없다.
 // 규칙 3: 배치 상수 옆에 총폭 계산 주석을 남긴다 (.mt-figure 가 overflow:hidden).
 // 규칙 4: SVG 안의 긴 설명 문장에는 mt-svg-note 를 붙인다 — 720px 이하에서 숨겨진다
 //         (viewBox 가 축소되면 실제 픽셀이 4~5px 로 떨어져 읽을 수 없다).
+//         숨긴 내용은 figcaption 이 받는다.
 
-/* ─── 한 판의 골드를 무엇으로 쪼갰나 ─────────────────── */
-/* 이 페이지의 첫 그림이자 제일 중요한 그림. 개념 뼈대를 3초에 보이게 한다.
-   숫자 없음 — 구조만 말한다. */
-function MTDecompViz() {
-  const W = 760, H = 232;
-  // 총폭: 손자 열이 480 + 230 = 710 < 760 ✓
-  const box = (x, y, w, h, t, s, tone) => (
-    <g key={t}>
-      <rect x={x} y={y} width={w} height={h} rx="3"
-            fill={tone === 'root' ? 'var(--sage-100)' : tone === 'mid' ? 'var(--paper-2)' : 'var(--paper)'}
-            stroke={tone === 'root' ? 'var(--sage-500)' : 'var(--rule-2)'}
-            strokeWidth={tone === 'root' ? 1.8 : 1} />
-      <text x={x + w / 2} y={y + (s ? 20 : h / 2 + 5)} textAnchor="middle"
-            className={tone === 'root' ? 'mt-svg-lbl root' : 'mt-svg-lbl'}>{t}</text>
-      {s && <text x={x + w / 2} y={y + 36} textAnchor="middle" className="mt-svg-sub">{s}</text>}
-    </g>
-  );
-  const elbow = (x1, y1, x2, y2, mid) => (
-    <polyline points={`${x1},${y1} ${mid},${y1} ${mid},${y2} ${x2},${y2}`}
-              fill="none" stroke="var(--rule-2)" />
-  );
+/* ─── 물리 엔진 자리에 들어간 것의 범위 ──────────────── */
+/* 이 그림의 일은 자랑이 아니라 한계 긋기다 — "물리 엔진을 직접 만들었다" 로
+   읽히지 않게, 실제로 들어간 것이 네 겹뿐임을 보인다. */
+function MTGeoArchViz({ caption }) {
+  const W = 760, H = 262;
+  // 총폭: 마지막 열 x=566 + w=178 = 744 < 760 ✓
+  const cols = [
+    { x: 16,  w: 140, t: '호출자',       items: ['블레이드 매 프레임', '대시 스윕 1회', '장판 · 밀대', '스폰 · 배치'] },
+    { x: 186, w: 170, t: '질의 4종',      items: ['원', '캡슐', '회전 사각', '캡슐 다발'] },
+    { x: 386, w: 150, t: '모양 디스패치', items: ['바디 = 원', '바디 = 캡슐', '× 질의 모양', '→ 커널 선택'] },
+    { x: 566, w: 178, t: '수학 커널 7',   items: ['원-원 · 원-캡슐', '원-사각 · 캡슐-캡슐', '캡슐-사각', '선분 · 점 거리'] },
+  ];
+  const top = 44, boxH = 176;
 
   return (
-    <figure className="mt-figure">
+    /* 네 열의 항목 글자가 이 그림의 본체라 720px 이하에서 숨길 수가 없다.
+       viewBox 가 폭에 맞춰 줄면 8.5px 가 3.2px 로 떨어져 유실되므로(320px 실측),
+       그림만 가로 스와이프로 돌린다 — 세로는 잠근다. */
+    <figure className="mt-figure mt-figure-scroll">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
-           aria-label="한 판의 골드는 단위시간당 골드와 세션 시간의 곱이다">
-        {elbow(190, 113, 240, 55, 215)}
-        {elbow(190, 113, 240, 175, 215)}
-        {elbow(430, 55, 480, 30, 455)}
-        {elbow(430, 55, 480, 82, 455)}
-        <line x1={430} x2={480} y1={175} y2={175} stroke="var(--rule-2)" />
+           aria-label="물리 엔진 자리에 들어간 것은 질의 4종과 커널 7함수뿐이다">
+        <text x={16} y="22" className="mt-svg-lbl">물리 엔진 없이 — 실제로 들어간 것</text>
 
-        <circle cx={215} cy={113} r="10" fill="var(--paper)" stroke="var(--sage-500)" />
-        <text x={215} y={118} textAnchor="middle" className="mt-svg-op">×</text>
+        {cols.map((c, i) => (
+          <g key={c.t}>
+            <rect x={c.x} y={top} width={c.w} height={boxH} rx="3"
+                  fill={i === 0 ? 'var(--paper)' : i === 3 ? 'var(--sage-50)' : 'var(--paper-2)'}
+                  stroke={i === 3 ? 'var(--sage-500)' : 'var(--rule-2)'}
+                  strokeWidth={i === 3 ? 1.6 : 1} />
+            <text x={c.x + c.w / 2} y={top + 24} textAnchor="middle" className="mt-svg-lbl">{c.t}</text>
+            <line x1={c.x + 12} x2={c.x + c.w - 12} y1={top + 36} y2={top + 36} stroke="var(--rule)" />
+            {c.items.map((it, j) => (
+              <text key={it} x={c.x + c.w / 2} y={top + 62 + j * 27} textAnchor="middle"
+                    className="mt-svg-sub">{it}</text>
+            ))}
+          </g>
+        ))}
 
-        {box(20, 88, 170, 50, '한 판의 골드', null, 'root')}
-        {box(240, 33, 190, 44, '단위시간당 골드', null, 'mid')}
-        {box(240, 153, 190, 44, '세션 시간', null, 'mid')}
-        {box(480, 8, 230, 44, '처치 속도', '공격원 5종의 합', 'leaf')}
-        {box(480, 60, 230, 44, '처치당 골드', '적 분포의 기대값', 'leaf')}
-        {box(480, 153, 230, 44, '스태미나 ÷ 초당 소모', null, 'leaf')}
+        {cols.slice(0, 3).map((c, i) => {
+          const x1 = c.x + c.w, x2 = cols[i + 1].x, y = top + boxH / 2;
+          return (
+            <g key={`a${i}`}>
+              <line x1={x1 + 4} x2={x2 - 10} y1={y} y2={y} stroke="var(--rule-2)" />
+              <polyline points={`${x2 - 14},${y - 4} ${x2 - 6},${y} ${x2 - 14},${y + 4}`}
+                        fill="none" stroke="var(--rule-2)" />
+            </g>
+          );
+        })}
+
+        <text x={16} y={H - 8} className="mt-svg-sub mt-svg-note">
+          상태를 갖는 것은 등록된 바디 집합 하나뿐 — 커널은 순수 함수다
+        </text>
       </svg>
       <figcaption className="mt-figcap">
-        스킬이 무엇을 올리든 <b>이 세 잎 중 하나를 움직인다.</b>
-        그래서 노드 하나의 값을 같은 단위로 비교할 수 있다.
+        {window.renderInline(caption)} 상태를 갖는 것은 <b>등록된 바디 집합 하나뿐</b>이고,
+        커널은 인자만 받는 순수 함수다.
       </figcaption>
     </figure>
   );
 }
-window.MTDecompViz = MTDecompViz;
+window.MTGeoArchViz = MTGeoArchViz;
 
 /* ─── 밀집 지점 질의 — 셀 크기 R 이면 3×3 이 필요충분 ── */
 function MTDensityViz() {
@@ -93,7 +104,7 @@ function MTDensityViz() {
     <figure className="mt-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
            aria-label="셀 크기를 R 로 잡으면 반경 R 안의 적은 반드시 자기 셀의 3×3 이웃 안에 있다">
-        <text x={gx} y="22" className="mt-svg-lbl">균일 격자 — 셀 한 변 = R</text>
+        <text x={gx} y="22" className="mt-svg-lbl">가장 많이 덮는 지점 — 셀 한 변 = R</text>
 
         {/* 격자 */}
         {Array.from({ length: cols + 1 }).map((_, i) => (
@@ -139,179 +150,96 @@ function MTDensityViz() {
 }
 window.MTDensityViz = MTDensityViz;
 
-/* ─── 스폰 상한 — 마릿수 축과 면적 축 ────────────────── */
-/* 두 패널의 마릿수는 같고 반지름만 2배다. 면적은 정확히 4배가 된다(π 는 약분).
-   절대 점유율은 화면 크기에 달렸으므로 적지 않고, 축 사이의 비만 보인다. */
-function MTOccupancyViz() {
-  const W = 760, H = 306;
-  const pad = 20, panelW = 350, gap = 20;
-  // 총폭: 20 + 350 + 20 + 350 = 740 < 760 ✓
-  const panels = [
-    { x: pad,                r: 16, head: '작은 적 8마리', occ: '×1', ok: true },
-    { x: pad + panelW + gap, r: 32, head: '큰 적 8마리',   occ: '×4', ok: false },
-  ];
-  // 화면 사각 안의 8자리 (패널 로컬 비율 0~1)
-  const slots = [[0.14, 0.24], [0.40, 0.16], [0.68, 0.28], [0.88, 0.55],
-                 [0.20, 0.62], [0.46, 0.50], [0.70, 0.74], [0.34, 0.84]];
-  const scrX = 14, scrY = 56, scrW = panelW - 28, scrH = 150;
+/* ─── 여유 지점 질의 — 격자는 후보 샘플러다 ──────────── */
+/* 위 그림과 같은 격자 치수를 쓴다. 같은 모양인데 역할이 다르다는 것이
+   이 절의 요점이라, 치수를 맞춰야 대비가 산다.
+   장애물 반지름과 배치 반지름은 실제 판정과 무관한 임의값 — 원리도다. */
+function MTClearanceViz() {
+  const W = 760, H = 322;
+  const cell = 62, cols = 5, rows = 4;
+  const gx = 24, gy = 44;
+  // 격자 총폭: 24 + 310 = 334. 주석 열 x=360 → 위 그림과 동일 ✓
+  const R = 26;   // 놓으려는 원의 반지름
+
+  // 장애물 (cx, cy, 외접반지름)
+  const obs = [[70, 80, 16], [150, 110, 20], [250, 70, 14],
+               [300, 180, 18], [110, 240, 16], [200, 260, 15], [255, 215, 12]];
+
+  // 칸마다 랜덤 1점(지터). 좌표는 고정 — 그림은 매번 같아야 한다.
+  const cand = [[40, 72], [105, 88], [160, 62], [230, 90], [300, 70],
+                [52, 140], [120, 155], [185, 120], [245, 145], [310, 130],
+                [45, 200], [100, 180], [175, 205], [240, 185], [305, 210],
+                [60, 260], [130, 275], [190, 235], [250, 280], [315, 265]];
+
+  // 여유가 기준을 넘은 후보들 (min(중심거리 − (R + 장애물반지름)) ≥ padding)
+  const passIdx = [10, 12, 14, 4];
+  const pickIdx = 12;
+
+  const legend = (y, node, text) => (
+    <g className="mt-svg-note">
+      {node}
+      <text x={382} y={y} className="mt-svg-sub">{text}</text>
+    </g>
+  );
 
   return (
     <figure className="mt-figure">
       <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
-           aria-label="마릿수가 같아도 반지름이 두 배면 화면 점유 면적은 네 배가 된다">
-        {panels.map(p => (
-          <g key={p.head}>
-            <text x={p.x + scrX} y="26" className="mt-svg-lbl">{p.head}</text>
-            <rect x={p.x + scrX} y={scrY} width={scrW} height={scrH} rx="3"
-                  fill={p.ok ? 'var(--sage-50)' : 'var(--terra-50)'} stroke="var(--rule-2)" />
-            <text x={p.x + scrX + 6} y={scrY + 16} className="mt-svg-sub">화면</text>
-            {slots.map((s, i) => (
-              <circle key={i}
-                      cx={p.x + scrX + 20 + s[0] * (scrW - 40)}
-                      cy={scrY + 24 + s[1] * (scrH - 44)}
-                      r={p.r}
-                      fill={p.ok ? 'var(--sage-200)' : 'var(--terra-100)'}
-                      fillOpacity="0.85"
-                      stroke={p.ok ? 'var(--sage-500)' : 'var(--terra-400)'} />
-            ))}
+           aria-label="칸마다 랜덤 한 점을 후보로 뽑고 여유로 점수를 매긴다">
+        <text x={gx} y="22" className="mt-svg-lbl">가장 널널한 지점 — 칸마다 후보 1개</text>
 
-            {/* 두 축 */}
-            <text x={p.x + scrX} y={scrY + scrH + 28} className="mt-svg-sub">마릿수 축</text>
-            <rect x={p.x + scrX + 74} y={scrY + scrH + 18} width={110} height={12} rx="2"
-                  fill="var(--ink-3)" fillOpacity="0.35" stroke="var(--rule-2)" />
-            <text x={p.x + scrX + 192} y={scrY + scrH + 28} className="mt-svg-tag">8 / 8 — 동일</text>
-
-            <text x={p.x + scrX} y={scrY + scrH + 52} className="mt-svg-sub">면적 축</text>
-            <rect x={p.x + scrX + 74} y={scrY + scrH + 42} width={p.ok ? 42 : 168} height={12} rx="2"
-                  fill={p.ok ? 'var(--sage-300)' : 'var(--terra-300)'}
-                  stroke={p.ok ? 'var(--sage-500)' : 'var(--terra-400)'} />
-            <text x={p.x + scrX + (p.ok ? 124 : 250)} y={scrY + scrH + 52} className="mt-svg-tag">{p.occ}</text>
-          </g>
+        {/* 격자 — 여기서는 가속 구조가 아니라 후보 샘플러다 */}
+        {Array.from({ length: cols + 1 }).map((_, i) => (
+          <line key={`v${i}`} x1={gx + i * cell} x2={gx + i * cell} y1={gy} y2={gy + rows * cell}
+                stroke="var(--rule)" />
         ))}
+        {Array.from({ length: rows + 1 }).map((_, i) => (
+          <line key={`h${i}`} x1={gx} x2={gx + cols * cell} y1={gy + i * cell} y2={gy + i * cell}
+                stroke="var(--rule)" />
+        ))}
+
+        {/* 장애물 — 외접원으로 본다 */}
+        {obs.map((o, i) => (
+          <circle key={`o${i}`} cx={o[0]} cy={o[1]} r={o[2]} className="mt-obs" />
+        ))}
+
+        {/* 후보 점 */}
+        {cand.map((p, i) => (
+          <circle key={`c${i}`} cx={p[0]} cy={p[1]} r="3.4"
+                  className={passIdx.includes(i) ? 'mt-dot-in' : 'mt-dot-near'} />
+        ))}
+
+        {/* 통과 후보에 여유 링 */}
+        {passIdx.filter(i => i !== pickIdx).map(i => (
+          <circle key={`p${i}`} cx={cand[i][0]} cy={cand[i][1]} r={R}
+                  fill="none" stroke="var(--sage-500)" strokeDasharray="3 4" />
+        ))}
+
+        {/* 뽑힌 자리 */}
+        <circle cx={cand[pickIdx][0]} cy={cand[pickIdx][1]} r={R}
+                fill="var(--sage-200)" fillOpacity="0.55" stroke="var(--sage-500)" strokeWidth="1.6" />
+        <circle cx={cand[pickIdx][0]} cy={cand[pickIdx][1]} r="5" className="mt-dot-seed" />
+
+        {/* 주석 열 */}
+        <text x={360} y="60"  className="mt-svg-lbl">후보 = 칸마다 랜덤 1점</text>
+        <text x={360} y="80"  className="mt-svg-sub mt-svg-note">빈 자리는 장애물과 무관한 곳이다</text>
+        <text x={360} y="112" className="mt-svg-lbl">최대를 고르지 않는다</text>
+        <text x={360} y="132" className="mt-svg-sub mt-svg-note">기준을 넘긴 후보 중에서 균등하게 하나</text>
+
+        {legend(180, <circle cx={368} cy={176} r="5" className="mt-dot-seed" />, '뽑힌 자리 — 통과 후보 중 균등 1개')}
+        {legend(204, <circle cx={368} cy={200} r="5" className="mt-dot-in" />, '기준 통과 — 여유가 충분')}
+        {legend(228, <circle cx={368} cy={224} r="5" className="mt-dot-near" />, '탈락 — 장애물에 너무 가깝다')}
+        {legend(252, <circle cx={368} cy={248} r="6" className="mt-obs" />, '장애물 — 외접원으로 본다')}
       </svg>
       <figcaption className="mt-figcap">
-        두 화면의 마릿수 막대는 길이가 같고, 면적 막대는 <b>×1 대 ×4</b> 다.
-        반지름이 두 배면 면적은 네 배이므로 두 축의 눈금은 같이 움직이지 않는다.
+        후보 20개 중 기준을 넘은 것은 <b>4개</b>, 그중 하나가 균등하게 뽑힌다.
+        가장 널널한 곳을 고르면 늘 같은 구석이 나오므로 <b>고르지 않는다</b>.
+        장애물은 외접원으로 보는데, 그 근사는 항상 더 떨어뜨리는 쪽이다.
       </figcaption>
     </figure>
   );
 }
-window.MTOccupancyViz = MTOccupancyViz;
-
-/* ─── 재사용 — 바깥은 한 번, 안쪽만 계속 돈다 ────────── */
-/* 원리도다. 개수도 시간도 없다 — 이 항의 주장은 "몇 개를 아꼈나" 가 아니라
-   "무엇이 한 번이고 무엇이 반복인가" 하나뿐이다. 그 대비만 그린다. */
-function MTPoolViz() {
-  const W = 760, H = 118;
-  // 총폭: 쓰는 쪽 열이 530 + 210 = 740 < 760 ✓
-  // 계열별 차이(반환 시점 · 담는 단위)는 그리지 않는다 — 본문 요점 한 줄이 받는다.
-  const box = (x, y, w, h, t, subs, tone) => (
-    <g key={t}>
-      <rect x={x} y={y} width={w} height={h} rx="3"
-            fill={tone === 'pool' ? 'var(--sage-100)' : 'var(--paper)'}
-            stroke={tone === 'pool' ? 'var(--sage-500)' : 'var(--rule-2)'}
-            strokeWidth={tone === 'pool' ? 1.8 : 1} />
-      <text x={x + w / 2} y={y + (subs ? 21 : h / 2 + 5)} textAnchor="middle"
-            className={tone === 'pool' ? 'mt-svg-lbl root' : 'mt-svg-lbl'}>{t}</text>
-      {subs && subs.map((s, i) => (
-        <text key={i} x={x + w / 2} y={y + 38 + i * 15} textAnchor="middle" className="mt-svg-sub">{s}</text>
-      ))}
-    </g>
-  );
-  // 화살표 — head 6px. both 면 왼쪽에도 머리를 단다.
-  const arrow = (x1, x2, y, both) => (
-    <g>
-      <line x1={x1} x2={x2} y1={y} y2={y} stroke="var(--sage-500)" strokeWidth="1.4" />
-      <polygon points={`${x2},${y} ${x2 - 7},${y - 4} ${x2 - 7},${y + 4}`} fill="var(--sage-500)" />
-      {both && <polygon points={`${x1},${y} ${x1 + 7},${y - 4} ${x1 + 7},${y + 4}`} fill="var(--sage-500)" />}
-    </g>
-  );
-
-  return (
-    <figure className="mt-figure">
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
-           aria-label="묶음을 올리는 것은 구간마다 한 번이고, 쓰는 쪽과 풀 사이만 계속 돈다">
-        {box(20, 26, 200, 66, '묶음', ['씬 · 테마 · 해금 단위', '걸린 것만 올린다'], 'plain')}
-
-        {arrow(228, 300, 59)}
-        <text x={264} y={49} textAnchor="middle" className="mt-svg-sub">한 번</text>
-
-        {box(300, 26, 150, 66, '풀', ['꺼진 채로 미리', '유휴분은 버린다'], 'pool')}
-
-        {arrow(458, 522, 59, true)}
-        <text x={490} y={49} textAnchor="middle" className="mt-svg-op">계속</text>
-
-        {box(530, 26, 210, 66, '쓰는 쪽',
-             ['적 · 아이템 · 능력 효과', 'UI · 파티클 · 사운드'], 'plain')}
-
-      </svg>
-      <figcaption className="mt-figcap">
-        왼쪽 화살표는 구간마다 <b>한 번</b>, 오른쪽 화살표만 <b>계속</b> 돈다.
-        네 계열이 이 골격을 공유한다 — 쓰는 쪽은 스폰과 반환만 부르고, 세는 것도 버리는 것도 풀이 한다.
-      </figcaption>
-    </figure>
-  );
-}
-window.MTPoolViz = MTPoolViz;
-
-/* ─── 노드 영향력을 재는 법 — 빼 보고 차이를 본다 ────── */
-/* 원리도다. 막대에 눈금도 값도 없다 — 이 페이지에는 노드별 실측 표가 없고,
-   있는 것처럼 보이게 만들지 않는다. 보여줄 것은 "빼서 재는 방식" 하나뿐이다. */
-function MTNodeValueViz() {
-  // 세로: 마지막 주석 baseline = rowY[1]+barH+66 = 244. 글자 하강부까지 잡아 H 를 256 으로 둔다.
-  const W = 760, H = 256;
-  const cw = 30, cgap = 8, cx0 = 24, nChips = 8, removed = 4;
-  // 칩 줄 총폭: 24 + 8*30 + 7*8 = 320. 막대는 380 에서 시작해 최대 660 → 760 안 ✓
-  const rowY = [58, 148];
-  const barX = 380, barFull = 280, barCut = 196, barH = 30;
-  const chipY = r => rowY[r] + 2;
-
-  const chips = (r) => Array.from({ length: nChips }).map((_, i) => {
-    const gone = r === 1 && i === removed;
-    return (
-      <g key={i}>
-        <rect x={cx0 + i * (cw + cgap)} y={chipY(r)} width={cw} height={26} rx="3"
-              fill={gone ? 'var(--paper)' : 'var(--sage-200)'}
-              stroke={gone ? 'var(--terra-400)' : 'var(--sage-500)'}
-              strokeDasharray={gone ? '4 3' : ''} />
-        {gone && <text x={cx0 + i * (cw + cgap) + cw / 2} y={chipY(r) + 18} textAnchor="middle" className="mt-svg-tag">0</text>}
-      </g>
-    );
-  });
-
-  return (
-    <figure className="mt-figure">
-      <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
-           aria-label="전 노드 만렙에서 노드 하나만 0으로 내려 잃는 기대 골드가 그 노드의 값이다">
-        <text x={cx0} y="34" className="mt-svg-lbl">전 노드 만렙</text>
-        {chips(0)}
-        <rect x={barX} y={rowY[0]} width={barFull} height={barH} rx="2" fill="var(--sage-200)" stroke="var(--sage-500)" />
-        <text x={barX + 10} y={rowY[0] + 20} className="mt-svg-sub">한 판의 기대 골드</text>
-
-        <text x={cx0} y="124" className="mt-svg-lbl">그 노드만 0 으로</text>
-        {chips(1)}
-        <rect x={barX} y={rowY[1]} width={barCut} height={barH} rx="2" fill="var(--paper-2)" stroke="var(--rule-2)" />
-        <rect x={barX + barCut} y={rowY[1]} width={barFull - barCut} height={barH} rx="2"
-              fill="var(--terra-100)" stroke="var(--terra-400)" strokeDasharray="4 3" />
-
-        {/* 차이 구간 표시 */}
-        <line x1={barX + barCut} x2={barX + barCut} y1={rowY[1] + barH} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
-        <line x1={barX + barFull} x2={barX + barFull} y1={rowY[1] + barH} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
-        <line x1={barX + barCut} x2={barX + barFull} y1={rowY[1] + barH + 22} y2={rowY[1] + barH + 22} stroke="var(--terra-400)" />
-        <text x={cx0} y={rowY[1] + barH + 26} className="mt-svg-lbl">잃은 만큼 ÷ 그 노드의 총비용 = 그 노드의 값</text>
-
-        <line x1={cx0} x2={W - 24} y1={rowY[1] + barH + 44} y2={rowY[1] + barH + 44} stroke="var(--rule)" />
-        <text x={cx0} y={rowY[1] + barH + 66} className="mt-svg-sub mt-svg-note">해금 노드를 0 으로 내리면 그 능력 채널이 통째로 닫힌다 — 능력이 벌던 몫 전부가 차이로 잡힌다</text>
-      </svg>
-      <figcaption className="mt-figcap">
-        더해서 재지 않고 <b>빼서 잰다.</b> 해금 노드는 내리는 순간 그 능력이 통째로 꺼지므로,
-        해금의 값을 계산하는 규칙을 따로 만들 필요가 없다.
-      </figcaption>
-    </figure>
-  );
-}
-window.MTNodeValueViz = MTNodeValueViz;
-
+window.MTClearanceViz = MTClearanceViz;
 
 /* ─── 만든 것 3칸 ────────────────────────────────────── */
 /* 큰 숫자 밴드가 아니다. 이 페이지에는 개선 전후를 비교할 계측본이 없어
@@ -331,26 +259,3 @@ function MTBuilt({ items }) {
   );
 }
 window.MTBuilt = MTBuilt;
-
-/* ─── 사정거리 — 읽는 것 / 안 읽는 것 ────────────────── */
-function MTScope({ scope }) {
-  const ri = window.renderInline;
-  return (
-    <div className="mt-scope">
-      <div className="mt-scope-head">{scope.title}</div>
-      <p className="mt-scope-lead">{ri(scope.lead)}</p>
-      <div className="mt-scope-cols">
-        <div className="mt-scope-col reads">
-          <div className="mt-scope-k"><span className="glyph">✓</span> 읽는다</div>
-          <ul>{scope.reads.map((r, i) => <li key={i}>{ri(r)}</li>)}</ul>
-        </div>
-        <div className="mt-scope-col skips">
-          <div className="mt-scope-k"><span className="glyph">✕</span> 읽지 않는다</div>
-          <ul>{scope.skips.map((r, i) => <li key={i}>{ri(r)}</li>)}</ul>
-        </div>
-      </div>
-      <p className="mt-scope-why">{ri(scope.why)}</p>
-    </div>
-  );
-}
-window.MTScope = MTScope;

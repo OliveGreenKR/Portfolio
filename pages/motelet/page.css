@@ -224,3 +224,106 @@ code, .mt-body code, .mt-pt-v code, .mt-pt-k code, .mt-limit-v code, .mt-callout
      같은 목적지를 레일과 crumb 이 이미 갖고 있어 여기서는 내린다. */
   .nb-header .nb-nav { display: none; }
 }
+
+/* ══ 2026-08 개편분 ═══════════════════════════════════════
+   §03 구조 계약에 맞춰 추가. 계층은 크기가 아니라 색 램프로 가른다
+   (ink → ink-2 → ink-3). 15.5→15px 차이는 화면에서 구분되지 않는다.
+   색면(sage)은 섹션 요지(.mt-gist) 한 종류만 — 한계 목록·코드 꼬리말에 쓰지 않는다. */
+
+/* 절 사이 다리 — 다음 절의 첫 문장을 만든다 */
+.mt-bridge { margin: 22px 0 0; padding: 12px 0 0; border-top: 1px solid var(--rule);
+  font-size: 14.5px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
+.mt-bridge strong { color: var(--ink); font-weight: 600; }
+
+/* 표 2개 나란히 */
+.mt-tables { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 18px; margin: 20px 0 0; }
+.mt-note { margin: 10px 0 0; font-size: 13px; line-height: 1.7; color: var(--ink-3); text-wrap: pretty; }
+.mt-note strong { color: var(--ink-2); font-weight: 600; }
+
+/* 접기 — Level 4 */
+.mt-fold { margin: 16px 0 0; border-top: 1px solid var(--rule); }
+.mt-fold-btn { display: flex; align-items: center; gap: 8px; width: 100%;
+  padding: 11px 0; background: none; border: 0; cursor: pointer;
+  font: inherit; font-size: 13px; letter-spacing: .02em; color: var(--ink-3); text-align: left; }
+.mt-fold-btn:hover { color: var(--ink); }
+.mt-fold-mark { display: inline-flex; align-items: center; justify-content: center;
+  width: 16px; height: 16px; border: 1px solid var(--rule-2); border-radius: 2px;
+  font-size: 12px; line-height: 1; color: var(--ink-2); }
+.mt-fold-body { padding: 2px 0 14px; }
+
+/* 두 그림 나란히 + 공유 캡션 */
+.mt-twoviz { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 20px 0 0; }
+.mt-twoviz .mt-figure { margin: 0; }
+.mt-figcap-shared { margin: 10px 0 0; padding: 10px 12px;
+  border-left: 2px solid var(--sage-500); background: var(--paper-2);
+  font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
+.mt-figcap-shared strong { color: var(--ink); font-weight: 600; }
+
+/* 정확 / 근사 두 열 */
+.mt-qcols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 26px; margin: 22px 0 0; }
+.mt-qcol { min-width: 0; }
+.mt-qcols .mt-qcol + .mt-qcol { border-left: 1px solid var(--rule); padding-left: 26px; }
+.mt-qtag { display: inline-block; padding: 3px 8px; border: 1px solid var(--rule-2); border-radius: 2px;
+  font-size: 11px; letter-spacing: .06em; color: var(--ink-3); }
+.mt-qtitle { margin: 10px 0 8px; font-size: 17px; font-weight: 600; color: var(--ink); }
+.mt-qfall { margin: 12px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
+.mt-qfall-k { display: inline-block; margin-right: 8px; padding: 2px 7px;
+  border: 1px solid var(--rule-2); border-radius: 2px;
+  font-size: 11px; letter-spacing: .04em; color: var(--ink-3); }
+
+/* 2단으로 좁아진 열 안의 코드 — 가로 스크롤은 읽는 순서를 끊는다.
+   폭과 무관하게 접는다(1280px 에서 최장 줄의 24% 가 시야 밖이었다). */
+.mt-qcol .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* 여유 질의 그림의 장애물 */
+.mt-obs { fill: var(--ink-3); fill-opacity: .22; stroke: var(--ink-3); stroke-width: 1; }
+
+/* 전체 창 캡처 — 세로는 잠그고 가로만 스와이프 */
+.mt-shot-wide .mt-shot-scroll { overflow-x: auto; overflow-y: hidden; }
+.mt-shot-wide .mt-shot-scroll img { max-width: none; width: 1000px; display: block; }
+
+/* 대가 — 색면을 쓰지 않는다 */
+.mt-costgrp { margin: 24px 0 0; }
+.mt-costgrp-h { margin: 0 0 2px; font-size: 13px; letter-spacing: .06em;
+  color: var(--ink-3); font-weight: 600; }
+.mt-costs { border-top: 1px solid var(--rule); }
+.mt-cost { display: grid; grid-template-columns: 230px minmax(0, 1fr); gap: 20px;
+  padding: 14px 0; border-bottom: 1px solid var(--rule); align-items: start; }
+.mt-cost-k { font-size: 14.5px; font-weight: 600; color: var(--ink); line-height: 1.45; }
+.mt-cost-v { font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-cost-v strong { color: var(--ink); font-weight: 600; }
+.mt-close { margin: 22px 0 0; padding: 14px 0 0; border-top: 1px solid var(--rule);
+  font-size: 15px; line-height: 1.7; color: var(--ink); text-wrap: pretty; }
+
+/* 공유 자산 보정 — portfolio-page §2 함정표 */
+.nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; }
+.nb-page .nb-ascii-result { background: var(--paper-2); color: var(--ink-2); }
+.nb-page .nb-ascii-head { flex-wrap: wrap; }
+.nb-page .nb-ascii-head .lbl { min-width: 0; overflow-wrap: anywhere; letter-spacing: .06em; }
+.nb-page code { overflow-wrap: anywhere; }
+.nb-page .nb-table td:last-child { text-align: left; font-family: var(--font-sans); }
+
+@media (min-width: 1101px) {
+  .mt-twoviz { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 1100px) {
+  .mt-tables, .mt-qcols { grid-template-columns: 1fr; }
+  .mt-qcols .mt-qcol + .mt-qcol { border-left: none; border-top: 1px solid var(--rule);
+    padding-left: 0; padding-top: 20px; margin-top: 4px; }
+}
+@media (max-width: 720px) {
+  /* SVG 세 장 공통 — note 를 숨겨도 남는 라벨이 유실된다.
+     viewBox 가 폭에 맞춰 줄면 320px 에서 11px 라벨이 4.2px, R 태그가 3.2px 로 떨어진다(실측).
+     그래서 그림만 가로 스와이프로 돌리고 세로는 잠근다. min-width 660 → 배율 0.87,
+     라벨 9.5px · 태그 7.4px 로 회복된다. */
+  .mt-figure { overflow-x: auto; overflow-y: hidden; }
+  .mt-figure .mt-svg { min-width: 660px; }
+  .mt-cost { grid-template-columns: 1fr; gap: 6px; }
+  .mt-shot-wide .mt-shot-scroll img { width: 860px; }
+  /* 코드는 읽는 순서가 줄에 고정돼 가로 스크롤이 읽기를 끊는다. 좁은 폭에서는 접는다. */
+  .nb-page .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .nb-tablewrap { overflow-x: auto; }
+  .nb-tablewrap .nb-table { min-width: 520px; }
+}
