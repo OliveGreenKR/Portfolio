@@ -3,7 +3,7 @@
 //
 // 순서 = 경계 → 기하 월드 → 정확/근사 → 상한의 정의 → 체감의 정의 → 자동 탐색 → 대가.
 //   이전 판의 "절끼리 인과가 없다" 는 폐기됐다. CORE(정답을 먼저 정의하고 정확/근사를
-//   가른다)가 절 사이 인과를 만든다. 순서 교환 6건 중 5건이 잠겼다.
+//   가른다)가 절 사이 인과를 만든다. 순서 교환 6쌍 전부 잠겼다(05 렌즈2 실측).
 //   런타임이 밸런싱보다 앞이다 — 같은 방법이 런타임에서 세 번, 밸런싱에서 한 번
 //   반복되므로 세 번 나온 쪽이 먼저여야 반복이 보인다.
 //
@@ -312,6 +312,11 @@ function MTSearch({ data }) {
       <MTPoints points={s.points} />
       <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
 
+      {/* 목적함수 상세는 코드 블록의 상세다 — 그림 뒤로 밀면 주제가 끊긴다. */}
+      <MTFold label={s.fold.title}>
+        <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
+      </MTFold>
+
       {/* 코드와 화면이 같은 것을 말하는 자리. 전체 창이라 가로 스와이프로 둔다. */}
       <figure className="mt-shot mt-shot-wide">
         <div className="mt-shot-scroll">
@@ -326,10 +331,6 @@ function MTSearch({ data }) {
       <p className="mt-note">{ri(s.shot.note)}</p>
 
       <MTSub title={s.host.title} body={s.host.body} />
-
-      <MTFold label={s.fold.title}>
-        <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
-      </MTFold>
 
       <MTBridge>{s.bridge}</MTBridge>
     </section>
