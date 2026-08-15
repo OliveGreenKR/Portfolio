@@ -312,6 +312,6 @@
 .cm-bar.base   { fill: var(--rule-2); }
 .cm-bar.struct { fill: var(--sage-300); }
 .cm-bar.burst  { fill: var(--terra-300); }
-/* 진단(04) 전용 — .burst 를 재사용하면 02 범례가 정의한 "Burst 잡" 뜻이 두 절 뒤에서 뒤집힌다 */
+/* 진단(§04) 전용 — .burst 를 재사용하면 §02 범례가 정의한 "Burst 잡" 뜻이 두 절 뒤에서 뒤집힌다 */
 .cm-bar.hot     { fill: var(--ink-3); }
 .cm-bar.neutral { fill: var(--paper-3); stroke: var(--rule-2); stroke-width: 1; }
