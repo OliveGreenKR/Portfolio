@@ -4,7 +4,7 @@
 //   2 CMMapViz         네 방식 지도 (S4)  · s4.vizCaption   ← 가로축이 프레임 두 종류를 겸한다
 //   3 CMDiagnoseViz    진단 (S5)          · s5.vizCaption
 //   4 CMReuseViz       ① 재사용 (S6)      · s6.vizCaption
-//   5 CMPruneViz       ② 삭제 (S7)        · s7.vizCaption
+//   5 CMPruneViz       ② 버리기 (S7)        · s7.vizCaption
 //   6 CMRenderStructViz ③ 병합 (S8)       · s8.vizCaption
 //   7 CMSlotViz        ④ 슬롯 배정 (S9)   · s9.vizCaption
 //   8 CMConvexSubViz   ⑥ 볼록 뺄셈 (S11)  · s11.vizCaption
@@ -143,7 +143,7 @@ function CMMapViz() {
 
         {/* 후속 — 프레임 축 밖이라 전폭으로 두고 점선으로 격을 내린다 */}
         <line className="cm-svg-span" x1="0" y1={gridBottom + 12} x2="704" y2={gridBottom + 12} strokeDasharray="4 4" />
-        <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y={gridBottom + 30}>{m.afterLabel}</text>
+        <text className="cm-svg-lbl" x={CM_MAP_LERP_X} y={gridBottom + 26}>{m.afterLabel}</text>
         {after.map((r, i) => {
           const top = afterTop + i * 40;
           return (
@@ -170,6 +170,7 @@ window.CMMapViz = CMMapViz;
 //    실측으로 잡았다(교차 전수 검사: "메시로 만들어 올린다" ↔ "0.4525" 가 6px 겹쳤다).
 const CM_DG_BOX_BOTTOM = 84;
 const CM_DG_BASE = 240, CM_DG_MAXH = 108;   // 라벨 최상단 ≈ 240−108−9−11 = 112 > 84 ✓
+// ⚠️ 이 셋은 data.js s5.table 과 **같은 값이어야 한다.** 두 곳을 손으로 맞춘다
 const CM_DG_STAGES = [
   { x: 35, name: 'FoldOperation.Split', what: '접는 선으로 자른다', v: 0.1700, label: '0.1700' },
   { x: 265, name: 'FoldOperation.Compose', what: '조각을 쌓는다', v: 0.0201, label: '0.0201' },
@@ -206,7 +207,7 @@ function CMDiagnoseViz() {
         })}
 
         <line className="cm-svg-base" x1="20" y1={CM_DG_BASE} x2="700" y2={CM_DG_BASE} />
-        <text className="cm-svg-cap" x="20" y="262">막대 = 회차 16 프레임당 Average (ms). 실측은 준비 쪽이 자르기의 2.7배였다.</text>
+        <text className="cm-svg-cap" x="20" y="262">막대 = 16회 벤치 프레임당 Average (ms)</text>
 
         <defs>
           <marker id="cmArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
@@ -243,8 +244,10 @@ function CMReuseViz() {
         const y = 34 + i * 26;
         return (
           <g key={i}>
-            <rect className={hot ? 'cm-svg-cut' : 'cm-svg-piece'} x={px + p.x} y={y} width={p.w} height="18" rx="2" />
-            <text className="cm-svg-cap" x={px + 236} y={y + 13} textAnchor="end">
+            {/* 비용을 뜻하는 색은 sage 가 아니다 — sage 는 이 페이지에서 개선 쪽이다(코드쌍 '이후' 태그·구조 막대) */}
+            <rect className={hot ? 'cm-svg-redraw' : 'cm-svg-piece'} x={px + p.x} y={y} width={p.w} height="18" rx="2" />
+            {/* ⚠️ x=236 이면 조각 우단(px+220)이 글자를 관통한다. 가장 긴 라벨 63px 기준 시작 227 > 220 */}
+            <text className="cm-svg-cap" x={px + 290} y={y + 13} textAnchor="end">
               {hot ? '새로 만듦' : '참조 그대로'}
             </text>
           </g>
@@ -273,8 +276,9 @@ window.CMReuseViz = CMReuseViz;
 /* ── 5. ② 삭제 before/after (S7) ─────────────────────────────────────────── */
 // 종이 단면. 위·아래 양쪽에서 가려진 슬래브는 어떻게 접어도 드러나지 않는다.
 // 배치 검산: 우측 패널 380 + 40 + 200 = 620 ≤ viewBox 720 ✓
-const CM_PR_BEFORE = [0, 1, 1, 0, 1, 1, 1, 0, 0];   // 1 = 위·아래 다 가려짐
-const CM_PR_AFTER = [0, 0, 0, 0];
+// 가려짐 표시 수는 캡션의 감소율과 맞아야 한다 — 9장 중 7장을 버려 2장(−78%)이 337→57(−83%)에 가장 가깝다
+const CM_PR_BEFORE = [0, 1, 1, 1, 1, 1, 1, 1, 0];
+const CM_PR_AFTER = [0, 0];
 const CM_PR_SLAB_X = 44, CM_PR_SLAB_W = 190, CM_PR_SLAB_H = 11, CM_PR_STEP = 15;
 
 function CMPruneViz() {
@@ -301,8 +305,8 @@ function CMPruneViz() {
            aria-label="이전에는 위아래 양쪽에서 가려진 레이어까지 계속 쌓였고, 이후에는 확정할 때 그것들을 버려 회차 16 기준 337장이 57장으로 줄었다">
         {panel(0, '이전 — 가려진 것도 쌓인다', CM_PR_BEFORE, '337장', '회차 16')}
         {/* 두 주석은 구분선(x=350) 안쪽에 머물러야 한다 — 1회차에 366 까지 뻗어 뚫었다 */}
-        <text className="cm-svg-cap" x="240" y="54">위에서 안 보임</text>
-        <text className="cm-svg-cap" x="240" y="160">아래에서도 안 보임</text>
+        <text className="cm-svg-cap" x="248" y="54">위에서 안 보임</text>
+        <text className="cm-svg-cap" x="248" y="160">아래에서도 안 보임</text>
         <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="202" />
         {panel(380, '이후 — 확정할 때 버린다', CM_PR_AFTER, '57장', '같은 화면')}
 
@@ -319,7 +323,7 @@ function CMPruneViz() {
 window.CMPruneViz = CMPruneViz;
 
 /* ── 6. ③ 렌더 구조 before/after (S8) ────────────────────────────────────── */
-// 배치 검산: 좌 208 + 화살표 72 + 우 260 + z스택 120 = 660 ≤ viewBox 720 ✓
+// 배치 검산: 최우단은 z스택 라벨 "가림은 z-buffer 가"(x=586, 12px 11글자 ≈ 108) = 694 ≤ viewBox 720 ✓
 function CMRenderStructViz() {
   const stack = [0, 1, 2];
   return (
@@ -332,12 +336,12 @@ function CMRenderStructViz() {
         {stack.map(i => (
           <g key={i}>
             <rect className="cm-svg-box" x={i * 7} y={30 + i * 26} width="196" height="22" rx="2" />
-            <text className="cm-svg-cap" x={i * 7 + 8} y={45 + i * 26}>GameObject + MeshFilter + Mesh</text>
+            <text className="cm-svg-cap" x={i * 7 + 8} y={45 + i * 26}>렌더 오브젝트 한 벌</text>
           </g>
         ))}
         <text className="cm-svg-cap" x="22" y={30 + 3 * 26 + 16}>⋮</text>
         <rect className="cm-svg-box" x="28" y="130" width="196" height="22" rx="2" />
-        <text className="cm-svg-cap" x="36" y="145">GameObject + MeshFilter + Mesh</text>
+        <text className="cm-svg-cap" x="36" y="145">렌더 오브젝트 한 벌</text>
         <text className="cm-svg-pct" x="0" y="180">77개</text>
         <text className="cm-svg-cap" x="46" y="180">②가 버린 뒤 · 회차 16</text>
 
@@ -444,7 +448,7 @@ function CMConvexSubViz() {
           <path className="cm-svg-piece" d={`M${P(0) + 6},26 L${P(0) + 130},26 L${P(0) + 130},118 L${P(0) + 6},118 Z`} />
           <text className="cm-svg-cap" x={P(0) + 14} y="44">조각 W</text>
           <path className="cm-svg-cover" d={`M${P(0) + 50},50 L${P(0) + 118},50 L${P(0) + 118},104 L${P(0) + 50},104 Z`} />
-          <text className="cm-svg-cap" x={P(0) + 96} y="68">덮개 Q</text>
+          <text className="cm-svg-cap" x={P(0) + 58} y="80">덮개 Q</text>
           <text className="cm-svg-cap" x={P(0)} y="146">둘 다 볼록이다</text>
         </g>
         {/* 2 — h0 */}
@@ -484,7 +488,7 @@ function CMConvexSubViz() {
         </g>
 
         <line className="cm-svg-base" x1="0" y1="190" x2="700" y2="190" />
-        <text className="cm-svg-txt" x="0" y="214">남은 것이 없으면 그 레이어는 완전히 덮인 것 — 지워도 된다.</text>
+        <text className="cm-svg-txt" x="0" y="214">남은 것이 없으면 그 레이어는 완전히 가려진 것 — 버려도 된다.</text>
         <text className="cm-svg-cap" x="0" y="238">여러 장이 나눠 덮는 경우도 조각이 깎여 사라지는 같은 경로다.</text>
       </svg>
       <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s11.vizCaption)}</figcaption>
