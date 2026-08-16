@@ -94,9 +94,9 @@ function MTHeader({ indexHref }) {
 
 const MT_RAIL = [
   ['sec', 'page'], ['hero', '전체'], ['scope', '01 범위'],
-  ['sec', '밸런싱'], ['model', '02 정의'], ['sim', '03 상대 비교'], ['search', '04 못 쓴 것'],
-  ['sec', '런타임'], ['runtime', '05 기하'],
-  ['sec', 'wrap-up'], ['cost', '06 한계'],
+  ['sec', '밸런싱'], ['model', '02 정의'], ['sim', '03 상대 비교'],
+  ['sec', '런타임'], ['runtime', '04 기하'],
+  ['sec', 'wrap-up'], ['cost', '05 한계'],
 ];
 
 function MTRail() {
@@ -211,41 +211,22 @@ function MTSim({ data }) {
         <p className="mt-body">{RI(s.host.body)}</p>
       </div>
 
-      <figure className="mt-shot-side">
-        <img src={s.shot.img} alt="에디터 좌측 패널 — 탐색 설정, 성장률 산점도, 구간 분석" />
-        <div>
-          <figcaption>{RI(s.shot.caption)}</figcaption>
-          <MTNote>{s.shot.note}</MTNote>
-          <p className="mt-missing">{RI(s.shot.missing)}</p>
-        </div>
+      <figure className="mt-shot">
+        <img src={s.shot.img} alt="스킬트리 에디터 — 노드 색이 상대 순위 히트맵, 우측이 소스/가정 config 패널, 좌하단이 구간 분석" />
+        <figcaption>{RI(s.shot.caption)}</figcaption>
+        <MTNote>{s.shot.note}</MTNote>
       </figure>
 
-      <p className="mt-bridge">{RI(s.bridge)}</p>
     </section>
   );
 }
 
-/* ─── §04 만들고 쓰지 못한 것 ────────────────────────── */
-function MTSearch({ data }) {
-  const s = data.search;
-  return (
-    <section id="search" className="nb-section">
-      <MTSectionHead no="04" title="만들고 쓰지 못한 것 — 수치 자동 탐색" kind="OPTIMIZER" />
-      <MTGist>{s.gist}</MTGist>
-      <MTPoints points={s.points} />
-      <MTFold label={s.fold.title}>
-        <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
-      </MTFold>
-    </section>
-  );
-}
-
-/* ─── §05 물리 엔진 없이 ─────────────────────────────── */
+/* ─── §04 물리 엔진 없이 ─────────────────────────────── */
 function MTRuntime({ data }) {
   const r = data.runtime;
   return (
     <section id="runtime" className="nb-section">
-      <MTSectionHead no="05" title="물리 엔진 없이 — 커널 7 · 질의 4종" kind="RUNTIME" />
+      <MTSectionHead no="04" title="물리 엔진 없이 — 커널 7 · 질의 4종" kind="RUNTIME" />
       <MTGist>{r.gist}</MTGist>
 
       {/* 답을 먼저. 산문 뒤에 묻어 두면 30초에 못 찾는다. */}
@@ -260,12 +241,12 @@ function MTRuntime({ data }) {
   );
 }
 
-/* ─── §06 한계 ───────────────────────────────────────── */
+/* ─── §05 한계 ───────────────────────────────────────── */
 function MTCost({ data }) {
   const c = data.cost;
   return (
     <section id="cost" className="nb-section">
-      <MTSectionHead no="06" title="재지 않은 것과 근사인 자리" kind="LIMITS" />
+      <MTSectionHead no="05" title="재지 않은 것과 근사인 자리" kind="LIMITS" />
       <MTGist>{c.gist}</MTGist>
 
       {/* 3분류가 안 보여서 11개가 평평한 자책 목록으로 읽혔다 — 카드로 세운다. */}
@@ -301,7 +282,6 @@ function MoteletPage({ indexHref = 'landing.html' }) {
           <MTScope data={data} />
           <MTModel data={data} />
           <MTSim data={data} />
-          <MTSearch data={data} />
           <MTRuntime data={data} />
           <MTCost data={data} />
           <footer className="nb-footer">
