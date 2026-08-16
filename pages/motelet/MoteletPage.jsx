@@ -202,10 +202,11 @@ function MTModel({ data }) {
       <MTGist>{m.gist}</MTGist>
       <MTBody>{m.problem}</MTBody>
 
-      <MTDefn title={m.formula.title} intro={m.formula.intro} lines={m.formula.lines} result={m.formula.result} />
+      {/* 탑다운 — 최종 분해를 먼저 세운다. 이게 없으면 뒤의 절이 전부 공중에 뜬다. */}
+      <window.MTGoldDecompViz />
+      <window.AsciiBlock title={m.formula.title} intro={m.formula.intro} code={m.formula.code} result={m.formula.result} />
 
-      <MTSub title={m.decompose.title} body={m.decompose.body} />
-      <MTBody>{m.whyNotDps}</MTBody>
+      <MTBody>{m.whyMin}</MTBody>
       <window.AsciiBlock title={m.code.title} intro={m.code.intro} code={m.code.code} result={m.code.result} />
 
       <MTBridge>{m.bridge}</MTBridge>
@@ -247,10 +248,13 @@ function MTSearch({ data }) {
         <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
       </MTFold>
 
-      <figure className="mt-shot mt-shot-zoom">
+      {/* 세로 캡처(511×977)라 전폭에 깔면 비율이 깨진다. 이미지 왼쪽 · 설명 오른쪽. */}
+      <figure className="mt-shot-side">
         <img src={s.shot.img} alt="에디터의 탐색 패널 — 설정과 로그 성장률 산점도, 아래 구간 분석" />
-        <figcaption>{ri(s.shot.caption)}</figcaption>
-        <p className="mt-note">{ri(s.shot.note)}</p>
+        <div>
+          <figcaption>{ri(s.shot.caption)}</figcaption>
+          <p className="mt-note">{ri(s.shot.note)}</p>
+        </div>
       </figure>
 
       <MTSub title={s.host.title} body={s.host.body} />

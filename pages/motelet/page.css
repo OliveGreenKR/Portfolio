@@ -209,9 +209,7 @@
 .mt-what strong { color: var(--ink); font-weight: 600; }
 
 /* 전체 창 캡처 옆 확대 컷 — 전체 창만으로는 차트가 150px 남짓이라 주장을 못 받친다. */
-.mt-shot-zoom { margin: 12px 0 0; }
-.mt-shot-zoom img { max-width: 100%; display: block; border: 1px solid var(--rule); }
-@media (min-width: 721px) { .mt-shot-zoom img { max-width: 420px; } }
+
 
 /* 정의 강조 — 코드가 아닌 것에 CODE 크롬을 붙이지 않는다(렌즈2). */
 .mt-defn { margin: 20px 0 0; padding: 16px 18px; border-left: 2px solid var(--sage-500); background: var(--paper-2); }
@@ -241,3 +239,16 @@
 .mt-honest { margin: 18px 0 0; padding: 12px 14px; border-left: 2px solid var(--rule-2);
   background: var(--paper-2); font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
 .mt-honest strong { color: var(--ink); font-weight: 600; }
+
+/* 세로로 긴 캡처 — 전폭에 깔면 비율이 깨진다. 이미지와 설명을 나란히 둔다. */
+.mt-shot-side { margin: 22px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr);
+  gap: 20px; align-items: start; }
+.mt-shot-side img { display: block; max-height: 520px; width: auto; max-width: 100%;
+  border: 1px solid var(--rule); }
+.mt-shot-side figcaption { margin: 0; font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-shot-side figcaption strong { color: var(--ink); font-weight: 600; }
+.mt-shot-side .mt-note { margin-top: 10px; }
+@media (max-width: 720px) {
+  .mt-shot-side { grid-template-columns: minmax(0, 1fr); }
+  .mt-shot-side img { max-height: 420px; margin: 0 auto; }
+}
