@@ -1,288 +1,169 @@
-// pages/deck/cartapli-mobile.js
-// 슬라이드 덱 매니페스트 — Cartapli Mobile.
+// Cartapli Mobile 제출용 덱 매니페스트.
+// 사실 SSOT: pages/cartapli-mobile/data.js
+// 이 파일은 절 선택, 순서, 제목·라벨 매핑만 담당한다.
 //
-// ⚠️ 사실을 만들지 않는다. pages/cartapli-mobile/data.js 를 참조만 한다.
-//    자르고 라벨을 명사구로 덮는 것만 허용.
+// 선택한 10장
+// 1 표지 — 프로젝트 정체성·직접 구현·대표 결과
+// 2 시스템 — BattleSimulation이 소유하는 책임 경계
+// 3 실행 — Variable / Fixed / Presentation의 완성 흐름
+// 4 결과 — S0부터 S2-b까지의 단계별 계측
+// 5 구조 — 확정 순간 파묻힌 조각 제거
+// 6 렌더 구조 — 레이어별 뷰를 앞·뒤 두 메시로 병합
+// 7 렌더 코드 — 두 메시 병합의 직접 구현 근거
+// 8 네이티브 구조 — 관리형 미리보기를 재사용 버퍼와 Job으로 교체
+// 9 네이티브 코드 — Schedule과 화면 반영을 분리한 직접 구현 근거
+// 10 범위 — 측정 해석과 다음 검증
 //
-// ── 2026-08-16. 13장 → 11장 → 9장. 장당 렌더 글자 688 → 380.
-//    사용자 지적: "포폴용 PDF 다. 핵심 성과를 결과 위주로, 요소마다 한 장씩 쓰면 넘친다."
-//
-// ── 9장 — 탑다운 (결론 → 근거 → 세부) ──────────────────────────────────────
-//   1 표지   cover     meta + hero GIF
-//   2 배경   diagram   원작 · 담당 범위 · 용어              ← L2
-//   3 성과   stats     헤드라인 4칸 (%가 먼저)               ← L1
-//   4 진단   diagram   CMDiagnoseViz — 왜 그 넷인가          ← L2
-//   5 기여   diagram   CMStageBars — 진단의 검증             ← L2
-//   6 고친 것 step+code 방식 ①②③④ + ④ Burst 코드           ← L3
-//   7 ⑤     step+code 로그 게이트 코드 + 얼리기 장치         ← L3
-//   8 ⑥     diagram   CMPolicyCompareViz + 세 방식 표        ← L3
-//   9 검증   columns   오라클 대조                           ← L2 앵커
-//
-// ── 왜 이 순서인가 (탑다운 검수 · 채점 반영) ────────────────────────────────
-//   · **진단이 기여 막대보다 앞이다.** 막대 라벨은 결과가 아니라 **처방 목록**이라,
-//     "왜 그 넷인가" 없이 보면 ①②③④ 가 정의 없는 기호로 먼저 나온다. 진단을 앞에 두면
-//     막대가 **진단의 검증**으로 읽혀 두 장이 한 논증이 된다(인접 쌍 잠김 5/8 → 7/8).
-//   · **저작 경계는 앞쪽이다.** 신입 심사에서 "이거 본인이 한 게 맞나" 는 일찍 오는 의문이다.
-//   · **측정 한계(PC 에디터)는 수치 옆에 둔다.** 수치보다 먼저 주면 대상 없는 면책이 되어
-//     경계심만 남고, 뒤에 두면 감춘 것으로 읽힌다.
-//
-// ── 제목 어휘 ───────────────────────────────────────────────────────────────
-//   제출용 공개 문서다. 작업 일지 말투(`고치기 전과 고친 뒤`)와 **종결형 서술문**을
-//   제목·라벨에 쓰지 않는다. 크롬(절 이름)을 제목이 복창하지도 않는다.
-//
-// ── 헤드라인 수치 ───────────────────────────────────────────────────────────
-//   `−93.8%` 가 `0.643 → 0.040 ms` 보다 먼저 읽혀야 한다. 원수치는 근거지 성과가 아니다.
-//   → 큰 자리에 %(또는 개수 대비), 그 아래 작게 원수치. 네 칸 전부 세 줄을 채워야
-//     칸 높이가 어긋나지 않는다(실측: 빈 칸 하나가 정렬을 깼다).
-//
-// ── 뺀 것 ───────────────────────────────────────────────────────────────────
-//   지도 장 · ①②③ 개별 장 · ⑥ 코드 27줄 · `자체 프레임 훅` 칸 · 원작 팀·기간 각주
-//   · 기여 장 요점 네 줄 · 6장이 3장 수치를 재게시하던 것(같은 사실 반복 3건 → 0)
-//   · 한계 목록(공개물에서 뺐다 — 사용자 결정). 단 **측정 조건은 수치의 조건**이라 남는다.
-//
-// ── 지면 규약 (페이지가 이미 내린 결정 — 덱이 뒤집지 않는다) ────────────────
-//   · 가려짐 계산 세 이름 = `합쳐서 뺀다` / `차례로 깎아낸다` / `덮였는지만 본다`.
-//     그림 안 라벨이 이 글자를 그린다 — 덱만 명사형으로 바꾸면 그림과 표가 갈라진다.
-//   · 내부 단계 코드 S0/S1-1/S2-a 를 쓰지 않는다.
-//   · ⑥은 단계가 아니다. 다섯 단계 막대에 얹지 않는다.
-//   · 절 번호를 쓰지 않는다 — 방식 번호 ①~⑥ 과 범위가 겹쳐 크롬 한 줄에서 충돌한다.
-//
-// ⚠️ ⚠️ 미해결 — 8장(⑥)이 **지금 사실이 아니다.**
-//    CM 레포 HEAD 의 `PaperBuried.SingleCoverPolicy = true` (= `덮였는지만 본다`)이고,
-//    커밋 `739af3a` 가 덱이 인용하는 `7943d04` 뒤에 왔다. `false` 는 미커밋 워킹트리에만.
-//    → 8장의 `채택`/`기각`, 3장 `~28 KB`, 6장 `0.0121 ms` 가 HEAD 와 어긋난다.
-//      두 파일(`Math/PaperBuried.cs` · `docs/perf/S2-d-single-cover.md`) 커밋 전 제출 금지.
+// 제외
+// - S1-1 전용 장: 결과 그래프에는 남긴다. 중간 진단 단계이고, S1-2·S2-a·S2-b가
+//   판단과 직접 구현을 더 짧게 증명하므로 별도 Before/After·코드는 사이트에서만 유지한다.
+// - S1-2 코드 장: 제거 시점과 되돌리기 경계는 구조 그림과 요점으로 전달된다. 코드까지
+//   넣으면 강한 구현 증거인 S2-a·S2-b 코드와 경쟁한다.
+// - Confirm transaction 전용 장: 실행 단계의 핵심은 Job 예약과 화면 반영의 분리다.
+//   확정 트랜잭션은 사이트에서 전체 흐름과 함께 유지한다.
+// - 전체 검증 appendix: 공개 결과·현재 한계·다음 산출물만 마지막 장에 재선택한다.
+// - 새 수치·새 사실·PDF: 만들지 않는다.
 
 (function buildCartapliMobileDeck() {
   const C = window.CM_DATA;
-  const O = window.CARTAPLI_DATA; // 원작(PC · Steam 출시작) — 2장에만 쓴다
-
-  const S = (t, n) => {
-    const p = String(t).split('. ');
-    const s = p.slice(0, n).join('. ');
-    return n >= p.length ? s : s + '.';
-  };
-  const rest = (t, from) => String(t).split('. ').slice(from).join('. ');
-  const deref = (t, pairs) => pairs.reduce((s, [a, b]) => s.split(a).join(b), String(t));
-  const SITE = 'https://olivegreenkr.github.io/Portfolio/';
-  const metric = (k) => (O.metrics.rows.find((r) => r[0] === k) || ['', ''])[1];
-
-  const H = C.meta.headline.rows;
-  const big = (i, n, sub) => ({ n, label: H[i].k, sub });
-
-  // 방식 한 절 → 요점 한 줄. 이름은 막대 라벨과 글자까지 같게 둔다.
-  const way = (i, body) => ['①②③④'[i] + ' ' + C.s4.map.rows[i].title, body];
+  const SITE = 'https://olivegreenkr.github.io/Portfolio/pages/cartapli-mobile.html';
+  const byId = (id) => C.methods.find((item) => item.id === id);
+  const prune = byId('prune');
+  const merge = byId('merge');
+  const native = byId('native');
+  const external = C.meta.links.filter((link) => link.external);
+  const tones = ['sage', 'wheat', 'blue'];
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.cm = {
-    proj: 'Cartapli Mobile',
+    proj: C.meta.title,
     slides: [
-      // ─── 1. 표지 ───────────────────────────────────────────────────────────
       {
         layout: 'cover',
-        section: '메인 · 성능',
+        section: '프로젝트',
         subtitle: C.meta.subtitle,
         title: C.meta.title,
-        hook: C.meta.core,
-        pills: C.meta.pills,
-        // 표지에서 바로 닿을 곳 셋 — 이 절의 상세 페이지 · 원작 페이지 · 원작 스토어.
-        // 사이트 주소는 outro.js 와 같은 값을 쓴다(data.js 에는 자기 사이트 주소가 없다).
+        hook: C.meta.boundary,
+        pills: C.meta.metrics.map((metric, index) => ({
+          text: metric.value + ' · ' + metric.label,
+          tone: tones[index],
+          kind: index === 0 ? 'accent' : null,
+        })),
         links: [
-          { label: '상세 페이지', v: '전체 서술 · 코드 · 다이어그램',
-            href: SITE + 'pages/cartapli-mobile.html', tone: 'sage', hero: true },
-          { label: '원작 페이지', v: O.meta.title,
-            href: SITE + 'pages/cartapli.html', tone: 'blue' },
-          // 추적 파라미터(?snr=)는 뗀다 — 제출물에 남길 것이 아니다.
-          { label: 'Steam', v: O.meta.title, href: O.meta.steam.split('?')[0], tone: 'blue' },
+          { label: '상세 페이지', v: '전체 흐름 · 코드 · 계측', href: SITE, tone: 'sage', hero: true },
+          { label: external[0].label, href: external[0].href, tone: 'blue' },
+          { label: external[1].label, href: external[1].href, tone: 'wheat' },
         ],
-        hero: { img: C.hero.src, caption: S(C.hero.caption, 1) },
+        hero: { img: C.meta.media.src, caption: C.meta.media.caption },
       },
-
-      // ─── 2. 배경 (L2) ──────────────────────────────────────────────────────
-      // 얼리기 장치는 ⑤ 장으로 보냈다 — 그 장치가 실제로 값을 하는 자리다.
       {
         layout: 'diagram',
-        section: '배경',
-        title: '프로젝트 소개',
-        lead: O.meta.oneLine + '. ' + S(C.s2.facts[1][1], 1),
-        step: { img: O.screenshots[0] },
+        section: '아키텍처',
+        title: 'BattleSimulation 중심의 시스템 책임 경계',
+        lead: C.architecture.gist,
+        step: { viz: 'system-map' },
+        vizComponent: 'CMSystemMap',
+        vizProps: { systems: C.architecture.systems },
+      },
+      {
+        layout: 'diagram',
+        section: '실행 흐름',
+        title: '계산과 화면 반영이 분리된 시뮬레이션 실행 단계',
+        lead: C.architecture.body,
+        step: { viz: 'simulation-flow' },
+        vizComponent: 'CMSimulationFlow',
+        vizProps: { lanes: C.architecture.lanes, clock: C.architecture.clock },
+      },
+      {
+        layout: 'diagram',
+        section: '계측 결과',
+        title: '같은 입력으로 분리한 다섯 단계 최적화 결과',
+        lead: C.result.gist,
+        step: { viz: 'stage-chart' },
+        vizComponent: 'CMStageChart',
+        vizProps: { bars: C.result.bars },
+        points: C.meta.metrics.map((metric) => [
+          metric.label,
+          metric.value + ' · ' + metric.detail,
+        ]),
+        note: C.result.conditions[3][1],
+      },
+      {
+        layout: 'diagram',
+        section: prune.stage,
+        title: '확정 순간의 파묻힌 조각 제거',
+        lead: prune.gist,
+        step: { viz: 'before-after' },
+        vizComponent: 'CMBeforeAfter',
+        vizProps: { before: prune.before, after: prune.after, stage: prune.stage },
         points: [
-          // 원작이 팀 작업이라 이 절도 팀 작업으로 읽힐 수 있다 — 성격을 먼저 끊는다.
-          ['무엇인가', S(C.s2.facts[0][1], 2) + ' 원작과는 별개 레포의 **개인 프로젝트**다.'],
-          ['원작 팀 작업', C.s2.others.slice(C.s2.others.indexOf('접기를 연출한다는'))
-            .split('이다.')[0] + '이다.'],
-          ['내 작업', S(C.s2.mine, 1)],
-          // ⚠️ 두 지표는 기준일이 다르다 — 하나로 묶으면 조건 열 오류가 된다.
-          ['원작 실적', metric('Steam 평가').replace(/\)$/, ', 2026-02 누적)') + ' · 순 사용자 '
-            + metric('Lifetime unique users') + ' (2026-05 둘째주)'],
+          [prune.metric.value, prune.metric.detail + ' · ' + prune.metric.label],
         ],
-        // 덱이 `보간`·`확정` 을 아홉 번 쓰는데 정의가 없었다. 첫 수치보다 앞에 둔다.
-        note: S(C.s2.facts[4][1], 1) + ' **레이어** = 접어서 갈라진 종이 조각 한 겹, '
-          + '**렌더 오브젝트** = 그 한 장을 화면에 올리려고 두던 한 벌.',
+        note: prune.scope,
       },
-
-      // ─── 3. 성과 (L1) ──────────────────────────────────────────────────────
-      {
-        layout: 'stats',
-        section: '결과',
-        title: '최종 수치',
-        bigs: [
-          big(0, H[0].d, H[0].v),
-          { n: '337 → 2', label: '렌더 오브젝트', sub: H[1].d },
-          // 델타 부호(+)는 뺀다 — 아래 줄이 `가만히 있을 때 대비` 라고 이미 말한다.
-          { n: H[2].v.replace(/\+/g, ''), label: H[2].k.split(' (')[0], sub: '가만히 있을 때 대비' },
-          { n: 'GC 0회', label: '접기 확정 프레임의 GC 할당', sub: H[3].v },
-        ],
-        note: '측정 조건 — ' + C.cond + '. '
-          + C.s2.facts[5][1].slice(C.s2.facts[5][1].indexOf('⚠️ **재는 곳은')).replace('(§11)', '')
-          + ' 넷째 칸만 통계가 다르고(최대 vs 후반 평균) 뒤에 나오는 **가려짐 판정 교체의 몫**이다.',
-      },
-
-      // ─── 4. 진단 (L2) ──────────────────────────────────────────────────────
-      // ⚠️ 기여 막대보다 **앞**이다(탑다운 검수 Critical · 채점 D 잠김 +2).
       {
         layout: 'diagram',
-        section: '진단',
-        title: '예상과 실측',
-        lead: C.s5.gist,
-        step: { viz: 'diagnose' },
-        vizComponent: 'CMDiagnoseViz',
+        section: merge.stage,
+        title: '레이어별 뷰를 대체한 앞·뒤 두 메시',
+        lead: merge.gist,
+        step: { viz: 'before-after' },
+        vizComponent: 'CMBeforeAfter',
+        vizProps: { before: merge.before, after: merge.after, stage: merge.stage },
         points: [
-          ['병목', '정점은 1,348개인데 레이어가 337장 — 비용은 **레이어 한 장마다 붙는 렌더 오브젝트**'],
-          // ⚠️ 원문을 그대로 자른다 — 요약해 쓰면 매니페스트 자작 문장이 된다.
-          ['격차 — 8배에서 2.7배로', rest(C.s5.revised, 1).split(' 그 걷어내는 과정이')[0]],
+          [merge.metric.value, merge.metric.detail + ' · ' + merge.metric.label],
         ],
-        // ⚠️ 이 막대값은 **고치기 전** 상태다. 6장의 같은 마커 값과 시점이 달라 라벨로 가른다.
-        note: '막대는 **고치기 전** 값이다 · ' + C.cond + '.',
+        note: merge.scope,
       },
-
-      // ─── 5. 기여 (L2) ──────────────────────────────────────────────────────
-      // 그림 한 장이 이 장의 전부다. 제목 앞머리가 4장을 가리켜 두 장을 한 논증으로 묶는다.
-      // ⚠️ 이 막대는 **지금 안 쓰는 판정 방식**으로 잰 값이다 — 그 조건이 이 장에 없으면
-      //    여기서 멈춘 독자가 틀린 그림을 갖는다.
-      {
-        layout: 'diagram',
-        section: '기여 배분',
-        title: '그 진단이 지목한 넷 — 구조 96.4% / Burst 잡 3.6%',
-        lead: C.s3.lead + ' 첫째 지표(접는 동안 프레임 시간)를 다섯 단계로 가른다.',
-        step: { viz: 'bars' },
-        vizComponent: 'CMStageBars',
-        note: '⚠️ 다섯 전부 2026-07-24 값이고 그때 가려짐 판정은 아직 `합쳐서 뺀다` 였다 — '
-          + '뒤에서 바꾼 방식은 이 막대에 없다. 구현을 통째로 갈아치운 두 곳은 옛 구현을 '
-          + '정답지로 남겨 매번 대조했다(마지막 장).',
-      },
-
-      // ─── 6. 고친 것 (L3) ───────────────────────────────────────────────────
-      // ⚠️ 3장·5장이 이미 낸 수를 다시 내지 않는다 — 이 장의 일은 "얼마였나" 가 아니라
-      //    "어떤 변경이었나" 다. 큰 줄도 두지 않는다(③ 하나만 말해 제목과 어긋났다).
       {
         layout: 'step',
-        section: '고친 것',
-        no: '①②③④',
-        title: '구조 개선 셋 · Burst 잡 이관 하나',
-        step: {
-          code: {
-            title: C.s9.pair.file + ' · ' + C.s9.pair.commit,
-            code: C.s9.pair.after.code,
-            lang: 'csharp',
-          },
-          points: [],
-        },
+        section: merge.stage + ' · 구현 근거',
+        title: '앞·뒤 두 메시 병합의 구현 근거',
+        step: { code: Object.assign({ lang: 'csharp' }, merge.code.after) },
         points: [
-          way(0, C.s4.map.rows[0].what),
-          // ⚠️ 정점 1,348 → 251 은 **②의 몫**이다. ③ 줄에 붙이면 ③이 정점을 줄인 것으로 읽힌다.
-          // ⚠️ 57장은 판정이 `합쳐서 뺀다` 이던 값이라 ⑥의 41장과 시차가 있다.
-          way(1, '레이어 337 → 57장 · 정점 1,348 → 251 — ⑥ 뒤에는 41장이 남는다.'),
-          way(2, C.s4.map.rows[2].what + ' — 레이어가 몇 장이든 **2개로 고정**된다.'),
-          // ⚠️ 같은 마커가 4장에도 나온다. 시점 라벨이 없으면 같은 개념의 두 수로 읽힌다.
-          way(3, '`FoldOperation.Split` — ①②③ 적용 뒤 0.0403 → 0.0176 ms'),
+          ['판단', merge.gist],
+          ['결과', merge.code.after.result],
+          ['측정', merge.metric.detail + ' · ' + merge.metric.value],
         ],
-        // ①의 자기 무효화는 상위(막대 장)가 아니라 여기서 말한다 — 층위가 거꾸로 붙어 있었다.
-        note: '⚠️ **줄어든 값의 44.7% 가 ①**인데 그중 뷰 쪽은 ③이 무효로 만들었다. '
-          + '③ 커밋이 `PaperLayerView.cs` 229줄을 통째로 지웠다.',
+        note: merge.scope,
       },
-
-      // ─── 7. ⑤ 변인 통제 (L3) ───────────────────────────────────────────────
-      // 이 덱에서 가장 희소한 장 — 자기 계측이 자기 성과를 과소표시하고 있었음을
-      // 스스로 찾아 다섯 단계를 전부 다시 잰 기록이다. 얼리기 장치가 값을 하는 자리다.
-      {
-        layout: 'step',
-        section: '그 뒤',
-        no: '⑤',
-        title: '렌더 준비의 90% 였던 로그 한 줄',
-        step: {
-          problem: '계측 도구를 고치고 네 단계를 전부 다시 잰다',
-          code: {
-            title: C.s10.pair.file + ' · ' + C.s10.pair.commit,
-            intro: rest(C.s10.pair.intro, 1),
-            code: C.s10.pair.after.code,
-            lang: 'csharp',
-          },
-          points: [],
-        },
-        points: [
-          ['원인', C.s10.pair.before.ref],
-          // ⚠️ "덮어쓰는 것은 로깅 호출부뿐" 을 빼면 "손 안 댄 것을 다시 쟀다" 로 읽혀
-          //    주장이 세진다 — 얼린 브랜치는 실제로 수정됐다.
-          ['단계 얼리기', C.s2.facts[2][1].split(' — 태그')[0] + ' — 태그 1개와 브랜치 4개. '
-            + C.s2.facts[2][1].split('. ')[1] + '.'],
-          ['총 개선폭 — 같은 코드, 다시 잰 값', C.s10.delta.before.v + ' → '
-            + C.s10.delta.after.v + ' · **같은 코드를 두 번 잰 것**이지 추가 개선이 아니다.'],
-        ],
-        note: '⚠️ 90% 는 **④까지 고친 뒤 · 로그를 걷어내기 전** 후반 회차 **보간 프레임** '
-          + '중앙값이라 막대(전 구간 Average)와 직접 비교되지 않는다.',
-      },
-
-      // ─── 8. ⑥ 판정 (L3) ────────────────────────────────────────────────────
-      // ⚠️ lead 를 두지 않는다. 한 줄이 78px 을 먹고 그만큼 그림 배율에서 빠진다 —
-      //    viewBox 720×320 이라 세로가 글자 크기를 정한다(실측: 있음 14.5px / 없음 17.1px).
       {
         layout: 'diagram',
-        section: '그 뒤',
-        no: '⑥',
-        title: '가려짐 판정 — 세 방식 실측 비교',
-        step: { viz: 'policy' },
-        vizComponent: 'CMPolicyCompareViz',
-        points: C.s11.table.rows.map((r) => [r[0],
-          '판정 비용 ' + r[1].replace('채택한 것의 ', '') + ' · 버린 ' + r[2]
-          + ' · 남는 ' + r[3] + ' · ' + r[4]])
-          // 3장 넷째 칸(GC 0회)이 던진 공을 받는 자리다 — 안 받으면 그 수치의 출처가 없다.
-          .concat([['걷어낸 값', '범용 라이브러리를 걷어낸 값은 시간만이 아니다 — 확정 때 '
-            + '생기던 쓰레기가 **1.73 MB 에서 후반 평균 ~28 KB 로, GC 수집 0회**가 됐다.']]),
-        // ⚠️ 20~30초가 설계값이라는 한정을 반드시 싣는다 — 빠지면 채택 근거가 잰 값으로 읽힌다.
-        note: '왼쪽은 16회 누적, 오른쪽은 회차 16 시점이라 더할 수 없다. '
-          + '**승패를 가른 것은 계산 속도가 아니라 접는 빈도였다** — 손익분기 0.32초 vs '
-          + '설계 20~30초에 한 번. ⚠️ 이 20~30초는 **잰 값이 아니라 설계값**이다. '
-          + '측정 조건 — ' + C.condPolicy + '.',
+        section: native.stage,
+        title: '관리형 미리보기를 대체한 재사용 네이티브 분할 경로',
+        lead: native.gist,
+        step: { viz: 'before-after' },
+        vizComponent: 'CMBeforeAfter',
+        vizProps: { before: native.before, after: native.after, stage: native.stage },
+        points: [
+          [native.metric.value, native.metric.detail + ' · ' + native.metric.label],
+        ],
+        note: native.scope,
       },
-
-      // ─── 9. 검증 (L2 앵커) ─────────────────────────────────────────────────
-      // ⚠️ 셋째 행은 `PaperVisibilityTests.cs` 와 어긋난다 — 오라클 대조는 채택안 하나뿐이고
-      //    14 는 케이스 수가 아니라 [Test] 개수다. 덱이 페이지와 갈라지면 안 되므로
-      //    여기서 고치지 않는다. **data.js 를 고쳐야 한다.**
+      {
+        layout: 'step',
+        section: native.stage + ' · 구현 근거',
+        title: '분할 Job 예약과 화면 반영의 구현 경계',
+        step: { code: Object.assign({ lang: 'csharp' }, native.code.after) },
+        points: [
+          ['계산 단계', C.architecture.lanes[0].items[0][2]],
+          ['화면 반영', C.architecture.lanes[2].items[0][2]],
+          ['결과', native.code.after.result],
+        ],
+        note: native.scope,
+      },
       {
         layout: 'columns',
-        section: '검증',
-        title: '갈아엎은 뒤에도 같은 결과',
-        gist: deref(rest(C.s12.lead, 1), [['§08 에서', '④에서'], ['§10 에서', '⑥에서']]),
-        colCount: 2,
-        cols: [
-          {
-            kind: '정답지', mark: '✓', tone: 'sage',
-            title: '옛 구현을 지우지 않고 남겼다',
-            sub: S(rest(C.s12.body, 2), 1),
-            pairs: C.s12.tests.map((r) => [r[0], r[1] + ' · ' + r[2]]),
-          },
-          {
-            kind: '따로 둔 이유', tone: 'wheat',
-            title: '`접기 한 번 전체` 가 따로 있는 이유',
-            sub: S(C.s12.why, 1).replace('전체를 맞추는 테스트가 따로 있는 이유는 ', ''),
-            pairs: [['회차마다 레이어 수 · 정점 수',
-              rest(C.s12.why, 1).replace('그리고 회차마다 레이어 수와 정점 수도 같이 맞춘다 — ', '')]],
-          },
-        ],
-        note: deref(C.s12.close, [['§02 의 막대', '앞의 막대'],
-          ['같은 그림에 대한 비교', '같은 결과물을 놓고 잰 비교']]),
+        section: '검증 범위',
+        title: '측정 해석과 다음 검증 범위',
+        gist: C.validation.intro,
+        colCount: 3,
+        cols: C.validation.columns.map((column, index) => ({
+          kind: index === 0 ? 'CONFIRMED' : index === 1 ? 'MEASUREMENT SCOPE' : 'NEXT ARTIFACTS',
+          tone: tones[index],
+          title: column.title,
+          items: column.items,
+        })),
+        note: C.result.correction.title + ' — ' + C.result.correction.body,
       },
     ],
   };

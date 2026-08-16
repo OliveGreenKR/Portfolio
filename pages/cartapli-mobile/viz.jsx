@@ -1,602 +1,588 @@
 // pages/cartapli-mobile/viz.jsx
-// 이 페이지가 쓰는 그림은 여덟이다 (§03 2026-08-15 분량 배분: 그림 8).
-//   1 CMStageBars      단계별 기여 (S3)   · 대신하는 문장 = data.js s3.caption
-//   2 CMMapViz         네 방식 지도 (S4)  · s4.vizCaption   ← 가로축이 프레임 두 종류를 겸한다
-//   3 CMDiagnoseViz    진단 (S5)          · s5.vizCaption
-//   4 CMReuseViz       ① 재사용 (S6)      · s6.vizCaption
-//   5 CMPruneViz       ② 버리기 (S7)        · s7.vizCaption
-//   6 CMRenderStructViz ③ 병합 (S8)       · s8.vizCaption
-//   7 CMSlotViz        ④ 슬롯 배정 (S9)   · s9.vizCaption
-//   8 CMPolicyCompareViz ⑥ 세 방식 비교 (S11) · s11.compareCaption
-//   9 CMConvexSubViz   ⑥ 채택한 방식의 기전 (S11) · s11.vizCaption
-// S10(⑤ 재측정)에는 그림이 없다 — 고친 것이 계측기라 기존→개선으로 그릴 형상이 없다(§03 결정).
-//
-// 그림이 아닌 것 — CMCodePair(코드 쌍) · CMDelta(재측정 전후 수치 쌍).
-//
-// SVG 글자는 12px 아래로 내리지 않는다. page.css 가 figure 를 가로 스크롤로 두고
-// svg{min-width:560px} 을 걸어 두므로 390px 폰에서 배율은 0.78 — 12px → 9.4px 로 남는다.
-// (viewBox 를 폰 폭까지 줄이면 11px 글자가 4~5px 로 떨어져 유실된다)
 
-/* ── 코드 쌍 (그림 아님) ─────────────────────────────────────────────────────
-   ⚠️ 껍데기는 **공유 `.nb-ascii` 를 그대로 쓴다.** 다크 테마와 Prism 토큰 색이
-      `src/styles/syntax.css` 에서 `.nb-ascii` · `.sl-code` 두 셀렉터에만 걸려 있어서,
-      새 클래스로 상자를 만들면 코드가 조용히 라이트 테마로 떨어진다(실측).
-      전용 클래스는 before/after 를 가르는 라벨(.cm-pair-lbl)에만 쓴다.
-   before/after 는 **위아래로** 쌓는다 — 좌우 2열이면 한 칸이 36ch 로 좁아져
-   긴 식별자가 가로 스크롤을 만든다(§2 함정표). */
-function CMCodePair({ p }) {
-  const hl = window.highlightCode;
-  const panel = (kind, o) => (
-    <React.Fragment>
-      <div className={`cm-pair-lbl ${kind}`}>
-        <span className="tag">{kind === 'was' ? '이전' : '이후'}</span>
-        <span className="ref">{o.ref}</span>
-      </div>
-      {hl
-        ? <pre className={kind} dangerouslySetInnerHTML={{ __html: hl(o.code, 'csharp') }} />
-        : <pre className={kind}>{o.code}</pre>}
-    </React.Fragment>
-  );
+function CMSystemMap({ systems }) {
   return (
-    <div className="nb-ascii cm-pair">
-      <div className="nb-ascii-head">
-        <span>CODE</span>
-        <span className="lbl">{p.file}</span>
-        <span className="commit">{p.commit}</span>
-      </div>
-      {p.intro && <div className="nb-ascii-intro">{p.intro}</div>}
-      {panel('was', p.before)}
-      {panel('now', p.after)}
-      {p.result && <div className="nb-ascii-result">→ {p.result}</div>}
-    </div>
+    <figure className="cm-figure cm-system-map" aria-label="BattleSimulation을 중심으로 Paper, Surface, WorldLink, simulation worlds, presentation을 연결한 시스템 구조도">
+      {systems.map((system, index) => (
+        <React.Fragment key={system.title}>
+          <article className={'cm-system-card ' + (system.tone || '')}>
+            <span>{system.tag}</span>
+            <strong>{system.title}</strong>
+            <p>{window.renderInline(system.body)}</p>
+          </article>
+          {index < systems.length - 1 && <span className="cm-map-arrow" aria-hidden="true">→</span>}
+        </React.Fragment>
+      ))}
+    </figure>
   );
 }
-window.CMCodePair = CMCodePair;
+window.CMSystemMap = CMSystemMap;
 
-/* ── 1. 단계별 기여 (S3) ─────────────────────────────────────────────────── */
-// 배치 상수 — 총폭 검산: BAR_MAX(600) + 값 라벨 폭(≈108) = 708 ≤ viewBox 720 ✓
-// 범례 슬롯은 150 — 가장 긴 "Burst 잡으로 옮긴 몫"(≈130px)이 다음 색칩을 안 덮어야 한다
-const CM_BAR_MAX = 600;
-const CM_ROW_H = 64;
-const CM_ROW_TOP = 34;
-
-function CMStageBars() {
-  const { bars, legend, unitNote } = window.CM_DATA.s3.chart;
-  const h = CM_ROW_TOP + bars.length * CM_ROW_H + 4;
+function CMSimulationFlow({ lanes, clock }) {
   return (
-    <figure className="cm-fig">
-      <svg viewBox={`0 0 720 ${h}`} role="img" aria-label="단계별 프레임당 마커 합. S0 을 100 으로 두었을 때 S1-1 58.1, S1-2 25.6, S2-a 9.7, S2-b 6.2">
-        {/* 범례 — 항목당 96px 슬롯 */}
-        {legend.map((l, i) => (
-          <g key={l.group}>
-            <rect className={`cm-bar ${l.group}`} x={i * 150} y="6" width="12" height="12" />
-            <text className="cm-svg-cap" x={i * 150 + 18} y="16">{l.label}</text>
-          </g>
+    <figure className="cm-figure cm-sim-flow" aria-label="가변 프레임 세 단계, 고정 스텝 일곱 단계, Presentation 두 단계로 이어지는 전체 시뮬레이션 흐름">
+      {lanes.map((lane, laneIndex) => (
+        <React.Fragment key={lane.tag}>
+          <section className={'cm-flow-lane lane-' + laneIndex}>
+            <header>
+              <strong>{lane.tag}</strong>
+              <span>{lane.note}</span>
+            </header>
+            <div className="cm-flow-items">
+              {lane.items.map(([no, title, body], index) => (
+                <React.Fragment key={no}>
+                  <article className="cm-flow-step">
+                    <span>{no}</span>
+                    <strong>{title}</strong>
+                    <p>{window.renderInline(body)}</p>
+                  </article>
+                  {index < lane.items.length - 1 && <span className="cm-flow-arrow" aria-hidden="true">→</span>}
+                </React.Fragment>
+              ))}
+            </div>
+          </section>
+          {laneIndex === 0 && (
+            <aside className="cm-clock-bridge">
+              <span>{clock[0]}</span>
+              <strong>{clock[1]}</strong>
+              <b aria-hidden="true">↓</b>
+              <small>{clock[2]}</small>
+            </aside>
+          )}
+        </React.Fragment>
+      ))}
+    </figure>
+  );
+}
+window.CMSimulationFlow = CMSimulationFlow;
+
+function CMTransaction({ items }) {
+  return (
+    <figure className="cm-confirm-flow" aria-label="접기 확정 시 알림, 종이 확정, 표면 재해석 순서">
+      <span className="cm-transaction-label">CONFIRM TRANSACTION</span>
+      <div>
+        {items.map(([no, title, body], index) => (
+          <React.Fragment key={no}>
+            <article>
+              <span>{no}</span>
+              <strong>{title}</strong>
+              <p>{body}</p>
+            </article>
+            {index < items.length - 1 && <span className="cm-flow-arrow" aria-hidden="true">→</span>}
+          </React.Fragment>
         ))}
-        <text className="cm-svg-cap dim" x="612" y="16">{unitNote}</text>
-
-        {bars.map((b, i) => {
-          const top = CM_ROW_TOP + i * CM_ROW_H;
-          const w = Math.max(2, (b.pct / 100) * CM_BAR_MAX);
-          return (
-            <g key={b.stage}>
-              <text className="cm-svg-txt" x="0" y={top + 12}>
-                <tspan className="cm-svg-stage">{b.stage}</tspan>
-                <tspan dx="10">{b.name}</tspan>
-              </text>
-              <line className="cm-svg-base" x1="0" y1={top + 44} x2={CM_BAR_MAX} y2={top + 44} />
-              <rect className={`cm-bar ${b.group}`} x="0" y={top + 22} width={w} height="22" />
-              <text className="cm-svg-val" x="612" y={top + 33}>
-                <tspan className="cm-svg-pct">{b.pct}</tspan>
-                <tspan dx="8" className="cm-svg-delta">{b.delta}</tspan>
-              </text>
-              <text className="cm-svg-cap" x="612" y={top + 50}>{b.ms} ms</text>
-            </g>
-          );
-        })}
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s3.caption)}</figcaption>
+      </div>
     </figure>
   );
 }
-window.CMStageBars = CMStageBars;
+window.CMTransaction = CMTransaction;
 
-/* ── 2. 네 방식 지도 (S4) ────────────────────────────────────────────────── */
-// 가로축이 프레임 두 종류를 겸한다 — 별도 타임라인 그림 한 칸을 여기서 흡수했다(§03 결정).
-// 배치 검산: 확정 영역 462 + 242 = 704 ≤ viewBox 720 ✓
-// ⚠️ 2026-08-15 축 교체 — 옛 축(보간/확정 프레임)은 **사실이 아니었다.**
-//    ④는 확정에서도 같은 잡을 쓰고, ②는 확정 때 일어나지만 효과가 그 뒤 모든 프레임에 걸린다.
-// 배치 검산: 변경 상자 266 + 438 = 704 ≤ viewBox 720 ✓
-const CM_MAP_AXIS_X = 26, CM_MAP_BOX_X = 266, CM_MAP_BOX_W = 438;
-const CM_MAP_TOP = 40, CM_MAP_ROW_H = 54;
-
-function CMMapViz() {
-  const m = window.CM_DATA.s4.map;
-  const rows = m.rows, after = m.after;
-  const gridBottom = CM_MAP_TOP + rows.length * CM_MAP_ROW_H;
-  const afterTop = gridBottom + 32;
-  const h = afterTop + after.length * 40 + 6;      // 검산: 40+216+32+80+6 = 374
+function CMStageChart({ bars }) {
+  const max = Math.max(...bars.map((bar) => bar.ms));
   return (
-    <figure className="cm-fig">
-      <svg viewBox={`0 0 720 ${h}`} role="img"
-           aria-label="네 변경이 각각 무엇을 줄였는지 — 같은 일을 다시 하기, 레이어 장수, 레이어당 유니티 객체, 프레임마다 새로 만들던 관리형 객체. 아래 두 칸은 단계가 아닌 후속이다">
-        <text className="cm-svg-lbl" x={CM_MAP_AXIS_X} y="16">{m.axisLabel}</text>
-        <text className="cm-svg-lbl" x={CM_MAP_BOX_X} y="16">그래서 무엇을 했나</text>
-        <line className="cm-svg-base" x1="0" y1="24" x2="704" y2="24" />
-
-        {rows.map((r, i) => {
-          const top = CM_MAP_TOP + i * CM_MAP_ROW_H;
-          return (
-            <g key={r.n}>
-              <text className="cm-svg-num" x="0" y={top + 26}>{r.n}</text>
-              <text className="cm-svg-txt" x={CM_MAP_AXIS_X} y={top + 26}>{r.axis}</text>
-              <rect className="cm-svg-box" x={CM_MAP_BOX_X} y={top} width={CM_MAP_BOX_W} height="44" rx="3" />
-              <text className="cm-svg-txt" x={CM_MAP_BOX_X + 14} y={top + 19}>{r.title}</text>
-              <text className="cm-svg-cap" x={CM_MAP_BOX_X + 14} y={top + 36}>{r.what}</text>
-              {i < rows.length - 1 && <line className="cm-svg-span" x1="0" y1={top + 48} x2="704" y2={top + 48} />}
-            </g>
-          );
-        })}
-
-        <line className="cm-svg-span" x1="0" y1={gridBottom + 10} x2="704" y2={gridBottom + 10} strokeDasharray="4 4" />
-        <text className="cm-svg-lbl" x={CM_MAP_AXIS_X} y={gridBottom + 26}>{m.afterLabel}</text>
-        {after.map((r, i) => {
-          const top = afterTop + i * 40;
-          return (
-            <g key={r.n}>
-              <text className="cm-svg-num dim" x="0" y={top + 21}>{r.n}</text>
-              <rect className="cm-svg-box dim" x={CM_MAP_AXIS_X} y={top} width={704 - CM_MAP_AXIS_X} height="32" rx="3" />
-              <text className="cm-svg-cap" x={CM_MAP_AXIS_X + 14} y={top + 20}>{r.title}</text>
-              <text className="cm-svg-cap dim" x={CM_MAP_BOX_X + 14} y={top + 20}>{r.what}</text>
-            </g>
-          );
-        })}
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s4.vizCaption)}</figcaption>
+    <figure className="cm-figure cm-stage-chart" aria-label="S0부터 S2-b까지 프레임당 CPU 마커 Average 합이 0.643ms에서 0.040ms로 감소한 그래프">
+      <div className="cm-chart-legend">
+        <span><i className="base"></i>기준</span>
+        <span><i className="structure"></i>구조 개선</span>
+        <span><i className="native"></i>NativeArray·Job·Burst 결합</span>
+      </div>
+      <div className="cm-chart-rows">
+        {bars.map((bar) => (
+          <div className="cm-chart-row" key={bar.stage}>
+            <span className="cm-chart-stage">{bar.stage}</span>
+            <div className="cm-chart-track">
+              <i className={'cm-chart-bar ' + bar.group} style={{ width: Math.max(6, (bar.ms / max) * 100) + '%' }}></i>
+            </div>
+            <b>{bar.ms.toFixed(3)} ms</b>
+            <strong>{bar.delta}</strong>
+            <span>{bar.label}</span>
+          </div>
+        ))}
+      </div>
     </figure>
   );
 }
-window.CMMapViz = CMMapViz;
+window.CMStageChart = CMStageChart;
 
-/* ── 3. 진단 — 예상과 실측 (S5) ──────────────────────────────────────────── */
-// 막대 높이는 실측 Average 에 비례한다(0.4525 / 0.0201 / 0.1700 중 최대를 108px 로).
-// 배치 검산: 마지막 상자 495 + 190 = 685 ≤ viewBox 720 ✓
-// ⚠️ 상자 두 줄(이름 + 무엇을 하나)과 최대 막대의 값 라벨은 **입력값과 무관하게** 겹친다 —
-//    최대 막대는 항상 MAXH 를 꽉 채우므로 그 라벨 y 가 고정이다. 상자 아래 여백이 헤드룸이다.
-//    실측으로 잡았다(교차 전수 검사: "메시로 만들어 올린다" ↔ "0.4525" 가 6px 겹쳤다).
-const CM_DG_BOX_BOTTOM = 84;
-const CM_DG_BASE = 240, CM_DG_MAXH = 108;   // 라벨 최상단 ≈ 240−108−9−11 = 112 > 84 ✓
-// ⚠️ 이 셋은 data.js s5.table 과 **같은 값이어야 한다.** 두 곳을 손으로 맞춘다
-const CM_DG_STAGES = [
-  { x: 35, name: 'FoldOperation.Split', what: '접는 선으로 자른다', v: 0.1700, label: '0.1700' },
-  { x: 265, name: 'FoldOperation.Compose', what: '조각을 쌓는다', v: 0.0201, label: '0.0201' },
-  { x: 495, name: 'Renderer.Sync', what: '메시로 만들어 올린다', v: 0.4525, label: '0.4525' },
-];
+function CMBeforeAfter({ before, after, stage }) {
+  const panel = (data, kind) => (
+    <article className={'cm-ba-panel ' + kind}>
+      <span>{kind === 'before' ? 'BEFORE' : 'AFTER'}</span>
+      <strong>{data.title}</strong>
+      <div className="cm-ba-flow">
+        {data.items.map((item, index) => (
+          <React.Fragment key={item}>
+            <i>{item}</i>
+            {index < data.items.length - 1 && <b aria-hidden="true">→</b>}
+          </React.Fragment>
+        ))}
+      </div>
+      <p>{data.footer}</p>
+    </article>
+  );
 
-function CMDiagnoseViz() {
-  const max = 0.4525;
   return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 282" role="img"
-           aria-label="접기 한 프레임의 세 단계를 같은 축에 놓은 그림. 예상은 자르는 계산이었으나 실측에서는 메시로 만들어 올리는 준비가 가장 비쌌다">
-        <text className="cm-svg-lbl" x="35" y="12">예상 — 여기가 비쌀 것이라고 봤다</text>
-        <line className="cm-svg-arrow" x1="130" y1="17" x2="130" y2="36" markerEnd="url(#cmArrow)" />
-
-        {CM_DG_STAGES.map((s, i) => {
-          const h = Math.max(3, (s.v / max) * CM_DG_MAXH);
-          const cx = s.x + 95;
-          return (
-            <g key={s.name}>
-              {/* 이름과 설명을 상자 안에 넣는다 — 상자 밖에 두면 최대 막대의 값 라벨과 겹친다 */}
-              <rect className="cm-svg-box" x={s.x} y="40" width="190" height={CM_DG_BOX_BOTTOM - 40} rx="3" />
-              <text className="cm-svg-txt" x={s.x + 12} y="60">{s.name}</text>
-              <text className="cm-svg-cap" x={s.x + 12} y="78">{s.what}</text>
-              {i < 2 && (
-                <line className="cm-svg-arrow" x1={s.x + 196} y1="62" x2={s.x + 224} y2="62" markerEnd="url(#cmArrow)" />
-              )}
-              {/* ⚠️ .cm-bar.burst 를 쓰지 않는다 — §02 의 범례가 그 색을 "Burst 잡"으로 정의했다.
-                  두 절 뒤에서 같은 색이 "렌더링 준비"를 뜻하면 색이 거짓말을 한다(05 렌즈0·2 일치). */}
-              <rect className={`cm-bar ${i === 2 ? 'hot' : 'neutral'}`} x={cx - 33} y={CM_DG_BASE - h} width="66" height={h} />
-              <text className="cm-svg-val" x={cx} y={CM_DG_BASE - h - 9} textAnchor="middle">{s.label}</text>
-            </g>
-          );
-        })}
-
-        <line className="cm-svg-base" x1="20" y1={CM_DG_BASE} x2="700" y2={CM_DG_BASE} />
-        <text className="cm-svg-cap" x="20" y="262">막대 = 16회 벤치 프레임당 Average (ms)</text>
-
-        <defs>
-          <marker id="cmArrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
-          </marker>
-        </defs>
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s5.vizCaption)}</figcaption>
+    <figure className="cm-figure cm-before-after" aria-label={stage + '의 기존 방식과 개선 방식 비교'}>
+      {panel(before, 'before')}
+      <span className="cm-ba-divider" aria-hidden="true">→</span>
+      {panel(after, 'after')}
     </figure>
   );
 }
-window.CMDiagnoseViz = CMDiagnoseViz;
+window.CMBeforeAfter = CMBeforeAfter;
 
-/* ── 4. ① 재사용 before/after (S6) ───────────────────────────────────────── */
-// 조각의 x 구간이 접는 선을 넘느냐가 곧 "다시 만드느냐"다 — 도형이 원리를 그대로 쓴다.
-// 배치 검산: 우측 패널 380 + 240 = 620 ≤ viewBox 720 ✓
-const CM_RU_PIECES = [
-  { x: 16, w: 110 }, { x: 100, w: 120 }, { x: 40, w: 80 },
-  { x: 120, w: 100 }, { x: 30, w: 90 },
-];
-const CM_RU_LINE = 150;   // 패널 기준 접는 선 x
+/* Page-only visual language.
+   The submission deck keeps the legacy components above. These components are
+   intentionally named CMPage* and are mounted only by CartapliMobilePage.jsx. */
 
-function CMReuseViz() {
-  const panel = (px, title, redrawAll) => (
+let cmPageMermaidSequence = 0;
+
+function cmMermaidText(value) {
+  return String(value).replace(/`/g, '').replace(/"/g, "'").replace(/\s+/g, ' ').trim();
+}
+
+function useCMNarrow() {
+  const query = '(max-width: 760px)';
+  const [narrow, setNarrow] = React.useState(() => window.matchMedia(query).matches);
+  React.useEffect(() => {
+    const media = window.matchMedia(query);
+    const update = () => setNarrow(media.matches);
+    media.addEventListener('change', update);
+    return () => media.removeEventListener('change', update);
+  }, []);
+  return narrow;
+}
+
+function CMPageMermaid({ source, label, caption, minWidth = 980, className = '' }) {
+  const hostRef = React.useRef(null);
+  const idRef = React.useRef('cm-page-mermaid-' + (++cmPageMermaidSequence));
+
+  React.useEffect(() => {
+    const mermaid = window.mermaid;
+    if (!mermaid || !hostRef.current) return undefined;
+    let cancelled = false;
+    mermaid.render(idRef.current, source)
+      .then(({ svg }) => {
+        if (!cancelled && hostRef.current) hostRef.current.innerHTML = svg;
+      })
+      .catch((error) => {
+        if (!cancelled && hostRef.current) {
+          hostRef.current.textContent = 'diagram render error · ' + error.message;
+        }
+      });
+    return () => { cancelled = true; };
+  }, [source]);
+
+  return (
+    <figure className={'cm-page-diagram ' + className} aria-label={label} style={{ '--cm-diagram-min': minWidth + 'px' }}>
+      <div className="cm-page-diagram-scroll">
+        <div className="cm-page-mermaid-host" ref={hostRef}></div>
+      </div>
+      <figcaption>{window.renderInline(caption)}</figcaption>
+    </figure>
+  );
+}
+
+function CMPageArchitectureDiagram() {
+  const narrow = useCMNarrow();
+  if (narrow) return <CMPageMobileArchitecture />;
+  const source = `classDiagram
+direction LR
+class FrameLoop {
+  +SimTick()
+  +RenderTick()
+}
+class BattleSimulation {
+  <<order owner>>
+  +SimTick()
+}
+class PaperController
+class SurfaceWorld
+class WorldLink
+class GeoWorld
+class MotionWorld
+class IWorld {
+  <<interface>>
+  +Position
+}
+class PaperRenderer {
+  +Sync(front, back)
+}
+class PaperOutlineRenderer {
+  +Sync(outline)
+}
+FrameLoop --> BattleSimulation : calls
+BattleSimulation --> PaperController : orders calls
+BattleSimulation --> SurfaceWorld : orders calls
+BattleSimulation --> WorldLink : orders calls
+BattleSimulation --> GeoWorld : orders calls
+BattleSimulation --> MotionWorld : orders calls
+WorldLink --> IWorld : read / write
+PaperController --> PaperRenderer : RenderTick
+PaperController --> PaperOutlineRenderer : RenderTick`;
+
+  return (
+    <CMPageMermaid
+      source={source}
+      label="BattleSimulation 중심 클래스 책임 관계도"
+      caption="실행 순서는 `BattleSimulation` 한 곳이 소유한다. 월드 간 위치 교환은 `IWorld`, 화면 출력은 `RenderTick` 경계 뒤의 두 renderer로 분리된다."
+      minWidth={920}
+    />
+  );
+}
+window.CMPageArchitectureDiagram = CMPageArchitectureDiagram;
+
+function CMPageMobileArchitecture() {
+  const Node = ({ x, y, w = 150, title, meta }) => (
     <g>
-      <text className="cm-svg-lbl" x={px} y="14">{title}</text>
-      {/* ⚠️ 이 라벨을 선 위쪽(y≈22)에 두면 패널 제목과 겹친다 — 제목이 x 0..180 을 먹는데
-          선이 x=150 이라 같은 구간이다. 교차 전수 검사로 잡았다. 아래쪽 빈 자리로 내린다. */}
-      <line className="cm-svg-half" x1={px + CM_RU_LINE} y1="24" x2={px + CM_RU_LINE} y2="162" strokeDasharray="4 3" />
-      <text className="cm-svg-cap" x={px + CM_RU_LINE + 6} y="174">접는 선</text>
-      {CM_RU_PIECES.map((p, i) => {
-        const crosses = p.x < CM_RU_LINE && p.x + p.w > CM_RU_LINE;
-        const hot = redrawAll || crosses;
-        const y = 34 + i * 26;
-        return (
-          <g key={i}>
-            {/* 비용을 뜻하는 색은 sage 가 아니다 — sage 는 이 페이지에서 개선 쪽이다(코드쌍 '이후' 태그·구조 막대) */}
-            <rect className={hot ? 'cm-svg-redraw' : 'cm-svg-piece'} x={px + p.x} y={y} width={p.w} height="18" rx="2" />
-            {/* ⚠️ x=236 이면 조각 우단(px+220)이 글자를 관통한다. 가장 긴 라벨 63px 기준 시작 227 > 220 */}
-            <text className="cm-svg-cap" x={px + 290} y={y + 13} textAnchor="end">
-              {hot ? '새로 만듦' : '참조 그대로'}
-            </text>
-          </g>
-        );
-      })}
-      {/* '접는 선' 라벨(y=174)과 x 가 겹치므로 한 줄 더 내린다 */}
-      <text className="cm-svg-cap" x={px} y="196">
-        {redrawAll ? '5장 전부 다시 만든다' : '걸치는 2장만 새로 · 3장은 원본 인스턴스 통과'}
-      </text>
+      <rect x={x} y={y} width={w} height="58" rx="3" className="cm-mobile-arch-node" />
+      <text x={x + w / 2} y={y + 25} textAnchor="middle" className="cm-mobile-arch-title">{title}</text>
+      {meta && <text x={x + w / 2} y={y + 43} textAnchor="middle" className="cm-mobile-arch-meta">{meta}</text>}
     </g>
   );
   return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 212" role="img"
-           aria-label="이전에는 접는 선에 걸치지 않는 레이어까지 매 프레임 다시 만들었고, 이후에는 걸치는 것만 새로 만들고 나머지는 원본 인스턴스를 그대로 통과시킨다">
-        {panel(0, '이전 — 매 프레임 전부 재생성', true)}
-        <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="204" />
-        {panel(380, '이후 — 걸치는 것만', false)}
+    <figure className="cm-page-diagram cm-mobile-architecture" aria-label="BattleSimulation 중심 모바일 컴포넌트 관계도">
+      <svg viewBox="0 0 360 700" role="img">
+        <defs>
+          <marker id="cm-mobile-arch-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 0 L 10 5 L 0 10 z" className="cm-viz-arrow-head" />
+          </marker>
+        </defs>
+        <Node x={105} y={18} title="FrameLoop" meta="SimTick · RenderTick" />
+        <path d="M180 76 V108" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <Node x={80} y={110} w={200} title="BattleSimulation" meta="실행 순서 소유" />
+        <text x="190" y="194" className="cm-mobile-arch-edge">orders calls</text>
+        <path d="M180 168 V440" className="cm-mobile-arch-line" />
+        <path d="M180 218 H90 V242" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <path d="M180 218 H270 V242" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <path d="M180 330 H90 V350" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <path d="M180 440 H90 V458" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <path d="M180 440 H270 V458" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <Node x={15} y={244} title="PaperController" meta="paper state" />
+        <Node x={195} y={244} title="SurfaceWorld" meta="surface resolve" />
+        <Node x={15} y={352} title="WorldLink" meta="position bridge" />
+        <Node x={195} y={352} title="IWorld" meta="read · write contract" />
+        <path d="M165 381 H193" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <Node x={15} y={460} title="GeoWorld" meta="collision query" />
+        <Node x={195} y={460} title="MotionWorld" meta="fixed-step motion" />
+        <text x="24" y="548" className="cm-mobile-arch-edge">RenderTick</text>
+        <path d="M90 302 H8 V562" className="cm-mobile-arch-line" />
+        <path d="M8 562 H92 V580" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <path d="M8 562 H270 V580" className="cm-mobile-arch-line" markerEnd="url(#cm-mobile-arch-arrow)" />
+        <Node x={10} y={582} w={164} title="PaperRenderer" meta="front · back mesh" />
+        <Node x={186} y={582} w={164} title="OutlineRenderer" meta="outline mesh" />
       </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s6.vizCaption)}</figcaption>
+      <figcaption>중앙 제어기는 생명주기가 아니라 호출 순서만 소유한다. 월드는 <code>IWorld</code> 계약으로 연결되고, 화면 출력은 <code>RenderTick</code> 뒤로 분리된다.</figcaption>
     </figure>
   );
 }
-window.CMReuseViz = CMReuseViz;
 
-/* ── 5. ② 버리기 before/after (S7) ─────────────────────────────────────────── */
-// 종이 단면. 위·아래 양쪽에서 가려진 슬래브는 어떻게 접어도 드러나지 않는다.
-// 배치 검산: 우측 패널 380 + 40 + 200 = 620 ≤ viewBox 720 ✓
-// 가려짐 표시 수는 캡션의 감소율과 맞아야 한다 — 9장 중 7장을 버려 2장(−78%)이 337→57(−83%)에 가장 가깝다
-const CM_PR_BEFORE = [0, 1, 1, 1, 1, 1, 1, 1, 0];
-const CM_PR_AFTER = [0, 0];
-const CM_PR_SLAB_X = 44, CM_PR_SLAB_W = 190, CM_PR_SLAB_H = 11, CM_PR_STEP = 15;
+function CMPageSimulationDiagram({ lanes, clock }) {
+  const narrow = useCMNarrow();
+  const makeLane = (lane, prefix) => {
+    const nodes = lane.items.map(([no, title, body], index) => {
+      const id = prefix + (index + 1);
+      const safeTitle = cmMermaidText(no + ' · ' + title).replace(/\./g, narrow ? '<br/>' : '.');
+      const safeBody = cmMermaidText(body).replace(/ · /g, narrow ? '<br/>' : ' · ');
+      return `${id}["${safeTitle}${narrow ? '' : '<br/><small>' + safeBody + '</small>'}"]`;
+    });
+    const edges = lane.items.slice(1).map((_, index) => `${prefix}${index + 1} --> ${prefix}${index + 2}`);
+    return [...nodes, ...edges].join('\n');
+  };
+  const source = `flowchart TB
+subgraph V["VARIABLE FRAME · ${cmMermaidText(lanes[0].note)}"]
+direction TB
+${makeLane(lanes[0], 'V')}
+end
+subgraph F["FIXED STEP · ${cmMermaidText(clock[2])}"]
+direction TB
+${makeLane(lanes[1], 'F')}
+end
+subgraph P["PRESENTATION · ${cmMermaidText(lanes[2].note)}"]
+direction TB
+${makeLane(lanes[2], 'P')}
+end
+V3 --> G{fixed step<br/>available?}
+G -->|yes · max 3| F1
+F7 -->|consume next| G
+G -->|no · 0 allowed| P1
+style V fill:#f5e8df,stroke:#c56f5b
+style F fill:#edf3e8,stroke:#7da36e
+style P fill:#f3efe5,stroke:#9b927c`;
 
-function CMPruneViz() {
-  const panel = (px, title, slabs, count, note, arrows) => {
-    const bottom = 34 + slabs.length * CM_PR_STEP;
+  return (
+    <CMPageMermaid
+      source={source}
+      label="가변 프레임, 고정 스텝, 화면 반영의 실행 흐름도"
+      caption="화살표가 실제 호출 순서다. Variable Frame 뒤 누적 시간을 최대 3회 소비하며, fixed-step이 0회인 프레임은 바로 Presentation으로 넘어간다. `Complete`에서 최신 결과를 소비한다."
+      minWidth={0}
+      className="is-flow"
+    />
+  );
+}
+window.CMPageSimulationDiagram = CMPageSimulationDiagram;
+
+function CMPageOptimizationCurve({ bars }) {
+  const narrow = useCMNarrow();
+  if (narrow) {
+    const max = Math.max(...bars.map((bar) => bar.ms));
     return (
-      <g>
-        <text className="cm-svg-lbl" x={px} y="14">{title}</text>
-        {/* 화살표는 x=px+22 한 열에만 있다 — 카운트를 슬래브 열(px+44)에 두어 x 가 안 겹친다 */}
-        {arrows && <line className="cm-svg-arrow" x1={px + 22} y1="22" x2={px + 22} y2="34" markerEnd="url(#cmArrow2)" />}
-        {slabs.map((buried, i) => (
-          <rect key={i} className={buried ? 'cm-svg-done' : 'cm-svg-piece'}
-                x={px + CM_PR_SLAB_X} y={34 + i * CM_PR_STEP} width={CM_PR_SLAB_W} height={CM_PR_SLAB_H} rx="1" />
-        ))}
-        {arrows && <line className="cm-svg-arrow" x1={px + 22} y1={bottom + 12} x2={px + 22} y2={bottom} markerEnd="url(#cmArrow2)" />}
-        <text className="cm-svg-pct" x={px + CM_PR_SLAB_X} y="196">{count}</text>
-        <text className="cm-svg-cap" x={px + CM_PR_SLAB_X + 46} y="196">{note}</text>
-      </g>
+      <figure className="cm-page-curve cm-page-curve-mobile" aria-label="S0부터 S2-b까지 다섯 단계의 CPU 마커 합 비교 막대그래프">
+        <svg viewBox="0 0 360 560" role="img">
+          <text x="18" y="28" className="cm-viz-kicker">FRAME COST · AVERAGE MS</text>
+          {bars.map((bar, index) => {
+            const rowY = 82 + index * 96;
+            const barWidth = Math.max(8, (bar.ms / max) * 188);
+            return (
+              <g key={bar.stage}>
+                <text x="18" y={rowY - 14} className="cm-curve-stage">{bar.stage}</text>
+                <text x="18" y={rowY + 10} className="cm-curve-label">{bar.label}</text>
+                <rect x="142" y={rowY - 18} width="188" height="18" rx="2" className="cm-mobile-bar-track" />
+                <rect x="142" y={rowY - 18} width={barWidth} height="18" rx="2" className={'cm-mobile-bar ' + bar.group} />
+                <text x="330" y={rowY - 28} textAnchor="end" className="cm-curve-value">{bar.ms.toFixed(3)} ms</text>
+                <text x="330" y={rowY + 20} textAnchor="end" className="cm-curve-delta">{bar.delta}</text>
+              </g>
+            );
+          })}
+        </svg>
+        <figcaption>다섯 단계를 한 화면에서 비교한다. 막대 길이는 같은 입력에서 측정한 프레임당 CPU 마커 합이다.</figcaption>
+      </figure>
     );
-  };
-  return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 210" role="img"
-           aria-label="이전에는 위아래 양쪽에서 가려진 레이어까지 계속 쌓였고, 이후에는 확정할 때 그것들을 버려 회차 16 기준 337장이 57장으로 줄었다">
-        {panel(0, '이전 — 가려진 것도 쌓인다', CM_PR_BEFORE, '337장', '회차 16', true)}
-        {/* 두 주석은 구분선(x=350) 안쪽에 머물러야 한다 — 1회차에 366 까지 뻗어 뚫었다 */}
-        <text className="cm-svg-cap" x="248" y="54">위에서 안 보임</text>
-        <text className="cm-svg-cap" x="248" y="160">아래에서도 안 보임</text>
-        <line className="cm-svg-sep" x1="350" y1="8" x2="350" y2="202" />
-        {panel(380, '이후 — 확정할 때 버린다', CM_PR_AFTER, '57장', '같은 화면', false)}
-
-        <defs>
-          <marker id="cmArrow2" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
-          </marker>
-        </defs>
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s7.vizCaption)}</figcaption>
-    </figure>
-  );
-}
-window.CMPruneViz = CMPruneViz;
-
-/* ── 6. ③ 렌더 구조 before/after (S8) ────────────────────────────────────── */
-// 배치 검산: 최우단은 z스택 라벨 "가림은 z-buffer 가"(x=586, 12px 11글자 ≈ 108) = 694 ≤ viewBox 720 ✓
-function CMRenderStructViz() {
-  const stack = [0, 1, 2];
-  return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 230" role="img"
-           aria-label="가려진 레이어를 버린 뒤에도 남아 있던 렌더 오브젝트 77개를, 앞뒤 메시 두 개에 전 레이어를 이어붙여 2개로 고정한다">
-        {/* ⚠️ 여기에 337 을 쓰면 337→2 를 병합의 몫으로 귀속하게 된다 —
-            버리기(②)가 이미 337→77 을 했다. §01 F04 정정이 명시 금지한 자리다. */}
-        <text className="cm-svg-lbl" x="0" y="14">이전 — 레이어마다 렌더 오브젝트</text>
-        {stack.map(i => (
-          <g key={i}>
-            <rect className="cm-svg-box" x={i * 7} y={30 + i * 26} width="196" height="22" rx="2" />
-            <text className="cm-svg-cap" x={i * 7 + 8} y={45 + i * 26}>렌더 오브젝트 한 벌</text>
-          </g>
-        ))}
-        <text className="cm-svg-cap" x="22" y={30 + 3 * 26 + 16}>⋮</text>
-        <rect className="cm-svg-box" x="28" y="130" width="196" height="22" rx="2" />
-        <text className="cm-svg-cap" x="36" y="145">렌더 오브젝트 한 벌</text>
-        <text className="cm-svg-pct" x="0" y="180">77개</text>
-        <text className="cm-svg-cap" x="46" y="180">②가 버린 뒤 · 회차 16</text>
-
-        <line className="cm-svg-arrow" x1="252" y1="96" x2="304" y2="96" markerEnd="url(#cmArrow3)" />
-
-        <text className="cm-svg-lbl" x="330" y="14">이후 — 앞뒤 메시 2개</text>
-        <rect className="cm-svg-cell fixed" x="330" y="30" width="228" height="50" />
-        <text className="cm-svg-txt" x="342" y="50">앞면 메시 1개</text>
-        <text className="cm-svg-cap" x="342" y="70">제자리에 남은 조각 전부</text>
-        <rect className="cm-svg-cell flip" x="330" y="90" width="228" height="50" />
-        <text className="cm-svg-txt" x="342" y="110">뒷면 메시 1개</text>
-        <text className="cm-svg-cap" x="342" y="130">넘어간 조각 전부</text>
-        <text className="cm-svg-pct" x="330" y="180">2개</text>
-        <text className="cm-svg-cap" x="372" y="180">레이어가 몇 장이든 고정</text>
-
-        <text className="cm-svg-cap" x="586" y="26">쌓임은 정점 z 에</text>
-        {stack.map(i => (
-          <path key={i} className="cm-svg-zslab" d={`M592,${46 + i * 20} l52,-11 v13 l-52,11 z`} />
-        ))}
-        <text className="cm-svg-cap" x="586" y="130">가림은 z-buffer 가</text>
-
-        <defs>
-          <marker id="cmArrow3" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
-          </marker>
-        </defs>
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s8.vizCaption)}</figcaption>
-    </figure>
-  );
-}
-window.CMRenderStructViz = CMRenderStructViz;
-
-/* ── 7. ④ 출력 버퍼 슬롯 배정 (S9) ──────────────────────────────────────── */
-// 배치 상수 — 총폭 검산: BUF_X(112) + CELL_W(96) × 6 = 688 ≤ viewBox 720 ✓
-const CM_BUF_X = 112;
-const CM_CELL_W = 96;
-const CM_PAIRS = 3;
-
-function CMSlotViz() {
-  const cells = [];
-  for (let i = 0; i < CM_PAIRS; i++) {
-    const x = CM_BUF_X + i * CM_CELL_W * 2;
-    cells.push({ i, x, cx: x + CM_CELL_W });
   }
+
+  const width = 1000;
+  const plot = { left: 74, right: 948, top: 54, bottom: 292 };
+  const maxY = 0.7;
+  const x = (index) => plot.left + ((plot.right - plot.left) / (bars.length - 1)) * index;
+  const y = (value) => plot.bottom - (value / maxY) * (plot.bottom - plot.top);
+  const points = bars.map((bar, index) => [x(index), y(bar.ms)]);
+  const line = points.map(([px, py], index) => (index ? 'L' : 'M') + px + ' ' + py).join(' ');
+  const area = line + ` L ${plot.right} ${plot.bottom} L ${plot.left} ${plot.bottom} Z`;
+  const ticks = [0.6, 0.4, 0.2, 0];
+
   return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 268" role="img" aria-label="출력 버퍼가 레이어별 두 칸으로 미리 나뉘어 있고 각 잡 스레드가 자기 칸에만 쓰는 구조">
-        <text className="cm-svg-lbl" x="8" y="60">잡 스레드</text>
-        <text className="cm-svg-lbl" x="8" y="176">출력 버퍼</text>
-
-        {cells.map(c => (
-          <g key={`t${c.i}`}>
-            <rect className="cm-svg-box" x={c.cx - 76} y="34" width="152" height="40" rx="3" />
-            <text className="cm-svg-txt" x={c.cx} y="59" textAnchor="middle">레이어 {c.i} 분할</text>
-            <line className="cm-svg-arrow" x1={c.cx} y1="76" x2={c.cx} y2="146" markerEnd="url(#cmArrow4)" />
-          </g>
-        ))}
-
-        {cells.map(c => (
-          <g key={`b${c.i}`}>
-            {/* 칸 색은 정보를 나르지 않는다 — '제자리'·'넘어감' 글자가 이미 구분한다. 둘 다 중립. */}
-            <rect className="cm-svg-cell fixed" x={c.x} y="150" width={CM_CELL_W} height="46" />
-            <rect className="cm-svg-cell flip" x={c.x + CM_CELL_W} y="150" width={CM_CELL_W} height="46" />
-            <text className="cm-svg-cap" x={c.x + CM_CELL_W / 2} y="178" textAnchor="middle">제자리</text>
-            <text className="cm-svg-cap" x={c.x + CM_CELL_W * 1.5} y="178" textAnchor="middle">넘어감</text>
-            <line className="cm-svg-sep" x1={c.x} y1="150" x2={c.x} y2="196" />
-            <text className="cm-svg-slot" x={c.x + 4} y="214">SlotStarts[{c.i}]</text>
-          </g>
-        ))}
-        <rect className="cm-svg-bufline" x={CM_BUF_X} y="150" width={CM_CELL_W * 2 * CM_PAIRS} height="46" />
-
-        {cells.map(c => (
-          <g key={`s${c.i}`}>
-            <line className="cm-svg-span" x1={c.x} y1="232" x2={c.x + CM_CELL_W * 2} y2="232" />
-            <text className="cm-svg-cap" x={c.cx} y="252" textAnchor="middle">레이어 {c.i}의 몫</text>
-          </g>
-        ))}
-
+    <figure className="cm-page-curve cm-visual-scroll" aria-label="S0부터 S2-b까지 CPU 마커 합이 단계적으로 감소하는 선 그래프">
+      <svg viewBox={'0 0 ' + width + ' 390'} role="img">
         <defs>
-          <marker id="cmArrow4" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
-          </marker>
+          <linearGradient id="cm-curve-area" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stopColor="var(--sage-300)" stopOpacity=".55" />
+            <stop offset="1" stopColor="var(--sage-100)" stopOpacity=".08" />
+          </linearGradient>
         </defs>
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s9.vizCaption)}</figcaption>
-    </figure>
-  );
-}
-window.CMSlotViz = CMSlotViz;
-
-/* ── 8. ⑥ 세 방식 비교 (S11) ────────────────────────────────────────────── */
-// 사용자 지적(2026-08-15): 셋이 각각 무엇을 하는지가 안 보였다 — 같은 그림에 표시만 달랐다.
-// 방식마다 **자기 단계**를 보인다. 셋 다 같은 상황을 받고, 셋째만 빼는 계산을 아예 안 한다.
-// 배치 검산: 마지막 단계 504 + 104 = 608 ≤ viewBox 720 ✓ (캡션 최장 ≈ 92px → 596)
-// 라벨은 전부 상자 **밖**(왼쪽 이름 열 · 상자 아래 캡션)에 둔다 — 안에 두면 테두리가 글자를 관통한다.
-const CM_PC_STEP = [168, 336, 504], CM_PC_W = 104, CM_PC_H = 50;
-
-function CMPolicyCompareViz() {
-  // 한 단계 상자. kind 가 그 단계에서 무엇이 남았는지를 정한다
-  const step = (x, y, kind) => {
-    const w = CM_PC_W, bx = x + 6, by = y + 10, bw = 92, bh = 30, half = 46;
-    switch (kind) {
-      case 'twoCovers':   // 위 두 장이 따로 있다
-        return (<g>
-          <rect className="cm-svg-cover" x={bx} y={by} width={half} height={bh} />
-          <rect className="cm-svg-cover" x={bx + half} y={by} width={half} height={bh} />
-        </g>);
-      case 'merged':      // 둘을 하나로 합쳤다
-        return <rect className="cm-svg-union" x={bx - 3} y={by - 3} width={bw + 6} height={bh + 6} rx="2" />;
-      case 'piece':       // 아래 조각이 그대로 남아 있다
-        return <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />;
-      case 'gone':        // 남는 것이 없다
-        return <rect className="cm-svg-done" x={bx} y={by} width={bw} height={bh} rx="2" />;
-      case 'halfGone':    // 왼쪽만 깎였다
-        return (<g>
-          <rect className="cm-svg-done" x={bx} y={by} width={half} height={bh} />
-          <rect className="cm-svg-piece" x={bx + half} y={by} width={half} height={bh} />
-        </g>);
-      case 'pieceA':      // 조각 위에 한 장만 올려 본다
-        return (<g>
-          <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />
-          <rect className="cm-svg-cover" x={bx} y={by} width={half} height={bh} />
-        </g>);
-      case 'pieceB':
-        return (<g>
-          <rect className="cm-svg-piece" x={bx} y={by} width={bw} height={bh} rx="2" />
-          <rect className="cm-svg-cover" x={bx + half} y={by} width={half} height={bh} />
-        </g>);
-      default: return null;
-    }
-  };
-
-  const rows = [
-    { name: '합쳐서 뺀다', out: '가려짐 → 버린다',
-      steps: [['twoCovers', '위 두 장'], ['merged', '먼저 하나로 합치고'], ['gone', '한 번에 빼면 없다']] },
-    { name: '차례로 깎아낸다 · 채택', out: '가려짐 → 버린다',
-      steps: [['piece', '아래 조각'], ['halfGone', 'A 를 깎고'], ['gone', 'B 를 깎으면 끝']] },
-    { name: '덮였는지만 본다', out: '못 잡는다 → 남긴다',
-      steps: [['pieceA', 'A 하나로 덮나 — 아니오'], ['pieceB', 'B 하나로 덮나 — 아니오'], ['piece', '그대로 남는다']] },
-  ];
-
-  return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 320" role="img"
-           aria-label="세 방식이 같은 상황에서 각각 어떤 단계를 밟는지. 합쳐서 뺀다는 위 두 장을 먼저 합친 뒤 한 번에 빼고, 차례로 깎아낸다는 합치지 않고 한 장씩 깎으며, 덮였는지만 본다는 빼지 않고 한 장이 통째로 덮는지만 확인해 이 경우를 놓친다">
-        <text className="cm-svg-lbl" x="0" y="16">같은 상황 — 위 두 장이 걸쳐 있고, 둘이 합쳐야 아래 조각을 다 가린다</text>
-
-        {rows.map((r, ri) => {
-          const top = 34 + ri * 94;
+        <text x="18" y="24" className="cm-viz-kicker">FRAME COST · AVERAGE MS</text>
+        {ticks.map((tick) => (
+          <g key={tick}>
+            <line x1={plot.left} x2={plot.right} y1={y(tick)} y2={y(tick)} className="cm-viz-grid" />
+            <text x={plot.left - 14} y={y(tick) + 5} textAnchor="end" className="cm-viz-axis">{tick.toFixed(1)}</text>
+          </g>
+        ))}
+        <path d={area} className="cm-curve-area" />
+        <path d={line} className="cm-curve-line" />
+        {bars.map((bar, index) => {
+          const px = x(index), py = y(bar.ms);
           return (
-            <g key={r.name}>
-              <text className="cm-svg-txt" x="0" y={top + 20}>{r.name}</text>
-              <text className="cm-svg-cap" x="0" y={top + 40}>{r.out}</text>
-              {r.steps.map(([kind, cap], si) => (
-                <g key={si}>
-                  <rect className="cm-svg-box" x={CM_PC_STEP[si]} y={top + 2} width={CM_PC_W} height={CM_PC_H} rx="3" />
-                  {step(CM_PC_STEP[si], top + 2, kind)}
-                  <text className="cm-svg-cap" x={CM_PC_STEP[si]} y={top + 68}>{cap}</text>
-                  {si < 2 && (
-                    <line className="cm-svg-arrow" x1={CM_PC_STEP[si] + CM_PC_W + 8} y1={top + 27}
-                          x2={CM_PC_STEP[si + 1] - 10} y2={top + 27} markerEnd="url(#cmArrow5)" />
-                  )}
-                </g>
-              ))}
-              {ri < 2 && <line className="cm-svg-span" x1="0" y1={top + 86} x2="704" y2={top + 86} />}
+            <g key={bar.stage}>
+              <line x1={px} x2={px} y1={py} y2={plot.bottom} className="cm-curve-stem" />
+              <circle cx={px} cy={py} r="8" className={'cm-curve-dot ' + bar.group} />
+              <text x={px} y={py - 18} textAnchor="middle" className="cm-curve-value">{bar.ms.toFixed(3)} ms</text>
+              <text x={px} y={plot.bottom + 31} textAnchor="middle" className="cm-curve-stage">{bar.stage}</text>
+              <text x={px} y={plot.bottom + 53} textAnchor="middle" className="cm-curve-label">{bar.label}</text>
+              <text x={px} y={plot.bottom + 76} textAnchor="middle" className="cm-curve-delta">{bar.delta}</text>
             </g>
           );
         })}
-
-        <defs>
-          <marker id="cmArrow5" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto">
-            <path d="M0,0 L8,4 L0,8 z" fill="var(--ink-3)" />
-          </marker>
-        </defs>
       </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s11.compareCaption)}</figcaption>
+      <figcaption>같은 입력을 유지한 채 한 단계씩 바꿨다. 선의 기울기는 각 단계 직전 대비 감소폭, 마지막 점은 전체 경로의 최종 비용이다.</figcaption>
     </figure>
   );
 }
-window.CMPolicyCompareViz = CMPolicyCompareViz;
+window.CMPageOptimizationCurve = CMPageOptimizationCurve;
 
-/* ── 9. ⑥ 채택한 방식이 어떻게 도는가 (S11) ─────────────────────────────── */
-// 배치 검산: 4패널 × 176 = 704 ≤ viewBox 720 ✓
-const CM_SUB_PANEL = 176;
-function CMConvexSubViz() {
-  const P = i => i * CM_SUB_PANEL;
+function CMVizArrow({ id }) {
   return (
-    <figure className="cm-fig">
-      <svg viewBox="0 0 720 250" role="img"
-           aria-label="조각에서 덮개를 뺄 때 덮개의 변을 차례로 반평면 경계로 삼아 바깥 조각을 떼어 내고 안쪽만 다음 변으로 넘긴다. 남은 것이 없으면 완전히 덮인 것이다">
-        {/* 1 — 시작 */}
-        <g>
-          <text className="cm-svg-lbl" x={P(0)} y="14">시작</text>
-          <path className="cm-svg-piece" d={`M${P(0) + 6},26 L${P(0) + 130},26 L${P(0) + 130},118 L${P(0) + 6},118 Z`} />
-          <text className="cm-svg-cap" x={P(0) + 14} y="44">조각 W</text>
-          <path className="cm-svg-cover" d={`M${P(0) + 50},50 L${P(0) + 118},50 L${P(0) + 118},104 L${P(0) + 50},104 Z`} />
-          <text className="cm-svg-cap" x={P(0) + 58} y="80">덮개 Q</text>
-          <text className="cm-svg-cap" x={P(0)} y="146">둘 다 볼록이다</text>
-        </g>
-        {/* 2 — h0 */}
-        <g>
-          <text className="cm-svg-lbl" x={P(1)} y="14">h₀ 로 자른다</text>
-          <path className="cm-svg-cut" d={`M${P(1) + 6},26 L${P(1) + 130},26 L${P(1) + 130},50 L${P(1) + 6},50 Z`} />
-          <path className="cm-svg-piece" d={`M${P(1) + 6},50 L${P(1) + 130},50 L${P(1) + 130},118 L${P(1) + 6},118 Z`} />
-          <line className="cm-svg-half" x1={P(1)} y1="50" x2={P(1) + 140} y2="50" />
-          <text className="cm-svg-cap" x={P(1) + 112} y="44">h₀</text>
-          <text className="cm-svg-cap" x={P(1)} y="146">바깥을 떼어 낸다</text>
-          <text className="cm-svg-cap" x={P(1)} y="166">안쪽만 다음 변으로</text>
-        </g>
-        {/* 3 — h1 */}
-        <g>
-          <text className="cm-svg-lbl" x={P(2)} y="14">h₁ 로 자른다</text>
-          <path className="cm-svg-done" d={`M${P(2) + 6},26 L${P(2) + 130},26 L${P(2) + 130},50 L${P(2) + 6},50 Z`} />
-          <path className="cm-svg-cut" d={`M${P(2) + 6},50 L${P(2) + 50},50 L${P(2) + 50},118 L${P(2) + 6},118 Z`} />
-          <path className="cm-svg-piece" d={`M${P(2) + 50},50 L${P(2) + 130},50 L${P(2) + 130},118 L${P(2) + 50},118 Z`} />
-          <line className="cm-svg-half" x1={P(2) + 50} y1="26" x2={P(2) + 50} y2="126" />
-          {/* ⚠️ 이 라벨은 선 옆 빈 자리에만 놓인다 — 위(패널 제목)·아래(캡션) 둘 다 글자가 있어 겹친다.
-              자동 지표(폰트·넘침·이탈)는 글자끼리 겹치는 것을 못 잡는다. 교차 전수 검사로 두 번 걸렀다. */}
-          <text className="cm-svg-cap" x={P(2) + 56} y="66">h₁</text>
-          <text className="cm-svg-cap" x={P(2)} y="146">또 하나 떼어 낸다</text>
-          <text className="cm-svg-cap" x={P(2)} y="166">떼어 낸 것도 볼록이다</text>
-        </g>
-        {/* 4 — 완료 */}
-        <g>
-          <text className="cm-svg-lbl" x={P(3)} y="14">변을 다 훑으면</text>
-          <path className="cm-svg-done" d={`M${P(3) + 6},26 L${P(3) + 130},26 L${P(3) + 130},50 L${P(3) + 6},50 Z`} />
-          <path className="cm-svg-done" d={`M${P(3) + 6},50 L${P(3) + 50},50 L${P(3) + 50},118 L${P(3) + 6},118 Z`} />
-          <path className="cm-svg-cut" d={`M${P(3) + 50},104 L${P(3) + 130},104 L${P(3) + 130},118 L${P(3) + 50},118 Z`} />
-          <path className="cm-svg-cut" d={`M${P(3) + 118},50 L${P(3) + 130},50 L${P(3) + 130},104 L${P(3) + 118},104 Z`} />
-          <path className="cm-svg-hole" d={`M${P(3) + 50},50 L${P(3) + 118},50 L${P(3) + 118},104 L${P(3) + 50},104 Z`} />
-          <text className="cm-svg-cap" x={P(3) + 62} y="82">Q 자리</text>
-          <text className="cm-svg-cap" x={P(3)} y="146">남은 것이 W 빼기 Q</text>
-          <text className="cm-svg-cap" x={P(3)} y="166">전부 볼록 조각이다</text>
-        </g>
+    <defs>
+      <marker id={id} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+        <path d="M 0 0 L 10 5 L 0 10 z" className="cm-viz-arrow-head" />
+      </marker>
+      <pattern id={id + '-hatch'} width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+        <line x1="0" y1="0" x2="0" y2="8" className="cm-viz-hatch" />
+      </pattern>
+    </defs>
+  );
+}
 
-        <line className="cm-svg-base" x1="0" y1="190" x2="700" y2="190" />
-        <text className="cm-svg-txt" x="0" y="214">남은 것이 없으면 그 레이어는 완전히 가려진 것 — 버려도 된다.</text>
-        <text className="cm-svg-cap" x="0" y="238">여러 장이 나눠 덮는 경우도 조각이 깎여 사라지는 같은 경로다.</text>
-      </svg>
-      <figcaption className="cm-figcap">{window.renderInline(window.CM_DATA.s11.vizCaption)}</figcaption>
+function CMReuseVisual({ method, viewBox = '0 0 1000 390', side }) {
+  const arrow = 'cm-reuse-arrow';
+  return (
+    <svg viewBox={viewBox} role="img" aria-label="모든 레이어를 다시 만드는 방식과 변하지 않은 레이어 참조를 재사용하는 방식 비교">
+      <CMVizArrow id={arrow} />
+      {side !== 'after' && <g>
+        <text x="34" y="34" className="cm-viz-kicker">BEFORE · RECREATE ALL</text>
+        {[0, 1, 2, 3, 4].map((i) => <rect key={'bi' + i} x={62 + i * 10} y={86 + i * 35} width="150" height="72" rx="3" className="cm-viz-paper old" />)}
+        <line x1="258" x2="398" y1="177" y2="177" className="cm-viz-arrow" markerEnd={'url(#' + arrow + ')'} />
+        {[0, 1, 2, 3, 4].map((i) => <rect key={'bo' + i} x={366 + i * 11} y={76 + i * 38} width="150" height="72" rx="3" className="cm-viz-paper created" />)}
+        <text x="137" y="306" textAnchor="middle" className="cm-viz-label">입력 전체</text>
+        <text x="446" y="306" textAnchor="middle" className="cm-viz-label">새 Layer · 새 Mesh</text>
+      </g>}
+      {side !== 'before' && <g>
+        <text x="540" y="34" className="cm-viz-kicker good">AFTER · PRESERVE IDENTITY</text>
+        {[0, 1, 2, 3, 4].map((i) => <rect key={'ai' + i} x={570 + i * 10} y={86 + i * 35} width="150" height="72" rx="3" className={'cm-viz-paper ' + (i < 3 ? 'reused' : 'crossed')} />)}
+        <line x1="732" x2="886" y1="154" y2="154" className="cm-viz-arrow good" markerEnd={'url(#' + arrow + ')'} />
+        <path d="M748 210 C790 174 832 174 874 210" className="cm-viz-ref-loop" />
+        <text x="810" y="136" textAnchor="middle" className="cm-viz-label good">same reference</text>
+        <text x="810" y="232" textAnchor="middle" className="cm-viz-note">교차한 레이어만 분할</text>
+        <rect x="874" y="83" width="78" height="57" rx="3" className="cm-viz-paper reused" />
+        <path d="M876 188 L916 151 L953 188 L953 247 L876 247 Z" className="cm-viz-piece new" />
+        <line x1="915" x2="915" y1="152" y2="247" className="cm-viz-fold-line" />
+        <text x="682" y="306" textAnchor="middle" className="cm-viz-label">위치 먼저 분류</text>
+        <text x="914" y="306" textAnchor="middle" className="cm-viz-label">재사용 / 새 조각</text>
+      </g>}
+      {!side && <text x="500" y="365" textAnchor="middle" className="cm-viz-caption">{method.after.footer}</text>}
+    </svg>
+  );
+}
+
+function CMPruneVisual({ method, viewBox = '0 0 1000 390', side }) {
+  const arrow = 'cm-prune-arrow';
+  return (
+    <svg viewBox={viewBox} role="img" aria-label="파묻힌 조각을 유지하는 방식과 확정 순간 제거하는 방식 비교">
+      <CMVizArrow id={arrow} />
+      {side !== 'after' && <g>
+        <text x="36" y="34" className="cm-viz-kicker">BEFORE · KEEP HIDDEN PIECES</text>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <path key={i} d={`M ${92 + i * 18} ${250 - i * 28} l 180 -18 l 78 64 l -190 22 z`} className={'cm-viz-layer ' + (i === 1 || i === 2 ? 'buried' : 'visible')} />
+        ))}
+        <line x1="128" y1="227" x2="270" y2="305" className="cm-viz-cross" />
+        <line x1="270" y1="227" x2="128" y2="305" className="cm-viz-cross" />
+        <text x="208" y="345" textAnchor="middle" className="cm-viz-label">보이지 않아도 다음 입력에 포함</text>
+      </g>}
+      {!side && <g>
+        <line x1="418" x2="570" y1="190" y2="190" className="cm-viz-arrow" markerEnd={'url(#' + arrow + ')'} />
+        <text x="495" y="169" textAnchor="middle" className="cm-viz-note">앞·뒤 가려짐 판정</text>
+      </g>}
+      {side !== 'before' && <g>
+        <text x="610" y="34" className="cm-viz-kicker good">AFTER · PRUNE ON CONFIRM</text>
+        {[0, 1, 2, 3].map((i) => (
+          <path key={i} d={`M ${650 + i * 22} ${238 - i * 38} l 185 -16 l 72 62 l -190 22 z`} className="cm-viz-layer kept" />
+        ))}
+        <path d="M604 278 h40 v54 h-40 z M598 270 h52" className="cm-viz-trash" />
+        <text x="777" y="345" textAnchor="middle" className="cm-viz-label good">{method.after.items[2]}</text>
+      </g>}
+      {!side && <text x="500" y="375" textAnchor="middle" className="cm-viz-caption">되돌리기 이력은 제거 전 상태를 보존하고, 확정 데이터에는 남길 조각만 옮긴다.</text>}
+    </svg>
+  );
+}
+
+function CMMergeVisual({ method, viewBox = '0 0 1000 390', side }) {
+  const arrow = 'cm-merge-arrow';
+  return (
+    <svg viewBox={viewBox} role="img" aria-label="레이어마다 렌더 오브젝트를 두는 방식과 앞뒤 두 메시로 병합하는 방식 비교">
+      <CMVizArrow id={arrow} />
+      {side !== 'after' && <g>
+        <text x="34" y="34" className="cm-viz-kicker">BEFORE · OBJECT PER LAYER</text>
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <g key={i} transform={`translate(${50 + (i % 3) * 132} ${76 + Math.floor(i / 3) * 105})`}>
+            <path d="M0 20 L70 0 L108 35 L78 72 L12 63 Z" className="cm-viz-mesh old" />
+            <rect x="77" y="55" width="44" height="24" rx="2" className="cm-viz-object" />
+            <text x="99" y="71" textAnchor="middle" className="cm-viz-mini">GO</text>
+          </g>
+        ))}
+        {[0, 1, 2, 3, 4, 5].map((i) => <line key={i} x1={100 + (i % 3) * 132} y1={172 + Math.floor(i / 3) * 105} x2="474" y2={150 + i * 24} className="cm-viz-submit" />)}
+        <rect x="464" y="125" width="76" height="174" rx="4" className="cm-viz-queue" />
+        <text x="502" y="213" textAnchor="middle" className="cm-viz-label vertical">DRAW</text>
+        <text x="258" y="342" textAnchor="middle" className="cm-viz-label">레이어 수만큼 Object · 제출</text>
+      </g>}
+      {!side && <line x1="548" x2="632" y1="210" y2="210" className="cm-viz-arrow" markerEnd={'url(#' + arrow + ')'} />}
+      {side !== 'before' && <g>
+        <text x="594" y="34" className="cm-viz-kicker good">AFTER · TWO FACE BUFFERS</text>
+        <path d="M660 112 L785 76 L865 142 L812 220 L683 205 Z" className="cm-viz-mesh front" />
+        <path d="M694 164 L820 128 L900 194 L846 272 L717 257 Z" className="cm-viz-mesh back" />
+        <text x="750" y="95" className="cm-viz-face">FRONT</text>
+        <text x="816" y="250" className="cm-viz-face">BACK</text>
+        <line x1="888" x2="954" y1="210" y2="210" className="cm-viz-arrow good" markerEnd={'url(#' + arrow + ')'} />
+        <text x="786" y="342" textAnchor="middle" className="cm-viz-label good">z에 쌓임 순서 · renderer 2개 고정</text>
+      </g>}
+      {!side && <text x="500" y="375" textAnchor="middle" className="cm-viz-caption">{method.metric.detail} · {method.metric.label}</text>}
+    </svg>
+  );
+}
+
+function CMNativeVisual({ method, viewBox = '0 0 1000 410', side }) {
+  const arrow = 'cm-native-arrow';
+  return (
+    <svg viewBox={viewBox} role="img" aria-label="매 프레임 관리형 객체 그래프 생성과 재사용 NativeArray Job 파이프라인 비교">
+      <CMVizArrow id={arrow} />
+      {side !== 'after' && <g>
+        <text x="34" y="34" className="cm-viz-kicker">BEFORE · MANAGED PREVIEW EACH FRAME</text>
+        {[0, 1, 2].map((frame) => (
+          <g key={frame} transform={`translate(${48 + frame * 138} 86)`}>
+            <text x="51" y="0" textAnchor="middle" className="cm-viz-note">frame {frame + 1}</text>
+            <rect x="0" y="18" width="102" height="40" rx="3" className="cm-viz-managed" />
+            <rect x="8" y="66" width="86" height="34" rx="3" className="cm-viz-managed" />
+            <rect x="18" y="108" width="66" height="30" rx="3" className="cm-viz-managed" />
+            <text x="51" y="43" textAnchor="middle" className="cm-viz-mini">PaperData</text>
+            <text x="51" y="88" textAnchor="middle" className="cm-viz-mini">PaperLayer</text>
+            <text x="51" y="128" textAnchor="middle" className="cm-viz-mini">List</text>
+          </g>
+        ))}
+        <path d="M62 274 h342" className="cm-viz-gc-line" />
+        <text x="233" y="304" textAnchor="middle" className="cm-viz-label">분할 · Compose · 객체 생성이 한 경로</text>
+      </g>}
+      {side !== 'before' && <g>
+        <text x="516" y="34" className="cm-viz-kicker good">AFTER · SCHEDULE → WORK → COMPLETE</text>
+        <line x1="536" x2="938" y1="112" y2="112" className="cm-viz-timeline" markerEnd={'url(#' + arrow + ')'} />
+        <circle cx="570" cy="112" r="8" className="cm-curve-dot structure" />
+        <circle cx="814" cy="112" r="8" className="cm-curve-dot native" />
+        <circle cx="918" cy="112" r="8" className="cm-curve-dot base" />
+        <text x="570" y="86" textAnchor="middle" className="cm-viz-label">SimTick</text>
+        <text x="814" y="86" textAnchor="middle" className="cm-viz-label">RenderTick</text>
+        <text x="918" y="86" textAnchor="middle" className="cm-viz-label">Confirm</text>
+        <rect x="582" y="132" width="220" height="45" rx="22" className="cm-viz-worker" />
+        <text x="692" y="160" textAnchor="middle" className="cm-viz-label good">worker execution window</text>
+        <text x="570" y="202" textAnchor="middle" className="cm-viz-note">선 3값 · Schedule</text>
+        <text x="814" y="202" textAnchor="middle" className="cm-viz-note">Complete · Sync</text>
+        <text x="918" y="202" textAnchor="middle" className="cm-viz-note">Marshal</text>
+        <rect x="548" y="242" width="374" height="64" rx="4" className="cm-viz-native-buffer" />
+        <rect x="566" y="258" width="92" height="32" rx="3" className="cm-viz-buffer-cell" />
+        <rect x="670" y="258" width="110" height="32" rx="3" className="cm-viz-buffer-cell" />
+        <rect x="792" y="258" width="112" height="32" rx="3" className="cm-viz-buffer-cell" />
+        <text x="735" y="338" textAnchor="middle" className="cm-viz-label good">접기당 한 번 올린 NativeArray를 매 프레임 재사용</text>
+      </g>}
+      {!side && <text x="500" y="386" textAnchor="middle" className="cm-viz-caption">{method.metric.detail} · {method.metric.label} · {method.metric.value}</text>}
+    </svg>
+  );
+}
+
+function CMPageMethodViz({ method }) {
+  const narrow = useCMNarrow();
+  const Visual = {
+    reuse: CMReuseVisual,
+    prune: CMPruneVisual,
+    merge: CMMergeVisual,
+    native: CMNativeVisual,
+  }[method.id];
+
+  if (!Visual) return null;
+  const mobileViews = {
+    reuse: ['0 0 530 390', '500 0 500 390'],
+    prune: ['0 0 560 390', '540 0 460 390'],
+    merge: ['0 0 620 390', '580 0 420 390'],
+    native: ['0 0 500 410', '500 0 500 410'],
+  }[method.id];
+  return (
+    <figure className={'cm-page-method-viz method-' + method.id + (narrow ? ' is-mobile' : ' cm-visual-scroll')}>
+      {narrow ? (
+        <div className="cm-page-method-mobile">
+          <div><Visual method={method} viewBox={mobileViews[0]} side="before" /></div>
+          <div><Visual method={method} viewBox={mobileViews[1]} side="after" /></div>
+        </div>
+      ) : <Visual method={method} />}
+      <figcaption>
+        <span>{method.before.footer}</span>
+        <b aria-hidden="true">→</b>
+        <span>{method.after.footer}</span>
+      </figcaption>
     </figure>
   );
 }
-window.CMConvexSubViz = CMConvexSubViz;
-
-/* ── 재측정 전후 수치 쌍 (그림 아님 — 텍스트 블록의 일부) ─────────────────── */
-function CMDelta({ d }) {
-  const ri = window.renderInline;
-  return (
-    <div className="cm-delta">
-      <div className="cm-delta-lbl">{d.label}</div>
-      <div className="cm-delta-row">
-        <span className="cm-delta-cell was"><b>{d.before.v}</b><i>{d.before.k}</i></span>
-        <span className="cm-delta-ar">→</span>
-        <span className="cm-delta-cell now"><b>{d.after.v}</b><i>{d.after.k}</i></span>
-      </div>
-      <p className="cm-delta-note">{ri(d.note)}</p>
-    </div>
-  );
-}
-window.CMDelta = CMDelta;
+window.CMPageMethodViz = CMPageMethodViz;

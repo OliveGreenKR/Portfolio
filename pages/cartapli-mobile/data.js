@@ -1,565 +1,299 @@
 // pages/cartapli-mobile/data.js
-// ─────────────────────────────────────────────────────────────────────────────
-// 이 파일이 이 페이지 문장의 유일한 원본이다. 중간 문서를 만들지 않는다.
-// 상류 판단(사실 → 전략 → 구조)의 원본:
-//   knowledge_base/projects/cartapli_mobile/research/portfolio-flow.md
-//   §01 사실([FREEZE] · [CODE PAIRS] P1~P6 · [CODE EXCERPTS] C1~C6 · [MARKER SUM])
-//   §02 전략(2026-08-15 개정)  ·  §03 구조(2026-08-15 재작성, 12절 계약)
-//
-// ── 절 계약 (§03). 순서·개수를 여기서 바꾸지 않는다 ──────────────────────────
-//   S1 히어로 / S2 개요·경계 / S3 최종결과 / S4 지도 / S5 진단
-//   S6 ①재사용 / S7 ②버리기 / S8 ③병합 / S9 ④Burst / S10 ⑤재측정 / S11 ⑥판정
-//   S12 검증·한계
-//   S5 이후의 순서는 커밋 날짜가 잠근다 —
-//     385fd68(7/22) → 992c50a(7/23) → 792bb3a(7/24) → cafa4ae(7/24)
-//     → f920035(7/24) → 0d73c39(8/12).  순서를 바꾸면 날짜가 어긋난다.
-//   S6~S11 은 고정 리듬 — [link] → [기존→개선 그림] → [코드 쌍] → [설명 3줄].
-//   ⚠️ 블록 수를 4~6 안에 둔다. 1회차 실측이 4·4·7·8·8·11 이라 ⑥이 여섯 중
-//      최상위로 읽혔다(05 렌즈2 Critical). 리듬은 분량에도 걸린다.
-//
-// ── 수치 규칙 ────────────────────────────────────────────────────────────────
-// 1. 시간·할당 수치가 나오는 자리마다 아래 한 문장을 붙인다. 문구를 바꾸지 않는다.
-//      "Windows PC · Unity 에디터 PlayMode · 임의 접기 벤치(시드 12345) 16회차"
-//    → 상수 CM_COND. 조건을 떼면 E3(동일 조건 전후 비교) 자격을 잃는다.
-//    ⚠️ S11 은 예외다 — 별도 하네스(정책별 자기 궤적 재현)라 전용 문구 CM_COND_POLICY 를 쓴다.
-// 2. 구조 불변식(s8.table — 렌더 오브젝트·드로우콜·레이어·정점)에는 COND 를 붙이지 않는다.
-// 3. 측정 시점·정책 상태를 밝힌다 — s3 막대 · s5 진단 · s8 표 · s9 마커 = 2026-07-24 /
-//    가려짐 계산이 아직 `합쳐서 뺀다` 이던 상태. s11 = 2026-08-12 / 별도 하네스.
-//    ⚠️ ⑥을 s3 의 다섯 막대에 얹지 않는다. 단계가 아니다(§01 [FREEZE]).
-// 4. **회차 한정**을 빠뜨리지 않는다. 할당 쌍(39,006/25,468 B)과 로그 비중(89.8%)은
-//    전부 **후반 회차 r13~16** 값이다. 조건 열 누락이 이 프로젝트가 다섯 번 낸 사고다.
-// 5. §01 에 없는 수치를 쓰지 않는다. 커밋 메시지도 §01 을 통과하지 않으면 출처가 아니다.
-//    ⚠️ 1회차에 `992c50a` 커밋 메시지의 "5,041장 → 3회차 3장" 을 그대로 실었다가
-//       4렌즈 중 3렌즈에 Critical 로 잡혔다 — 그것은 **폐기한 정렬 벤치** 값이다.
-// 6. **결론 수치**는 전부 Average. 스파이크·구간 대표값은 Median/Max 이고 그 성격을 문장에 밝힌다.
-// 7. **정도 주장은 잰 것에만.** "절반" 처럼 분해하지 않은 비중을 수로 말하지 않는다.
-//
-// ── 문장 규칙 ────────────────────────────────────────────────────────────────
-// 8. 주장 세기 ≤ 증거 급. 금지 어휘: 크게 개선 · 성능 향상 · 최적화했다 · 효율적으로 ·
-//    획기적으로 · 강력한 · 최적의 · 다양한 · 사용자 경험을 향상 · 많은 것을 배웠다
-// 9. 측정 안 한 판단에는 "재지 않았다"를 붙인다.
-// 10. ⚠️ 커스텀 생명주기 훅에 **성능 주장을 붙이지 않는다** — s9.notes[2] 한 줄이 전부다(§02 확정 1번).
-//     그래서 s12 한계에도 다시 쓰지 않는다. 한 줄은 한 번만이다.
-// 11. renderInline 은 **굵게** · `코드` · *기울임* 만. 중첩 금지.
-//     코드 쌍의 file/commit/intro/result/ref 는 renderInline 을 안 거친다 — 마크업 금지.
-// 12. 이모지는 ⚠️ 와 ✓ 둘뿐(DESIGN_SYSTEM.md).
-//
-// ── 용어 고정 (05 렌즈0·1 이 다섯 갈래·세 갈래를 잡았다) ─────────────────────
-//   방식 번호  ① 재사용 / ② 버리기 / ③ 병합 / ④ Burst / ⑤ 변인통제 / ⑥ 판정 교체
-//              ⚠️ 가려짐 계산 방식에는 **원문자를 쓰지 않는다** — 방식 번호와 충돌한다.
-//   가려짐 계산 `합쳐서 뺀다` / `차례로 깎아낸다`(채택) / `덮였는지만 본다` — 지면에는 이 세 이름만 쓴다.
-//              내부 이름(Clipper2 유니온 · 볼록 뺄셈 · 단일 덮개)은 KB 에만 둔다. 독자가 알 이유가 없다.
-//   ②의 동사   "버린다" 하나. (지운다 / 걷어낸다 / 삭제 ❌)
-//   렌더 객체   "렌더 오브젝트" 하나. 첫 등장에서 한 벌의 구성을 한 번만 푼다.
-//   가려짐      "가려진" 하나. "덮개/덮인" 은 볼록 뺄셈의 기하 용어로만 쓰고 그 자리에서 정의한다.
-//
-// ── 금지 수치 ────────────────────────────────────────────────────────────────
-//   정점 251 을 진단(s5) 자리에 쓰는 것 — S1-2 이후 값이다. 진단은 1,348.
-//   회차 시간(FoldRoundTime) 전량 · 정렬 접기 벤치 수치 전량(5,041장 포함) ·
-//   옛(로그 포함) 시리즈(−70.0% 한 값만 s10 에 살린다)
-//
-// ── 뺀 것과 이유 (§02 REMOVE / DEFER 요약) ───────────────────────────────────
-// REMOVE  커스텀 생명주기 프레임워크 서술(목표에서 제외, ④ 절 한 줄만)
-//         ⑥을 다섯 단계 막대에 얹는 것 · 각 방식 절의 구구절절(3줄 상한)
-//         Median·Max 통계표 · 외부 발표 인용 · 발표자 실측치 · 배칭 방식 비교표
-//         bench-overlay 절차 세부 · InnerLoopBatchCount 세부
-// DEFER   외곽선 렌더링(측정 없음) · 배틀/Geo/Motion/Surface(근거 문서 없음)
-//         기기 실측 · GPU 시간 · 오버드로우 — s12 한계로만 언급
-//         커스텀 생명주기 프레임워크 — 컨텐츠·개발량이 쌓이면 별도 항목으로
-// ─────────────────────────────────────────────────────────────────────────────
-
-const CM_COND = 'Windows PC · Unity 에디터 PlayMode · 임의 접기 벤치(시드 12345) 16회차';
-const CM_COND_POLICY = 'Windows PC · Unity 에디터 · 세 방식을 따로 돌린 정책 비교 하네스 (2026-08-12)';
+// Public copy SSOT. Upstream: knowledge_base/projects/cartapli_mobile/research/portfolio-flow.md
+// Scope: Windows PC · Unity Editor PlayMode · same deterministic 16-fold benchmark.
 
 window.CM_DATA = {
-  cond: CM_COND,
-  condPolicy: CM_COND_POLICY,
-
-  /* ── S1 히어로 (Level 1) ─────────────────────────────────────────────── */
   meta: {
-    eyebrow: 'PROJECT · PERFORMANCE',
+    eyebrow: 'ANDROID TECHNICAL PROTOTYPE',
     title: 'Cartapli Mobile',
-    subtitle: '종이접기 시뮬레이션 — 모바일 이식과 리메이크',
-    core: '어느 변경이 얼마를 벌었는지 갈라 말할 수 있게, 한 단계씩 고쳐 얼려 두고 같은 벤치로 다시 쟀다.',
-    // 사용자 지적(2026-08-15): 첫 화면에 시간만 있고 렌더 오브젝트·드로우콜·할당이 없었다.
-    // 넷 다 고치기 전 → 지금 쌍으로 올린다. ⚠️ 넷째 줄은 통계가 달라(최대 vs 후반 평균) 배수를 쓰지 않는다.
-    // 숫자를 먼저 놓고 설명을 뒤에 둔다. 열이 다섯이면 눈이 갈 데를 못 찾는다(사용자 지적).
-    headline: {
-      rows: [
-        { v: '0.643 → 0.040 ms', d: '−93.8%', k: '접는 동안 프레임 하나에 드는 시간' },
-        { v: '337개 → 2개', d: '레이어가 몇 장이든 고정', k: '종이를 화면에 올리는 유니티 객체' },
-        { v: '+298 → +1', d: '', k: '드로우콜 (가만히 있을 때 대비)' },
-        { v: '1.73 MB → ~28 KB', d: 'GC 수집 0회', k: '접기를 확정할 때 한 프레임에 생기는 쓰레기' },
-      ],
-      href: '#result',
-      hrefLabel: '어느 변경이 얼마를 벌었나 → §02',
-    },
-    pills: [
-      { text: '2026-07 ~ 08 · 진행 중' },
-      { text: 'Unity · Burst / Job' },   // sage 색면은 .cm-core 하나뿐이다 — accent 필을 쓰지 않는다
+    subtitle: '종이접기 전투를 Android에서 검증하기 위해 시뮬레이션 실행 구조를 다시 설계한 기술 프로토타입',
+    core: '같은 접기 입력을 반복 계측해 파묻힌 레이어를 제거하고, 렌더러를 두 메시로 합친 뒤, 분할 연산을 NativeArray·Job·Burst 경로로 옮겼다.',
+    links: [
+      { label: 'Architecture', href: '#architecture' },
+      { label: 'Optimization result', href: '#result' },
+      { label: 'GitHub', href: 'https://github.com/OliveGreenKR/Cartapli_mobile', external: true },
+      { label: 'Steam original', href: 'https://store.steampowered.com/app/4314560/', external: true },
     ],
-  },
-
-  hero: {
-    src: 'cartapli-mobile/assets/fold-manual.gif',
-    w: 1308,
-    h: 602,
-    alt: '벤치 씬에서 종이를 수동으로 접는 장면. 회차를 거듭할수록 조각이 갈라져 쌓인다.',
-    caption: '벤치 씬에서 손으로 접는 장면. 회차를 거듭할수록 조각이 갈라져 쌓인다 — 이 페이지의 모든 수치가 **이 동작 하나의 비용**이다.',
-  },
-
-  /* ── S2 개요와 저작 경계 (Level 3) ───────────────────────────────────── */
-  // ⚠️ 저작 경계 카드가 정의표보다 **먼저** 온다(§02 결정: 앞쪽 배치). JSX 순서로 강제한다.
-  s2: {
-    mine: '가려진 레이어 판정 · 앞뒤 2메시 병합 렌더러 · Burst 잡 분할 파이프라인 · 오라클 테스트 · 측정 인프라. 지금 돌아가는 분할 커널도 원작 시절 내가 UV 대응으로 다시 쓴 것이고, 이 레포는 그것을 이식했다.',
-    others: '점과 직선의 대칭으로 접기를 연출한다는 **아이디어와 최초 구현은 PoC 입안자의 것**이다. 원작 팀 레포의 최초 커밋에 이미 들어 있었다. 이 페이지가 다루는 것은 그 위에 올린 것들이다.',
+    metrics: [
+      { value: '−93.8%', label: '프레임당 CPU 마커 합', detail: '0.643 → 0.040 ms', note: '전체 개선 전 → Native 결합 후 · S0→S2-b' },
+      { value: '−99.7%', label: '드로우콜 증분', detail: '+298 → +1', note: '초기 구조 → 2메시 병합 후 · 정지 대조군 대비' },
+      { value: '−99.4%', label: '렌더 오브젝트', detail: '337 → 2', note: '초기 구조 → 2메시 병합 후 · 16회차' },
+    ],
+    media: {
+      src: 'cartapli-mobile/assets/fold-manual.gif',
+      width: 1308,
+      height: 602,
+      alt: 'PaperBench에서 접는 선을 움직여 종이를 접는 측정 입력',
+      caption: 'PaperBench 측정 입력 · 실제 전투 화면이 아닌 접기 파이프라인 검증 장면',
+    },
     facts: [
-      ['프로젝트', 'PC 원작 `Cartapli` 의 모바일 이식 + 리메이크. 퍼즐 게임이고 **개발 중**이다. 원작과는 **별개 레포**다.'],
-      ['목표', '기존 로직을 모바일 환경에 맞게 고쳐 나가는 **학습·개발**이다. 그래서 *"DOTS 를 쓰면 빨라진다"* 가 아니라 **구조 개선으로 얼마, DOTS 로 추가 얼마**를 갈라 말하는 것을 목표로 잡았다. 여기서 재는 DOTS 는 **Burst 잡 하나**다 — ECS 로 갈아엎지 않았다.'],
-      ['얼리기', '단계마다 그 시점 엔진을 브랜치로 얼려 둔다 — 태그 1개(`perf-s0`)와 브랜치 4개(`bench-s0` ~ `bench-s2-a`). 얼린 브랜치에 덮어쓰는 것은 **로깅 호출부의 API 이관뿐**이고 접기 로직은 손대지 않는다. 벤치 코드는 최신 것 하나를 그대로 얹는다. 그래서 한 달 뒤에도 **같은 자극으로 다시 잴 수 있다** — §09 가 실제로 그렇게 했다.'],
-      ['용어', '**레이어** = 접어서 갈라진 종이 조각 한 겹. 접을 때마다 잘린 쪽이 늘어 회차를 거듭할수록 쌓인다 — 이 벤치의 16회차에서 337장이다. **렌더 오브젝트** = 그 한 장을 화면에 올리기 위해 두던 한 벌(GameObject + MeshFilter + MeshRenderer + Mesh).'],
-      ['프레임 두 종류', '접는 선을 **끄는 동안**이 보간 프레임이고, **놓는 한 프레임**이 확정이다. 끄는 동안은 종이 전체가 매 프레임 다시 만들어지고, 확정할 때만 조각이 실제로 갈라진다.'],
-      ['벤치', '정사각형 종이 한 장에 시드 12345 의 결정론 난수로 각도·비율·방향을 뽑아 **16회 접는다.** 대표로 보는 값은 **접는 동안 프레임 하나에 드는 시간**이다 — 프로파일러로 잰 세 구간(자르기 · 조각 쌓기 · 화면에 올리기)의 프레임 평균을 더한 값이고, 여기서 **"고치기 전"** 은 데이터·계산·화면을 파일 단위로 갈라 놓기만 한 출발 상태다. ⚠️ **재는 곳은 Windows PC 의 Unity 에디터다** — 이식 대상은 모바일이지만 기기 실측은 없다(§11).'],
+      'Mobile 저장소 단일 Git 저자',
+      'Unity 6.3 · URP 17.3',
+      'Android · Min SDK 25 · ARM64',
+      'Android 빌드 테스트 전',
     ],
+    boundary: '출시 원작과 별도 저장소다. Mobile에서 시뮬레이션 실행 순서 제어, 파묻힘 판정, 2메시 렌더러, NativeArray·Job·Burst 결합 경로와 계측 인프라를 구현했다.',
   },
 
-  /* ── S3 최종 결과 (Level 2) — §01 [MARKER SUM] ───────────────────────── */
-  s3: {
-    gist: '순서대로 적용하며 갈라 보니 구조를 바꾼 몫이 96.4%, Burst 잡으로 옮긴 몫이 3.6% 였다.',
-    lead: '아래 다섯 막대는 얼려 둔 브랜치를 **같은 벤치로 다시 돌려** 잰 값이다.',
-    chart: {
-      unitNote: '고치기 전 = 100',
-      legend: [
-        { group: 'base', label: '고치기 전' },
-        { group: 'struct', label: '구조를 바꾼 몫' },
-        { group: 'burst', label: 'Burst 잡으로 옮긴 몫' },
-      ],
-      // ms 를 병기한다 — % 만 두면 96.4/3.6 을 독자가 검산할 수 없다(05 렌즈0)
-      bars: [
-        { stage: '기준', name: '고치기 전', pct: 100, ms: '0.643', delta: '', group: 'base' },
-        { stage: '①', name: '안 바뀐 레이어는 다시 만들지 않는다', pct: 58.1, ms: '0.373', delta: '−41.9%', group: 'struct' },
-        { stage: '②', name: '가려진 레이어를 버린다', pct: 25.6, ms: '0.165', delta: '−74.4%', group: 'struct' },
-        { stage: '③', name: '앞뒤 메시 두 개로 합친다', pct: 9.7, ms: '0.062', delta: '−90.3%', group: 'struct' },
-        { stage: '④', name: '자르는 계산을 Burst 잡으로 옮긴다', pct: 6.2, ms: '0.040', delta: '−93.8%', group: 'burst' },
-      ],
-    },
-    // ⚠️ `S0 대비` 였던 것을 고쳤다 — 머리 주석의 용어 고정이 내부 단계 코드를 지면에서
-    //    금지하는데 이 캡션만 어기고 있었다. 그림 안이라 덱 매니페스트가 못 고치는 자리다.
-    caption: '`Renderer.Sync` · `FoldOperation.Split` · `Compose` 세 마커의 프레임당 Average 합, 고치기 전 대비. 줄어든 0.603 ms 중 **구조 개선이 0.581 ms(96.4%), Burst 잡이 0.022 ms(3.6%)** 다.',
-    notes: [
-      '⚠️ **이 배분은 적용 순서 기준이다.** 앞의 셋이 이미 깎아 놓은 자리에 ④가 들어갔으므로, 순서를 바꿔 재면 몫도 바뀐다. ④가 직접 건드린 `FoldOperation.Split` 만 떼어 보면 그 단계에서 **−56.3%** 다 — 전체 대비 3.6% 와 같은 사건의 두 얼굴이다.',
-      '⚠️ 이 막대는 **경과**다. 줄어든 값의 44.7% 가 ①의 몫인데 **그중 뷰 쪽은 ③이 무효로 만들었다**(연산 쪽 규약은 지금도 돈다) — §05 가 그 이야기를 한다. 둘의 비중은 한 커밋에 함께 들어가 **따로 재지 않았다.** ③·④ 값은 뷰 쪽이 죽은 뒤에 잰 것이라 최종 −93.8% 가 거기 기대고 있지는 않다.',
-      '⚠️ 다섯 전부 **2026-07-24 에 잰 값**이고, 그때 가려짐 계산은 아직 `합쳐서 뺀다` 였다. §10 에서 바꾼 방식은 그 뒤(2026-08-12)라 이 막대에 안 들어 있다. 그리고 이 축은 프레임당 Average 라 초반 저부하 프레임이 표본의 다수를 차지한다 — 후반의 레이어 격차는 §07 의 구조 표로 봐야 한다.',
+  architecture: {
+    gist: '`BattleSimulation`이 종이·표면·기하·이동·판단의 순서를 소유하고, 계산과 화면 반영을 서로 다른 프레임 단계에 둔다.',
+    body: '가변 프레임은 접기 입력을 따라가고, 고정 스텝은 이동과 판정을 결정한다. 종이 분할 Job은 계산 단계에서 예약하고 화면 반영 단계에서 완료해, 그 사이를 작업 스레드의 실행 시간으로 사용한다.',
+    systems: [
+      { tag: 'ORDER OWNER', title: 'BattleSimulation', body: '`SimTick`의 단일 진입점. 하위 월드를 정해진 순서로 호출한다.', tone: 'owner' },
+      { tag: 'FRAME PHASES', title: 'FrameLoop · TickSystems', body: '계산(`SimTick`)과 화면 반영(`RenderTick`)의 호출 시점을 고정한다.' },
+      { tag: 'PAPER', title: 'PaperController', body: '확정 종이 상태, 접는 선 보간기, 분할 파이프라인을 조립한다.' },
+      { tag: 'SURFACE', title: 'SurfaceWorld', body: '종이 위 부착 위치를 확정 상태와 접기 미리보기로 나눠 해석한다.' },
+      { tag: 'WORLD BRIDGE', title: 'WorldLink', body: '`IWorld` 위치를 가져와 이동시킨 뒤 종이 위 구속에 되돌려 쓴다.' },
+      { tag: 'SIM WORLDS', title: 'GeoWorld · MotionWorld', body: '충돌 질의 도형을 갱신하고 이동 규칙과 고정 간격 적분을 실행한다.' },
+      { tag: 'SCREEN OUTPUT', title: 'PaperRenderer · PaperOutlineRenderer', body: '`PaperRenderer`는 앞면·뒷면 두 메시를, 별도 `PaperOutlineRenderer`는 외곽선을 그린다.' },
     ],
-  },
-
-  /* ── S4 네 방식 한눈에 (Level 2) — 지도 ──────────────────────────────── */
-  // ⚠️ 2026-08-15 축 교체. 옛 축(보간 프레임 / 확정 프레임)은 **사실이 아니었다** —
-  //    ④는 확정에서도 같은 잡을 쓰고, ②는 확정 때 일어나지만 효과가 그 뒤 모든 프레임에 걸린다.
-  //    넷 중 어느 것도 한 프레임 종류에만 속하지 않는다. 새 축은 "무엇을 줄였나" 다.
-  s4: {
-    gist: '넷은 서로 다른 것을 줄인다 — 같은 일을 다시 하기, 레이어 장수, 레이어당 객체, 프레임마다 나오는 쓰레기.',
-    lead: '막대 네 칸이 각각 무슨 변경이었는지를 한 장에 놓는다.',
-    map: {
-      rows: [
-        { n: '①', axis: '같은 일을 다시 하는 것', title: '안 바뀐 레이어는 다시 만들지 않는다',
-          what: '접는 선에 안 걸린 레이어는 그대로 통과시킨다' },
-        { n: '②', axis: '다뤄야 할 레이어 장수', title: '가려진 레이어를 버린다',
-          what: '위아래 모두 가려진 것은 데이터에서 지운다' },
-        { n: '③', axis: '레이어 한 장마다 붙던 객체', title: '앞뒤 메시 두 개로 합친다',
-          what: '레이어마다 두던 유니티 객체를 없앤다' },
-        { n: '④', axis: '프레임마다 새로 만들던 쓰레기', title: '자르는 계산을 Burst 잡으로 옮긴다',
-          what: '결과를 관리형 객체로 되돌리지 않는다' },
-      ],
-      after: [
-        { n: '⑤', title: '측정 환경의 변인을 통제한다', what: '재는 도구를 고치고 넷을 전부 다시 잰다' },
-        { n: '⑥', title: '가려짐 판정 방식을 다시 고른다', what: '②가 만든 계산 비용을 어떻게 낼지' },
-      ],
-      axisLabel: '무엇을 줄였나',
-      afterLabel: '그 뒤에 온 것 — 막대에 들어가지 않는다',
-    },
-    vizCaption: '넷은 **서로 다른 것**을 줄인다. 그래서 하나를 해도 나머지 셋이 남고, 넷을 순서대로 쌓아야 §02 의 막대가 나온다. 아래 두 칸은 단계가 아니라 그 뒤에 온 것이다.',
-  },
-
-  /* ── S5 진단 (Level 2) — §02 M2′ ─────────────────────────────────────── */
-  s5: {
-    gist: '예상은 폴리곤 분할이었고, 실측은 렌더링 준비였다.',
-    // ⚠️ 이 절의 순서 잠금은 첫 문장의 지시어 **"앞 지도"** 한 마디가 진다.
-    //    ⚠️⚠️ 그 "앞" 을 지우지 마라 — 지시어가 없으면 전방참조로도 읽혀 §03↔§04 가 즉시 풀린다.
-    //    (아래 after 끝 문장은 인과를 더할 뿐 잠금 기여가 0 이라고 05 렌즈2 3차가 판정했다)
-    body: '앞 지도의 네 칸이 **왜 그 넷이고 왜 그 순서인지**가 여기서 정해졌다. 회차를 거듭할수록 레이어가 쌓이니 자르는 계산이 무거워졌으리라 보고 폴리곤 분할부터 의심했는데, 마커를 나눠 재 보니 순서가 반대였다.',
-    vizCaption: '세 마커를 같은 축에 놓으면 예상한 자리와 실제로 비싼 자리가 어긋난다.',
-    table: {
-      headers: ['프레임당 마커', '무엇을 재는가', '16회 벤치 · 프레임당 Average'],
-      rows: [
-        ['`Renderer.Sync`', '레이어를 메시로 만들어 올리는 준비', '**0.4525 ms**'],
-        ['`FoldOperation.Split`', '접는 선으로 폴리곤을 자르는 계산', '0.1700 ms'],
-        ['`FoldOperation.Compose`', '잘린 조각을 쌓임 순서대로 다시 모으는 일', '0.0201 ms'],
-      ],
-    },
-    caption: '예상은 분할이었다. 실측에서는 렌더링 준비가 **2.7배** 비쌌다. **이 표는 §09 의 재측정 뒤에 다시 낸 값**이다.',
-    revised: '진단 당시에는 이 차이가 **8배**로 보였다. 그때 쓰던 벤치는 뒤에 퇴화 패턴이라 버렸고, 마커 안에는 아직 `Debug.Log` 한 줄이 들어 있었고, 통계도 Median 이었다. 셋을 다 걷고 같은 진단을 다시 내니 2.7배다 — **정도는 3분의 1로 줄었지만 방향은 바뀌지 않았다.** 그 걷어내는 과정이 §09 다.',
-    after: '정체는 기하 계산량이 아니었다. 같은 회차의 정점 총수는 1,348개인데 레이어는 337장이었고, 비용은 레이어 **한 장마다 붙는 렌더 오브젝트** 쪽에 있었다. 그래서 GPU 문제로 넘기지 않고 CPU 쪽으로 방향을 잡았다 — GPU 는 가려진 픽셀을 z-buffer 로 버리지만, CPU 는 화면에 보이지도 않을 레이어의 메시까지 매번 새로 만들고 있었다. **앞 지도에서 ①③④ 가 보간 프레임 쪽에 몰려 있는 것이 이 진단의 결과다** — 비싼 것이 거기였다.',
-  },
-
-  /* ── S6 ① 재사용 (Level 3) · 385fd68 · 2026-07-22 ────────────────────── */
-  s6: {
-    link: '진단이 지목한 것은 레이어 한 장마다 붙는 렌더 오브젝트였다. 가장 먼저 한 것은 그것을 없애는 게 아니라 **손대지 않아도 되는 것을 골라내는 일**이었다.',
-    vizCaption: '접는 선에 실제로 걸치는 레이어는 일부인데, **바뀐 것을 알아볼 방법이 없어 매 프레임 전부 다시 만들고 있었다.** 걸치지 않고 제자리에 남는 레이어를 원본 그대로 통과시키면 뷰가 참조만 비교해 건너뛸 수 있다.',
-    pair: {
-      file: 'FoldOperation.cs — 레이어 루프',
-      commit: '385fd68 · 2026-07-22',
-      intro: '뷰가 "지난 프레임과 같은가" 를 물으려면 근거가 있어야 하는데, 연산이 매번 새 객체를 뱉으니 물어볼 수가 없었다. 그래서 뷰가 아니라 연산의 반환 규약을 먼저 고쳤다.',
-      before: {
-        ref: '레이어마다 자르고, 결과는 매번 새 인스턴스',
-        code: `PaperGeometry.SplitPolygonByLine(
-    layer.Vertices, layer.UVs,
-    midPoint, abDirection, foldAxis,
-    /* out 6개 — 제자리·넘어간 쪽 정점과 UV … */);
-
-if (polyA.Count > 2)
-    fixedLayers.Add(
-        new PaperLayer(polyA, uvsA,
-                       layer.IsFolded, i));`,
+    lanes: [
+      {
+        tag: 'VARIABLE FRAME',
+        note: '입력 추종 · 매 프레임 1회',
+        items: [
+          ['01', 'Paper.Tick', '접는 선 보간 · 분할 Job 예약'],
+          ['02', 'Surface.Resolve', '확정 상태가 바뀌면 부착 위치 재해석'],
+          ['03', 'Fold Preview', '확정 전 임시 위치 적용'],
+        ],
       },
-      after: {
-        ref: '자르기 전에 어느 쪽인지 먼저 본다',
-        code: `PaperGeometry.PolygonSide side =
-    PaperGeometry.ClassifyPolygon(
-        layer.Vertices, midPoint, abDirection);
+      {
+        tag: 'FIXED STEP',
+        note: '프레임당 0~3회',
+        items: [
+          ['04', 'PaperTransit', '종이 월드의 기준틀 이동'],
+          ['05', 'Geo.Sync', '현재 위치·회전으로 질의 도형 갱신'],
+          ['06', 'WorldLink.Pull', '종이 구속 결과를 이동 상태로 가져오기'],
+          ['07', 'Motion.Step', '이동 규칙 순회'],
+          ['08', 'Motion.Integrate', '고정 dt 적분'],
+          ['09', 'WorldLink.Push', '이동 결과를 종이 위 위치에 반영'],
+          ['10', 'Judge', '최종 위치로 충돌·규칙 판단'],
+        ],
+      },
+      {
+        tag: 'PRESENTATION',
+        note: '늦은 계산 뒤 · 화면 렌더링 전',
+        items: [
+          ['11', 'Pipeline.Complete', '예약한 분할 Job 완료 · 조각 쌓임 순서 구성'],
+          ['12', 'PaperController.RenderTick', '`PaperRenderer.Sync` 두 메시 · `PaperOutlineRenderer.Sync` 외곽선'],
+        ],
+      },
+    ],
+    clock: ['FIXED-STEP CLOCK', 'Accumulate(unscaledDeltaTime × timeScale)', 'TryConsume → 프레임당 0~3 fixed steps'],
+    confirm: [
+      ['A', 'NotifyFoldConfirmed', '접기 전 좌표가 필요한 대상에 먼저 알림'],
+      ['B', 'Paper.ConfirmFold', '지금 보이는 선으로 확정 · 파묻힘 제거'],
+      ['C', 'Surface.Resolve', '새 확정 상태 기준으로 부착 위치 재해석'],
+    ],
+    decisions: [
+      ['순서 소유', '하위 시스템의 등록 순서 대신 중앙 제어기가 실행 순서를 소유한다.'],
+      ['월드 결합', '각 월드는 상대 타입을 모르고 `IWorld`의 위치 읽기·쓰기 계약으로 연결된다.'],
+      ['화면 반영 분리', '계산 단계는 Job을 예약하고 `RenderTick`이 완료 결과를 화면에 반영한다.'],
+    ],
+  },
 
-// 통째로 남는 쪽 — 원본 인스턴스를 그대로 넘긴다.
-// 참조가 보존돼야 뷰가 "지난번과 같은 레이어"임을
-// 알아보고 메시 재생성을 건너뛴다.
+  result: {
+    gist: '기준선(S0)부터 Native 결합 단계(S2-b)까지, 고정 seed 12345로 만든 같은 임의 접기 16회를 반복해 각 변경의 효과를 분리했다.',
+    bars: [
+      { stage: 'S0', label: '전량 재생성', ms: 0.643, delta: 'baseline', group: 'base' },
+      { stage: 'S1-1', label: '원본 참조 재사용', ms: 0.373, delta: '−41.9%', group: 'structure' },
+      { stage: 'S1-2', label: '파묻힌 레이어 삭제', ms: 0.165, delta: '−55.9%', group: 'structure' },
+      { stage: 'S2-a', label: '앞·뒤 2메시 병합', ms: 0.062, delta: '−62.0%', group: 'structure' },
+      { stage: 'S2-b', label: 'NativeArray·Job·Burst 결합', ms: 0.040, delta: '−36.3%', group: 'native' },
+    ],
+    correction: {
+      title: '처음 수치를 버리고 전 단계를 다시 측정했다',
+      body: '`Debug.Log` 한 줄이 `Renderer.Sync` 측정의 약 90%를 차지했다. 로그를 가드하고 퇴화한 정렬 입력을 임의 입력으로 교체한 뒤 S0~S2-b를 모두 재측정했다.',
+    },
+    conditions: [
+      ['환경', 'Windows PC · Unity Editor PlayMode'],
+      ['입력', '정사각형 5 · seed 12345 · 임의 접기 16회'],
+      ['채택값', '`Sync + Split + Compose` 프레임당 Average 합'],
+      ['해석', '단계 간 상대 비교 · Android 절대 성능 아님'],
+    ],
+    axes: [
+      ['레이어', '337 → 57', 'S0 → S1-2 · 파묻힘 삭제'],
+      ['렌더 오브젝트', '337 → 77 → 2', 'S0 → S1-2 → S2-a'],
+      ['드로우콜 증분', '+298 → +71 → +1', 'S0 → S1-2 → S2-a'],
+      ['Split Average', '0.0403 → 0.0176 ms', 'S2-a → S2-b · −56.3%'],
+    ],
+  },
+
+  methods: [
+    {
+      id: 'reuse', no: '03', stage: 'S1-1', kind: 'STRUCTURE 01',
+      title: '변하지 않은 레이어를 다시 만들지 않는다',
+      gist: '접는 선에 걸치지 않은 레이어는 새 객체로 복제하지 않고 원본 참조를 그대로 통과시켰다.',
+      metric: { value: '−41.9%', detail: '0.643 → 0.373 ms', label: '프레임당 마커 합' },
+      before: { title: '기존 · 전량 재생성', items: ['모든 레이어 분할 시도', '새 PaperLayer 생성', '모든 Mesh 재생성'], footer: '변하지 않은 입력도 새 결과처럼 처리' },
+      after: { title: '개선 · 동일성 보존', items: ['선의 앞/뒤/교차 먼저 분류', '앞쪽은 원본 참조 반환', '같은 참조면 메시 생성 생략'], footer: '실제로 바뀐 레이어만 재생성' },
+      code: {
+        before: {
+          title: 'Before · FoldOperation / PaperLayerView',
+          intro: '분할 결과를 항상 새 레이어로 만들고, 뷰는 매번 메시를 갱신했다.',
+          code: `PaperGeometry.SplitPolygonByLine(
+    layer.Vertices, layer.UVs, ...);
+
+fixedLayers.Add(new PaperLayer(
+    polyA, uvsA, layer.IsFolded, i));
+
+public void UpdateMesh(PaperLayer layer)
+{
+    RegenerateMesh(layer.Vertices, layer.UVs);
+}`,
+          result: '입력이 같아도 할당과 메시 생성 반복',
+        },
+        after: {
+          title: 'After · 385fd68',
+          intro: '교차 전에 위치를 분류하고, 변하지 않은 레이어의 참조를 보존했다.',
+          code: `PaperGeometry.PolygonSide side =
+    PaperGeometry.ClassifyPolygon(
+    layer.Vertices, midPoint, abDirection);
+
 if (side == PaperGeometry.PolygonSide.Front)
 {
     fixedLayers.Add(layer);
     continue;
 }
 
-// 통째로 넘어가는 쪽은 좌표가 바뀌므로 새로 만들되,
-// 자를 것이 없으니 분할 경로를 거치지 않는다.
-if (side == PaperGeometry.PolygonSide.Back) { … }`,
+if (ReferenceEquals(_lastLayer, layer))
+    return;`,
+          result: '원본 참조가 뷰의 메시 생성 생략 근거가 됨',
+        },
       },
-      result: '뷰 쪽은 if (ReferenceEquals(_lastLayer, layer)) return; 한 줄로 끝난다',
+      note: '이 단계의 레이어별 뷰 생략 경로는 S2-a의 2메시 병합에서 사라진다. 단계별 측정은 다음 병목이 레이어별 Unity Object임을 드러내는 역할을 했다.',
+      scope: 'S0 → S1-1 · Windows PC · Unity Editor PlayMode · 동일 입력',
     },
-    notes: [
-      '`PaperLayer` 는 불변이라 **참조가 같으면 내용도 같다** — 참조 비교가 정당한 근거가 되는 이유가 이것이고, 값 비교였다면 정점을 다 훑어야 해서 아끼려던 것을 그대로 썼을 것이다.',
-      '같은 커밋이 `StackOrder` 필드도 지웠다. 값이 리스트 인덱스와 항상 같아 파생할 수 있었고, 그것이 레이어당 객체 할당을 하나 더 없앴다.',
-      '⚠️ 이 변경은 **뷰 쪽이 죽었다.** 참조 비교로 건너뛰던 것을 §07(병합)이 무효로 만들었다 — 합쳐 그리면 매 프레임 전부 다시 쌓는다. **연산 쪽 반환 규약은 지금도 돌아간다.** 둘의 비중은 한 커밋에 함께 들어가 따로 재지 않았다.',
-    ],
-  },
+    {
+      id: 'prune', no: '04', stage: 'S1-2', kind: 'STRUCTURE 02',
+      title: '확정 순간 파묻힌 조각을 제거한다',
+      gist: '다른 조각에 앞·뒤 모두 가려져 다시 드러날 수 없는 조각은 확정 데이터로 옮기기 전에 버렸다.',
+      metric: { value: '−55.9%', detail: '0.373 → 0.165 ms', label: '프레임당 마커 합' },
+      before: { title: '기존 · 숨은 조각 유지', items: ['접을수록 레이어 누적', '16회차 레이어 337개', '정점 1,348개'], footer: '보이지 않아도 다음 분할 입력에 포함' },
+      after: { title: '개선 · 확정 때 제거', items: ['앞·뒤 가려짐 판정', '파묻힌 조각 제거', '레이어 57개 · 정점 251개'], footer: '같은 접기를 5.9배 적은 레이어로 표현' },
+      code: {
+        before: {
+          title: 'Before · 모든 결과를 관리형 상태로',
+          intro: '분할된 조각을 가시성과 무관하게 전부 다음 확정 상태로 보존했다.',
+          code: `FoldSplitResult split = FoldOperation.Split(
+    source, localA, localB);
 
-  /* ── S7 ② 버리기 (Level 3) · 992c50a · 2026-07-23 ────────────────────── */
-  s7: {
-    link: '①까지는 전부 **"장수 × 상수"의 상수 쪽**이었다. 장수는 접을수록 1.5배씩 늘어 언젠가 상수 개선을 삼킨다. 여기서 처음 장수 쪽을 건드린다.',
-    vizCaption: '위아래 양쪽 모두에 가려진 레이어는 **어떻게 접어도 다시 드러나지 않는다** — 넘어간 조각의 위아래가 뒤집혀도 서로 자리를 바꿀 뿐이다. 그래서 확정하는 순간 데이터에서 버려도 화면이 그대로다. 회차 16 기준 337장이 57장으로 줄었다.',
-    pair: {
-      file: 'PaperController.ConfirmFold + PaperData.PruneBuried',
-      commit: '992c50a · 2026-07-23',
-      intro: '위 레이어부터 차례로 빼 나가면 "보이는 면적"과 "완전히 가려진 레이어"가 같은 계산에서 나온다. 따로 만들면 같은 계산을 두 번 짓는 꼴이라 하나로 합쳤다.',
-      before: {
-        ref: '확정하면 그대로 쌓인다',
-        code: `_confirmed = FoldOperation.Preview(
-    _baseData, localA, localB, _allowFullFlip);
-_baseData = _confirmed;`,
-      },
-      after: {
-        ref: '확정할 때 가려진 것을 버린다',
-        code: `_confirmed = FoldOperation
-    .Preview(_baseData, localA, localB,
-             _allowFullFlip)
-    .PruneBuried();
-_baseData = _confirmed;
+PaperData preview = FoldOperation.Compose(
+    source, split, allowFullFlip);
 
-// ── PruneBuried 안 ──
-// 버릴 것이 없으면 원본 그대로.
-// 레이어 참조가 보존돼야 뷰가 메시를 다시 안 만든다
-if (keptCount == _layers.Count) return this;`,
+_confirmed = preview;`,
+          result: '파묻힌 조각도 다음 접기의 입력이 됨',
+        },
+        after: {
+          title: 'After · 현재 파이프라인',
+          intro: '되돌리기 이력을 먼저 보존하고, 관리형 상태로 옮기기 전에 네이티브 조각 목록을 압축한다.',
+          code: `PushHistory(new FoldHistoryEntry(
+    _confirmed, localA, localB));
+
+ScheduleSplit(localA, localB);
+_pipeline.Complete(_allowFullFlip);
+_pipeline.PruneBuriedPieces();
+
+_confirmed =
+    _pipeline.MarshalToPaperData(_baseData);`,
+          result: '버릴 조각의 PaperLayer를 만들지 않음',
+        },
       },
-      result: '회차 16 의 레이어가 337장에서 57장으로 줄었다 — 증폭이 사라졌다',
+      note: '판정 비용은 매 프레임이 아니라 접기 확정 프레임으로 이동했다. 되돌리기는 제거 전 상태 사본이 담당한다.',
+      scope: 'S1-1 → S1-2 · Windows PC · Unity Editor PlayMode · 레이어/정점은 16회차 종단값',
     },
-    notes: [
-      '살아남은 레이어의 가려짐 정도는 **다시 계산하지 않고 물려준다.** 가려진 것을 버려도 나머지가 가려진 정도는 변하지 않기 때문이고, 다시 계산하면 확정 한 번에 전 레이어 폴리곤 연산이 두 번 돈다.',
-      '⚠️ 대가가 있다. 버린 레이어가 살아 있는 유일한 곳이 되돌리기 히스토리라, 같은 커밋이 히스토리를 `Stack` 에서 `List` 로 바꾸고 한도 10을 뒀다 — **한도를 넘겨 밀려난 상태는 영영 되돌릴 수 없다.**',
-      '⚠️ 그리고 이 변경이 **확정마다 도는 새 비용**을 만들었다 — 무엇이 가려졌는지 판정해야 버릴 수 있기 때문이다. 그 비용을 어떤 방식으로 낼지가 §10 의 문제다.',
-    ],
-  },
+    {
+      id: 'merge', no: '05', stage: 'S2-a', kind: 'RENDER STRUCTURE',
+      title: '레이어별 Unity Object를 앞·뒤 두 메시로 합친다',
+      gist: '정점 수보다 객체 수가 병목이었다. 레이어별 GameObject·MeshRenderer·Mesh를 버리고 쌓임 순서를 정점 z에 구웠다.',
+      metric: { value: '−98.6%', detail: '+71 → +1', label: 'S1-2 → S2-a 드로우콜 증분' },
+      before: { title: '기존 · 레이어마다 뷰', items: ['GameObject + MeshFilter', 'MeshRenderer + Mesh', 'S1-2 최대 77개'], footer: '레이어 수만큼 드로우콜 제출' },
+      after: { title: '개선 · 면별 병합 메시', items: ['앞면 버퍼 하나', '뒷면 버퍼 하나', '렌더 오브젝트 2개 고정'], footer: 'z-buffer가 조각 쌓임 순서 처리' },
+      code: {
+        before: {
+          title: 'Before · PaperLayerView pool',
+          intro: '보이는 레이어마다 뷰를 배정하고 각 Mesh를 따로 갱신했다.',
+          code: `EnsureCapacity(CountVisible(data));
 
-  /* ── S8 ③ 병합 (Level 3) · 792bb3a · 2026-07-24 ──────────────────────── */
-  s8: {
-    // ⚠️ L3 라 요지 줄(.cm-gist)을 두지 않는다. KEY MESSAGE("레이어가 몇 장이든 렌더 오브젝트는 2개")는
-    //    vizCaption 과 표가 진다.
-    link: '②가 버린 뒤에도 렌더 오브젝트는 77개가 남아 있었다. §04 가 지목한 정체를 여기서 정면으로 없앤다.',
-    vizCaption: '레이어 한 장마다 한 벌씩 두던 렌더 오브젝트를 **앞면·뒷면 메시 두 개**로 합쳤다. 쌓임 순서는 정점 z 에 굽고, 무엇이 무엇을 가리는지는 z-buffer 가 정한다 — 그래서 **레이어가 몇 장이든 렌더 오브젝트는 2개**다.',
-    pair: {
-      file: 'PaperRenderer.cs — 뷰 풀 → 앞뒤 2메시',
-      commit: '792bb3a · 2026-07-24',
-      intro: '뷰 풀을 만드는 자리와 메시를 올리는 자리가 한 커밋에서 함께 사라진다.',
-      before: {
-        ref: '보이는 레이어 수만큼 GameObject 를 만든다',
-        code: `EnsureCapacity(CountVisible(data, canCull));
-// …
-while (_views.Count < requiredCount)
-{
-    GameObject layerObject = new GameObject(
-        $"Layer{_views.Count}");
-    // … 레이어·부모·위치 설정
-    PaperLayerView view = layerObject
-        .AddComponent<PaperLayerView>();
-    view.Initialize();   // + MeshFilter/Renderer/Mesh
-    _views.Add(view);
-}`,
-      },
-      after: {
-        ref: '메시는 둘뿐이고, 쌓임은 정점 z 에 굽는다',
-        code: `_frontMesh = CreateMeshObject("PaperFront", …);
-_backMesh  = CreateMeshObject("PaperBack",  …);
-// …
 for (int i = 0; i < data.LayerCount; i++)
 {
-    // 쌓임 순서 = 레이어 인덱스.
-    // z 로 구워 z-buffer 가 위 레이어를 남긴다
-    float z = -i * _stackSpacing;
-    if (layer.IsFolded)
-        AppendLayer(layer, z, _backPositions,  …);
-    else
-        AppendLayer(layer, z, _frontPositions, …);
+    PaperLayerView view = _views[viewIndex++];
+    view.UpdateMesh(data.Layers[i]);
+    view.SetMaterial(material);
+    view.SetStackOrder(i, _stackSpacing);
 }`,
-      },
-      result: '같은 커밋이 PaperLayerView.cs 229줄을 통째로 지웠다',
-    },
-    notes: [
-      '앞뒤를 구분하는 수단은 **두 메시의 머티리얼 하나뿐**이다. 넘어간 조각도 winding 이 앞면으로 맞춰져 있어 컬링으로는 가를 수 없다.',
-      '가림 판정을 CPU 가 하지 않고 **z-buffer 에 떠넘겼다.** "보이는 면만 그리기"(폴리곤 불리언)도 후보였지만, 정점이 251개뿐이라 그 계산이 아끼는 것보다 비싸리라 보고 **재지 않았다.**',
-      '⚠️ ①의 뷰 쪽 최적화가 여기서 무효가 됐다. 합쳐 그리면 매 프레임 전 레이어를 다시 쌓기 때문이다. 정점이 세 자리라 실질 손실이 없다고 보고 받아들였다.',
-    ],
-    table: {
-      headers: ['지표 · 회차 16 시점', '이전', '버린 뒤', '병합한 뒤'],
-      rows: [
-        ['렌더 오브젝트 수', '337', '77', '**2**'],
-        ['드로우콜 델타 (정지 대조군 대비)', '+298', '+71', '**+1**'],
-        ['레이어 수', '337', '57', '57'],
-        ['정점 수', '1,348', '251', '251'],
-      ],
-    },
-    // 표 각주 한 줄 — 리듬을 지키려 두 문단을 한 줄로 줄였다(05 렌즈2)
-    reconcile: '위 두 행은 **버리기가 먼저 4분의 3을 하고** 병합이 나머지를 장수와 무관하게 만든다. 아래 두 행은 버리기만의 몫이다 — 병합은 그리는 방식만 바꾸므로 데이터가 달라지면 안 되고, 실제로 안 달라졌다. **77 과 57 이 다른 것**은 유니티 객체를 담아 두는 풀이 접는 동안의 최대치까지 커진 뒤 도로 줄지 않기 때문이고, **드로우콜이 렌더 오브젝트보다 조금 적은 것**은 같은 머티리얼끼리 일부가 배칭되기 때문이다. 2026-07-24 에 잰 값이고 가려짐 계산은 아직 `합쳐서 뺀다` 였다(§10 에서 바꾼 뒤에는 41장이 남는다). ①의 열이 없는 것은 그 변경이 이 지표들을 안 움직이기 때문이다.',
-  },
-
-  /* ── S9 ④ Burst (Level 3) · cafa4ae · 2026-07-24 ─────────────────────── */
-  s9: {
-    link: '렌더 쪽을 끝내고 나면 보간 프레임에 남는 것은 분할 계산 하나다. **선이 움직이는 매 프레임** 도는 유일한 연산이라 여기만 잡으로 옮겼다.',
-    vizCaption: '레이어마다 쓸 칸이 미리 정해져 있어 스레드끼리 구간이 겹치지 않는다. 락이 없고, **결과 순서가 스레드 속도와 무관하게 결정된다.** 쌓임 순서가 곧 종이의 앞뒤라 이 결정성은 선택이 아니다.',
-    slot: {
-      title: 'PaperSplitLayersJob.cs — 출력 자리 사전 배정',
-      code: `public void Execute(int index)
+          result: 'S1-2 렌더 오브젝트 77 · 드로우콜 증분 +71',
+        },
+        after: {
+          title: 'After · PaperRenderer.Sync',
+          intro: '조각을 면별 버퍼에 이어붙이고 두 Mesh만 업로드한다.',
+          code: `for (int i = 0; i < view.PieceCount; i++)
 {
-    int2 range       = BaseRanges[index];
-    int capacity     = range.y + SlotMargin;
-    int fixedStart   = SlotStarts[index];
-    int flippedStart = fixedStart + capacity;
+    PaperPiece piece = view.Pieces[i];
+    float z = -i * _stackSpacing;
 
-    PaperGeometryNative.SplitConvex(/* … */
-        fixedStart, flippedStart, capacity,
-        out int fixedCount, out int flippedCount);
-    // … 배정한 자리와 쓴 개수를 출력에 공표한다
-}`,
+    if (piece.IsFolded) AppendPiece(..., _backPositions);
+    else AppendPiece(..., _frontPositions);
+}
+
+UploadMesh(_frontMesh, ...);
+UploadMesh(_backMesh, ...);`,
+          result: '렌더 오브젝트 2 · 드로우콜 증분 +1',
+        },
+      },
+      note: '정점은 이미 251개뿐이어서 “보이는 면만” 다시 만드는 폴리곤 불리언은 선택하지 않았다. 이 단계는 적은 정점을 더 적은 Unity Object로 제출하는 문제에 집중했다.',
+      scope: 'S1-2 → S2-a · Windows PC · Unity Editor PlayMode · 드로우콜은 정지 대조군 대비 증분 · 16회차',
     },
-    pair: {
-      file: 'PaperController.cs — 매 프레임 경로',
-      commit: 'cafa4ae · 2026-07-24',
-      intro: '보간 프레임마다 PaperData·PaperLayer·List<Vector2> 를 레이어 수만큼 새로 만들고 있었다. 분할을 NativeArray 위 Burst 잡으로 옮기고 결과를 관리형으로 되돌리지 않기로 했다 — 확정하는 순간에만 마샬한다. 기준 상태는 접기를 시작해서 확정할 때까지 고정이라 폴드당 한 번만 올리고, 매 프레임 바꾸는 것은 접는 선 세 값뿐이다.',
-      before: {
-        ref: '매 프레임 관리형 상태를 새로 만든다',
-        code: `UpdateFoldLineCache(
-    _animator.PointA, _animator.CurrentPointB);
+    {
+      id: 'native', no: '06', stage: 'S2-b', kind: 'NATIVE / JOB / BURST',
+      title: '매 프레임 관리형 조각 그래프를 만들지 않는다',
+      gist: '폴드 기준 형상은 한 번만 NativeArray에 올리고, 매 프레임 바뀌는 접는 선 세 값만 Job에 전달했다.',
+      metric: { value: '−56.3%', detail: '0.0403 → 0.0176 ms', label: 'Split Average' },
+      before: { title: '기존 · 관리형 미리보기', items: ['매 프레임 PaperData', 'PaperLayer + List<Vector2>', '즉시 계산 후 화면 반영'], footer: '레이어 수에 비례해 임시 객체 생성' },
+      after: { title: '개선 · 재사용 네이티브 버퍼', items: ['접기당 기준 1회 업로드', '매 프레임 선 3값 + Job', '화면 반영 단계에서 완료'], footer: '확정 순간에만 PaperData로 변환' },
+      code: {
+        before: {
+          title: 'Before · managed FoldOperation.Preview',
+          intro: '계산 단계에서 관리형 조각 그래프를 완성한 뒤 화면 반영 대상으로 넘겼다.',
+          code: `UpdateFoldLineCache(pointA, pointB);
 
 SetPresented(FoldOperation.Preview(
     _baseData,
-    _animator.PointA, _animator.CurrentPointB,
-    _allowFullFlip));`,
-      },
-      after: {
-        ref: '스케줄(NormalTick)과 회수(LateTick)를 떼어 놓는다',
-        code: `// NormalTick — 결과를 기다리지 않는다.
-// 워커가 도는 동안 메인은 남은 일을 한다
-UpdateFoldLineCache(
-    _animator.PointA, _animator.CurrentPointB);
-ScheduleSplit(
-    _animator.PointA, _animator.CurrentPointB);
+    pointA,
+    pointB,
+    _allowFullFlip));
 
-// LateTick — 스케줄에서 여기까지의 거리가
-// 곧 워커에게 준 시간이다
+_paperRenderer.Sync(_presented);`,
+          result: '분할·Compose·관리형 생성이 한 경로에 결합',
+        },
+        after: {
+          title: 'After · PaperFoldSplitPipeline',
+          intro: '계산 단계는 Job을 예약하고, 화면 반영 단계는 완료된 네이티브 결과를 소비한다.',
+          code: `// SimTick
+_pipeline.Schedule(
+    midPoint, lineNormal, foldAxis);
+
+// RenderTick
 _pipeline.Complete(_allowFullFlip);
-_paperRenderer.Sync(_pipeline.View);`,
+_paperRenderer.Sync(_pipeline.View);
+
+// only when the fold is confirmed
+_confirmed =
+    _pipeline.MarshalToPaperData(_baseData);`,
+          result: 'Schedule→Complete 사이를 작업 스레드 실행 시간으로 사용',
+        },
       },
-      result: '버퍼는 Allocator.Persistent — TempJob 은 4프레임 제한이라 수백 프레임짜리 드래그에 못 쓴다',
+      note: 'S2-b는 NativeArray·Job·Burst를 함께 바꾼 결합 단계다. Compose는 조각 순회 때문에 0.0011→0.0016ms로 늘었지만 전체 합은 0.062→0.040ms로 감소했다.',
+      scope: 'S2-a → S2-b 결합 변경 · Windows PC · Unity Editor PlayMode · 프레임당 Average',
     },
-    notes: [
-      '보간 중 잠정 상태는 **관리형으로 만들어지지 않는다.** 쌓임 순서도 자료구조가 아니라 **순회 방향**으로 만들었다 — 제자리 조각은 아래에서 위로, 넘어간 조각은 위에서 아래로 훑으면 리스트를 뒤집거나 복사하는 일이 한 번도 없다.',
-      '확정도 **보간과 같은 잡**을 쓴다. 분할 구현이 하나뿐이라야 눈에 보이던 모양과 저장되는 모양이 어긋날 수 없다.',
-      '⚠️ Job 을 쓰려면 "언제 스케줄하고 언제 걷는가"를 프레임 안에서 선언할 수단이 필요했는데 유니티 기본 `Update` 에는 그것이 없다. 그래서 자체 프레임 훅을 두고 그 위에 얹었다 — **그 훅 자체는 재지 않았고 이 페이지의 수치에 들어 있지 않다.**',
+  ],
+
+  validation: {
+    intro: '공개 수치는 같은 Windows PC의 Unity Editor에서 단계 간 차이를 비교한 결과다.',
+    columns: [
+      { title: '확인한 것', items: ['고정 seed로 만든 동일 입력의 단계별 원본 CSV', '렌더 JSON의 오브젝트·드로우콜 증분', '실코드와 단계 커밋의 기존/개선 비교'] },
+      { title: '적용 범위', items: ['Windows PC · Unity Editor PlayMode', 'CPU marker 상대 비교', 'PaperBench 16회 입력'] },
+      { title: '다음 검증', items: ['Android 빌드와 기기 CPU/GPU 계측', '분할·가려짐·파이프라인 테스트 실행 결과 파일 보존', '대표 전투 화면 캡처'] },
     ],
-    results: [
-      '자르는 계산 **0.0403 → 0.0176 ms** (−56.3%). ⚠️ 2026-07-24 · 가려짐 계산이 아직 `합쳐서 뺀다` 이던 때의 값이다 — §10 에서 바꾼 뒤 같은 구간을 다시 재면 0.0121 ms 다.',
-      '보간 프레임 할당(**후반 회차 r13~16 중앙값**) — 원값 **39,006B / 613회 → 25,468B / 403회**. 에디터가 정지 상태에서도 내는 바닥 17,772B / 372회를 양쪽에서 빼면 **21,234B / 241회 → 7,696B / 31회**다. ⚠️ 뺀 바닥이 개선 후 원값의 70% 라 이 차분은 바닥이 흔들리면 같이 흔들린다.',
-      '`Compose` 는 0.0011 → 0.0016 ms 로 늘었다. 참조를 옮기던 일이 조각을 훑는 일로 바뀐 몫이고, 절대값이 작아 합에는 영향이 없다.',
-    ],
-  },
-
-  /* ── S10 ⑤ 재측정 (Level 3) · f920035 · 2026-07-24 ───────────────────── */
-  s10: {
-    link: '넷을 다 고치고 다 잰 **뒤**였다. 여기까지는 고치는 쪽을 봤다. 남은 것은 **재는 쪽**이다 — 단계별 비교가 성립하려면 재는 조건이 네 단계에서 같아야 한다.',
-    split: '`Renderer.Sync` 가 왜 비싼지 모르는 채로 범인을 짚지 않았다. 먼저 `Sync` 안을 `Fill` · `Upload` · `Log` 세 마커로 쪼갰다. 재 보니 `Fill` 과 `Upload` 를 합쳐도 `Sync` 의 10% 였다. 남은 90% 는 프레임마다 한 줄 도는 `Debug.Log` 였다. ⚠️ 아래 수는 **그 한 줄을 걷어내기 전** 값이고 후반 회차의 중앙값이라, §02 막대(전 구간 Average · 걷어낸 뒤)와 직접 비교되지 않는다 — 고치기 전 마지막 단계의 **후반 회차 r13~16 보간 프레임 중앙값** 229,300ns 중 205,900ns, **89.8%.** 레이어가 많은 초기 단계에서는 비중이 이보다 낮다(S0 에서 약 28%).',
-    pair: {
-      file: 'PaperRenderer.cs — 로그 게이트',
-      commit: 'f920035 · 2026-07-24',
-      intro: '게이트가 로그 함수 안에 있으면 이미 늦다. C# 은 인자를 먼저 다 계산하므로, 로그가 꺼져 있어도 보간 문자열은 만들어진다.',
-      before: {
-        ref: '호출부는 꺼진 줄 알지만 문자열은 이미 만들어졌다',
-        code: `// 호출부 — 매 프레임 도는 자리
-this.LogIf(_isDebugLogging,
-    $"Sync 완료 - 조각:{view.PieceCount}, …", this);
-
-// 그 LogIf 의 본문
-public static void LogIf(
-    this object self, bool cond, string msg, …)
-{
-    if (!cond) return;   // ← 여기 닿았을 때는
-                         //   msg 가 이미 완성돼 있다
-    … // 전역 스위치도 여기서 본다 — 역시 늦다
-    Debug.Log(Format(self, msg, LogLevel.Info), …);
-}`,
-      },
-      after: {
-        ref: '게이트를 호출부 밖으로 끌어냈다',
-        code: `if (CLog.IsEnabled(GameLogChannel.Paper,
-                   LogLevel.Verbose))
-{
-    CLog.Verbose(GameLogChannel.Paper,
-        $"Sync 완료 - 조각:{view.PieceCount}, …", this);
-}
-
-// 범인을 짚기 전에 먼저 한 것 — 계측을 쪼갰다
-static readonly ProfilerMarker FillMarker   = …;
-static readonly ProfilerMarker UploadMarker = …;
-static readonly ProfilerMarker LogMarker    = …;`,
-      },
-      result: '같은 커밋이 호출부 27곳을 이관하고, 릴리즈 빌드에서는 호출 자체가 사라지게 했다',
-    },
-    notes: [
-      '쪼갠 자리는 `Sync` **안쪽**이다. 바깥에서 재면 총량만 보이고 그 안의 어느 조각이 무거운지는 끝까지 안 보인다 — 마커를 하나 더 넣은 게 아니라 **있던 마커를 갈랐다.**',
-      '그 한 줄은 레이어 수와 무관하게 **모든 단계에 프레임당 한 번씩 똑같이** 들어 있었다. 상수가 양쪽에 더해진 꼴이라 개선률이 실제보다 작게 나오고 있었다.',
-      '고친 뒤 **얼려 둔 브랜치 넷을 그대로 다시 돌렸다.** 접기 로직은 옛 커밋 그대로, 로깅 호출부만 최신 API 로 맞춰서다 — §01 의 얼리기 장치가 여기서 값을 한다. §04 의 진단도 이때 다시 냈다.',
-    ],
-    delta: {
-      label: 'S0 대비 총 개선 — 같은 코드, 다시 잰 값',
-      before: { k: '재측정 전', v: '−70.0%' },
-      after: { k: '재측정 후', v: '−93.8%' },
-      note: '두 값은 **같은 코드를 두 번 잰 것**이지 추가 개선이 아니다. 규율이 자기에게 유리한 쪽으로만 작동한 게 아니라는 증거는 이 사건 하나가 아니라 **두 사건이 짝을 이루는 데** 있다 — 같은 재측정이 여기서는 성과를 키웠고, §04 의 진단에서는 8배를 2.7배로 **깎았다.**',
-    },
-    rules: [
-      ['그 대조군이 서 있는 벤치부터 의심한다', '처음 쓰던 정렬 접기 벤치는 조각이 정확히 포개지는 퇴화 패턴이라, 가려진 레이어를 버리기 시작하자 3회차에서 수렴해 끝나 버렸다. 도달할 수 없는 상한을 성과로 쓰는 꼴이라 벤치를 버리고 임의 접기로 새로 만들었다. §04 의 "8배"가 그 폐기된 벤치의 값이다.'],
-      ['결론은 Average 로만 낸다', '`Split` 을 노이즈 대조군으로 두고 봤더니 Average 는 ±3% 안이고 Median 과 Max 는 30% 안팎 흔들렸다. 에디터에서 Max 는 쓸 수 없는 지표다. 단 **스파이크와 구간 대표값은 중앙값으로 본다.** ⚠️ 대조군 자격은 `Split` 의 코드가 안 바뀐 구간에서만 성립한다 — §08 에서 그 코드를 갈아치웠다.'],
-      ['내 추론도 같은 규율에 건다', '`Sync` 가 −27% 인 것을 "정점을 담는 그릇이 바뀐 덕" 이라고 적었다가, 재측정에서 −3.3% 로 나왔다. 대조군이 흔들리는 폭과 같은 크기라 기각하고 문서에 정정을 남겼다.'],
-    ],
-  },
-
-  /* ── S11 ⑥ 판정 교체 (Level 3) · 0d73c39 → 7943d04 · 2026-08-12 ──────── */
-  s11: {
-    link: '재는 조건이 정리된 뒤에 숙제가 하나 남아 있었다. §06 에서 가려진 레이어를 버리기로 하자 **접기를 확정할 때마다 "무엇이 가려졌나"를 계산하는 일**이 새로 생겼다. 그 계산을 어떻게 할지 방식이 셋이었고, 고르기 전에 셋을 다 쟀다.',
-    ways: [
-      ['합쳐서 뺀다',
-       '위에 쌓인 레이어를 **먼저 전부 하나로 합치고**, 그 하나를 아래 조각에서 뺀다. 합치는 데에 아무 모양이나 다룰 수 있는 범용 라이브러리(`Clipper2`)가 필요하다.',
-       '정확하다'],
-      ['차례로 깎아낸다',
-       '**합치지 않는다.** 아래 조각에서 위 레이어를 한 장씩 순서대로 깎고, 깎다가 남는 것이 없어지면 가려진 것이다. 레이어가 전부 볼록이라 **직선으로 자르기만** 하면 된다.',
-       '정확하다 · **채택**'],
-      ['덮였는지만 본다',
-       '**빼는 계산을 아예 안 한다.** 위 레이어 **한 장이 통째로** 아래를 품는지만 확인한다. 여러 장이 나눠서 가리면 어느 한 장도 통째로 품지 않으니 못 잡는다.',
-       '놓치는 경우가 있다'],
-    ],
-    compareCaption: '셋 다 **같은 상황**을 받는다 — 위에 두 장이 걸쳐 있고 **둘이 합쳐야** 아래 조각을 다 가린다. 앞의 둘은 가는 길이 다를 뿐 같은 답을 내고, `덮였는지만 본다`는 **애초에 빼지 않으므로** 이 경우를 놓친다. 답이 같다면 남는 문제는 **어떻게 구하느냐**다 — 그게 아래다.',
-    vizCaption: '채택한 **차례로 깎아낸다**가 실제로 어떻게 도는가. 조각 하나에서 **덮개**(위에 쌓인 레이어 한 장)를 빼는 그림이다. 덮개가 볼록이면 **변마다 한 번씩 자르는 것**으로 나머지가 정확히 구해진다 — 이번 변 바깥은 조각으로 떼어 내고 안쪽만 다음 변으로 넘기면 되므로 **교차점을 따로 구할 필요도 도형을 다시 조립할 필요도 없다.**',
-    pair: {
-      file: 'PaperVisibility.cs → PaperCoverage.cs',
-      commit: '0d73c39 로 갈아엎고 7943d04 로 다듬음 · 2026-08-12',
-      intro: '합쳐서 뺀다는 범용 라이브러리로 위 레이어들을 하나로 합친 뒤 차집합을 구한다. 채택한 쪽은 덮개의 변을 차례로 경계선 삼아 자르기만 반복한다. 아래 발췌는 다듬은 뒤(7943d04) 코드다.',
-      before: {
-        ref: '합쳐서 뺀다 — 합집합을 쌓고 차집합을 구한다',
-        code: `// 지금까지 덮인 영역을 뺀 나머지 넓이 — 이게 먼저다
-Paths64 remain = Clipper.Difference(
-    new Paths64 { path }, covered, FillRule.NonZero);
-if (remain.Count == 0) return 0f;
-// …
-// 그다음 자기 자신을 덮개에 합쳐 다음 레이어로 넘긴다
-covered = Clipper.Union(
-    covered, new Paths64 { path }, FillRule.NonZero);`,
-      },
-      after: {
-        ref: '차례로 깎아낸다 — 덮개의 변마다 한 번씩 자른다',
-        code: `for (int e = 0; e < coverCount; e++)
-{
-    if (!EdgeNormal(coverVertices, coverStart,
-                    coverCount, e, coverSign,
-                    out float2 a, out float2 normal))
-        continue;
-
-    // 자를 자리가 남았는지 먼저 본다.
-    // 자르고 나서 알면 이미 남의 칸에 쓴 뒤다
-    if (outCount >= MaxPieces) return false;
-
-    // 이번 변 바깥 = 떨어져 나가는 조각
-    int outsideCount = ClipHalfPlane(/* … */
-        a, normal, keepInside: false);
-    if (outsideCount < 0) return false;
-    // … 넓이가 남아 있으면 조각으로 담고 outCount++
-
-    // 안쪽만 남겨 다음 변으로 넘긴다
-    int insideCount = ClipHalfPlane(/* … */
-        a, normal, keepInside: true);
-
-    // 안쪽이 비면 남은 항도 전부 비어 있다
-    if (insideCount < 3) return true;
-    CopyRange(scratch.Buffer, spareStart,
-              insideCount, scratch.Buffer, runningStart);
-    runningCount = insideCount;
-}`,
-      },
-      result: '갈아엎은 커밋이 Cartapli.Paper.asmdef 에서 Clipper2 참조를 뺐다 — 이제 실수로 쓰면 컴파일이 안 된다',
-    },
-    notes: [
-      '`합쳐서 뺀다`를 뺀 진짜 근거는 속도가 아니라 **도형의 성질**이다. 처음 종이가 볼록(오목한 데가 없는 모양)이고 자르기가 볼록을 볼록 둘로만 가르므로, 아무리 접어도 **레이어는 볼록에서 벗어나지 않는다.** 그러면 아무 모양이나 다루는 범용 라이브러리가 **애초에 필요 없다** — 직선으로 자르기만 반복하면 되고, 근사가 아니라 정확하다.',
-      '⚠️ **범용 라이브러리를 걷어낸 값이 시간만이 아니었다.** 그 라이브러리는 아무 모양이나 다루려고 프레임마다 관리형 객체를 새로 짓는다. 자르기만 하는 계산은 **고정 크기 네이티브 버퍼 위 Burst 잡**으로 옮길 수 있어서, 접기를 확정하는 순간 생기던 쓰레기가 **1.73 MB 에서 후반 평균 ~28 KB 로, GC 수집 0회**가 됐다.',
-      '빼다 보면 조각이 여러 개로 쪼개질 수 있어(덮개가 한가운데 들어가면) 버퍼를 고정 크기로 두고 **넘치면 "안 가려졌다"로 물러선다**(위 `MaxPieces` 가드). 이 계산의 결과가 곧 **버려도 된다는 허가**라 **두 방향의 실수 값이 다르기 때문**이다 — 가려진 걸 놓치면 레이어 한 장이 더 남을 뿐이지만, 안 가려진 걸 가려졌다고 하면 **종이가 화면에서 사라진다.**',
-    ],
-    table: {
-      headers: ['방식', '판정 비용', '버린 레이어 (16회 누적)', '남는 레이어 (회차 16 시점)', '결론'],
-      rows: [
-        ['합쳐서 뺀다', '채택한 것의 **12~23배**', '69장', '57장', '기각 — 느린데 버린 장수도 더 적다'],
-        ['차례로 깎아낸다', '기준', '98장', '41장', '**채택**'],
-        ['덮였는지만 본다', '채택한 것의 **0.37~0.45배**', '기록 없음', '57장', '기각 — 계산은 싸지만 뒤가 따라 오른다'],
-      ],
-    },
-    tablecap: '가운데 두 열은 **더할 수 없다** — 왼쪽은 16회 동안 버린 누적이고 오른쪽은 16회차 시점에 남은 수다. `덮였는지만 본다`의 누적은 기록하지 않았다. **합쳐서 뺀다가 더 느린데도 덜 버리는 이유**는, 채택한 쪽이 아주 얇게 남은 잔여 조각까지 오차 범위로 삼켜 더 버리기 때문이다. ⚠️ 첫 행의 **57장만 출처가 다르다** — 그 방식이 실제로 돌던 2026-07-24 벤치 값이고 나머지는 아래 조건에서 잰 값이다.',
-    decide: '**승패를 가른 것은 계산 속도가 아니라 접는 빈도였다.** `덮였는지만 본다`는 계산이 싸지만 덜 버린다. 남는 레이어가 41장에서 57장으로 늘면 그만큼 자르기와 화면 올리기가 매 프레임 따라 오른다. 그 **매 프레임 손해**가 채택한 쪽의 **확정 한 번 손해**를 갚는 데 19프레임(60fps 에 0.32초)이 걸리는데, 실제 게임은 20~30초에 한 번 접으니 그보다 60~100배 뜸하다 — 그 간격으로 나눠 붙이면 프레임 평균이 38.5µs 대 45.9µs 다. ⚠️ 이 20~30초는 **설계값이지 실제 플레이를 잰 값이 아니고, 선택 전체가 그 값 위에 서 있다.** 그래서 **되돌리는 조건을 코드와 함께 남겼다** — 접기 횟수 상한이 5회 이하로 정해지거나 간격이 0.3초 아래로 잦아지면 `덮였는지만 본다`로 돌아간다. 그쪽 구현을 지우지 않았고 테스트가 셋을 다 돈다.',
-  },
-
-  /* ── S12 결과가 같은지 검증했다 (Level 4) ────────────────────────────── */
-  // ⚠️ 2026-08-15 — 한계 목록 9항을 **공개 페이지에서 뺐다**(사용자 결정: 공개 사이트는 심사용이지
-  //    감사 자료가 아니다). 9항은 KB §01 [UNKNOWN]·§02 M10 에 그대로 남아 면접 준비 자료로 산다.
-  //    ⚠️ 단 "Windows PC · Unity 에디터에서 쟀다"는 한계가 아니라 **수치의 조건**이라 §01 벤치 설명과
-  //    각 절의 측정 조건 줄에 남는다. 떼면 시간 수치가 근거를 잃는다.
-  s12: {
-    lead: '구현을 이만큼 갈아치웠으면 다음 질문은 **그 숫자들이 같은 그림에 대한 것인가**다. §08 에서 자르는 계산을, §10 에서 가려짐 계산을 통째로 바꿨다.',
-    body: '바꾸면 결과가 조용히 달라질 수 있다. 겹치는 순서가 틀리면 화면에서는 색이 살짝 다른 정도로만 보여 눈으로 못 잡는다. 그래서 두 경우 모두 **바꾸기 전 구현을 지우지 않고 테스트용 정답지로 남겼다.** 새 구현이 낸 답을 매번 옛 구현과 맞춰 본다.',
-    tests: [
-      ['조각 하나 자르기', '새 구현과 옛 구현의 결과를 맞춘다', '임의 400 케이스'],
-      ['접기 한 번 전체', '자르고 쌓는 과정 전체를 맞춘다', '임의 200 케이스'],
-      ['가려짐 계산', '세 방식의 답을 옛 구현과 맞춘다', '14 케이스'],
-    ],
-    why: '전체를 맞추는 테스트가 따로 있는 이유는 **조각 하나짜리 정답지로는 겹치는 순서를 검증할 수 없기** 때문이다. 그리고 회차마다 레이어 수와 정점 수도 같이 맞춘다 — 같은 난수로 도는 벤치라 기하학적 의미가 조금이라도 달라지면 그 수가 갈린다.',
-    close: '넷을 고치는 동안 이 대조가 한 번도 안 깨졌다. 그래서 §02 의 막대가 **같은 그림에 대한 비교**다.',
   },
 };

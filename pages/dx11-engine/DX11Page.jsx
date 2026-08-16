@@ -68,6 +68,22 @@ function DXStoryBlock({ item, viz }) {
   );
 }
 
+function DXCodeEvidence({ item }) {
+  const AsciiBlock = window.AsciiBlock;
+  return (
+    <div className="dx-code-evidence">
+      <h3>{item.title}</h3>
+      <AsciiBlock
+        title={item.source}
+        intro={item.intro}
+        code={item.code}
+        result={item.result}
+        lang={item.lang}
+      />
+    </div>
+  );
+}
+
 function DXOverview({ data }) {
   const ri = window.renderInline;
   return (
@@ -88,7 +104,9 @@ function DXPhysics({ data }) {
       <p className="dx-gist">{ri(data.physics.gist)}</p>
       <DXStoryBlock item={data.physics.boundary} viz="DXBoundaryViz" />
       <DXStoryBlock item={data.physics.sync} viz="DXSyncTierViz" />
+      <DXCodeEvidence item={data.code.sync} />
       <DXStoryBlock item={data.physics.tick} viz="DXTickViz" />
+      <DXCodeEvidence item={data.code.tick} />
       <DXStoryBlock item={data.physics.collision} viz="DXCollisionPipelineViz" />
     </section>
   );
@@ -101,6 +119,7 @@ function DXSystems({ data }) {
       <DXSectionHead no="03" title="렌더링 · 코어 · 인프라" kind="ENGINE SYSTEMS" />
       <p className="dx-gist">{ri(data.systems.gist)}</p>
       <DXStoryBlock item={data.systems.render} viz="DXRenderPipelineViz" />
+      <DXCodeEvidence item={data.code.renderCache} />
       <DXStoryBlock item={data.systems.foundation} viz="DXFoundationViz" />
     </section>
   );
@@ -111,8 +130,8 @@ function DXEvidence({ data }) {
   const column = (title, tone, rows) => <div className={`dx-proof-col ${tone}`}><h3>{title}</h3>{rows.map(([key, value]) => <div className="dx-proof-row" key={key}><strong>{key}</strong><p>{ri(value)}</p></div>)}</div>;
   return (
     <section id="evidence" className="nb-section">
-      <DXSectionHead no="04" title="검증된 것과 남은 한계" kind="EVIDENCE" />
-      <div className="dx-proof-grid">{column('코드로 확인', 'verified', data.evidence.verified)}{column('아직 주장하지 않음', 'limits', data.evidence.limits)}</div>
+      <DXSectionHead no="04" title="검증 결과와 적용 범위" kind="EVIDENCE" />
+      <div className="dx-proof-grid">{column('확인한 내용', 'verified', data.evidence.verified)}{column('적용 범위 · 개선 과제', 'limits', data.evidence.limits)}</div>
     </section>
   );
 }
