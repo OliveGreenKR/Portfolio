@@ -117,8 +117,8 @@ const MT_RAIL = [
   ['scope', '01 범위'],
   ['sec', '밸런싱'],
   ['model', '02 정의'],
-  ['sim', '03 시뮬'],
-  ['search', '04 탐색'],
+  ['sim', '03 상대 비교'],
+  ['search', '04 못 쓴 것'],
   ['sec', '런타임'],
   ['runtime', '05 기하'],
   ['sec', 'wrap-up'],
@@ -219,11 +219,13 @@ function MTSim({ data }) {
   const s = data.sim;
   return (
     <section id="sim" className="nb-section">
-      <MTSectionHead no="03" title="성장 곡선 시뮬레이터" kind="SIMULATOR" />
+      <MTSectionHead no="03" title="시뮬레이터를 쓴 방식 — 절대값이 아니라 상대 비교" kind="SIMULATOR" />
       <MTGist>{s.gist}</MTGist>
       <MTBody>{s.body}</MTBody>
 
       <MTPoints points={s.points} />
+      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
+      <MTSub title={s.curve.title} body={s.curve.body} />
       <p className="mt-honest">{window.renderInline(s.honest)}</p>
 
       <MTBridge>{s.bridge}</MTBridge>
@@ -237,12 +239,11 @@ function MTSearch({ data }) {
   const s = data.search;
   return (
     <section id="search" className="nb-section">
-      <MTSectionHead no="04" title="수치 자동 탐색" kind="OPTIMIZER" />
+      <MTSectionHead no="04" title="만들고 쓰지 못한 것 — 수치 자동 탐색" kind="OPTIMIZER" />
       <MTGist>{s.gist}</MTGist>
       <MTBody>{s.body}</MTBody>
 
       <MTPoints points={s.points} />
-      <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
 
       <MTFold label={s.fold.title}>
         <window.DataTable headers={s.fold.headers} rows={s.fold.rows} />
