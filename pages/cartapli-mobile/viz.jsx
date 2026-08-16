@@ -18,33 +18,36 @@
 // (viewBox 를 폰 폭까지 줄이면 11px 글자가 4~5px 로 떨어져 유실된다)
 
 /* ── 코드 쌍 (그림 아님) ─────────────────────────────────────────────────────
-   before/after 를 **위아래로** 쌓는다. 좌우 2열로 두면 한 칸이 36ch 로 좁아져
-   PaperFoldSplitPipeline 급 식별자가 가로 스크롤을 만든다(§2 함정표).
-   위아래면 폭이 AsciiBlock 과 같고, 읽는 순서도 시간 순과 맞는다. */
+   ⚠️ 껍데기는 **공유 `.nb-ascii` 를 그대로 쓴다.** 다크 테마와 Prism 토큰 색이
+      `src/styles/syntax.css` 에서 `.nb-ascii` · `.sl-code` 두 셀렉터에만 걸려 있어서,
+      새 클래스로 상자를 만들면 코드가 조용히 라이트 테마로 떨어진다(실측).
+      전용 클래스는 before/after 를 가르는 라벨(.cm-pair-lbl)에만 쓴다.
+   before/after 는 **위아래로** 쌓는다 — 좌우 2열이면 한 칸이 36ch 로 좁아져
+   긴 식별자가 가로 스크롤을 만든다(§2 함정표). */
 function CMCodePair({ p }) {
   const hl = window.highlightCode;
   const panel = (kind, o) => (
-    <div className={`cm-pair-panel ${kind}`}>
-      <div className="cm-pair-lbl">
+    <React.Fragment>
+      <div className={`cm-pair-lbl ${kind}`}>
         <span className="tag">{kind === 'was' ? '이전' : '이후'}</span>
         <span className="ref">{o.ref}</span>
       </div>
       {hl
-        ? <pre dangerouslySetInnerHTML={{ __html: hl(o.code, 'csharp') }} />
-        : <pre>{o.code}</pre>}
-    </div>
+        ? <pre className={kind} dangerouslySetInnerHTML={{ __html: hl(o.code, 'csharp') }} />
+        : <pre className={kind}>{o.code}</pre>}
+    </React.Fragment>
   );
   return (
-    <div className="cm-pair">
-      <div className="cm-pair-head">
+    <div className="nb-ascii cm-pair">
+      <div className="nb-ascii-head">
         <span>CODE</span>
         <span className="lbl">{p.file}</span>
         <span className="commit">{p.commit}</span>
       </div>
-      {p.intro && <div className="cm-pair-intro">{p.intro}</div>}
+      {p.intro && <div className="nb-ascii-intro">{p.intro}</div>}
       {panel('was', p.before)}
       {panel('now', p.after)}
-      {p.result && <div className="cm-pair-result">→ {p.result}</div>}
+      {p.result && <div className="nb-ascii-result">→ {p.result}</div>}
     </div>
   );
 }

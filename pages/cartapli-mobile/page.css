@@ -21,6 +21,7 @@
 /* ── 공유 CSS 가 이 페이지를 깨는 자리 (portfolio-page §2 함정표) ─────────── */
 .nb-page main { min-width: 0; }
 .nb-page .nb-ascii pre { overflow-x: auto; max-width: 100%; font-size: 13px; }
+.nb-page .nb-ascii-intro { font-size: 15px; }   /* 공유 기본 14px 은 이 페이지의 본문 3단 밖이다 */
 .nb-page .nb-table { font-size: 15px; }
 .nb-page .nb-table th {                                   /* 헤더가 전부 한글이라 uppercase 는 효과 0 이고 */
   font-size: 13px; text-transform: none; letter-spacing: 0.02em;  /* 넓은 자간은 표 폭만 늘려 폰에서 넘침을 키운다 */
@@ -77,47 +78,27 @@
 }
 .cm-hero .nb-metarow { margin-bottom: 36px; }
 
-/* 최종 성과 네 줄 — 고치기 전 → 지금. 색면을 쓰지 않는다(.cm-core 가 유일) */
+/* 최종 성과 네 줄 — 두 칸이다. 값(모노)이 세로로 맞고 설명이 옆에서 흐른다.
+   ⚠️ 다섯 칸(값·화살표·값·증감·설명)으로 짰다가 "정렬이 이상해 잘 안 보인다" 는 지적을 받았다.
+      화살표까지 칸을 주면 칸마다 폭이 달라 어디를 봐야 할지가 사라진다. 값은 한 문자열이다. */
 .cm-headline {
   border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  padding: 6px 0 14px; margin: 0 0 28px;
+  padding: 4px 0 16px; margin: 0 0 28px;
 }
-.cm-headline-hd, .cm-headline-row {
-  display: grid; grid-template-columns: minmax(0,1fr) 88px 16px 96px 132px;
-  gap: 0 12px; align-items: baseline;
+.cm-headline-row {
+  display: grid; grid-template-columns: 216px minmax(0, 1fr);
+  gap: 2px 20px; align-items: baseline;
+  padding: 11px 0; border-top: 1px solid var(--rule);
 }
-.cm-headline-hd {
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase;
-  color: var(--ink-3); padding: 8px 0 6px;
+.cm-headline-row:first-child { border-top: 0; }
+.cm-headline-v {
+  font-family: var(--font-mono); font-size: 20px; font-weight: 500;
+  color: var(--ink); letter-spacing: -0.01em;
 }
-.cm-headline-hd span:first-child { grid-column: 2; }
-.cm-headline-hd span:last-child { grid-column: 4; }
-.cm-headline-row { padding: 9px 0; border-top: 1px solid var(--rule); }
-.cm-headline-k { font-size: 15px; color: var(--ink-2); }
-.cm-headline-a0 { font-family: var(--font-mono); font-size: 15px; color: var(--ink-3); text-align: right; }
-.cm-headline-ar { color: var(--ink-3); font-size: 13px; text-align: center; }
-.cm-headline-v { font-family: var(--font-mono); font-size: 20px; font-weight: 500; color: var(--ink); letter-spacing: -0.01em; }
-.cm-headline-d { font-size: 13.5px; color: var(--ink-3); }
-.cm-headline-lnk { display: inline-block; font-size: 13.5px; color: var(--ink-3); margin-top: 14px; }
-@media (max-width: 720px) {
-  .cm-headline-hd { display: none; }
-  .cm-headline-row { grid-template-columns: 1fr auto; gap: 2px 10px; }
-  .cm-headline-k { grid-column: 1 / -1; }
-  .cm-headline-ar { text-align: left; }
-  .cm-headline-a0, .cm-headline-ar, .cm-headline-v, .cm-headline-d { text-align: left; }
-}
-
-/* §10 세 방식 목록 — 표보다 앞에 와서 "무엇을 비교하는가" 를 먼저 준다 */
-.cm-ways { list-style: none; margin: 4px 0 22px; padding: 0; }
-.cm-ways li {
-  display: grid; grid-template-columns: 132px minmax(0,1fr) 128px; gap: 16px;
-  padding: 14px 0; border-top: 1px solid var(--rule); align-items: baseline;
-}
-.cm-ways li:last-child { border-bottom: 1px solid var(--rule); }
-.cm-way-n { font-size: 15.5px; font-weight: 600; color: var(--ink); }
-.cm-way-d { font-size: 15px; line-height: 1.7; color: var(--ink-2); }
-.cm-way-v { font-size: 13.5px; color: var(--ink-3); }
-@media (max-width: 720px) { .cm-ways li { grid-template-columns: 1fr; gap: 4px; } }
+.cm-headline-k { font-size: 15px; line-height: 1.6; color: var(--ink-2); }
+.cm-headline-k i { font-style: normal; color: var(--ink-3); font-size: 13.5px; margin-left: 10px; }
+.cm-headline-lnk { display: inline-block; font-size: 13.5px; color: var(--ink-3); margin-top: 16px; }
+@media (max-width: 720px) { .cm-headline-row { grid-template-columns: 1fr; } }
 
 /* ── L2 / L3 / L4 섹션 ───────────────────────────────────────────────────── */
 .nb-section.lv3 .nb-section-title { font-size: 23px; color: var(--ink-2); }
@@ -182,52 +163,27 @@
 }
 .cm-notes li strong { color: var(--ink); font-weight: 600; }
 
-/* ── 코드 쌍 (before / after) ─────────────────────────────────────────────── */
-/* 위아래로 쌓는다 — 좌우 2열이면 한 칸이 36ch 로 좁아져 긴 식별자가 가로 스크롤을 만든다.
-   위아래면 폭이 공유 AsciiBlock 과 같고 읽는 순서도 시간 순과 맞는다. */
-.cm-pair {
-  margin: 24px 0 0; border: 1px solid var(--rule); border-radius: 4px;
-  background: var(--paper-2); overflow: hidden;
-}
-.cm-pair-head {
-  padding: 12px 16px; border-bottom: 1px dashed var(--rule); background: var(--paper);
-  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em;
-  text-transform: uppercase; color: var(--ink-3);
-  display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px;
-}
-.cm-pair-head .lbl { color: var(--ink); min-width: 0; overflow-wrap: anywhere; }
-.cm-pair-head .commit { margin-left: auto; color: var(--ink-3); letter-spacing: 0.02em; }
-.cm-pair-intro {
-  padding: 14px 18px; font-size: 15px; line-height: 1.7; color: var(--ink-2);
-  border-bottom: 1px solid var(--rule); background: var(--paper);
-}
-.cm-pair-panel { border-bottom: 1px solid var(--rule); }
+/* ── 코드 쌍 (before / after) ─────────────────────────────────────────────
+   상자·배경·신택스 색은 전부 공유 `.nb-ascii` + `syntax.css` 가 준다(다크 IDE 테마).
+   ⚠️ 여기서 background 를 다시 정하지 마라 — 전용 클래스로 상자를 새로 만들었다가
+      코드가 조용히 라이트 테마로 떨어진 적이 있다(syntax.css 는 .nb-ascii · .sl-code 두
+      셀렉터에만 걸려 있다). 이 파일은 **before/after 를 가르는 라벨**만 갖는다. */
+.cm-pair .commit { margin-left: auto; letter-spacing: 0.02em; }
 .cm-pair-lbl {
   display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px;
-  padding: 10px 18px; background: var(--paper-2);
+  padding: 9px 18px; background: var(--code-bg-head);
+  border-top: 1px solid var(--code-rule); border-bottom: 1px solid var(--code-rule);
 }
 .cm-pair-lbl .tag {
   font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em;
-  padding: 2px 7px; border-radius: 2px; border: 1px solid var(--rule-2); color: var(--ink-3);
+  padding: 2px 7px; border-radius: 2px;
+  border: 1px solid var(--code-rule); color: var(--code-dim);
 }
-.cm-pair-panel.now .cm-pair-lbl .tag { border-color: var(--sage-500); color: var(--sage-700); }
-.cm-pair-lbl .ref { font-size: 13.5px; color: var(--ink-2); min-width: 0; overflow-wrap: anywhere; }
-.cm-pair-panel pre {
-  margin: 0; padding: 16px 20px 18px;
-  font-family: var(--font-mono); font-size: 13px; line-height: 1.7;
-  color: var(--ink); background: var(--paper);
-  overflow-x: auto; max-width: 100%;
-}
+.cm-pair-lbl.now .tag { border-color: var(--code-kw); color: var(--code-kw); }
+.cm-pair-lbl .ref { font-size: 13.5px; color: #c8c1b4; min-width: 0; overflow-wrap: anywhere; }
 /* 이전 판은 한 단 뒤로 물린다 — 지금 코드가 아니다 */
-.cm-pair-panel.was pre { color: var(--ink-2); }
-.cm-pair-result {
-  padding: 14px 18px; border-top: 1px solid var(--rule); background: var(--paper-2);
-  font-family: var(--font-mono); font-size: 13.5px; color: var(--ink-2); letter-spacing: 0.02em;
-}
-@media (max-width: 720px) {
-  .cm-pair-panel pre { white-space: pre-wrap; overflow-wrap: anywhere; }
-  .cm-pair-head .commit { margin-left: 0; }
-}
+.nb-page .cm-pair pre.was { opacity: 0.66; }
+@media (max-width: 720px) { .cm-pair .commit { margin-left: 0; } }
 
 /* ── S9 결과 목록 ────────────────────────────────────────────────────────── */
 .cm-results { margin: 6px 0 0; padding-left: 20px; }

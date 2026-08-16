@@ -151,14 +151,10 @@ function CMHero({ data }) {
       <p className="cm-core">{m.core}</p>
 
       <div className="cm-headline">
-        <div className="cm-headline-hd"><span>고치기 전</span><span>지금</span></div>
         {m.headline.rows.map(r => (
           <div className="cm-headline-row" key={r.k}>
-            <span className="cm-headline-k">{r.k}</span>
-            <span className="cm-headline-a0">{r.a}</span>
-            <span className="cm-headline-ar">→</span>
-            <span className="cm-headline-v">{r.b}</span>
-            <span className="cm-headline-d">{r.d}</span>
+            <b className="cm-headline-v">{r.v}</b>
+            <span className="cm-headline-k">{r.k}{r.d && <i>{r.d}</i>}</span>
           </div>
         ))}
         <a className="cm-headline-lnk" href={m.headline.href}>{m.headline.hrefLabel}</a>
