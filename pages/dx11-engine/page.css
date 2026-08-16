@@ -41,6 +41,12 @@
 .dx-story-copy { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; align-items: start; }
 .dx-story h3 { margin: 0; color: var(--ink); font-family: var(--font-display); font-size: 23px; line-height: 1.32; letter-spacing: -.01em; }
 .dx-story-copy > p { margin: 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.75; text-wrap: pretty; }
+.dx-code-evidence { padding: 28px 0 12px; border-top: 1px solid var(--rule-2); }
+.dx-code-evidence > h3 {
+  margin: 0 0 14px; color: var(--ink); font-family: var(--font-display);
+  font-size: 21px; line-height: 1.35; letter-spacing: -.01em;
+}
+.dx-code-evidence .nb-ascii { margin: 0; }
 .dx-evidence-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .dx-facts {
   display: grid; grid-template-columns: 120px minmax(0, 1fr); margin: 18px 0 0;
@@ -134,6 +140,7 @@
   .dx-hook { font-size: 17px; }
   .dx-story { padding-top: 28px; }
   .dx-story h3 { font-size: 20px; }
+  .dx-code-evidence > h3 { font-size: 19px; }
   .dx-story-copy > p, .dx-facts dd, .dx-proof-row p { font-size: 15px; }
   .dx-shot figcaption, .dx-figure figcaption { font-size: 13px; }
   .dx-node > small, .dx-render-support small, .dx-tier-name small,

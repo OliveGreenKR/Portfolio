@@ -33,12 +33,12 @@ window.DX11_DATA = {
     gist: '가장 크게 재설계한 곳은 물리다. 핵심은 알고리즘보다 먼저 **상태의 주인과 이동 경로**를 정한 것이다.',
     boundary: {
       title: '1. 상태 소유권을 물리로 옮겼다',
-      body: '게임 객체가 두 벌로 들던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮겼다. 게임 쪽에는 슬롯 ID와 동기화용 입력·결과·더티 상태를 남기고, 두 영역의 왕복은 입력·Job·결과·이벤트 네 통로로 제한했다.',
+      body: '게임 객체가 소유하던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮겼다. 게임 쪽에는 슬롯 ID와 동기화용 입력·결과·더티 상태를 남기고, 두 영역의 왕복은 입력·Job·결과·이벤트 네 통로로 제한했다.',
       evidence: ['FPhysicsStateArrays', 'IdToIdx / IdxToId', '23 property arrays', '4 communication paths'],
     },
     sync: {
       title: '2. 입력은 갱신 빈도에 따라 세 계층으로 나눴다',
-      body: '트랜스폼과 질량을 같은 주기로 복사하지 않는다. 데이터 구조와 순회를 High·Mid·Low로 나누고, 각 계층의 더티 플래그가 선 슬롯만 중앙 배열에 반영한다.',
+      body: '트랜스폼과 질량을 같은 주기로 복사하지 않는다. High·Mid·Low로 구조와 순회를 나누고, 더티 플래그가 설정된 슬롯만 중앙 배열에 반영한다.',
       evidence: ['FHighFrequencyData', 'FMidFrequencyData', 'FLowFrequencyData', 'Dirty Flags'],
     },
     tick: {
@@ -67,17 +67,122 @@ window.DX11_DATA = {
     },
   },
 
+  code: {
+    sync: {
+      title: '더티 플래그 기반 입력 동기화',
+      source: 'PhysicsSystem.cpp · SyncGameToPhysics / BatchSync* (excerpt)',
+      intro: '세 계층을 각각 순회하고, 대응 더티 플래그가 설정된 슬롯만 중앙 SoA에 반영한다.',
+      lang: 'cpp',
+      code: `void UPhysicsSystem::SyncGameToPhysics()
+{
+    BatchSyncHighFrequencyData();
+    BatchSyncMidFrequencyData();
+    BatchSyncLowFrequencyData();
+    BatchClearAllDirtyFlags();
+}
+
+// BatchSyncHighFrequencyData()
+FPhysicsDataDirtyFlags dirtyFlags = physicsObject->GetDirtyFlags();
+if (!dirtyFlags.HasHighFreq())
+    continue;
+FHighFrequencyData data = physicsObject->GetHighFrequencyData();
+PhysicsStateSoA->WorldPosition[i] = XMVectorSet(
+    data.Position.x, data.Position.y, data.Position.z, 1.0f);
+
+// BatchSyncMidFrequencyData()
+if (!dirtyFlags.HasMidFreq())
+    continue;
+FMidFrequencyData data = physicsObject->GetMidFrequencyData();
+PhysicsStateSoA->PhysicsTypes[i] = data.PhysicsType;
+
+// BatchSyncLowFrequencyData()
+if (!dirtyFlags.HasLowFreq())
+    continue;
+FLowFrequencyData data = physicsObject->GetLowFrequencyData();
+PhysicsStateSoA->InvMasses[i] = data.InvMass;`,
+      result: '구조 분리뿐 아니라 순회 함수와 플래그 검사도 High·Mid·Low마다 독립시켰다.',
+      points: [
+        ['분리 기준', 'Transform / Type·Mask / Properties'],
+        ['선택 조건', '각 배치 순회에서 대응 더티 플래그 검사'],
+        ['반영 위치', 'FPhysicsStateArrays의 선택된 속성 배열'],
+      ],
+    },
+    tick: {
+      title: '입력과 결과를 나눈 시뮬레이션 경계',
+      source: 'PhysicsSystem.cpp · PrepareSimulation / FinalizeSimulation',
+      intro: 'PrepareSimulation은 입력과 Job을, FinalizeSimulation은 결과와 충돌 이벤트 반환을 담당한다.',
+      lang: 'cpp',
+      code: `void UPhysicsSystem::PrepareSimulation()
+{
+    bIsSimulating = true;
+    SyncGameToPhysics();
+    ProcessJobQueue();
+    PhysicsStateSoA->CleanupExpiredObjectRefs();
+    JobQueue->Clear();
+    JobPool->Reset();
+}
+
+void UPhysicsSystem::FinalizeSimulation()
+{
+    bIsSimulating = false;
+    SyncPhysicsToGame();
+    SyncPhysicsEvents();
+}`,
+      result: '입력 이동과 결과·이벤트 반환을 서로 다른 경계 함수로 분리했다.',
+      points: [
+        ['시작', 'Game → Physics 동기화 후 Job 처리'],
+        ['상태', 'bIsSimulating으로 시뮬레이션 구간 표시'],
+        ['종료', 'Physics → Game 결과와 충돌 이벤트 반환'],
+      ],
+    },
+    renderCache: {
+      title: 'IRenderData를 드로우 콜로 조립',
+      source: 'RenderContext.cpp · DrawRenderData (excerpt)',
+      intro: '렌더 데이터에서 버퍼·리소스를 꺼내 바인딩하고, 인덱스 유무에 따라 드로우 호출을 선택한다.',
+      lang: 'cpp',
+      code: `void FRenderContext::DrawRenderData(const IRenderData* InData)
+{
+    auto VertexBuffer = InData->GetVertexBuffer();
+    if (VertexBuffer)
+        BindVertexBuffer(VertexBuffer,
+            InData->GetStride(), InData->GetOffset());
+
+    auto IndexBuffer = InData->GetIndexBuffer();
+    if (IndexBuffer)
+        BindIndexBuffer(IndexBuffer);
+
+    for (size_t i = 0; i < InData->GetTextureCount(); ++i)
+    {
+        uint32_t Slot;
+        ID3D11ShaderResourceView* SRV;
+        InData->GetTextureData(i, Slot, SRV);
+        BindPixelShaderResource(Slot, SRV);
+    }
+
+    if (InData->GetIndexCount() > 0)
+        DrawIndexed(InData->GetIndexCount(),
+            InData->GetStartIndex(), InData->GetBaseVertexLocation());
+    else if (InData->GetVertexCount() > 0)
+        Draw(InData->GetVertexCount(), InData->GetBaseVertexLocation());
+}`,
+      result: 'IRenderData의 자원 정보를 FRenderContext가 바인딩과 Draw / DrawIndexed 호출로 전환한다.',
+      points: [
+        ['입력', 'IRenderData의 버퍼·텍스처·드로우 정보'],
+        ['바인딩', 'Vertex / Index Buffer와 Shader Resource'],
+        ['분기', 'IndexCount가 있으면 DrawIndexed, 아니면 Draw'],
+      ],
+    },
+  },
+
   evidence: {
     verified: [
-      ['구조', 'mine 브랜치의 현재 코드와 master에 남은 이전 구조를 대조해 소유권·호출 경로·상수 사용을 확인했다.'],
+      ['구조', '현재 구조와 이전 구조의 코드를 대조해 소유권·호출 경로·상수 사용을 확인했다.'],
       ['검증 도구', '충돌 트리/형상 Debug Draw, ImGui 상태창, D3D 바인딩 검사 코드를 구현했다.'],
       ['범위', '물리뿐 아니라 메인 루프·렌더링·씬·리소스·입력·메모리 코드를 직접 구현했다.'],
     ],
     limits: [
-      ['성능 개선량', '프로파일러 캡처와 재현 가능한 벤치마크가 없어 수치로 주장하지 않는다.'],
-      ['결정성', '리플레이·고정 시드 검증이 없어 프레임률 독립/결정성을 주장하지 않는다.'],
-      ['물리 범위', '상자·구 중심이며 GJK/EPA와 실제 멀티스레드 실행은 구현하지 않았다.'],
-      ['렌더 캐시', '프레임 시작 초기화 경로가 없어 ImGui가 같은 컨텍스트를 바꾼 뒤 내부 캐시와 실제 상태가 어긋날 수 있다.'],
+      ['물리 적용 범위', '현재 구현은 상자·구 충돌과 단일 스레드 실행을 대상으로 한다.'],
+      ['렌더 캐시 개선 과제', '프레임 시작 시 내부 바인딩 캐시를 초기화하는 경로가 필요하다.'],
     ],
   },
 
