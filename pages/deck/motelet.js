@@ -5,7 +5,7 @@
 //
 // 2026-08-15 재조립(2차). 페이지 비중이 8:2 로 잡히면서 덱도 같이 뒤집었다.
 //   주제 = 주관이던 "성장 체감" 을 계산으로 바꿔 밸런싱을 판단으로 만들었다.
-//   02·03 = 밸런싱(정의 → 곡선 → 자동 탐색), 04 = 런타임 한 장, 05 = 남은 것.
+//   02 = 밸런싱(정의 + 곡선), 03 = 도구 화면, 04 = 런타임 한 장, 05 = 남은 것.
 //
 // ■ 뺀 것
 //   §01 범위 표 — 덱 한 장에 넣으면 숫자만 남고 판단이 안 보인다. 05 note 한 줄로 받는다.
@@ -50,30 +50,28 @@
         cols: [
           { kind: 'DEFINE', mark: '✓', tone: 'sage',
             title: '무엇을 재기로 했나',
-            sub: M.model.whyNotDps,
-            pairs: [
-              ['성장', 'E[한 판에 버는 골드]'],
-              ['성장 체감', '스킬 한 칸을 샀을 때 그 값의 증가분'],
-              ['기대 골드의 분해', M.model.decompose.body],
-            ] },
+            sub: M.model.problem,
+            pairs: M.model.formula.lines.concat(
+              M.model.minTable.rows.map(r => [r[0], r[1] + ' → ' + r[2]])) },
           { kind: 'CURVE', mark: '✓', tone: 'sage',
             title: '곡선은 구매 정책의 함수다',
-            sub: M.sim.gist,
-            pairs: M.sim.points },
+            sub: M.sim.loop.note,
+            pairs: M.sim.split.rows.map(r => [r[0], r[1]]) },
         ],
-        note: M.sim.honest,
+        note: M.sim.splitNote,
       },
 
-      // ─── 03 자동 탐색 ───
+      // ─── 03 도구 화면 ───
+      // 히트맵 색 · 소스/가정 config 분리 · 구간 분석이 한 화면에 다 있다.
       {
         layout: 'diagram',
         section: '02 밸런싱',
         no: 'b',
-        title: '목표 곡선을 주면 값을 맞춘다',
-        lead: M.search.gist + ' ' + M.search.body,
-        step: { img: { src: M.search.shot.img, caption: M.search.shot.caption } },
-        points: M.search.points,
-        note: M.search.host.body,
+        title: '절대값이 아니라 노드 간 상대 순위',
+        lead: M.sim.gist + ' ' + M.sim.splitNote,
+        step: { img: { src: M.sim.shot.img, caption: M.sim.shot.caption } },
+        points: M.sim.points,
+        note: M.sim.shot.note,
       },
 
       // ─── 04 런타임 한 장 ───
@@ -84,7 +82,7 @@
         title: '자체 2D 기하 쿼리',
         gist: M.runtime.gist,
         step: {
-          problem: M.runtime.why,
+          problem: M.runtime.whyNote,
           code: M.runtime.code,
           points: [],
         },
@@ -105,8 +103,7 @@
           title: g.head,
           pairs: g.items,
         })),
-        note: '역할 경계 — ' + M.scope.gist.replace(/\*\*/g, '')
-              + ' 디렉터리별 커밋 표는 사이트에 있다.',
+        note: '역할 경계 — ' + M.scope.gist.replace(/\*\*/g, ''),
       },
     ],
   };
