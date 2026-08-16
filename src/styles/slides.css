@@ -466,9 +466,14 @@
    1920px 슬라이드에서는 못 읽는다 — 덱 그림 여섯 장 전부가 13px 로 나가고 있었다.
    범례·읽는 법이 여기 적히므로 캡션이 안 읽히면 그림도 반만 전달된다.
    덱의 다른 보조 글(.sl-note 등)과 같은 급으로 올린다.
-   (게임 화면의 .sl-shot figcaption 은 이미 22px 다 — 손대지 않는다.) */
+   (게임 화면의 .sl-shot figcaption 은 이미 22px 다 — 손대지 않는다.)
+
+   page.css 의 `max-width: 76ch` 도 같이 푼다. 사이트 본문 폭(76ch)에 맞춘 값이라
+   1752px 슬라이드에서는 캡션이 오른쪽 절반을 비운 채 세 줄로 접히고, 그 세 줄이
+   전부 **그림에서 뺏어 온 세로**다(실측: 캡션 93px → 62px, 그림 배율 1.14 → 1.44).
+   완전히 풀면 한 줄이 너무 길어 눈이 되돌아오지 못하므로 118ch 로 둔다. */
 .slide .cm-figcap,
-.slide .dx-figcap { font-size: 20px; line-height: 1.55; }
+.slide .dx-figcap { font-size: 20px; line-height: 1.55; max-width: 118ch; }
 
 /* 프로젝트 그림은 대개 SVG 라 viewBox 가 상자에 맞춰 알아서 커진다. 예외가 하나 있다 —
    CMRendererViz(렌더러 감축)는 SVG 가 아니라 순수 div/span 이라(cartapli-mobile/viz.jsx)
