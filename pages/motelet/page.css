@@ -93,15 +93,10 @@
 
 .mt-svg-sub  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--ink-3); }
 .mt-svg-lbl  { font-family: var(--font-mono); font-size: 11.5px; fill: var(--ink-2); font-weight: 600; }
-.mt-svg-tag  { font-family: var(--font-mono); font-size: 10.5px; fill: var(--terra-500); font-weight: 600; }
 
 /* 항 풀이 — 그림의 잎 이름과 같은 말을 쓴다 */
 
 /* 밀집 질의 그림의 점 — 검사 대상 여부를 색으로 가른다 */
-.mt-dot-seed { fill: var(--terra-400); stroke: var(--terra-700); }
-.mt-dot-in   { fill: var(--sage-500); stroke: var(--sage-900); }
-.mt-dot-near { fill: var(--paper); stroke: var(--sage-500); }
-.mt-dot-far  { fill: var(--rule-2); stroke: none; }
 
 /* ─── 사정거리 — 읽는 것 / 안 읽는 것 ────────────────── */
 
@@ -157,36 +152,15 @@
 .mt-fold-body { padding: 2px 0 14px; }
 
 /* 두 그림 나란히 + 공유 캡션 */
-.mt-twoviz { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 20px 0 0; }
-.mt-twoviz .mt-figure { margin: 0; }
-.mt-figcap-shared { margin: 10px 0 0; padding: 10px 12px;
-  border-left: 2px solid var(--sage-500); background: var(--paper-2);
-  font-size: 13.5px; line-height: 1.7; color: var(--ink-2); }
-.mt-figcap-shared strong { color: var(--ink); font-weight: 600; }
 
 /* 정확 / 근사 두 열 */
-.mt-qcols { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  gap: 26px; margin: 22px 0 0; }
-.mt-qcol { min-width: 0; }
-.mt-qcols .mt-qcol + .mt-qcol { border-left: 1px solid var(--rule); padding-left: 26px; }
-.mt-qtag { display: inline-block; padding: 3px 8px; border: 1px solid var(--rule-2); border-radius: 2px;
-  font-size: 11px; letter-spacing: .06em; color: var(--ink-3); }
-.mt-qtitle { margin: 10px 0 8px; font-size: 17px; font-weight: 600; color: var(--ink); }
-.mt-qfall { margin: 12px 0 0; font-size: 13.5px; line-height: 1.7; color: var(--ink-2); text-wrap: pretty; }
-.mt-qfall-k { display: inline-block; margin-right: 8px; padding: 2px 7px;
-  border: 1px solid var(--rule-2); border-radius: 2px;
-  font-size: 11px; letter-spacing: .04em; color: var(--ink-3); }
 
 /* 2단으로 좁아진 열 안의 코드 — 가로 스크롤은 읽는 순서를 끊는다.
    폭과 무관하게 접는다(1280px 에서 최장 줄의 24% 가 시야 밖이었다). */
-.mt-qcol .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; }
 
 /* 여유 질의 그림의 장애물 */
-.mt-obs { fill: var(--ink-3); fill-opacity: .22; stroke: var(--ink-3); stroke-width: 1; }
 
 /* 전체 창 캡처 — 세로는 잠그고 가로만 스와이프 */
-.mt-shot-wide .mt-shot-scroll { overflow-x: auto; overflow-y: hidden; }
-.mt-shot-wide .mt-shot-scroll img { max-width: none; display: block; }
 
 /* 대가 — 색면을 쓰지 않는다 */
 .mt-costgrp { margin: 24px 0 0; }
@@ -210,12 +184,9 @@
 .nb-page .nb-table td:last-child { text-align: left; font-family: var(--font-sans); }
 
 @media (min-width: 1101px) {
-  .mt-twoviz { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 1100px) {
   .mt-tables, .mt-qcols { grid-template-columns: 1fr; }
-  .mt-qcols .mt-qcol + .mt-qcol { border-left: none; border-top: 1px solid var(--rule);
-    padding-left: 0; padding-top: 20px; margin-top: 4px; }
 }
 @media (max-width: 720px) {
   /* SVG 세 장 공통 — note 를 숨겨도 남는 라벨이 유실된다.
@@ -253,9 +224,6 @@
 
 /* 두 그림은 붙어 있어야 대비가 일어난다 — 세로로 900px 쌓이면 공유 캡션이 첫 그림에서 떨어진다(렌즈2). */
 @media (min-width: 1101px) {
-  .mt-twoviz { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
-  .mt-twoviz .mt-figure { overflow-x: auto; overflow-y: hidden; }
-  .mt-twoviz .mt-figure .mt-svg { min-width: 560px; }
 }
 @media (max-width: 720px) {
   .mt-defn-rows { grid-template-columns: minmax(0, 1fr); gap: 2px 0; }
@@ -264,9 +232,12 @@
 
 /* §06 이 LEVEL 3 인데 페이지 최장 절이었다(2,872px, 그 중 그림이 1,444px = 50%).
    원인은 텍스트가 아니라 그림 세로 길이라, 두 컷에 높이 상한을 건다. */
-.mt-shot-wide .mt-shot-scroll { max-height: 340px; }
-.mt-shot-wide .mt-shot-scroll img { max-height: 340px; width: auto; }
 .mt-shot-zoom img { max-height: 360px; width: auto; }
 
 /* 데스크톱에서는 범례가 그림 안에 이미 있다 — 캡션의 범례 재진술은 좁은 폭 전용. */
 @media (min-width: 721px) { .mt-cap-legend { display: none; } }
+
+/* 시뮬 절의 정직 한 줄 — 요점 목록 뒤에서 도구의 한계를 그 자리에 박는다. */
+.mt-honest { margin: 18px 0 0; padding: 12px 14px; border-left: 2px solid var(--rule-2);
+  background: var(--paper-2); font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
+.mt-honest strong { color: var(--ink); font-weight: 600; }
