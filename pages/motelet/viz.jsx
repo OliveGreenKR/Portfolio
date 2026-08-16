@@ -69,6 +69,70 @@ function MTGeoArchViz({ caption }) {
 }
 window.MTGeoArchViz = MTGeoArchViz;
 
+
+/* ─── 한 판의 골드를 무엇으로 쪼갰나 ─────────────────── */
+/* 이 페이지에서 제일 먼저 보여야 하는 그림. 정의(두 줄)만으로는
+   "그래서 무엇을 계산하나" 가 안 잡힌다 — 최종 분해를 먼저 세운다.
+   숫자 없음. 구조만 말한다. */
+function MTGoldDecompViz() {
+  const W = 760, H = 268;
+  // 총폭: 마지막 열 x=596 + w=148 = 744 < 760 ✓
+  const box = (x, y, w, h, t, s, tone) => (
+    <g key={t}>
+      <rect x={x} y={y} width={w} height={h} rx="3"
+            fill={tone === 'root' ? 'var(--sage-100)' : tone === 'mid' ? 'var(--paper-2)' : 'var(--paper)'}
+            stroke={tone === 'root' ? 'var(--sage-500)' : 'var(--rule-2)'}
+            strokeWidth={tone === 'root' ? 1.8 : 1} />
+      <text x={x + w / 2} y={y + (s ? 22 : h / 2 + 5)} textAnchor="middle"
+            className={tone === 'root' ? 'mt-svg-lbl root' : 'mt-svg-lbl'}>{t}</text>
+      {s && <text x={x + w / 2} y={y + 39} textAnchor="middle" className="mt-svg-sub">{s}</text>}
+    </g>
+  );
+  const elbow = (x1, y1, x2, y2, mid) => (
+    <polyline key={`${x1}${y1}${y2}`} points={`${x1},${y1} ${mid},${y1} ${mid},${y2} ${x2},${y2}`}
+              fill="none" stroke="var(--rule-2)" />
+  );
+  const op = (x, y, t) => (
+    <g key={`op${x}${y}`}>
+      <circle cx={x} cy={y} r="11" fill="var(--paper)" stroke="var(--sage-500)" />
+      <text x={x} y={y + 5} textAnchor="middle" className="mt-svg-op">{t}</text>
+    </g>
+  );
+
+  return (
+    <figure className="mt-figure">
+      <svg viewBox={`0 0 ${W} ${H}`} className="mt-svg" role="img"
+           aria-label="한 판의 골드는 처치 수와 처치당 골드의 곱이고, 처치 수는 처치율과 버틴 시간의 곱이며, 처치율은 공격력 항과 스폰 항 중 작은 쪽이다">
+        {elbow(156, 146, 206, 76, 181)}
+        {elbow(156, 146, 206, 216, 181)}
+        {elbow(356, 76, 406, 44, 381)}
+        {elbow(356, 76, 406, 110, 381)}
+        {elbow(546, 44, 596, 28, 571)}
+        {elbow(546, 44, 596, 74, 571)}
+
+        {op(181, 146, '×')}
+        {op(381, 76, '×')}
+        <text x={571} y={48} textAnchor="middle" className="mt-svg-op">min</text>
+
+        {box(16, 118, 140, 56, '한 판의 골드', null, 'root')}
+        {box(206, 52, 150, 48, '처치 수', null, 'mid')}
+        {box(206, 192, 150, 48, '처치당 골드', '적 분포의 기대값', 'leaf')}
+        {box(406, 22, 140, 44, '처치율', null, 'mid')}
+        {box(406, 88, 140, 44, '버틴 시간', '스태미나 ÷ 소모', 'leaf')}
+        {box(596, 8, 148, 40, '공격력 항', null, 'leaf')}
+        {box(596, 54, 148, 40, '스폰 항', null, 'leaf')}
+
+      </svg>
+      <figcaption className="mt-figcap">
+        스킬이 무엇을 올리든 <b>이 잎 중 하나를 움직인다.</b> 그래서 노드 하나의 값을 같은 단위로 잰다.
+        <br />공격력 항 = Σ(발동빈도 × 동시타격 수 × 치사율) · 스폰 항 = 공급량 ÷ 스폰 간격.
+        둘 중 <b>작은 쪽</b>이 그 레벨의 병목이다.
+      </figcaption>
+    </figure>
+  );
+}
+window.MTGoldDecompViz = MTGoldDecompViz;
+
 /* ─── 만든 것 3칸 ────────────────────────────────────── */
 /* 큰 숫자 밴드가 아니다. 이 페이지에는 개선 전후를 비교할 계측본이 없어
    히어로에 올릴 성과 수치가 없다. 규모·설정값을 숫자처럼 세우면 훅과 무관한
