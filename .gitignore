@@ -12,3 +12,6 @@ pages/deck/
 
 # 제출용 덱의 PDF 출력물 — deck.html 과 같은 이유로 공개하지 않는다.
 pages/deck.pdf
+
+# 출력물(PDF 등) 전용 폴더 — 소스에 산출물을 섞지 않는다. 언제든 tools/export_deck.js 로 다시 만든다.
+_exports/
