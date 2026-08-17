@@ -402,6 +402,19 @@
             <window.AsciiBlock {...m.code.after} lang="csharp" />
           </div>
         </div>
+        {/* 왜 하나는 매 프레임에 두고 하나는 확정으로 옮겼나 — 단가가 다르다.
+            이 대비가 없으면 "확정 때만 판정" 이 그냥 구현 선택으로 읽힌다. */}
+        {m.costs && (
+          <div className="cmd-costs">
+            {m.costs.map(([name, what, value, when]) => (
+              <article key={name}>
+                <header><b>{name}</b><span>{what}</span></header>
+                <div><strong>{value}</strong><small>{when}</small></div>
+              </article>
+            ))}
+            <p className="cmd-costs__scope">{RI(m.costScope)}</p>
+          </div>
+        )}
         <div className="cmd-method__foot">
           <p className="cmd-tradeoff">{RI(m.note)}</p>
           <p className="cmd-scope">측정 범위 — {RI(m.scope)}</p>
