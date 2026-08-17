@@ -42,7 +42,8 @@
     return <p className="cv-lede">{typeof children === 'string' ? RI(children) : children}</p>;
   }
 
-  // items: [{ kind: 'accent' | 'plain', text }] 또는 문자열 배열
+  // items: [{ kind: 'accent' | 'plain', tone, text }] 또는 문자열 배열
+  // tone 은 tokens.css 태그 팔레트 — sage(확보) · terra(한계) · wheat(측정) · blue(외부).
   function Pills({ items }) {
     if (!items || !items.length) return null;
     return (
@@ -50,12 +51,31 @@
         {items.map((p, i) => {
           const o = typeof p === 'string' ? { text: p } : p;
           return (
-            <span key={i} className={'cv-pill' + (o.kind === 'accent' ? ' cv-pill--accent' : '')}>
+            <span key={i} data-tone={o.tone}
+                  className={'cv-pill' + (o.kind === 'accent' ? ' cv-pill--accent' : '')}>
               {o.text}
             </span>
           );
         })}
       </div>
+    );
+  }
+
+  // 역할 한 줄. 심사자가 가장 먼저 찾는 줄이라 스펙 목록 안에 두지 않는다.
+  // ⚠️ <b>라벨</b><span>본문</span> 을 붙여서 내므로 본문 앞의 구분자는 호출자가 넣는다.
+  function RoleLine({ label, children }) {
+    return (
+      <p className="cv-role"><b>{label}</b><span>{RI(children)}</span></p>
+    );
+  }
+
+  // 만든 것 목록. 항목마다 인라인 마크업(**굵게** · `코드`)을 해석한다.
+  function Specs({ items }) {
+    if (!items || !items.length) return null;
+    return (
+      <ul className="cv-specs">
+        {items.map((t, i) => <li key={i}>{RI(t)}</li>)}
+      </ul>
     );
   }
 
@@ -86,6 +106,6 @@
     );
   }
 
-  Object.assign(window, { CoverSplit, Eyebrow, CoverTitle, Lede, Pills, LinkRow, Art });
+  Object.assign(window, { CoverSplit, Eyebrow, CoverTitle, Lede, RoleLine, Pills, Specs, LinkRow, Art });
   window.COVERS = window.COVERS || {};
 })();

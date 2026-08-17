@@ -63,6 +63,28 @@
   color: var(--ink-2);
 }
 .cv-pill--accent { border-color: var(--sage-400); color: var(--ink); background: var(--sage-100); }
+/* 색조 — 배지가 전부 같은 색이면 종류가 안 갈린다. tokens.css 태그 팔레트에서만. */
+.cv-pill[data-tone] { color: var(--tone); border-color: var(--tone); background: var(--tone-bg); }
+.cv-pill[data-tone="sage"]  { --tone: var(--sage-700);  --tone-bg: var(--sage-100); }
+.cv-pill[data-tone="terra"] { --tone: var(--terra-500); --tone-bg: var(--terra-50); }
+.cv-pill[data-tone="wheat"] { --tone: #8a6320;          --tone-bg: #f6ecd7; }
+.cv-pill[data-tone="blue"]  { --tone: #46708a;          --tone-bg: #e7eef3; }
+
+/* ─── 역할 한 줄 · 만든 것 목록 ──────────────────────────────
+   ⚠️ 두 부품은 옮겨오기 전 원본(.sl-cover__role · .sl-cover__specs)에 **스타일이 없어서**
+      1920px 슬라이드에서 16px 로 렌더되고 있었다. 이관 기준이 "화면 동일" 이라 그 값을
+      그대로 옮겨 적었다 — 의도된 크기로 보이지 않는다. 표지 개정 때 정한다.
+      (p·ul 의 브라우저 기본 여백 16px 도 배치의 일부라 함께 적는다) */
+.cv-role {
+  margin: calc(16px * var(--cs)) 0;
+  font-size: calc(16px * var(--cs));
+}
+.cv-specs {
+  margin: calc(16px * var(--cs)) 0;
+  padding-left: calc(40px * var(--cs));
+  font-size: calc(16px * var(--cs));
+  list-style: disc;
+}
 
 /* ─── 링크 ──────────────────────────────────────────────
    배지(둥근 캡슐)와 **모양 자체를 다르게** 한다. 색만 다르면 누를 수 있는 것인지 안 보인다.
