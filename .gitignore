@@ -9,3 +9,6 @@ pages/_syntax-preview.html
 pages/deck.html
 pages/deck.snapshot.html
 pages/deck/
+
+# 제출용 덱의 PDF 출력물 — deck.html 과 같은 이유로 공개하지 않는다.
+pages/deck.pdf
