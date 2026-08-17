@@ -394,27 +394,38 @@
         {/* 그림과 코드를 위아래로 쌓으면 둘 다 못 들어간다(그림 1000x390 = 2.56:1).
             좌우로 두면 그림은 제 비율대로 크게, 코드는 세로로 두 벌 다 들어간다. */}
         <div className="cmd-method__body">
-          <div className="cmd-method__art">
-            <window.CMPageMethodViz method={m} />
+          <div className="cmd-method__left">
+            <div className="cmd-method__art">
+              <window.CMPageMethodViz method={m} />
+            </div>
+            {/* 단가 대비는 그림 바로 아래, 왼쪽 열 안에 둔다. 전폭으로 깔면 코드 열과 겹친다. */}
+            {m.costs && (
+              <div className="cmd-costs">
+                <div className="cmd-costs__bar" aria-label={m.costRatioLabel}>
+                  {m.costRatio.map(([name, pct]) => (
+                    <span key={name} style={{ '--pct': pct + '%' }} className={'is-' + (name === '판정' ? 'prune' : 'split')}>
+                      <b>{pct}%</b>
+                    </span>
+                  ))}
+                </div>
+                <p className="cmd-costs__ratio">{RI(m.costRatioLabel)}</p>
+                {m.costs.map(([name, what, value, when]) => (
+                  <article key={name} className={'is-' + (name === '판정' ? 'prune' : 'split')}>
+                    <b>{name}</b>
+                    <strong>{value}</strong>
+                    <em>{when}</em>
+                    <small>{what}</small>
+                  </article>
+                ))}
+                <p className="cmd-costs__scope">{RI(m.costScope)}</p>
+              </div>
+            )}
           </div>
           <div className="cmd-codepair">
             <window.AsciiBlock {...m.code.before} lang="csharp" />
             <window.AsciiBlock {...m.code.after} lang="csharp" />
           </div>
         </div>
-        {/* 왜 하나는 매 프레임에 두고 하나는 확정으로 옮겼나 — 단가가 다르다.
-            이 대비가 없으면 "확정 때만 판정" 이 그냥 구현 선택으로 읽힌다. */}
-        {m.costs && (
-          <div className="cmd-costs">
-            {m.costs.map(([name, what, value, when]) => (
-              <article key={name}>
-                <header><b>{name}</b><span>{what}</span></header>
-                <div><strong>{value}</strong><small>{when}</small></div>
-              </article>
-            ))}
-            <p className="cmd-costs__scope">{RI(m.costScope)}</p>
-          </div>
-        )}
         <div className="cmd-method__foot">
           <p className="cmd-tradeoff">{RI(m.note)}</p>
           <p className="cmd-scope">측정 범위 — {RI(m.scope)}</p>
