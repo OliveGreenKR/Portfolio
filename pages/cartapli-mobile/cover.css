@@ -18,7 +18,7 @@
    (이관 전에는 slides.css 안에 .slide--cm 스코프로 있었다. 표지가 덱 밖으로 나가면서
     그 스코프가 안 걸리므로 표지 루트(.cmd-cover) 스코프로 옮겼다.) */
 
-.cmd-cover { display: flex; flex-direction: column; gap: calc(24px * var(--cs)); flex: 1 1 auto; min-height: 0; }
+.cmd-cover { display: flex; flex-direction: column; gap: calc(20px * var(--cs)); flex: 1 1 auto; min-height: 0; }
 .cmd-cover__top {
   display: grid;
   /* ⚠️ minmax(0,1fr) 이어야 한다. 그냥 1fr 이면 최소폭이 내용 크기로 잡혀 좁은 자리
@@ -59,7 +59,8 @@
 .cmd-metric {
   min-width: 0;
   border: 1px solid var(--rule); background: var(--paper-2);
-  padding: calc(22px * var(--cs)) calc(24px * var(--cs));
+  /* 박스로 바꾸면서 늘어난 여백이 덱에서 34px 넘쳤다 — 한 단 줄인다(실측). */
+  padding: calc(18px * var(--cs)) calc(22px * var(--cs));
 }
 .cmd-metric > strong {
   display: block; font-family: var(--font-mono);

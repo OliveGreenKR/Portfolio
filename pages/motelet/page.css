@@ -42,24 +42,6 @@
   color: var(--terra-500); font-weight: 700;
 }
 
-/* ─── Hero ───────────────────────────────────────────── */
-.mt-hero { padding: 56px 0 48px; border-bottom: 1px solid var(--rule); }
-.mt-hero-main { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 460px); gap: 40px; align-items: start; }
-.mt-hero-sub { font-family: var(--font-mono); font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--terra-500); margin: 6px 0 10px; font-weight: 600; }
-.mt-hook { font-size: 19px; line-height: 1.68; color: var(--ink-2); margin: 20px 0 0; max-width: 660px; text-wrap: pretty; }
-.mt-hook strong { color: var(--ink); font-weight: 600; }
-.mt-what { margin: 16px 0 0; font-size: 15px; line-height: 1.78; color: var(--ink-2); text-wrap: pretty; max-width: 62ch; }
-.mt-what strong { color: var(--ink); font-weight: 600; }
-
-.mt-hero-media { margin: 6px 0 0; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper); overflow: hidden; }
-.mt-hero-media img { display: block; width: 100%; height: auto; }
-.mt-hero-media figcaption { padding: 11px 14px; border-top: 1px solid var(--rule); font-size: 12.5px; line-height: 1.6; color: var(--ink-3); background: var(--paper-2); text-wrap: pretty; }
-
-.mt-boundary { margin: 22px 0 0; padding: 13px 16px; border-left: 2px solid var(--rule-2);
-  background: var(--paper-2); font-size: 14px; line-height: 1.72; color: var(--ink-2); text-wrap: pretty; }
-.mt-boundary strong { color: var(--ink); font-weight: 600; }
-.mt-hero .nb-metarow { margin-top: 18px; }
-
 /* 만든 것 3칸 — 아래 절로 가는 앵커. 성과 수치가 없는 페이지라 숫자 밴드를 흉내내지 않는다. */
 .mt-built { margin: 28px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border: 1px solid var(--rule); border-radius: 4px; overflow: hidden; background: var(--paper); }
 .mt-built-cell { padding: 20px 22px 22px; border-right: 1px solid var(--rule); display: flex; flex-direction: column; gap: 9px;
@@ -263,8 +245,7 @@ a.mt-built-cell:hover { background: var(--sage-50); }
 
 /* ─── Responsive ─────────────────────────────────────── */
 @media (max-width: 1100px) {
-  .mt-hero-main { grid-template-columns: minmax(0, 1fr); gap: 24px; }
-  .mt-hero-media { max-width: 620px; }
+
   .mt-tables { grid-template-columns: 1fr; }
   .mt-costcards { grid-template-columns: minmax(0, 1fr); gap: 8px; }
   /* 패널 SVG 는 viewBox 460 기준이라, 폭이 그보다 커지면 글자가 과하게 커진다. */
@@ -280,8 +261,7 @@ a.mt-built-cell:hover { background: var(--sage-50); }
   .mt-pinlist { grid-template-columns: minmax(0, 1fr); }
 }
 @media (max-width: 720px) {
-  .mt-hero { padding: 36px 0 32px; }
-  .mt-hook { font-size: 17px; }
+
   .mt-built { grid-template-columns: 1fr; }
   .mt-built-cell { border-right: none; border-bottom: 1px solid var(--rule); }
   .mt-built-cell:last-child { border-bottom: none; }
