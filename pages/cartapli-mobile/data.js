@@ -3,6 +3,9 @@
 // Scope: Windows PC · Unity Editor PlayMode · same deterministic 16-fold benchmark.
 
 window.CM_DATA = {
+  // 표지가 큰 숫자 칸을 갖는다 — 페이지가 같은 수치를 또 내지 않는다.
+  coverOwnsStats: true,
+
   meta: {
     eyebrow: 'ANDROID TECHNICAL PROTOTYPE',
     title: 'Cartapli Mobile',

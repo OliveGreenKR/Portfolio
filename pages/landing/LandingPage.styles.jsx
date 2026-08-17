@@ -67,7 +67,9 @@ const landingStyles = {
   // ─── Hero
   hero: {
     display: 'grid',
-    gridTemplateColumns: '1fr 220px',
+    // minmax(0,·) 여야 한다. 그냥 1fr 이면 최소폭이 제목 min-content 로 잡혀
+    // 폭선(--measure)을 넘겨 프로필 사진이 카드보다 한참 오른쪽으로 밀린다(실측).
+    gridTemplateColumns: 'minmax(0, 1fr) 220px',
     gap: 56,
     paddingTop: 80,
     paddingBottom: 64,
@@ -111,9 +113,11 @@ const landingStyles = {
   },
   miniStats: {
     display: 'grid',
-    gridTemplateColumns: 'repeat(4, max-content)',
-    gap: 40,
-    rowGap: 8,
+    // max-content 4칸이면 최소폭이 내용 크기라 폭선(--measure)을 그냥 뚫는다(실측 850px).
+    // 칸이 좁아지면 줄을 접게 둔다 — 틀이 내용을 자르지 않고 내용이 틀에 맞춘다.
+    gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))',
+    gap: 24,
+    rowGap: 18,
     fontFamily: 'var(--font-mono)',
     fontSize: 12,
     color: 'var(--ink-3)',
