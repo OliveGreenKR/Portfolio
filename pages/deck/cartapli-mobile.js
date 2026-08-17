@@ -66,22 +66,38 @@
 
       {
         cls: 'cm',
-        layout: 'cmResult',
-        section: '계측 결과',
-        no: '02',
-        title: '다섯 단계로 나눠 본 최적화 방식별 개선 결과',
-        kind: 'S0 → S2-b · MEASURED',
-        result: C.result,
+        layout: 'cmFoldFlow',
+        section: '접기 로직',
+        title: '접는 선 하나가 두 스레드를 도는 경로',
+        kind: 'DATA · SIM → VIEW',
+        architecture: C.architecture,
       },
 
       {
         cls: 'cm',
         layout: 'cmFlow',
-        section: '실행 구조',
-        no: '01',
-        title: '종이접기 전투의 핵심 시뮬레이션 실행 경로',
-        kind: 'ARCHITECTURE',
+        section: '실행 경로',
+        title: 'Schedule 과 Complete 사이에서 도는 시뮬레이션 순서',
+        kind: 'CALL ORDER',
         architecture: C.architecture,
+      },
+
+      {
+        cls: 'cm',
+        layout: 'cmWorlds',
+        section: '좌표계',
+        title: 'WorldLink — 종이 좌표와 이동 좌표를 잇는 다리',
+        kind: 'WORLDS · IWORLD',
+        architecture: C.architecture,
+      },
+
+      {
+        cls: 'cm',
+        layout: 'cmResult',
+        section: '계측 결과',
+        title: '다섯 단계로 나눠 본 최적화 방식별 개선 결과',
+        kind: 'S0 → S2-b · MEASURED',
+        result: C.result,
       },
 
       methodSlide('reuse'),
@@ -93,7 +109,6 @@
         cls: 'cm',
         layout: 'cmValidation',
         section: '검증 범위',
-        no: '07',
         title: 'Editor 상대 비교의 적용 범위와 다음 검증',
         kind: 'SCOPE',
         validation: C.validation,
