@@ -79,6 +79,7 @@ window.CM_DATA = {
         ],
       },
     ],
+    foldRule: '접는 선을 축으로 정점을 반사하고 순서를 뒤집어 뒷면 조각을 만든다. 선에 걸치지 않은 레이어는 분할하지 않고 원본 참조를 통과시킨다.',
     clock: ['FIXED-STEP CLOCK', 'Accumulate(unscaledDeltaTime × timeScale)', 'TryConsume → 프레임당 0~3 fixed steps'],
     confirm: [
       ['A', 'NotifyFoldConfirmed', '접기 전 좌표가 필요한 대상에 먼저 알림'],
@@ -185,18 +186,22 @@ _confirmed = preview;`,
           result: '파묻힌 조각도 다음 접기의 입력이 됨',
         },
         after: {
-          title: 'After · 현재 파이프라인',
-          intro: '되돌리기 이력을 먼저 보존하고, 관리형 상태로 옮기기 전에 네이티브 조각 목록을 압축한다.',
-          code: `PushHistory(new FoldHistoryEntry(
-    _confirmed, localA, localB));
+          title: 'After · PaperController 호출 지점 둘',
+          intro: '매 프레임 경로는 분할만 예약한다. 파묻힘 판정은 접기 확정 경로에만 있다.',
+          code: `// TickSimulation - 매 프레임
+ScheduleSplit(_animator.PointA,
+              _animator.CurrentPointB);
+_needsSync = true;
+// 판정 없음
 
+// ConfirmFold - 접기 확정 때만
+PushHistory(new FoldHistoryEntry(...));
 ScheduleSplit(localA, localB);
 _pipeline.Complete(_allowFullFlip);
 _pipeline.PruneBuriedPieces();
-
 _confirmed =
     _pipeline.MarshalToPaperData(_baseData);`,
-          result: '버릴 조각의 PaperLayer를 만들지 않음',
+          result: '판정이 매 프레임 경로에서 빠져 확정 프레임 한 곳으로 모임',
         },
       },
       note: '판정 비용은 매 프레임이 아니라 접기 확정 프레임으로 이동했다. 되돌리기는 제거 전 상태 사본이 담당한다.',
@@ -267,20 +272,22 @@ _paperRenderer.Sync(_presented);`,
           result: '분할·Compose·관리형 생성이 한 경로에 결합',
         },
         after: {
-          title: 'After · PaperFoldSplitPipeline',
-          intro: '계산 단계는 Job을 예약하고, 화면 반영 단계는 완료된 네이티브 결과를 소비한다.',
-          code: `// SimTick
-_pipeline.Schedule(
-    midPoint, lineNormal, foldAxis);
+          title: 'After · PaperFoldSplitPipeline 버퍼 수명',
+          intro: '버퍼는 접기 확정 때 한 번 잡는다. 매 프레임에는 같은 버퍼를 다시 가리키고 접는 선 세 값만 넘긴다.',
+          code: `// SetBase - 접기 확정 때 한 번
+EnsureCapacity(ref _baseVertices, vertexTotal);
+// 이미 충분하면 재할당하지 않는다
+_baseVertices[range.x + v] = ...;
 
-// RenderTick
-_pipeline.Complete(_allowFullFlip);
-_paperRenderer.Sync(_pipeline.View);
-
-// only when the fold is confirmed
-_confirmed =
-    _pipeline.MarshalToPaperData(_baseData);`,
-          result: 'Schedule→Complete 사이를 작업 스레드 실행 시간으로 사용',
+// Schedule - 매 프레임
+var job = new PaperSplitLayersJob {
+    BaseVertices = _baseVertices,  // 같은 버퍼
+    MidPoint  = midPoint,
+    LineNormal = lineNormal,
+    FoldAxis  = foldAxis
+};
+_handle = job.Schedule(_baseLayerCount, ...);`,
+          result: '접기당 1회 확보 · 매 프레임은 선 3값만 · Persistent 로 드래그 내내 유지',
         },
       },
       note: 'S2-b는 NativeArray·Job·Burst를 함께 바꾼 결합 단계다. Compose는 조각 순회 때문에 0.0011→0.0016ms로 늘었지만 전체 합은 0.062→0.040ms로 감소했다.',

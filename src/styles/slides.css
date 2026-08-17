@@ -717,7 +717,7 @@
 
 /* ── 실행 구조 ──────────────────────────────────────────────────────────── */
 .slide--cm .cmd-flow { display: flex; flex-direction: column; }
-.slide--cm .cmd-flow__art { flex: 1 1 auto; min-height: 0; display: flex; }
+.slide--cm .cmd-flow__art { flex: 0 0 auto; margin: auto 0; min-width: 0; display: flex; }
 /* 실행 순서 스윔레인 — viewBox 1200 폭이 슬라이드 1752 에 놓여 배율 1.46.
    유저 좌표 12px 이 17.5px 로 올라간다. */
 .slide--cm .cmd-flowchart { margin: 0; flex: 1 1 auto; min-height: 0; min-width: 0; display: flex; align-items: center; }
@@ -905,3 +905,74 @@
   }
   .slide:last-child { break-after: auto; page-break-after: auto; }
 }
+
+/* ─── CM · 접기 로직 플로우 (2스레드 타임라인) ──────────────────────────────
+   viewBox 1320 이 슬라이드 1752 에 놓여 배율 1.33 — 유저 좌표 13px = 17.3px. */
+.slide--cm .cmd-foldflow { display: flex; flex-direction: column; }
+.slide--cm .cmd-foldflow__art { flex: 0 0 auto; margin: auto 0; min-width: 0; display: flex; }
+.slide--cm .cmd-foldflow__art svg { width: 100%; height: auto; }
+.slide--cm .cmd-tl-lane { fill: var(--ink-2); font-size: 14px; font-weight: 700; letter-spacing: .1em; }
+.slide--cm .cmd-tl-lane.is-worker { fill: var(--sage-700); }
+.slide--cm .cmd-tl-line { stroke: var(--ink-3); stroke-width: 2; fill: none; }
+.slide--cm .cmd-tl-line.is-worker { stroke: var(--sage-500); stroke-width: 3; }
+.slide--cm .cmd-tl-hop { stroke: var(--terra-400); stroke-width: 2; stroke-dasharray: 5 5; fill: none; }
+.slide--cm .cmd-tl-head { fill: var(--ink-3); }
+.slide--cm .cmd-tl-dot { fill: var(--paper); stroke: var(--ink-3); stroke-width: 2.5; }
+.slide--cm .cmd-tl-dot.is-key { fill: var(--terra-500); stroke: var(--terra-500); }
+.slide--cm .cmd-tl-band { fill: var(--sage-100); stroke: var(--sage-400); }
+.slide--cm .cmd-tl-bandtext { fill: var(--sage-700); font-size: 15px; font-weight: 600; }
+.slide--cm .cmd-tl-step { fill: var(--ink); font-family: var(--font-mono); font-size: 15px; font-weight: 600; }
+.slide--cm .cmd-tl-sub { fill: var(--ink-3); font-size: 13px; }
+.slide--cm .cmd-tl-axis { fill: var(--ink-3); font-size: 13px; letter-spacing: .04em; }
+
+.slide--cm .cmd-split {
+  display: grid; grid-template-columns: 1fr auto 1fr; gap: 26px; align-items: center;
+  border-top: 1px solid var(--rule); padding-top: 16px; margin-top: 10px; flex: 0 0 auto;
+}
+.slide--cm .cmd-split article { border: 1px solid var(--rule); background: var(--paper-2); padding: 18px 22px; }
+.slide--cm .cmd-split article.is-view { border-color: var(--sage-400); background: var(--sage-50); }
+.slide--cm .cmd-split span {
+  display: block; font-size: 16px; letter-spacing: .12em; color: var(--ink-3); font-weight: 600;
+}
+.slide--cm .cmd-split b { display: block; margin: 6px 0 5px; font-size: 24px; font-weight: 600; }
+.slide--cm .cmd-split small { display: block; font-size: 18px; line-height: 1.45; color: var(--ink-2); }
+.slide--cm .cmd-split > i { font-style: normal; font-size: 34px; color: var(--terra-500); }
+
+/* ─── CM · 좌표계와 월드 ──────────────────────────────────────────────────── */
+.slide--cm .cmd-worlds { display: flex; flex-direction: column; }
+.slide--cm .cmd-worlds__grid {
+  flex: 0 0 auto; margin: auto 0;
+  display: grid; grid-template-columns: 1fr 380px 1fr; gap: 26px; align-items: start;
+}
+.slide--cm .cmd-world { border: 1px solid var(--rule); background: var(--paper-2); padding: 22px 24px; display: flex; flex-direction: column; gap: 14px; }
+.slide--cm .cmd-world.is-paper { border-color: var(--terra-300); background: #faf1ea; }
+.slide--cm .cmd-world.is-motion { border-color: var(--sage-300); background: var(--sage-50); }
+.slide--cm .cmd-world > header { font-size: 21px; font-weight: 700; letter-spacing: .04em; }
+.slide--cm .cmd-world article b { display: block; font-size: 21px; font-weight: 600; margin-bottom: 4px; }
+.slide--cm .cmd-world article small { display: block; font-size: 18px; line-height: 1.45; color: var(--ink-2); }
+.slide--cm .cmd-world > footer { margin-top: auto; font-size: 17px; color: var(--ink-3); border-top: 1px solid var(--rule); padding-top: 10px; }
+
+.slide--cm .cmd-bridge { display: flex; flex-direction: column; justify-content: center; gap: 12px; text-align: center; }
+.slide--cm .cmd-bridge__tag { font-size: 20px; font-weight: 700; color: var(--ink-2); letter-spacing: .04em; }
+.slide--cm .cmd-bridge__arrow { border: 1px dashed var(--rule-2); background: var(--paper); padding: 12px 16px; position: relative; }
+.slide--cm .cmd-bridge__arrow b { display: block; font-family: var(--font-mono); font-size: 20px; font-weight: 600; }
+.slide--cm .cmd-bridge__arrow small { display: block; font-size: 17px; line-height: 1.4; color: var(--ink-2); margin-top: 3px; }
+.slide--cm .cmd-bridge__arrow.is-pull::before { content: '←'; position: absolute; left: -18px; top: 50%; transform: translateY(-50%); color: var(--terra-500); font-size: 24px; }
+.slide--cm .cmd-bridge__arrow.is-push::after { content: '→'; position: absolute; right: -18px; top: 50%; transform: translateY(-50%); color: var(--sage-700); font-size: 24px; }
+.slide--cm .cmd-bridge__contract { background: var(--paper-3); padding: 10px 14px; }
+.slide--cm .cmd-bridge__contract code { font-size: 20px; }
+.slide--cm .cmd-bridge__contract small { display: block; font-size: 16px; color: var(--ink-3); margin-top: 3px; }
+
+/* WorldLink 구간 발췌 — 고정 스텝 레인에서 Pull~Push 만 떼어 위치로 보인다.
+   viewBox 1320 · 표시 폭 1752 → 배율 1.33. 유저 좌표 13px = 17.3px */
+.slide--cm .cmd-worlds__strip { flex: 0 0 auto; margin-top: 6px; }
+.slide--cm .cmd-worlds__strip svg { width: 100%; height: auto; }
+.slide--cm .cmd-ws-card { fill: var(--paper-2); stroke: var(--rule-2); }
+.slide--cm .cmd-ws-card.is-on { fill: #f7ece5; stroke: var(--terra-400); stroke-width: 1.6; }
+.slide--cm .cmd-ws-no { fill: var(--ink-3); font-size: 13px; letter-spacing: .08em; }
+.slide--cm .cmd-ws-title { fill: var(--ink); font-family: var(--font-mono); font-size: 14px; font-weight: 600; }
+.slide--cm .cmd-ws-step { stroke: var(--ink-3); stroke-width: 1.4; fill: none; }
+.slide--cm .cmd-ws-head { fill: var(--ink-3); }
+.slide--cm .cmd-ws-brace { stroke: var(--terra-500); stroke-width: 1.8; fill: none; }
+.slide--cm .cmd-ws-bracelabel { fill: var(--terra-600); font-size: 14px; font-weight: 700; }
+.slide--cm .cmd-ws-note { fill: var(--ink-3); font-size: 13px; }
