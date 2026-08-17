@@ -1,26 +1,30 @@
-// pages/deck/dx11-viz.jsx
-// DX11 절의 덱 전용 도표. **덱을 먼저 고치고, 확정되면 페이지로 한 번에 옮긴다** (사용자 지시).
+// pages/dx11-engine/svg-viz.jsx
+// DX11 의 구조·흐름 도표 넷. **페이지와 덱이 같은 그림을 쓴다** — 이 파일이 유일한 원본이다.
 //
-// 왜 페이지의 HTML 상자 도표를 안 쓰는가:
-// 그것들은 상자를 격자에 늘어놓은 것이라 "글이 많은 것"과 구별이 안 됐다. 구조도의 값어치는
+// 왜 HTML 상자 격자를 버렸는가:
+// 상자를 격자에 늘어놓은 도표는 "글이 많은 것"과 구별이 안 된다. 구조도의 값어치는
 // **자리와 선**에 있다 — 무엇이 무엇 안에 들어 있는지(포함), 어디서 어디로 가는지(방향),
 // 같은 열에 선 것이 왜 같은 열인지(도메인). 상자 나열은 그 셋을 하나도 못 준다.
 //
-// 그래서 넷을 SVG 로 다시 그린다. 각 그림이 쓰는 시각 장치:
-//   ARCH   2차원 격자 — 세로축 = 소유 계층, 가로축 = 도메인. 층을 가로지르는 선에 방향과 이름.
-//   FRAME  타임라인 — 한 프레임이 막대 하나. ② 물리만 아래로 확대(사다리꼴)해 서브스텝을 편다.
-//   PHYS   영역 + 포함 — 소유를 **상자 안에 넣어서** 표현한다. 통신은 벽을 뚫는 화살표 넷.
-//   TICK   게이트 + 루프 — 격리 구간을 음영으로 두르고, 통로 넷이 게이트에서만 드나든다.
+// 각 그림이 쓰는 시각 장치:
+//   DXArchitectureViz  2차원 격자 — 세로축 = 소유 계층, 가로축 = 도메인. 층을 가로지르는 선에 방향과 이름.
+//   DXFrameFlowViz     타임라인 — 한 프레임이 막대 하나. ② 물리만 아래로 확대(사다리꼴)해 서브스텝을 편다.
+//   DXBoundaryViz      영역 + 포함 — 소유를 **상자 안에 넣어서** 표현한다. 통신은 벽을 뚫는 화살표 넷.
+//   DXTickViz          게이트 + 루프 — 격리 구간을 음영으로 두르고, 통로 넷이 게이트에서만 드나든다.
 //
-// 사실은 pages/dx11-engine/data.js 와 _code_audit.md 가 갖는다. 여기서 새 사실을 만들지 않는다.
+// ⚠️ 뷰박스 글자는 20 이상으로 잡는다. 덱(1920×1200)에서 그림이 칸 높이에 맞춰 0.82~0.90 배로
+//    줄기 때문에, 20 미만이면 16px 판독선 아래로 떨어진다(실측).
+//
+// 사실은 pages/dx11-engine/data.js 와 knowledge_base 의 _code_audit.md 가 갖는다.
+// 여기서 새 사실을 만들지 않는다.
 
-(function defineDX11DeckViz() {
+(function defineDX11SvgViz() {
   const RI = (s) => window.renderInline(s);
 
-  // 도표 껍데기. 페이지의 dx-figure 와 같은 클래스를 써서 덱 CSS(테두리·캡션 크기)를 그대로 받는다.
+  // 도표 껍데기. 페이지의 dx-figure 를 그대로 쓰고 dx-svgfig 로 SVG 전용 규칙만 얹는다.
   function Fig({ label, caption, children }) {
     return (
-      <figure className="dx-figure dxd-fig" aria-label={label}>
+      <figure className="dx-figure dx-svgfig" aria-label={label}>
         <div className="dx-diagram">{children}</div>
         <figcaption>{RI(caption)}</figcaption>
       </figure>
@@ -77,7 +81,7 @@
   );
 
   // ─── 1. 엔진 아키텍처 — 세로축 소유 계층 · 가로축 도메인 ───────────────────
-  function DXDArchViz() {
+  function DXArchitectureViz() {
     // 왼쪽 240 은 **거터**다. 층 이름을 격자 안에 두면 소유 화살표와 겹친다(실측).
     const COLS = [260, 594, 928, 1262];
     const CW = 298;
@@ -166,10 +170,10 @@
       </Fig>
     );
   }
-  window.DXDArchViz = DXDArchViz;
+  window.DXArchitectureViz = DXArchitectureViz;
 
   // ─── 2. 한 프레임 — 타임라인 + ② 물리 확대 ────────────────────────────────
-  function DXDFrameViz() {
+  function DXFrameFlowViz() {
     // 함수 이름은 줄이지 않는다 — 이 그림의 근거다. 한 칸에 안 들어가면 접어서 두 줄로 낸다.
     const phases = [
       ['①', 'INPUT', ['ProcessWindows', 'Message']],
@@ -231,10 +235,10 @@
       </Fig>
     );
   }
-  window.DXDFrameViz = DXDFrameViz;
+  window.DXFrameFlowViz = DXFrameFlowViz;
 
   // ─── 3. 물리 구조 — 영역 · 포함 · 벽을 뚫는 통로 넷 ────────────────────────
-  function DXDPhysStructViz() {
+  function DXBoundaryViz() {
     const owned = [
       ['FPhysicsStateArrays', '속성 배열 23개 · 슬롯 ID 매핑'],
       ['Job 풀 + 큐', '힘 · 임펄스 요청을 모아 실행'],
@@ -300,10 +304,10 @@
       </Fig>
     );
   }
-  window.DXDPhysStructViz = DXDPhysStructViz;
+  window.DXBoundaryViz = DXBoundaryViz;
 
   // ─── 4. 한 틱 — 게이트 둘과 격리 구간 ────────────────────────────────────
-  function DXDTickViz() {
+  function DXTickViz() {
     const inGates = [[220, '① 입력 동기화'], [390, '② Job 처리']];
     const outGates = [[1210, '③ 결과 반환'], [1390, '④ 이벤트 배송']];
     return (
@@ -351,5 +355,5 @@
       </Fig>
     );
   }
-  window.DXDTickViz = DXDTickViz;
+  window.DXTickViz = DXTickViz;
 })();

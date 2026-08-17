@@ -98,22 +98,22 @@
       // 요점을 안 붙인다. 그림이 층·클래스·관계를 다 말하고 규모는 캡션이 받는다.
       // 요점 넉 줄을 더하면 1920×1200 에서 세로가 넘친다(실측 127px).
       diagram('01 엔진 — 구조', '엔진 전체 아키텍처와 클래스 소유 관계',
-        D.overview.architecture, 'DXDArchViz'),
+        D.overview.architecture, 'DXArchitectureViz'),
 
       diagram('01 엔진 — 흐름', '한 프레임이 지나가는 순서',
-        D.overview.frame, 'DXDFrameViz'),
+        D.overview.frame, 'DXFrameFlowViz'),
 
       // ─── 02 물리 · 구조 → 흐름 → 세부 ────────────────────────────────
       // 리드를 두 줄로 줄인다. 세 줄이면 그림 칸이 그만큼 낮아지고, SVG 가 높이에 맞춰
       // 줄면서 글자가 판독선 아래로 떨어진다(실측 배율 0.825 → 14.9px).
       // 페이지 문장에서 사실을 빼지 않는다 — 남는 절(소유물 목록)은 그림이 대신 말한다.
       diagram('02 물리 — 구조', '물리가 소유한 것과 게임과의 네 통로',
-        D.physics.boundary, 'DXDPhysStructViz', {
+        D.physics.boundary, 'DXBoundaryViz', {
           lead: '게임 객체가 소유하던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮기고, 두 영역의 왕복은 네 통로로만 열어 뒀다.',
         }),
 
       diagram('02 물리 — 흐름', '한 틱이 도는 순서',
-        D.physics.tick, 'DXDTickViz'),
+        D.physics.tick, 'DXTickViz'),
 
       codeSlide('02 물리 — 흐름 · CODE', '틱의 여닫는 지점을 만든 두 함수', D.code.tick),
 
