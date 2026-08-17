@@ -1,0 +1,103 @@
+/* JCH Portfolio — cover.css
+   표지 부품의 스타일. **양식이 아니라 도구다** — 어떤 부품을 몇 개 어떤 순서로 쓸지는
+   프로젝트가 정한다 (pages/{slug}/cover.jsx).
+
+   ─── 크기 규칙 ────────────────────────────────────────────────
+   같은 표지가 크기가 다른 세 자리에 걸린다.
+     덱 슬라이드 1920×1200 / 랜딩 캐러셀 카드 / 상세 페이지 히어로
+   그래서 모든 치수를 **덱 기준 px × --cs** 로 쓴다. --cs 는 자리가 정한다.
+     덱   --cs: 1     → 덱 원본과 픽셀 단위로 같다 (곱셈이 항등원)
+     카드 --cs: 0.44  등
+   px 를 그대로 박으면 한 자리에서만 살고, em 으로 짜면 덱에서 반올림 오차가 남는다.
+
+   색·서체 토큰은 만들지 않는다 — tokens.css 가 원본이다. */
+
+/* 자리가 씌우는 껍데기. --cs 기본값은 덱(1) 이다. */
+.cv-host { --cs: 1; }
+
+/* ─── 2단 배치 (글 | 그림) ───────────────────────────────────
+   표지 셋이 같은 배치를 쓰지만 강제는 아니다 — 한 단으로 가고 싶으면 안 쓰면 된다. */
+.cv-split {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: calc(56px * var(--cs));
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.cv-split__main { flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: calc(26px * var(--cs)); }
+/* 폭을 고정하지 않고 상한으로 둔다 — 원본이 작은 이미지가 확대되어 뭉개진다
+   (실측: dx11 hero 656px 원본을 820px 로 늘리면 1.25배). */
+.cv-split__art { flex: 0 1 auto; max-width: calc(820px * var(--cs)); }
+
+/* ─── 타이포 ────────────────────────────────────────────── */
+.cv-eyebrow {
+  font-size: calc(26px * var(--cs));
+  letter-spacing: 0.06em;
+  color: var(--sage-700);
+  font-weight: 600;
+}
+.cv-title {
+  font-family: var(--font-display);
+  font-size: calc(104px * var(--cs));
+  line-height: 1.16;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+.cv-lede {
+  font-size: calc(34px * var(--cs));
+  line-height: 1.55;
+  color: var(--ink-2);
+  margin: 0;
+  max-width: calc(1180px * var(--cs));
+}
+
+/* ─── 배지 ──────────────────────────────────────────────── */
+.cv-pills { display: flex; flex-wrap: wrap; gap: calc(10px * var(--cs)); }
+.cv-pill {
+  font-size: calc(21px * var(--cs));
+  padding: calc(7px * var(--cs)) calc(15px * var(--cs));
+  border: 1px solid var(--rule-2);
+  border-radius: var(--r-pill);
+  color: var(--ink-2);
+}
+.cv-pill--accent { border-color: var(--sage-400); color: var(--ink); background: var(--sage-100); }
+
+/* ─── 링크 ──────────────────────────────────────────────
+   배지(둥근 캡슐)와 **모양 자체를 다르게** 한다. 색만 다르면 누를 수 있는 것인지 안 보인다.
+   각진 사각형 + 왼쪽 색 막대 + 오른쪽 화살표. tone 은 막대와 화살표에만 쓴다 —
+   글자까지 물들이면 다시 배지처럼 보인다. */
+.cv-links { display: flex; flex-wrap: wrap; gap: calc(12px * var(--cs)); }
+.cv-link {
+  --tone: var(--ink-3);
+  display: inline-flex;
+  align-items: baseline;
+  gap: calc(12px * var(--cs));
+  padding: calc(11px * var(--cs)) calc(16px * var(--cs));
+  border: 1px solid var(--rule-2);
+  border-left: calc(4px * var(--cs)) solid var(--tone);
+  border-radius: 3px;
+  background: var(--paper-2);
+  text-decoration: none;
+  color: var(--ink);
+}
+.cv-link__k { font-size: calc(19px * var(--cs)); font-weight: 600; letter-spacing: 0.02em; }
+.cv-link__v { font-size: calc(19px * var(--cs)); color: var(--ink-2); }
+.cv-link__go { font-size: calc(19px * var(--cs)); color: var(--tone); font-weight: 700; }
+/* 색조 — tokens.css 태그 팔레트에서만. sage(확보) · terra(문제/한계) ·
+   wheat(측정/수치) · dusty-blue(외부/링크). 지정 없으면 중립. */
+.cv-link[data-tone="sage"]  { --tone: var(--sage-700); }
+.cv-link[data-tone="terra"] { --tone: var(--terra-500); }
+.cv-link[data-tone="wheat"] { --tone: #8a6320; }
+.cv-link[data-tone="blue"]  { --tone: #46708a; }
+
+/* ─── 그림 ──────────────────────────────────────────────── */
+.cv-art { margin: 0; }
+.cv-art img { max-width: 100%; width: auto; height: auto; border: 1px solid var(--rule); display: block; }
+.cv-art figcaption {
+  font-size: calc(21px * var(--cs));
+  line-height: 1.5;
+  color: var(--ink-3);
+  margin: calc(10px * var(--cs)) 0 0;
+}

@@ -248,6 +248,16 @@
     );
   }
 
+  // ─── projectCover — 프로젝트가 소유한 표지 ─────────
+  // 덱은 표지를 **그리지 않는다**. 자리(1920×1200 · --cs:1)만 주고 그림은
+  // pages/{slug}/cover.jsx 가 그린다. 같은 표지를 랜딩 카드와 페이지 히어로도 쓰는데,
+  // 그 셋의 공통 스키마를 강요하면 프로젝트마다 다른 강조점이 양식에 끌려간다.
+  function ProjectCover({ s }) {
+    const c = (window.COVERS || {})[s.slug];
+    if (!c) return null;
+    return <div className="sl-body cv-host">{c.render({ density: 'deck' })}</div>;
+  }
+
   // ─── columns ──────────────────────────────────────
   function Columns({ s }) {
     return (
@@ -417,7 +427,8 @@
   // 레이아웃을 window.DECK_LAYOUTS 에 올린다. 공용 뷰가 프로젝트별 조건으로 부풀지 않고,
   // 한 프로젝트의 배치 실험이 다른 프로젝트 장을 건드리지 않는다.
   const LAYOUTS = Object.assign(
-    { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, toc: Toc, outro: Outro },
+    { title: Title, cover: Cover, projectCover: ProjectCover, columns: Columns, step: Step,
+      diagram: Diagram, list: List, stats: Stats, toc: Toc, outro: Outro },
     window.DECK_LAYOUTS || {},
   );
 
