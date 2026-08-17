@@ -127,35 +127,6 @@ function MTRail() {
   );
 }
 
-/* ─── Hero ───────────────────────────────────────────── */
-function MTHero({ data }) {
-  const m = data.meta;
-  return (
-    <section id="hero" className="mt-hero">
-      <div className="mt-hero-main">
-        <div className="mt-hero-copy">
-          <div className="nb-eyebrow">{m.eyebrow}</div>
-          <p className="mt-hero-sub">{m.subtitle}</p>
-          <h1 className="nb-title">{m.title}</h1>
-          <p className="mt-hook">{RI(data.hook)}</p>
-          <p className="mt-what">{RI(data.what)}</p>
-        </div>
-        <figure className="mt-hero-media">
-          <img src={data.hero.img} alt="전투 화면 — 플레이어 하나와 화면을 덮은 적, 광역 효과가 동시에 돌고 있다" />
-          <figcaption>{RI(data.hero.caption)}</figcaption>
-        </figure>
-      </div>
-
-      {/* 3칸이 곧 아래 절의 목차다. 첫 화면에서 이게 걸려야 한다. */}
-      <window.MTBuilt items={data.built} />
-
-      <p className="mt-boundary">{RI(m.boundary)}</p>
-      <div className="nb-metarow">
-        {m.facts.map(f => <span key={f} className="nb-metapill"><b>{f}</b></span>)}
-      </div>
-    </section>
-  );
-}
 
 /* ─── §01 게임 루프 ──────────────────────────────────── */
 function MTLoop({ data }) {
@@ -291,7 +262,10 @@ function MoteletPage({ indexHref = 'landing.html' }) {
       <div className="nb-body">
         <MTRail />
         <main>
-          <MTHero data={data} />
+          <window.CoverHero slug="motelet" />
+          {/* 표지에는 없는 것 — 이 3칸은 아래 절(§02 · §02-A · §03)로 가는 목차다.
+              표지는 자기가 어느 페이지에 있는지 모르므로 페이지가 붙인다. */}
+          <window.MTBuilt items={data.built} />
           <MTLoop data={data} />
           <MTTool data={data} />
           <MTModel data={data} />

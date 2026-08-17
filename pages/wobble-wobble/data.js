@@ -4,6 +4,9 @@
 // Mermaid classDef 들은 Notebook 토큰 팔레트 안에서 5 swatch (sage / terra / wheat / dusty / plum) 로만 칠한다.
 
 window.WOBBLE_DATA = {
+  // 표지가 큰 숫자 칸을 갖는다 — 페이지가 같은 수치를 또 내지 않는다.
+  coverOwnsStats: true,
+
   evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     code: 'MAIN · 04',

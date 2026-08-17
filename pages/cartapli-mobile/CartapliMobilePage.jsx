@@ -86,49 +86,6 @@ function ScopeLabel({ children }) {
   return <p className="cm-scope">측정 범위 — {children}</p>;
 }
 
-function CMHero({ data }) {
-  const m = data.meta;
-  return (
-    <section id="hero" className="cm-hero">
-      <div className="cm-hero-main">
-        <div className="cm-hero-copy">
-          <div className="nb-eyebrow">{m.eyebrow}</div>
-          <h1 className="nb-title">{m.title}</h1>
-          <p className="cm-subtitle">{m.subtitle}</p>
-          <p className="cm-core">{m.core}</p>
-          <nav className="cm-hero-links" aria-label="Project links">
-            {m.links.map((link) => (
-              <a key={link.label} href={link.href} target={link.external ? '_blank' : undefined} rel={link.external ? 'noreferrer' : undefined}>
-                {link.label}<span aria-hidden="true">{link.external ? ' ↗' : ' ↓'}</span>
-              </a>
-            ))}
-          </nav>
-        </div>
-        <figure className="cm-hero-media">
-          <img src={m.media.src} width={m.media.width} height={m.media.height} alt={m.media.alt} />
-          <figcaption>{m.media.caption}</figcaption>
-        </figure>
-      </div>
-
-      <p className="cm-metric-axis-note"><b>서로 다른 측정축 3개</b> · 각 퍼센트는 같은 카드 안의 전후 값만 비교</p>
-      <div className="cm-hero-metrics" aria-label="서로 다른 세 측정축의 핵심 최종 성과">
-        {m.metrics.map((metric) => (
-          <a href="#result" className="cm-hero-metric" key={metric.label}>
-            <strong>{metric.value}</strong>
-            <span>{metric.label}</span>
-            <b>{metric.detail}</b>
-            <small>{metric.note}</small>
-          </a>
-        ))}
-      </div>
-
-      <p className="cm-boundary">{m.boundary}</p>
-      <div className="nb-metarow">
-        {m.facts.map((fact) => <span key={fact} className="nb-metapill"><b>{fact}</b></span>)}
-      </div>
-    </section>
-  );
-}
 
 function CMArchitecture({ data }) {
   const s = data.architecture;
@@ -241,7 +198,7 @@ function CartapliMobilePage({ indexHref = 'landing.html' }) {
       <div className="nb-body">
         <CMRail />
         <main>
-          <CMHero data={data} />
+          <window.CoverHero slug="cartapli-mobile" />
           <CMArchitecture data={data} />
           <CMResult data={data} />
           {data.methods.map((method) => <CMMethod method={method} key={method.id} />)}

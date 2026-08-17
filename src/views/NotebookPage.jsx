@@ -3,6 +3,7 @@
 // Props:
 //   data        — page content (see pages/{slug}/data.js for schema)
 //   crumb       — e.g. "projects / cartapli"
+//   coverSlug   — 있으면 히어로를 그 프로젝트 표지로 낸다 (덱 · 랜딩 카드와 같은 것)
 //   indexHref   — link to landing/index from header brand + crumb
 //   systemsKind — optional override for "N SYSTEMS" kind label
 //   footerLeft  — left-side footer text (default uses crumb)
@@ -98,7 +99,17 @@ function NotebookHeroDiagram({ source }) {
   );
 }
 
-function NotebookHero({ data }) {
+// 표지를 가진 프로젝트는 히어로를 표지로 낸다 — 덱 · 랜딩 카드와 같은 것이다.
+// coverSlug 를 안 주면 예전 히어로 그대로다(표지가 아직 없는 페이지).
+function NotebookHero({ data, coverSlug }) {
+  const cover = coverSlug && (window.COVERS || {})[coverSlug];
+  if (cover) {
+    return <window.CoverHero slug={coverSlug} stats={data.coverOwnsStats ? null : data.heroMetrics} />;
+  }
+  return <NotebookHeroLegacy data={data} />;
+}
+
+function NotebookHeroLegacy({ data }) {
   const m = data.meta;
   const ri = window.renderInline || ((x) => x);
   return (
@@ -257,7 +268,7 @@ function NotebookFooter({ crumb }) {
   );
 }
 
-function NotebookPage({ data, crumb, indexHref = 'landing.html', systemsKind }) {
+function NotebookPage({ data, crumb, coverSlug, indexHref = 'landing.html', systemsKind }) {
   const evidenceFirst = !!data.evidenceFirst;
   return (
     <div className="nb-page">
@@ -265,7 +276,7 @@ function NotebookPage({ data, crumb, indexHref = 'landing.html', systemsKind }) 
       <div className="nb-body">
         <NotebookRail systems={data.systems} evidenceFirst={evidenceFirst} />
         <main>
-          <NotebookHero data={data} />
+          <NotebookHero data={data} coverSlug={coverSlug} />
           <NotebookFacts data={data} />
           {evidenceFirst ? (
             <>

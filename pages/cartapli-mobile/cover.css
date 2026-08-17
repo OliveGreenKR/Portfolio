@@ -21,7 +21,9 @@
 .cmd-cover { display: flex; flex-direction: column; gap: calc(24px * var(--cs)); flex: 1 1 auto; min-height: 0; }
 .cmd-cover__top {
   display: grid;
-  grid-template-columns: 1fr calc(720px * var(--cs));
+  /* ⚠️ minmax(0,1fr) 이어야 한다. 그냥 1fr 이면 최소폭이 내용 크기로 잡혀 좁은 자리
+     (상세 페이지 히어로 889px)에서 안 줄고 넘친다 — 실측 1222px. */
+  grid-template-columns: minmax(0, 1fr) calc(720px * var(--cs));
   gap: calc(56px * var(--cs));
   align-items: start;
 }
@@ -51,10 +53,11 @@
    배경 위에 떠 보이고 눈에 덜 걸렸다. 공용 .cv-big 과 같은 테두리·배경을 쓴다.
    4단 구조(값 · 이름 · 전후 · 조건)는 이 표지의 의도라 그대로 둔다. */
 .cmd-metrics {
-  display: grid; grid-template-columns: repeat(3, 1fr);
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: calc(24px * var(--cs));
 }
 .cmd-metric {
+  min-width: 0;
   border: 1px solid var(--rule); background: var(--paper-2);
   padding: calc(22px * var(--cs)) calc(24px * var(--cs));
 }

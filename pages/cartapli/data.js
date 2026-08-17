@@ -3,6 +3,9 @@
 // Real content from uploads/cartapli.md. Values are factual (메트릭 등).
 
 window.CARTAPLI_DATA = {
+  // 표지가 큰 숫자 칸을 갖는다 — 페이지가 같은 수치를 또 내지 않는다.
+  coverOwnsStats: true,
+
   evidenceFirst: true, // Evidence(메트릭)를 Context 바로 뒤(§02)로
   meta: {
     code: 'MAIN · 03',

@@ -35,6 +35,11 @@
             <window.CoverTitle>{M.meta.title}</window.CoverTitle>
             {/* 게임 한 줄 + 이 프로젝트의 주장. what 의 둘째 문장(한 판 규칙)은 2장이 받는다. */}
             <window.Lede>{S(M.what, 1) + ' ' + M.hook}</window.Lede>
+            {/* 상세 페이지는 세로가 안 막힌 자리다 — 한 판 규칙(what 둘째 문장)까지 낸다.
+                덱·카드에서는 뒤 장이 그 말을 받으므로 뺀다. */}
+            {density === 'hero' && M.what.split(/(?<=\.\**)\s+/)[1] && (
+              <window.Lede>{M.what.split(/(?<=\.\**)\s+/).slice(1).join(' ')}</window.Lede>
+            )}
             {/* 심사자가 가장 먼저 찾는 줄 — 스펙 목록 안에 두면 Unity 버전과 같은 무게가 된다.
                 ⚠️ 라벨과 본문이 붙어 나오므로 본문 앞에 구분자를 넣는다. */}
             <window.RoleLine label="PM 겸 배틀씬 프로그래머">

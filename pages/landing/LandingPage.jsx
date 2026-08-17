@@ -1,6 +1,6 @@
 // pages/landing/LandingPage.jsx
 // Top-level composition: Header / Rail / Hero / 메인 그리드 / Labs 그리드 / Footer.
-// Depends on window.LANDING_DATA · window.landingStyles · window.MainRowCard · LabsCard · LandingFooter · renderLandingInline.
+// Depends on window.LANDING_DATA · landingStyles · Carousel · CoverCard · LabCard · LandingFooter.
 
 function LandingHeader() {
   const s = window.landingStyles;
@@ -64,7 +64,14 @@ function LandingHero({ data }) {
         </h1>
         <p style={s.stance}>{st1}<br />{st2}</p>
         <p style={s.lede}>{window.renderLandingInline(data.lede)}</p>
-        <div style={s.miniStats}>
+      </div>
+      <div className="l-portrait" style={s.portrait}>
+        <img src="../assets/profile-glasses.png" alt="" style={s.portraitImg} />
+        <span style={s.portraitTag}>JCH · 2026</span>
+      </div>
+        {/* 스탯 줄은 글 칸이 아니라 **폭선 전체**를 쓴다 — 글 칸(424px) 안에 두면
+            네 칸이 2×2 로 접혀 히어로가 그만큼 길어진다. */}
+        <div style={{...s.miniStats, gridColumn: '1 / -1'}}>
           {data.stats.map((st, i) => (
             <div key={i} style={s.miniStat}>
               <span style={s.miniStatNum}>{st.n}</span>
@@ -73,11 +80,6 @@ function LandingHero({ data }) {
             </div>
           ))}
         </div>
-      </div>
-      <div className="l-portrait" style={s.portrait}>
-        <img src="../assets/profile-glasses.png" alt="" style={s.portraitImg} />
-        <span style={s.portraitTag}>JCH · 2026</span>
-      </div>
     </section>
   );
 }

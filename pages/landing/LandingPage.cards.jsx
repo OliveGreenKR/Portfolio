@@ -1,5 +1,6 @@
 // pages/landing/LandingPage.cards.jsx
-// 메인 행 카드 + Labs 카드 + Footer. window.MainRowCard, LabsCard, LandingFooter.
+// Footer + 인라인 마크업 파서. window.LandingFooter, renderLandingInline.
+// (메인 행 카드 · Labs 카드는 가로 캐러셀로 바뀌면서 사라졌다 — LandingPage.covers.jsx)
 
 const cardStyles = {
   // ─── Main row card
@@ -208,88 +209,6 @@ function renderLandingInline(s) {
   return parts;
 }
 
-function MainRowCard({ p, isLast }) {
-  const [hover, setHover] = React.useState(false);
-  const cardStyle = {
-    ...cardStyles.rowCard,
-    ...(isLast ? cardStyles.rowCardLast : {}),
-    background: hover ? 'var(--paper-2)' : 'transparent',
-  };
-  return (
-    <a
-      href={p.href}
-      className="l-rowcard"
-      style={cardStyle}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div style={cardStyles.rowIndex}>{p.idx}</div>
-      <div style={cardStyles.thumb}>
-        {p.thumb
-          ? <img src={p.thumb} alt="" style={cardStyles.thumbImg} />
-          : <div style={{width:'100%',height:'100%',backgroundImage:'repeating-linear-gradient(135deg, transparent 0 10px, rgba(31,29,26,0.05) 10px 11px)'}} />}
-        <span style={cardStyles.thumbCode}>{p.date || p.code}</span>
-      </div>
-      <div style={cardStyles.rowBody}>
-        <h3 style={cardStyles.rowTitle}>{p.title}</h3>
-        <p style={cardStyles.rowOneLine}>{p.oneLine}</p>
-        <div style={cardStyles.metaRow}>
-          {p.meta.map((m, i) => (
-            <span key={i} style={{...cardStyles.metaPill, ...(m.kind === 'accent' ? cardStyles.metaPillAccent : {})}}>
-              {m.text}
-            </span>
-          ))}
-        </div>
-        <dl style={cardStyles.metricsList}>
-          {p.metrics.map((m, i) => (
-            <React.Fragment key={i}>
-              <dt style={cardStyles.metricN}>{m.n}</dt>
-              <dd style={{...cardStyles.metricLabel, margin: 0}}>{m.label}</dd>
-            </React.Fragment>
-          ))}
-        </dl>
-      </div>
-      <div style={{...cardStyles.arrow, transform: hover ? 'translateX(4px)' : 'none', color: hover ? 'var(--ink)' : 'var(--ink-3)'}}>→</div>
-    </a>
-  );
-}
-
-// ISO 'YYYY-MM-DD' → 'YYYY.MM'. 미상(빈 문자열)이면 빈 값.
-function fmtCardDate(iso) {
-  return iso ? iso.slice(0, 7).replace('-', '.') : '';
-}
-
-function LabsCard({ l }) {
-  const [hover, setHover] = React.useState(false);
-  const hasHref = !!l.href;
-  const Tag = hasHref ? 'a' : 'div';
-  const props = hasHref ? { href: l.href } : {};
-  return (
-    <Tag
-      {...props}
-      style={{
-        ...cardStyles.labCard,
-        background: hover ? 'var(--paper-3)' : 'var(--paper-2)',
-        borderColor: hover && hasHref ? 'var(--ink-3)' : 'var(--rule)',
-        cursor: hasHref ? 'pointer' : 'default',
-      }}
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      <div style={cardStyles.labEyebrow}>
-        <span>{fmtCardDate(l.date)}</span>
-        <span style={cardStyles.labTag}>{l.tag}</span>
-      </div>
-      <h4 style={cardStyles.labTitle}>{l.title}</h4>
-      <div style={cardStyles.labDuration}>{l.duration}</div>
-      <p style={cardStyles.labLine}>{renderLandingInline(l.line)}</p>
-      {hasHref
-        ? <div style={{...cardStyles.labPlaceholderNote, color: hover ? 'var(--ink)' : 'var(--ink-3)', opacity: 1, transition: 'color 160ms'}}>read note →</div>
-        : <div style={cardStyles.labPlaceholderNote}>— page pending</div>}
-    </Tag>
-  );
-}
-
 function LandingFooter({ data }) {
   const hrefMap = { about: 'about.html', contact: 'about.html#links' };
   return (
@@ -304,4 +223,4 @@ function LandingFooter({ data }) {
   );
 }
 
-Object.assign(window, { MainRowCard, LabsCard, LandingFooter, renderLandingInline });
+Object.assign(window, { LandingFooter, renderLandingInline });

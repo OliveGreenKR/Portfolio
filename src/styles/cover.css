@@ -124,8 +124,8 @@
    수치가 주장인 표지용. 카드 제목이 아니라 **수치 자체**가 시선을 먼저 받아야 한다.
    (Cartapli 표지에서 만들고 Wobble 이 같은 모양을 쓰면서 공용으로 올렸다. 값은
     slides.css 의 stats 레이아웃(.sl-big)과 같다 — 그쪽은 덱 전용이라 표지가 못 쓴다.) */
-.cv-bigs { display: grid; grid-template-columns: repeat(var(--bigs, 4), 1fr); gap: calc(24px * var(--cs)); flex: 0 0 auto; }
-.cv-big { border: 1px solid var(--rule); background: var(--paper-2); padding: calc(30px * var(--cs)) calc(32px * var(--cs)); }
+.cv-bigs { display: grid; grid-template-columns: repeat(var(--bigs, 4), minmax(0, 1fr)); gap: calc(24px * var(--cs)); flex: 0 0 auto; }
+.cv-big { min-width: 0; border: 1px solid var(--rule); background: var(--paper-2); padding: calc(30px * var(--cs)) calc(32px * var(--cs)); }
 .cv-big__n {
   font-family: var(--font-display); font-size: calc(76px * var(--cs)); line-height: 1.16;
   font-weight: 700; letter-spacing: -0.03em; color: var(--ink);
@@ -145,3 +145,15 @@
   color: var(--ink-3);
   margin: calc(10px * var(--cs)) 0 0;
 }
+
+/* ─── 상세 페이지 히어로 자리 ─────────────────────────────
+   본문 칸(약 889px)에 덱 표지(본문 1752px)를 앉힌다 — 축척은 그 비율이다.
+   덱과 랜딩 카드에 이어 세 번째 자리이고, 여기서도 표지는 자기가 어디 있는지 모른다. */
+.cv-hero { padding-bottom: 40px; }
+.cv-hero .cv-host { --cs: 0.5; display: flex; }
+.cv-hero .cv-host > * { flex: 1 1 auto; min-width: 0; }
+/* ⚠️ 여기에 flex: 0 0 auto 를 걸면 안 된다 — 기준 폭이 max-content 가 되어 표지가
+   본문 칸(889px)을 뚫고 나간다(실측 1345px). 세로는 자리가 auto 라 안 늘어난다. */
+.cv-hero .cv-split { align-items: flex-start; }
+/* 표지가 히어로 자리를 통째로 차지하면 예전 히어로의 여백 규칙이 겹친다 — 자리 것만 남긴다. */
+.cv-hero .cv-host > .cv-stack > .cv-bigs { margin-top: calc(4px * var(--cs)); }

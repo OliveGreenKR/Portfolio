@@ -4,6 +4,9 @@
 // Schema mirrors DX11_DATA. hero = mermaid(전체 구조). 자산 없음.
 
 window.EDU_GAMIFICATION_DATA = {
+  // 표지가 큰 숫자 칸을 갖는다 — 페이지가 같은 수치를 또 내지 않는다.
+  coverOwnsStats: true,
+
   meta: {
     code: 'MAIN · 02',
     eyebrow: 'MAIN · 02 ─ 외주 · 납품 완료',

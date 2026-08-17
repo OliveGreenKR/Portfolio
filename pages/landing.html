@@ -17,6 +17,22 @@
     /* ⚠️ html/body 에 걸면 안 먹는다 — 그 값은 뷰포트로 전파돼서 한 축만 자를 수가 없다
        (실측: clip 을 걸어도 scrollLeft 가 232px 움직였다). 감싸는 요소에 건다. */
     #root { overflow-x: clip; }
+    /* ─── 폭선 하나 ────────────────────────────────────────────
+       랜딩의 모든 덩이가 이 한 값에서 나온다 — 히어로 · 섹션 머리글 · 표지 카드 · 푸터.
+       예전에는 덩이마다 폭이 따로 놀아서(히어로 889 · 카드 674 · 스탯 850) 고칠 때마다
+       한 군데씩 어긋났다. 값을 바꾸려면 여기 한 줄만 바꾼다. */
+    :root { --measure: clamp(280px, 72vw, 700px); }
+    .l-hero,
+    .cr__head,
+    .cr__hint,
+    .l-body > main > div:last-child > div { max-width: var(--measure); margin-inline: auto; }
+    /* 표지 카드 폭도 같은 값에서 나온다 (carousel.css 의 --card-w 를 덮는다) */
+    .cr--covers { --card-w: var(--measure); }
+
+    /* ⚠️ 틀을 뚫는 것은 전부 "최소폭이 내용 크기"인 격자다(max-content · 그냥 1fr).
+       새 덩이를 넣을 때 그 둘을 쓰지 않으면 이 틀 안에서 알아서 접힌다.
+       (미니 스탯은 LandingPage.styles.jsx 의 miniStats 에서 auto-fit 으로 고쳤다) */
+
     html { scroll-behavior: smooth; }
     a { color: inherit; }
     [data-screen-label] { /* labelled for design comment context */ }

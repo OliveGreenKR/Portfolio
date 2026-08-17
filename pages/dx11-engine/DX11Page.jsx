@@ -39,20 +39,6 @@ function DXRail() {
   return <aside className="nb-rail" aria-label="On-page navigation">{ids.map(id => <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{labels[id]}</a>)}</aside>;
 }
 
-function DXHero({ data }) {
-  const ri = window.renderInline;
-  return (
-    <section id="hero" className="dx-hero">
-      <div className="nb-eyebrow">{data.meta.eyebrow}</div>
-      <p className="dx-hero-sub">{data.meta.subtitle}</p>
-      <h1 className="nb-title">{data.meta.title}</h1>
-      <p className="dx-hook">{ri(data.hook)}</p>
-      <div className="nb-metarow">{data.meta.pills.map((pill, index) => <span key={index} className={`nb-metapill ${pill.kind === 'accent' ? 'accent' : ''}`}><b>{pill.text}</b></span>)}</div>
-      <figure className="dx-shot"><img src={data.hero.img} alt="" /><figcaption>{data.hero.caption}</figcaption></figure>
-      <div className="dx-links"><a href={data.repo.href} target="_blank" rel="noopener">{data.repo.label} ↗</a><a href={data.youtube.href} target="_blank" rel="noopener">{data.youtube.label} ↗</a></div>
-    </section>
-  );
-}
 
 function DXEvidenceChips({ items }) {
   return <div className="dx-evidence-chips" aria-label="Code evidence">{items.map(item => <code key={item}>{item}</code>)}</div>;
@@ -159,7 +145,7 @@ function DX11Page({ indexHref = 'landing.html' }) {
       <div className="nb-body">
         <DXRail />
         <main>
-          <DXHero data={data} />
+          <window.CoverHero slug="dx11-engine" stats={data.heroMetrics} />
           <DXSummary data={data} />
           <DXOverview data={data} />
           <DXPhysics data={data} />
