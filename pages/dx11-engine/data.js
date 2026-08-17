@@ -27,13 +27,23 @@ window.DX11_DATA = {
       ['직접 구현', '물리 · 충돌 · 렌더 · 게임오브젝트/씬 · 리소스 · 입력 · 메모리/디버그'],
       ['외부 기반', 'DirectX 11 API · DirectXMath · ImGui'],
     ],
+    architecture: {
+      title: '무엇이 무엇을 소유하는가',
+      body: '폴더로 나눈 구조가 아니다. 나눈 기준은 **소유권**이다. 게임 레이어가 객체 수명을, 시스템 싱글톤이 실행을, 상태·메모리 구조가 데이터를 갖는다. 세 층은 인터페이스 13개와 싱글톤 9개로 이어진다.',
+      evidence: ['13 interfaces', '9 singletons', '4-tier component tree', 'flat source layout'],
+    },
+    frame: {
+      title: '한 프레임이 지나가는 순서',
+      body: '한 프레임은 입력·물리·로직·렌더·UI·정리 여섯 단계로 고정돼 있다. **물리만** 고정 예산을 누적해 서브스텝으로 나눠 돌고, 나머지 단계는 프레임당 한 번씩 지난다.',
+      evidence: ['ProcessWindowsMessage', 'TickPhysics', 'ProcessRender', 'EndFrame + arena reset'],
+    },
   },
 
   physics: {
     gist: '가장 크게 재설계한 곳은 물리다. 핵심은 알고리즘보다 먼저 **상태의 주인과 이동 경로**를 정한 것이다.',
     boundary: {
       title: '1. 상태 소유권을 물리로 옮겼다',
-      body: '게임 객체가 소유하던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮겼다. 게임 쪽에는 슬롯 ID와 동기화용 입력·결과·더티 상태를 남기고, 두 영역의 왕복은 입력·Job·결과·이벤트 네 통로로 제한했다.',
+      body: '게임 객체가 소유하던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮겼다. 게임 쪽에는 슬롯 ID와 동기화용 입력·결과·더티 상태를 남기고, 두 영역의 왕복은 입력·Job·결과·이벤트 네 통로로 제한했다. `UPhysicsSystem`은 그 배열과 Job 큐·이벤트 큐·충돌 서브시스템을 함께 소유한다.',
       evidence: ['FPhysicsStateArrays', 'IdToIdx / IdxToId', '23 property arrays', '4 communication paths'],
     },
     sync: {

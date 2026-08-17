@@ -92,6 +92,8 @@ function DXOverview({ data }) {
       <p className="dx-gist">{ri(data.overview.gist)}</p>
       <window.DXEngineOverviewViz />
       <dl className="dx-facts">{data.overview.facts.map(([key, value]) => <React.Fragment key={key}><dt>{key}</dt><dd>{value}</dd></React.Fragment>)}</dl>
+      <DXStoryBlock item={data.overview.architecture} viz="DXArchitectureViz" />
+      <DXStoryBlock item={data.overview.frame} viz="DXFrameFlowViz" />
     </section>
   );
 }
