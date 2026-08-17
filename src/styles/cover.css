@@ -30,9 +30,13 @@
    (실측: dx11 hero 656px 원본을 820px 로 늘리면 1.25배). */
 .cv-split__art { flex: 0 1 auto; max-width: calc(820px * var(--cs)); }
 
+/* 작은 글자에는 **바닥**을 둔다. 덱(--cs:1)에서는 calc 가 이겨 값이 그대로고,
+   랜딩 카드(--cs:0.55)에서는 바닥이 이겨 글자가 읽을 수 있는 크기 아래로 안 내려간다.
+   비례로만 줄이면 링크가 10.5px 이 된다 — 화면에서 읽을 수 있는 글자가 아니다. */
+
 /* ─── 타이포 ────────────────────────────────────────────── */
 .cv-eyebrow {
-  font-size: calc(26px * var(--cs));
+  font-size: max(11px, calc(26px * var(--cs)));
   letter-spacing: 0.06em;
   color: var(--sage-700);
   font-weight: 600;
@@ -46,7 +50,7 @@
   margin: 0;
 }
 .cv-lede {
-  font-size: calc(34px * var(--cs));
+  font-size: max(13px, calc(34px * var(--cs)));
   line-height: 1.55;
   color: var(--ink-2);
   margin: 0;
@@ -56,7 +60,7 @@
 /* ─── 배지 ──────────────────────────────────────────────── */
 .cv-pills { display: flex; flex-wrap: wrap; gap: calc(10px * var(--cs)); }
 .cv-pill {
-  font-size: calc(21px * var(--cs));
+  font-size: max(10px, calc(21px * var(--cs)));
   padding: calc(7px * var(--cs)) calc(15px * var(--cs));
   border: 1px solid var(--rule-2);
   border-radius: var(--r-pill);
@@ -79,12 +83,12 @@
       (p·ul 의 브라우저 기본 여백 16px 은 배치의 일부라 그대로 둔다) */
 .cv-role {
   margin: calc(16px * var(--cs)) 0;
-  font-size: calc(21px * var(--cs));
+  font-size: max(11.5px, calc(21px * var(--cs)));
 }
 .cv-specs {
   margin: calc(16px * var(--cs)) 0;
   padding-left: calc(40px * var(--cs));
-  font-size: calc(16px * var(--cs));
+  font-size: max(12px, calc(16px * var(--cs)));
   list-style: disc;
 }
 
@@ -106,15 +110,31 @@
   text-decoration: none;
   color: var(--ink);
 }
-.cv-link__k { font-size: calc(19px * var(--cs)); font-weight: 600; letter-spacing: 0.02em; }
-.cv-link__v { font-size: calc(19px * var(--cs)); color: var(--ink-2); }
-.cv-link__go { font-size: calc(19px * var(--cs)); color: var(--tone); font-weight: 700; }
+.cv-link__k { font-size: max(11.5px, calc(19px * var(--cs))); font-weight: 600; letter-spacing: 0.02em; }
+.cv-link__v { font-size: max(11.5px, calc(19px * var(--cs))); color: var(--ink-2); }
+.cv-link__go { font-size: max(11.5px, calc(19px * var(--cs))); color: var(--tone); font-weight: 700; }
 /* 색조 — tokens.css 태그 팔레트에서만. sage(확보) · terra(문제/한계) ·
    wheat(측정/수치) · dusty-blue(외부/링크). 지정 없으면 중립. */
 .cv-link[data-tone="sage"]  { --tone: var(--sage-700); }
 .cv-link[data-tone="terra"] { --tone: var(--terra-500); }
 .cv-link[data-tone="wheat"] { --tone: #8a6320; }
 .cv-link[data-tone="blue"]  { --tone: #46708a; }
+
+/* ─── 큰 숫자 칸 ─────────────────────────────────────────
+   수치가 주장인 표지용. 카드 제목이 아니라 **수치 자체**가 시선을 먼저 받아야 한다.
+   (Cartapli 표지에서 만들고 Wobble 이 같은 모양을 쓰면서 공용으로 올렸다. 값은
+    slides.css 의 stats 레이아웃(.sl-big)과 같다 — 그쪽은 덱 전용이라 표지가 못 쓴다.) */
+.cv-bigs { display: grid; grid-template-columns: repeat(var(--bigs, 4), 1fr); gap: calc(24px * var(--cs)); flex: 0 0 auto; }
+.cv-big { border: 1px solid var(--rule); background: var(--paper-2); padding: calc(30px * var(--cs)) calc(32px * var(--cs)); }
+.cv-big__n {
+  font-family: var(--font-display); font-size: calc(76px * var(--cs)); line-height: 1.16;
+  font-weight: 700; letter-spacing: -0.03em; color: var(--ink);
+}
+.cv-big__k { font-size: max(11.5px, calc(27px * var(--cs))); font-weight: 600; margin-top: calc(10px * var(--cs)); }
+.cv-big__s { font-size: max(10px, calc(21px * var(--cs))); line-height: 1.5; color: var(--ink-2); margin-top: calc(6px * var(--cs)); }
+
+/* 위(글·그림) + 아래(큰 숫자) 2단 표지. 수치가 주장인 프로젝트가 쓴다. */
+.cv-stack { display: flex; flex-direction: column; gap: calc(24px * var(--cs)); flex: 1 1 auto; min-height: 0; }
 
 /* ─── 그림 ──────────────────────────────────────────────── */
 .cv-art { margin: 0; }

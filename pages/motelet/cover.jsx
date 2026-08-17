@@ -41,8 +41,11 @@
               {' — ' + S(M.meta.boundary, 1)}
             </window.RoleLine>
             <window.Pills items={pills} />
-            {/* 만든 것 셋. 2·3·4 장이 각각 이 줄 하나씩을 펼친다. */}
-            <window.Specs items={M.built.map((b) => '**' + b.title + '** — ' + b.sub)} />
+            {/* 만든 것 셋. 2·3·4 장이 각각 이 줄 하나씩을 펼친다.
+                카드에서는 뺀다 — 배지가 같은 셋을 이름으로 이미 말한다. */}
+            {density !== 'card' && (
+              <window.Specs items={M.built.map((b) => '**' + b.title + '** — ' + b.sub)} />
+            )}
             <window.LinkRow links={[
               { label: '상세 페이지', v: '전체 서술 · 코드 · 다이어그램',
                 href: SITE + 'pages/motelet.html', tone: 'sage' },

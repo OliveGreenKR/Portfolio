@@ -51,9 +51,13 @@
             </figure>
           </div>
 
-          <p className="cmd-axisnote">
-            <b>서로 다른 측정축 3개</b> · 각 퍼센트는 같은 카드 안의 전후 값만 비교
-          </p>
+          {/* 랜딩 카드에서는 각주를 뺀다 — 카드는 미리보기고, 축 주의와 측정 환경은
+              덱·상세 페이지가 받는다. 이 표지가 여섯 중 가장 높아서 줄 전체 높이를 정한다. */}
+          {density !== 'card' && (
+            <p className="cmd-axisnote">
+              <b>서로 다른 측정축 3개</b> · 각 퍼센트는 같은 카드 안의 전후 값만 비교
+            </p>
+          )}
           <div className="cmd-metrics">
             {m.metrics.map((metric) => (
               <article className="cmd-metric" key={metric.label}>
@@ -68,7 +72,7 @@
           {/* 표지에 "Android" 는 네 번 나오는데 측정 환경은 한 번도 안 나왔다.
               큰 %가 Android 실기기 성능으로 읽힌다 — claims.yaml CM-PERF-001 의 금지 추론이다.
               data.js result.conditions 원문을 그대로 한 줄로 붙인다. */}
-          {C.result.conditions && (
+          {density !== 'card' && C.result.conditions && (
             <p className="cmd-measure">
               <b>측정</b>{C.result.conditions.map(([, value]) => value).map((v, i) => (
                 <React.Fragment key={i}>{i ? ' · ' : ' '}{RI(v)}</React.Fragment>

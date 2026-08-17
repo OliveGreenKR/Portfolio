@@ -117,6 +117,11 @@ function NotebookHero({ data }) {
         <figure className="nb-hero-media filled">
           <img src={data.heroImage} alt={`${m.title} — key art`} />
         </figure>
+      ) : data.heroViz && window[data.heroViz] ? (
+        // 프로젝트가 자기 히어로 그림을 직접 그리는 길. mermaid 자동 배치로는
+        // 박스 크기가 글자 수를 따라 제각각이 되고 층이 셋 넘으면 글자가 판독선
+        // 아래로 떨어진다 — 그 프로젝트는 SVG 를 손으로 그린다.
+        React.createElement(window[data.heroViz])
       ) : data.heroMermaid ? (
         <NotebookHeroDiagram source={data.heroMermaid} />
       ) : (

@@ -31,7 +31,7 @@
     },
 
     render: ({ density }) => (
-      <div className="cp-cover">
+      <window.CoverStack>
         <window.CoverSplit
           main={
             <React.Fragment>
@@ -55,16 +55,8 @@
         {/* 출시 결과. data.js 의 heroMetrics 를 그대로 쓴다 — 고르거나 다시 쓰지 않는다.
             기준일(sub)을 값마다 붙인다: Steam 평가만 2026-02 누적이고 나머지 셋은
             2026-05 둘째주라, 한 줄로 묶으면 어느 날짜가 어느 수치의 것인지 못 가른다. */}
-        <div className="cp-bigs">
-          {C.heroMetrics.map((b) => (
-            <div className="cp-big" key={b.label}>
-              <div className="cp-big__n">{b.n}</div>
-              <div className="cp-big__k">{b.label}</div>
-              <div className="cp-big__s">{b.sub}</div>
-            </div>
-          ))}
-        </div>
-      </div>
+        <window.BigStats items={C.heroMetrics} />
+      </window.CoverStack>
     ),
   };
 })();

@@ -84,16 +84,29 @@ function LandingHero({ data }) {
 
 function FeaturedSection({ items }) {
   const s = window.landingStyles;
+  // 카드 = 덱 표지. 세로로 늘어놓던 행 카드(317px × 6)를 가로 캐러셀로 바꿨다 —
+  // 프로젝트가 늘어도 랜딩 세로 길이가 그대로다.
   return (
     <section id="featured" style={s.section} data-screen-label="Landing · Featured">
-      <div style={s.sectionHead}>
-        <h2 style={s.sectionTitle}>메인 프로젝트</h2>
-        <div style={s.sectionMeta}>FEATURED · 05 · 시스템 아키텍처</div>
-      </div>
-      <div className="l-featured-list">
-        {items.map((p, i) => (
-          <window.MainRowCard key={p.idx} p={p} isLast={i === items.length - 1} />
-        ))}
+      <window.Carousel
+        className="cr--covers"
+        label="메인 프로젝트 표지"
+        stage
+        autoScale
+        items={items}
+        render={(p, i, n) => <window.CoverCard p={p} i={i} n={n} />}
+        head={({ sel, go, n }) => (
+          <div style={s.sectionHead}>
+            <h2 style={s.sectionTitle}>메인 프로젝트</h2>
+            <div style={s.sectionMeta}>{'FEATURED · ' + String(n).padStart(2, '0') + ' · 시스템 아키텍처'}</div>
+            <window.CarouselRail n={n} sel={sel} go={go} />
+          </div>
+        )}
+      />
+      <div className="cr__hint">
+        <span>← → 방향키</span>
+        <span>좌우 화살표 · 옆 카드 클릭</span>
+        <span>끝에서 처음으로 이어짐</span>
       </div>
     </section>
   );
@@ -106,17 +119,22 @@ function LabsSection({ items }) {
     () => [...items].sort((a, b) => (b.date || '').localeCompare(a.date || '')),
     [items]
   );
+  // Labs 는 표지가 없다. 한 줄 요약이 전부라 카드가 작고, 한 화면에 셋이 들어간다.
   return (
     <section id="labs" style={s.section} data-screen-label="Landing · Labs">
-      <div style={s.sectionHead}>
-        <h2 style={s.sectionTitle}>Labs</h2>
-        <div style={s.sectionMeta}>POC · 06 · 1일–8주 단위 · 최신순</div>
-      </div>
-      <div className="l-labs-grid" style={{display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 16}}>
-        {sorted.map(l => (
-          <window.LabsCard key={l.idx} l={l} />
-        ))}
-      </div>
+      <window.Carousel
+        className="cr--labs"
+        label="Labs 카드"
+        items={sorted}
+        render={(l) => <window.LabCard l={l} />}
+        head={({ sel, go, n }) => (
+          <div style={s.sectionHead}>
+            <h2 style={s.sectionTitle}>Labs</h2>
+            <div style={s.sectionMeta}>{'POC · ' + String(n).padStart(2, '0') + ' · 1일–8주 단위 · 최신순'}</div>
+            <window.CarouselRail n={n} sel={sel} go={go} />
+          </div>
+        )}
+      />
     </section>
   );
 }
