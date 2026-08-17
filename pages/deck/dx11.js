@@ -67,7 +67,7 @@
         layout: 'columns',
         section: '00 요약',
         title: '구현 범위와 검증 근거, 적용 한계',
-        gist: '소유권과 호출 경로를 코드로 대조하고, 실행 중에는 Debug Draw·ImGui·D3D 바인딩 검사로 상태를 확인했다.',
+        gist: D.evidence.gist,
         // 공용 .sl-cols 는 한 줄짜리 격자를 세로 가운데에 세운다(align-content: center).
         // 세 칸뿐인 이 장에서는 그 규칙이 제목 아래에 빈 띠를 만든다 — 이 장에서만 위로 붙인다.
         cls: 'dx11sum',

@@ -182,6 +182,7 @@ void UPhysicsSystem::FinalizeSimulation()
   },
 
   evidence: {
+    gist: '소유권과 호출 경로를 코드로 대조하고, 실행 중에는 Debug Draw·ImGui·D3D 바인딩 검사로 상태를 확인했다.',
     verified: [
       ['구조', '현재 구조와 이전 구조의 코드를 대조해 소유권·호출 경로·상수 사용을 확인했다.'],
       ['검증 도구', '충돌 트리/형상 Debug Draw, ImGui 상태창, D3D 바인딩 검사 코드를 구현했다.'],

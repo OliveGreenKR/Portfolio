@@ -44,13 +44,6 @@
 }
 .dx-code-evidence .nb-ascii { margin: 0; }
 .dx-evidence-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
-.dx-facts {
-  display: grid; grid-template-columns: 120px minmax(0, 1fr); margin: 18px 0 0;
-  border-top: 1px solid var(--rule);
-}
-.dx-facts dt, .dx-facts dd { margin: 0; padding: 11px 0; border-bottom: 1px solid var(--rule); }
-.dx-facts dt { color: var(--ink-3); font: 700 10.5px/1.5 var(--font-mono); letter-spacing: .08em; text-transform: uppercase; }
-.dx-facts dd { color: var(--ink-2); font-size: 13.5px; line-height: 1.6; }
 
 /* Shared diagram language */
 .dx-figure { margin: 20px 0 22px; overflow: hidden; border: 1px solid var(--rule); border-radius: 5px; background: var(--paper); }
@@ -102,10 +95,11 @@
 .dx-render-support { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
 .dx-render-support > div { padding: 12px; border: 1px dashed var(--rule-2); border-radius: 4px; }
 
-/* Evidence gate */
-.dx-proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* 요약 절 — 범위 · 근거 · 한계 세 칸 */
+.dx-proof-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; align-items: start; }
 .dx-proof-col { overflow: hidden; border: 1px solid var(--rule); border-radius: 5px; }
 .dx-proof-col > h3 { margin: 0; padding: 13px 16px; border-bottom: 1px solid var(--rule); background: var(--paper-2); color: var(--ink); font-size: 15px; }
+.dx-proof-col.scope > h3 { border-top: 3px solid var(--ink-3); }
 .dx-proof-col.verified > h3 { border-top: 3px solid var(--sage-500); }
 .dx-proof-col.limits > h3 { border-top: 3px solid var(--terra-300); }
 .dx-proof-row { padding: 14px 16px; border-bottom: 1px solid var(--rule); }
@@ -115,6 +109,7 @@
 
 @media (max-width: 1100px) {
   .nb-body { grid-template-columns: minmax(0, 1fr); }
+  .dx-proof-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 760px) {
@@ -124,7 +119,7 @@
   .dx-story { padding-top: 28px; }
   .dx-story h3 { font-size: 20px; }
   .dx-code-evidence > h3 { font-size: 19px; }
-  .dx-story-copy > p, .dx-facts dd, .dx-proof-row p { font-size: 15px; }
+  .dx-story-copy > p, .dx-proof-row p { font-size: 15px; }
   .dx-shot figcaption, .dx-figure figcaption { font-size: 13px; }
   .dx-node > small, .dx-render-support small, .dx-tier-name small,
   .dx-diagram { padding: 13px; }
@@ -143,5 +138,4 @@
 @media (max-width: 430px) {
   .dx-tier { grid-template-columns: 1fr; }
   .dx-tier-gate, .dx-tier-target { justify-content: flex-start; }
-  .dx-facts { grid-template-columns: 82px minmax(0, 1fr); }
 }
