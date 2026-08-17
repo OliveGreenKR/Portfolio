@@ -16,23 +16,23 @@ writer = pypdf.PdfWriter(clone_from=pdf_path)
 writer._root_object.pop('/Outlines', None)
 writer._root_object.pop('/OpenAction', None)
 
+# 층은 매니페스트의 layout 이 정한다 (export_deck.js 가 그대로 실어 준다).
+# DOM 클래스로 판정하던 옛 방식은 표지를 프로젝트 소유로 옮긴 뒤 조용히 무너졌다 —
+# 그 사연은 export_deck.js 의 슬라이드 추출 주석에 있다.
+TOP = {'title': '표제지', 'toc': '목차'}
+
 parent = None
 for s in slides:
     page = s['page'] - 1
-    if s['isTitle']:
-        title = '표제지'
-    elif s['isToc']:
-        title = '목차'
-    elif s['isCover']:
-        title = s['proj']
-    else:
-        title = s['heading']
+    layout = s.get('layout')
 
-    if s['isTitle'] or s['isToc']:
-        writer.add_outline_item(title, page)
+    if layout in TOP or layout == 'outro':
+        # 표제지 · 목차 · 마무리 링크 장은 어느 프로젝트에도 안 속한다.
+        writer.add_outline_item(TOP.get(layout) or s['heading'] or '링크', page)
         parent = None
-    elif s['isCover']:
-        parent = writer.add_outline_item(title, page, bold=True)
+    elif layout == 'projectCover':
+        # 표지 슬라이드는 제목 필드가 없다 — 이름은 프로젝트명이다.
+        parent = writer.add_outline_item(s['proj'], page, bold=True)
     else:
         # 절 이름을 접두사로 붙이지 않는다 — 크롬 라벨이 프로젝트마다 층이 달라
         # ('01 밸런싱' vs 'a' vs '02 물리') 붙이면 항목마다 대시가 둘씩 생긴다.
