@@ -1,169 +1,102 @@
 // Cartapli Mobile 제출용 덱 매니페스트.
-// 사실 SSOT: pages/cartapli-mobile/data.js
-// 이 파일은 절 선택, 순서, 제목·라벨 매핑만 담당한다.
+// 사실 SSOT: pages/cartapli-mobile/data.js (Final Gate 통과본)
+// 이 파일은 절 선택·순서·제목만 소유한다. 새 수치·새 사실은 만들지 않는다.
+// 레이아웃은 deck/cm-slides.jsx, 그림은 페이지가 그린 CMPage* 를 그대로 마운트한다.
 //
-// 선택한 10장
-// 1 표지 — 프로젝트 정체성·직접 구현·대표 결과
-// 2 시스템 — BattleSimulation이 소유하는 책임 경계
-// 3 실행 — Variable / Fixed / Presentation의 완성 흐름
-// 4 결과 — S0부터 S2-b까지의 단계별 계측
-// 5 구조 — 확정 순간 파묻힌 조각 제거
-// 6 렌더 구조 — 레이어별 뷰를 앞·뒤 두 메시로 병합
-// 7 렌더 코드 — 두 메시 병합의 직접 구현 근거
-// 8 네이티브 구조 — 관리형 미리보기를 재사용 버퍼와 Job으로 교체
-// 9 네이티브 코드 — Schedule과 화면 반영을 분리한 직접 구현 근거
-// 10 범위 — 측정 해석과 다음 검증
+// ─── 8장 ───────────────────────────────────────────────────────────────────
+//  1 표지        실측 화면 + 측정축 3개 카드 + 역할·환경
+//  2 계측 결과    단계별 개선 곡선 + 계측 정정 + 조건표 + 축별 중간값
+//  3 실행 구조    Variable → Fixed → Presentation 호출 흐름 + 판단 3건
+//  4 S1-1        원본 참조 재사용        그림 + before/after 코드
+//  5 S1-2        파묻힌 조각 제거        그림 + before/after 코드
+//  6 S2-a        앞·뒤 두 메시 병합      그림 + before/after 코드
+//  7 S2-b        NativeArray·Job·Burst   그림 + before/after 코드
+//  8 검증 범위    적용 범위와 다음 검증
 //
-// 제외
-// - S1-1 전용 장: 결과 그래프에는 남긴다. 중간 진단 단계이고, S1-2·S2-a·S2-b가
-//   판단과 직접 구현을 더 짧게 증명하므로 별도 Before/After·코드는 사이트에서만 유지한다.
-// - S1-2 코드 장: 제거 시점과 되돌리기 경계는 구조 그림과 요점으로 전달된다. 코드까지
-//   넣으면 강한 구현 증거인 S2-a·S2-b 코드와 경쟁한다.
-// - Confirm transaction 전용 장: 실행 단계의 핵심은 Job 예약과 화면 반영의 분리다.
-//   확정 트랜잭션은 사이트에서 전체 흐름과 함께 유지한다.
-// - 전체 검증 appendix: 공개 결과·현재 한계·다음 산출물만 마지막 장에 재선택한다.
+// ─── 이전 판(10장)을 버린 이유 ──────────────────────────────────────────────
+// 공용 4레이아웃(cover/diagram/step/columns)에 맞추다 보니 한 주제가 [그림 장 + 코드 장]
+// 두 장으로 갈라졌다. 그 결과 (a) 코드 장의 왼쪽 열이 앞 장 문장의 복사본이 되고,
+// (b) 정작 개선 방식 장에는 코드가 없고, (c) 장당 밀도가 떨어져 한 주제가 길어졌다.
+// 단계당 한 장으로 접고 그림·코드·측정·트레이드오프를 같은 화면에 둔다.
+//
+// 그림도 바꿨다. 이전 판은 legacy CMStageChart(막대 행)·CMBeforeAfter(상자 나열)를 썼는데,
+// 같은 저장소의 사이트 페이지에 이미 이 프로젝트 전용으로 그린 것이 있다 —
+// 단계별 개선 **곡선**, 실제 호출 순서 **흐름도**, 방식마다 다른 **before/after 삽화**
+// (겹친 종이 더미 · 레이어별 GameObject 제출 · worker execution window · NativeArray 버퍼).
+// 덱이 사이트보다 못한 그림을 새로 그릴 이유가 없다. 읽기 재사용한다.
+//
+// ─── 뺀 것 ─────────────────────────────────────────────────────────────────
+// - 클래스 책임 관계도(CMPageArchitectureDiagram): 실행 순서 흐름도와 주장이 겹친다.
+//   호출 순서 쪽이 뒤의 네 단계와 직접 이어지므로 그쪽만 남긴다.
+// - Confirm transaction(A/B/C): 흐름도의 Presentation 구간이 같은 경계를 말한다.
 // - 새 수치·새 사실·PDF: 만들지 않는다.
 
 (function buildCartapliMobileDeck() {
   const C = window.CM_DATA;
   const SITE = 'https://olivegreenkr.github.io/Portfolio/pages/cartapli-mobile.html';
-  const byId = (id) => C.methods.find((item) => item.id === id);
-  const prune = byId('prune');
-  const merge = byId('merge');
-  const native = byId('native');
   const external = C.meta.links.filter((link) => link.external);
-  const tones = ['sage', 'wheat', 'blue'];
+  const byId = (id) => C.methods.find((method) => method.id === id);
+
+  // 단계 장은 전부 같은 틀이다 — data.js 의 method 하나를 통째로 넘긴다.
+  // 제목·번호·종류·그림·코드·측정·범위가 모두 그 안에 있어 매니페스트가 고를 것이 없다.
+  const methodSlide = (id) => {
+    const method = byId(id);
+    return { cls: 'cm', layout: 'cmMethod', section: method.stage + ' · ' + method.kind, method };
+  };
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.cm = {
     proj: C.meta.title,
     slides: [
       {
-        layout: 'cover',
-        section: '프로젝트',
-        subtitle: C.meta.subtitle,
+        cls: 'cm',
+        layout: 'cmCover',
+        section: C.meta.eyebrow,
         title: C.meta.title,
-        hook: C.meta.boundary,
-        pills: C.meta.metrics.map((metric, index) => ({
-          text: metric.value + ' · ' + metric.label,
-          tone: tones[index],
-          kind: index === 0 ? 'accent' : null,
-        })),
+        meta: C.meta,
+        // 표지 pill 은 목차 태그로도 쓰인다(engine.js). 짧게 유지한다.
+        pills: C.meta.metrics.map((metric) => ({ text: metric.value + ' · ' + metric.label })),
         links: [
-          { label: '상세 페이지', v: '전체 흐름 · 코드 · 계측', href: SITE, tone: 'sage', hero: true },
-          { label: external[0].label, href: external[0].href, tone: 'blue' },
-          { label: external[1].label, href: external[1].href, tone: 'wheat' },
+          { label: '상세 페이지', href: SITE },
+          { label: external[0].label, href: external[0].href },
+          { label: external[1].label, href: external[1].href },
         ],
-        hero: { img: C.meta.media.src, caption: C.meta.media.caption },
       },
+
       {
-        layout: 'diagram',
-        section: '아키텍처',
-        title: 'BattleSimulation 중심의 시스템 책임 경계',
-        lead: C.architecture.gist,
-        step: { viz: 'system-map' },
-        vizComponent: 'CMSystemMap',
-        vizProps: { systems: C.architecture.systems },
-      },
-      {
-        layout: 'diagram',
-        section: '실행 흐름',
-        title: '계산과 화면 반영이 분리된 시뮬레이션 실행 단계',
-        lead: C.architecture.body,
-        step: { viz: 'simulation-flow' },
-        vizComponent: 'CMSimulationFlow',
-        vizProps: { lanes: C.architecture.lanes, clock: C.architecture.clock },
-      },
-      {
-        layout: 'diagram',
+        cls: 'cm',
+        layout: 'cmResult',
         section: '계측 결과',
-        title: '같은 입력으로 분리한 다섯 단계 최적화 결과',
-        lead: C.result.gist,
-        step: { viz: 'stage-chart' },
-        vizComponent: 'CMStageChart',
-        vizProps: { bars: C.result.bars },
-        points: C.meta.metrics.map((metric) => [
-          metric.label,
-          metric.value + ' · ' + metric.detail,
-        ]),
-        note: C.result.conditions[3][1],
+        no: '02',
+        title: '다섯 단계로 나눠 본 최적화 방식별 개선 결과',
+        kind: 'S0 → S2-b · MEASURED',
+        result: C.result,
       },
+
       {
-        layout: 'diagram',
-        section: prune.stage,
-        title: '확정 순간의 파묻힌 조각 제거',
-        lead: prune.gist,
-        step: { viz: 'before-after' },
-        vizComponent: 'CMBeforeAfter',
-        vizProps: { before: prune.before, after: prune.after, stage: prune.stage },
-        points: [
-          [prune.metric.value, prune.metric.detail + ' · ' + prune.metric.label],
-        ],
-        note: prune.scope,
+        cls: 'cm',
+        layout: 'cmFlow',
+        section: '실행 구조',
+        no: '01',
+        title: '종이접기 전투의 핵심 시뮬레이션 실행 경로',
+        kind: 'ARCHITECTURE',
+        architecture: C.architecture,
       },
+
+      methodSlide('reuse'),
+      methodSlide('prune'),
+      methodSlide('merge'),
+      methodSlide('native'),
+
       {
-        layout: 'diagram',
-        section: merge.stage,
-        title: '레이어별 뷰를 대체한 앞·뒤 두 메시',
-        lead: merge.gist,
-        step: { viz: 'before-after' },
-        vizComponent: 'CMBeforeAfter',
-        vizProps: { before: merge.before, after: merge.after, stage: merge.stage },
-        points: [
-          [merge.metric.value, merge.metric.detail + ' · ' + merge.metric.label],
-        ],
-        note: merge.scope,
-      },
-      {
-        layout: 'step',
-        section: merge.stage + ' · 구현 근거',
-        title: '앞·뒤 두 메시 병합의 구현 근거',
-        step: { code: Object.assign({ lang: 'csharp' }, merge.code.after) },
-        points: [
-          ['판단', merge.gist],
-          ['결과', merge.code.after.result],
-          ['측정', merge.metric.detail + ' · ' + merge.metric.value],
-        ],
-        note: merge.scope,
-      },
-      {
-        layout: 'diagram',
-        section: native.stage,
-        title: '관리형 미리보기를 대체한 재사용 네이티브 분할 경로',
-        lead: native.gist,
-        step: { viz: 'before-after' },
-        vizComponent: 'CMBeforeAfter',
-        vizProps: { before: native.before, after: native.after, stage: native.stage },
-        points: [
-          [native.metric.value, native.metric.detail + ' · ' + native.metric.label],
-        ],
-        note: native.scope,
-      },
-      {
-        layout: 'step',
-        section: native.stage + ' · 구현 근거',
-        title: '분할 Job 예약과 화면 반영의 구현 경계',
-        step: { code: Object.assign({ lang: 'csharp' }, native.code.after) },
-        points: [
-          ['계산 단계', C.architecture.lanes[0].items[0][2]],
-          ['화면 반영', C.architecture.lanes[2].items[0][2]],
-          ['결과', native.code.after.result],
-        ],
-        note: native.scope,
-      },
-      {
-        layout: 'columns',
+        cls: 'cm',
+        layout: 'cmValidation',
         section: '검증 범위',
-        title: '측정 해석과 다음 검증 범위',
-        gist: C.validation.intro,
-        colCount: 3,
-        cols: C.validation.columns.map((column, index) => ({
-          kind: index === 0 ? 'CONFIRMED' : index === 1 ? 'MEASUREMENT SCOPE' : 'NEXT ARTIFACTS',
-          tone: tones[index],
-          title: column.title,
-          items: column.items,
-        })),
-        note: C.result.correction.title + ' — ' + C.result.correction.body,
+        no: '07',
+        title: 'Editor 상대 비교의 적용 범위와 다음 검증',
+        kind: 'SCOPE',
+        validation: C.validation,
+        note: '측정 범위 — 동일 결정론적 16회 입력 · Windows PC · Unity Editor PlayMode 상대 비교',
       },
     ],
   };
