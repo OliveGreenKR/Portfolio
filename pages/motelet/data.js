@@ -380,6 +380,46 @@ window.MOTELET_DATA = {
         '빠뜨리면 "적이 안 맞는다"로 즉시 드러난다.',
     },
 
+    /* 03-C 등록·질의 계약 코드 — 위 geo 도식이 말하는 구조의 실코드.
+       출처(기준 커밋 3571bfb3, Assets/Scripts/CursorBlade/Runtime/Geo/):
+         IGeoBody.cs:13  ·  GeoBodyMB.cs:93-94  ·  GeoWorldRegistry.cs:50-51
+       원문의 XML doc 주석은 한 줄 인라인으로 줄여 인용했고, OverlapCircle 은 인자 줄바꿈만
+       옮기고 null 가드 두 줄(`if (output == null) return;` · `if (b == null) continue;`)을
+       생략했다. 그 밖의 시그니처·본문은 원문 그대로다.
+       현재 페이지는 안 쓰고 덱(pages/deck/motelet.js)이 쓴다. */
+    contract: {
+      title: 'IGeoBody · GeoBodyMB · GeoWorldRegistry — 등록과 질의를 잇는 계약',
+      intro: '월드에 들어오는 조건은 이 인터페이스를 구현하는 것 하나다.',
+      code:
+        '// IGeoBody.cs — 월드에 등록되는 바디 계약\n' +
+        'public interface IGeoBody\n' +
+        '{\n' +
+        '    BodyShape GetHitShape();          // 원 / 캡슐 태그드\n' +
+        '    GeoCategory Category { get; }     // 질의가 거르는 분류\n' +
+        '    IDamageable? Damageable { get; }  // 없으면 데미지 소비자 skip\n' +
+        '    CharacterMotor2D? Motor { get; }  // 없으면 외력장 소비자 skip\n' +
+        '    GameObject GameObject { get; }\n' +
+        '}\n' +
+        '\n' +
+        '// GeoBodyMB.cs — 등록은 수명이 한다\n' +
+        'private void OnEnable()  => TryRegister();\n' +
+        'private void OnDisable() => TryUnregister();\n' +
+        '\n' +
+        '// GeoWorldRegistry.cs — 밖에서 들어오는 것은 질의뿐\n' +
+        'public void OverlapCircle(Vector2 center, float radius, List<IGeoBody> output,\n' +
+        '                          int layerMask = ~0, GeoCategory required = GeoCategory.All)\n' +
+        '{\n' +
+        '    output.Clear();\n' +
+        '    foreach (var b in _all)\n' +
+        '    {\n' +
+        '        if (!Passes(b, layerMask, required)) continue;\n' +
+        '        if (HitsCircle(b.GetHitShape(), center, radius)) output.Add(b);\n' +
+        '    }\n' +
+        '}',
+      result:
+        '호출자가 아는 타입은 `IGeoBody` 하나뿐이다 — 적인지 아이템인지 분신인지는 모른다.',
+    },
+
     /* 03-C 왜 자체 기하인가 */
     why2: {
       title: '왜 물리 엔진을 안 썼나',
