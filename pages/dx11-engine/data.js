@@ -65,15 +65,12 @@ window.DX11_DATA = {
 
   systems: {
     gist: '물리 밖에서도 같은 질문을 반복했다. **무엇을 언제 만들고, 누가 소유하며, 어디서 검증할 것인가.**',
+    // foundation 절은 삭제했다 — 네 칸이 전부 엔진 구조 도표 안에 이미 있었고,
+    // 그림만 있고 무엇을 주장하는지가 없었다.
     render: {
       title: '렌더링 — 제출과 실행을 분리했다',
       body: '씬은 렌더 Job만 제출한다. 렌더러는 상태 버킷으로 나눠 처리하고, `FRenderContext`는 내부 바인딩 캐시와 비교한 뒤 D3D11 호출을 수행한다. RenderData는 8MB 프레임 아레나에서 만들고 다음 프레임에 일괄 재사용한다.',
       evidence: ['Shader Reflection', 'Solid / Wireframe buckets', '8 MB frame arena', 'EndFrame binding validation'],
-    },
-    foundation: {
-      title: '코어 · 인프라 — 실행 기반을 직접 구성했다',
-      body: '게임오브젝트는 컴포넌트 트리로 기능을 조합하고 Transform을 자식에 전파한다. 리소스는 해시 핸들과 LRU 캐시로, 입력은 우선순위 Context와 Delegate로, 디버그는 UI·콘솔·Draw·D3D 바인딩 검사로 연결했다.',
-      evidence: ['4-tier component', 'FResourceHandle + LRU', 'Input Context + Delegate', 'Memory pools + Debug tools'],
     },
   },
 

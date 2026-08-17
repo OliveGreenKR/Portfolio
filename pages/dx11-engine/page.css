@@ -20,10 +20,6 @@
   color: var(--ink-3); font-size: 12.5px; line-height: 1.62; text-wrap: pretty;
 }
 .dx-shot figcaption strong, .dx-figure figcaption strong { color: var(--ink); }
-.dx-diagram-label {
-  display: block; margin-bottom: 8px; color: var(--terra-500); font: 700 9.5px/1.3 var(--font-mono);
-  letter-spacing: .15em; text-transform: uppercase;
-}
 .dx-links { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 18px; }
 .dx-links a {
   padding: 7px 12px; border: 1px solid var(--terra-200); border-radius: 3px;
@@ -73,11 +69,7 @@
 .dx-arrow { flex: 0 0 24px; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--rule-2); }
 .dx-arrow b { font: 400 18px/1 var(--font-mono); }
 .dx-arrow span { margin-bottom: 4px; color: var(--ink-3); font: 9px/1.2 var(--font-mono); white-space: nowrap; }
-.dx-runtime-flow, .dx-pipeline-flow { display: flex; align-items: stretch; }
-.dx-runtime-flow .dx-node { flex: 1 1 0; }
-.dx-support-line { display: flex; align-items: center; gap: 10px; margin: 18px 0 11px; color: var(--ink-3); font: 9px/1 var(--font-mono); text-transform: uppercase; letter-spacing: .12em; }
-.dx-support-line::before, .dx-support-line::after { content: ''; height: 1px; flex: 1; background: var(--rule); }
-.dx-support-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.dx-pipeline-flow { display: flex; align-items: stretch; }
 
 /* SVG 도표(svg-viz.jsx) — 페이지와 덱이 같은 파일을 쓴다.
    뷰박스가 1600 고정이라 좁은 화면에서는 글자가 못 읽을 만큼 줄어든다.
@@ -88,7 +80,6 @@
 .dxd-svg text.mono { font-family: var(--font-mono); }
 
 /* Physics diagrams */
-
 .dx-tier-head { display: grid; grid-template-columns: 125px 1fr 78px 120px; gap: 10px; color: var(--ink-3); font: 700 9px/1.2 var(--font-mono); letter-spacing: .1em; }
 .dx-tier-head span:nth-child(2) { grid-column: 2 / 4; text-align: center; }
 .dx-tier-list { display: grid; gap: 8px; margin-top: 9px; }
@@ -107,13 +98,9 @@
 .dx-pipeline-input { margin-bottom: 11px; padding: 8px 12px; border: 1px dashed var(--rule-2); border-radius: 3px; color: var(--ink-3); font: 10.5px/1.3 var(--font-mono); text-align: center; }
 .dx-pipeline-flow .dx-node { flex: 1 1 0; }
 
-/* Rendering and foundation */
+/* Rendering */
 .dx-render-support { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--rule); }
 .dx-render-support > div { padding: 12px; border: 1px dashed var(--rule-2); border-radius: 4px; }
-.dx-foundation-center { width: max-content; margin: 0 auto 14px; padding: 8px 15px; border-radius: 3px; background: var(--ink); color: var(--paper); font: 700 10px/1.2 var(--font-mono); letter-spacing: .13em; }
-.dx-foundation-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 9px; }
-.dx-foundation-grid .dx-node { position: relative; text-align: center; }
-.dx-foundation-grid .dx-node::before { content: ''; position: absolute; left: 50%; top: -10px; width: 1px; height: 9px; background: var(--rule-2); }
 
 /* Evidence gate */
 .dx-proof-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -141,10 +128,10 @@
   .dx-shot figcaption, .dx-figure figcaption { font-size: 13px; }
   .dx-node > small, .dx-render-support small, .dx-tier-name small,
   .dx-diagram { padding: 13px; }
-  .dx-runtime-flow, .dx-pipeline-flow { flex-direction: column; }
+  .dx-pipeline-flow { flex-direction: column; }
   .dx-arrow { flex: 0 0 24px; }
   .dx-arrow b { transform: rotate(90deg); }
-  .dx-support-grid, .dx-render-support { grid-template-columns: 1fr 1fr; }
+  .dx-render-support { grid-template-columns: 1fr 1fr; }
   .dx-tier-head { display: none; }
   .dx-tier { grid-template-columns: 98px 1fr; gap: 6px; }
   .dx-tier-gate, .dx-tier-target { min-height: 28px; padding: 6px 9px; }
@@ -154,7 +141,6 @@
 }
 
 @media (max-width: 430px) {
-  .dx-foundation-grid { grid-template-columns: 1fr; }
   .dx-tier { grid-template-columns: 1fr; }
   .dx-tier-gate, .dx-tier-target { justify-content: flex-start; }
   .dx-facts { grid-template-columns: 82px minmax(0, 1fr); }

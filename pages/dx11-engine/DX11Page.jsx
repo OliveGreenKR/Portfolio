@@ -35,7 +35,7 @@ function DXRail() {
     return () => observer.disconnect();
   }, []);
 
-  const labels = { hero: '전체', overview: '01 · 엔진 구조', physics: '02 · 물리 심화', systems: '03 · 기타 시스템', evidence: '04 · 검증 · 한계' };
+  const labels = { hero: '전체', overview: '01 · 엔진 구조', physics: '02 · 물리 심화', systems: '03 · 렌더링', evidence: '04 · 검증 · 한계' };
   return <aside className="nb-rail" aria-label="On-page navigation">{ids.map(id => <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{labels[id]}</a>)}</aside>;
 }
 
@@ -90,7 +90,6 @@ function DXOverview({ data }) {
     <section id="overview" className="nb-section">
       <DXSectionHead no="01" title="엔진 전체 구조" kind="TOP DOWN" />
       <p className="dx-gist">{ri(data.overview.gist)}</p>
-      <window.DXEngineOverviewViz />
       <dl className="dx-facts">{data.overview.facts.map(([key, value]) => <React.Fragment key={key}><dt>{key}</dt><dd>{value}</dd></React.Fragment>)}</dl>
       <DXStoryBlock item={data.overview.architecture} viz="DXArchitectureViz" />
       <DXStoryBlock item={data.overview.frame} viz="DXFrameFlowViz" />
@@ -118,11 +117,10 @@ function DXSystems({ data }) {
   const ri = window.renderInline;
   return (
     <section id="systems" className="nb-section">
-      <DXSectionHead no="03" title="렌더링 · 코어 · 인프라" kind="ENGINE SYSTEMS" />
+      <DXSectionHead no="03" title="렌더링 — 제출과 실행의 분리" kind="ENGINE SYSTEMS" />
       <p className="dx-gist">{ri(data.systems.gist)}</p>
       <DXStoryBlock item={data.systems.render} viz="DXRenderPipelineViz" />
       <DXCodeEvidence item={data.code.renderCache} />
-      <DXStoryBlock item={data.systems.foundation} viz="DXFoundationViz" />
     </section>
   );
 }

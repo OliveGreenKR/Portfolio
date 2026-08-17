@@ -17,37 +17,6 @@ function DXNode({ eyebrow, title, sub, tone = '' }) {
   return <div className={`dx-node ${tone}`}><span>{eyebrow}</span><strong>{title}</strong>{sub && <small>{sub}</small>}</div>;
 }
 
-function DXEngineOverviewViz() {
-  return (
-    <DXFigure
-      label="입력부터 Present와 프레임 정리까지 이어지는 엔진 전체 구조"
-      caption="위는 메인 루프의 **주요 호출 흐름**, 아래는 그 흐름을 받치는 공통 시스템이다. 물리는 전체 엔진의 한 단계이며, 가장 깊게 재설계한 영역이다."
-      className="dx-engine-map"
-    >
-      <div className="dx-diagram-label">RUNTIME · EVERY FRAME</div>
-      <div className="dx-runtime-flow">
-        <DXNode eyebrow="01" title="Input" sub="WinMsg · Context" />
-        <DXArrow />
-        <DXNode eyebrow="02" title="Physics" sub="fixed budget · collision" tone="focus" />
-        <DXArrow />
-        <DXNode eyebrow="03" title="Scene" sub="object tick · submit" />
-        <DXArrow />
-        <DXNode eyebrow="04" title="Render" sub="bucket · bind · draw" />
-        <DXArrow />
-        <DXNode eyebrow="05" title="UI / Present" sub="ImGui · swap chain" />
-      </div>
-      <div className="dx-support-line"><span>supports the frame</span></div>
-      <div className="dx-support-grid">
-        <DXNode eyebrow="CORE" title="GameObject / Component" sub="수명 · Transform 전파" />
-        <DXNode eyebrow="DATA" title="Resource" sub="Hash Handle · LRU" />
-        <DXNode eyebrow="MEMORY" title="Frame / Object Pools" sub="수명별 할당 전략" />
-        <DXNode eyebrow="TOOLS" title="Debug" sub="Console · Draw · D3D 검사" />
-      </div>
-    </DXFigure>
-  );
-}
-window.DXEngineOverviewViz = DXEngineOverviewViz;
-
 function DXSyncTierViz() {
   const tiers = [
     { key: 'HIGH', when: '매 틱 변할 수 있음', fields: 'Position · Rotation · Scale' },
@@ -124,23 +93,3 @@ function DXRenderPipelineViz() {
   );
 }
 window.DXRenderPipelineViz = DXRenderPipelineViz;
-
-function DXFoundationViz() {
-  const items = [
-    ['OBJECT / SCENE', '4단 컴포넌트 트리', 'Actor → Scene → Primitive · Transform 전파'],
-    ['RESOURCE', 'Hash Handle + LRU', '경로 해시 조회 · 미사용 리소스 정리'],
-    ['INPUT / EVENT', 'Context + Delegate', '우선순위 입력 · 수명 안전 언바인딩'],
-    ['MEMORY / DEBUG', '수명별 풀 + 도구', 'Arena · Object Pool · Ring Buffer · Console/Draw'],
-  ];
-  return (
-    <DXFigure
-      label="게임 실행을 받치는 코어와 인프라 네 영역"
-      caption="코어와 인프라는 부록이 아니다. 오브젝트의 **수명·참조·이벤트·임시 메모리**를 정해 물리와 렌더링이 같은 규칙 위에서 돌게 한다."
-      className="dx-foundation"
-    >
-      <div className="dx-foundation-center">ENGINE RUNTIME</div>
-      <div className="dx-foundation-grid">{items.map(([kind, title, sub]) => <DXNode key={kind} eyebrow={kind} title={title} sub={sub} />)}</div>
-    </DXFigure>
-  );
-}
-window.DXFoundationViz = DXFoundationViz;

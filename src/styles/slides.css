@@ -832,8 +832,7 @@
 }
 .slide .dx-node { padding: 18px 16px; }
 .slide .dx-node > span,
-.slide .dx-render-support span,
-.slide .dx-diagram-label {
+.slide .dx-render-support span {
   font-size: 20px; line-height: 1.25; color: var(--ink-2);
 }
 .slide .dx-node > strong,
@@ -847,10 +846,7 @@
 .slide .dx-arrow { flex-basis: 34px; }
 .slide .dx-arrow b { font-size: 26px; }
 .slide .dx-arrow span { font-size: 20px; color: var(--ink-2); }
-.slide .dx-support-line { font-size: 20px; margin: 20px 0 14px; color: var(--ink-2); }
-.slide .dx-support-grid,
-.slide .dx-render-support,
-.slide .dx-foundation-grid { gap: 12px; }
+.slide .dx-render-support { gap: 12px; }
 
 
 .slide .dx-tier-head {
@@ -878,7 +874,6 @@
 .slide .dx-return-flow span { font-size: 20px; }
 .slide .dx-return-flow strong { font-size: 22px; }
 .slide .dx-pipeline-input { font-size: 20px; padding: 12px 16px; }
-.slide .dx-foundation-center { font-size: 20px; padding: 11px 20px; }
 /* 오른쪽 칸이 소유물 4줄을 받는다 — 게임 쪽 상자와 같은 폭을 주면 줄이 세 번 접힌다. */
 
 /* 탑다운 3층에서 새로 쓰는 도표 — 아키텍처 · 프레임 흐름 · 물리 지도.
