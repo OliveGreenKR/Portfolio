@@ -205,11 +205,32 @@
           {s.subtitle && <div className="sl-cover__name">{s.subtitle}</div>}
           <h1 className="sl-h sl-h--cover">{s.title}</h1>
           <p className="sl-sub">{RI(s.hook)}</p>
+          {/* 제출 덱에서 심사자가 가장 먼저 찾는 줄 — "무엇을 본인이 했나".
+              스펙 목록 안에 두면 Unity 버전과 같은 무게가 된다. 따로 세운다. */}
+          {s.role && (
+            <p className="sl-cover__role"><b>{s.role[0]}</b><span>{RI(s.role[1])}</span></p>
+          )}
           <div className="sl-pills">
             {s.pills.map((p, i) => (
               <span key={i} data-tone={p.tone} className={'sl-pill' + (p.kind === 'accent' ? ' sl-pill--accent' : '')}>{p.text}</span>
             ))}
           </div>
+          {/* 수치 pill 은 값만 말한다. 그 값이 어떤 조건에서 나왔는지, 어디까지가 본인
+              작업인지를 같은 화면에 두지 않으면 표지가 실제보다 크게 읽힌다.
+              둘 다 선택 필드다 — 안 주면 아예 안 그린다(기존 표지 무영향). */}
+          {s.specs && (
+            <ul className="sl-cover__specs">
+              {s.specs.map((t, i) => <li key={i}>{RI(t)}</li>)}
+            </ul>
+          )}
+          {/* 수치별 범위·측정 조건. 한 문단으로 이으면 세 지표의 조건이 뒤섞여
+              어느 조건이 어느 수치의 것인지 못 가른다 — 지표당 한 줄로 낸다. */}
+          {s.scopes && (
+            <ul className="sl-cover__scopes">
+              {s.scopes.map((t, i) => <li key={i}>{RI(t)}</li>)}
+            </ul>
+          )}
+          {s.note && <p className="sl-note sl-cover__note">{RI(s.note)}</p>}
           <LinkRow items={s.links} />
         </div>
         {s.hero && (
@@ -387,7 +408,13 @@
     );
   }
 
-  const LAYOUTS = { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, toc: Toc, outro: Outro };
+  // 네 레이아웃으로 안 되는 절이 나오면 여기 다섯째를 더하지 말고, 프로젝트가 자기
+  // 레이아웃을 window.DECK_LAYOUTS 에 올린다. 공용 뷰가 프로젝트별 조건으로 부풀지 않고,
+  // 한 프로젝트의 배치 실험이 다른 프로젝트 장을 건드리지 않는다.
+  const LAYOUTS = Object.assign(
+    { title: Title, cover: Cover, columns: Columns, step: Step, diagram: Diagram, list: List, stats: Stats, toc: Toc, outro: Outro },
+    window.DECK_LAYOUTS || {},
+  );
 
   function SlideDeck({ deck }) {
     const total = deck.slides.length;
@@ -398,7 +425,12 @@
           return (
             // id 는 목차가 거는 앵커다. 쪽 번호와 같은 1-기반 —
             // 목차에 적힌 숫자를 그대로 #sN 으로 쓴다.
-            <section className="slide" id={'s' + (i + 1)} key={i} data-screen-label={deck.name + ' · ' + (i + 1)}>
+            // cls 는 프로젝트 스코프 훅이다. 덱 CSS 보정을 `.slide` 전역에 걸면
+            // 한 프로젝트를 고치는 순간 나머지 프로젝트 장이 같이 움직인다 — 실제로
+            // 코드 장 폰트·여백이 세 프로젝트 공용이라 CM 만 손댈 방법이 없었다.
+            // 매니페스트가 cls 를 주면 그 프로젝트 장에만 `.slide--<cls>` 가 붙는다.
+            <section className={'slide' + (s.cls ? ' slide--' + s.cls : '')}
+                     id={'s' + (i + 1)} key={i} data-screen-label={deck.name + ' · ' + (i + 1)}>
               <Chrome section={s.section || deck.name} no={s.no} deck={s.proj || deck.name} page={i + 1} total={total} />
               <Body s={s} />
             </section>
