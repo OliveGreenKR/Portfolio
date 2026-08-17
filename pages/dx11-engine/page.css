@@ -79,51 +79,16 @@
 .dx-support-line::before, .dx-support-line::after { content: ''; height: 1px; flex: 1; background: var(--rule); }
 .dx-support-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
 
-/* Architecture — layered ownership + cross-layer relations */
-.dx-arch-layers { display: grid; gap: 9px; }
-.dx-arch-layer { padding: 11px 12px; border: 1px solid var(--rule); border-radius: 4px; background: var(--paper-2); }
-.dx-arch-layer:nth-child(2) { border-color: var(--sage-200); background: var(--sage-50); }
-.dx-arch-layer-head { display: flex; align-items: baseline; gap: 9px; margin-bottom: 8px; }
-.dx-arch-layer-head b { color: var(--terra-500); font: 700 9px/1.2 var(--font-mono); letter-spacing: .12em; }
-.dx-arch-layer-head span { color: var(--ink-3); font: 9.5px/1.2 var(--font-mono); }
-.dx-arch-cells { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 7px; }
-.dx-arch-cell { min-width: 0; padding: 9px 10px; border: 1px solid var(--rule-2); border-radius: 3px; background: var(--paper); }
-.dx-arch-cell strong { display: block; color: var(--ink); font: 600 11.5px/1.35 var(--font-mono); overflow-wrap: anywhere; }
-.dx-arch-cell small { display: block; margin-top: 4px; color: var(--ink-3); font-size: 10.5px; line-height: 1.4; }
-.dx-arch-edge-head { margin: 15px 0 8px; padding-top: 13px; border-top: 1px solid var(--rule); color: var(--ink-3); font: 700 9px/1.2 var(--font-mono); letter-spacing: .12em; }
-.dx-arch-edges { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-.dx-arch-edges .dx-lane { grid-template-columns: 62px minmax(0, 1fr); row-gap: 3px; }
-.dx-arch-edges .dx-lane > strong { font: 600 11px/1.3 var(--font-mono); overflow-wrap: anywhere; }
-.dx-arch-edges .dx-lane > small { grid-column: 2; }
-
-/* Frame flow — fixed six-phase main loop */
-.dx-frame-track { display: grid; gap: 7px; }
-.dx-frame-step { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 11px; align-items: center; padding: 10px 12px; border: 1px solid var(--rule-2); border-radius: 4px; background: var(--paper-2); }
-.dx-frame-step.focus { border-color: var(--sage-500); background: var(--sage-50); }
-.dx-frame-no { color: var(--rule-2); font: 400 20px/1 var(--font-mono); text-align: center; }
-.dx-frame-step.focus .dx-frame-no { color: var(--sage-500); }
-.dx-frame-body { min-width: 0; display: grid; grid-template-columns: 88px minmax(0, 1fr); gap: 4px 12px; align-items: baseline; }
-.dx-frame-body span { color: var(--terra-500); font: 700 9px/1.3 var(--font-mono); letter-spacing: .12em; }
-.dx-frame-body strong { color: var(--ink); font: 600 12px/1.35 var(--font-mono); overflow-wrap: anywhere; }
-.dx-frame-body small { grid-column: 2; color: var(--ink-3); font-size: 10.5px; line-height: 1.45; }
-.dx-frame-loop { margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--rule-2); color: var(--ink-3); font: 9.5px/1.3 var(--font-mono); text-align: center; }
+/* SVG 도표(svg-viz.jsx) — 페이지와 덱이 같은 파일을 쓴다.
+   뷰박스가 1600 고정이라 좁은 화면에서는 글자가 못 읽을 만큼 줄어든다.
+   줄이는 대신 최소 폭을 두고 가로로 굴린다 — 도표는 접히지 않는 물건이다. */
+.dx-svgfig .dx-diagram { padding: 14px; overflow-x: auto; }
+.dx-svgfig .dxd-svg { display: block; width: 100%; min-width: 880px; height: auto; }
+.dxd-svg text { font-family: var(--font-sans); }
+.dxd-svg text.mono { font-family: var(--font-mono); }
 
 /* Physics diagrams */
-.dx-owned { display: grid; align-content: start; gap: 6px; padding: 11px 12px; border: 1px solid var(--sage-500); border-radius: 4px; background: var(--sage-50); }
-.dx-owned-head { color: var(--terra-500); font: 700 9px/1.2 var(--font-mono); letter-spacing: .12em; }
-.dx-owned-row { min-width: 0; display: grid; grid-template-columns: 48px minmax(0, 1fr); gap: 2px 8px; align-items: baseline; padding: 7px 9px; border: 1px solid var(--rule-2); border-radius: 3px; background: var(--paper); }
-.dx-owned-row > span { color: var(--ink-3); font: 700 8.5px/1.3 var(--font-mono); letter-spacing: .1em; }
-.dx-owned-row > strong { color: var(--ink); font: 600 11.5px/1.3 var(--font-mono); overflow-wrap: anywhere; }
-.dx-owned-row > small { grid-column: 2; color: var(--ink-3); font-size: 10px; line-height: 1.4; }
 
-.dx-boundary-grid { display: grid; grid-template-columns: minmax(150px, 1fr) minmax(250px, 1.45fr) minmax(150px, 1fr); gap: 12px; align-items: stretch; }
-.dx-boundary-grid > .dx-node { display: flex; flex-direction: column; justify-content: center; }
-.dx-lanes { display: grid; gap: 6px; }
-.dx-lane { position: relative; display: grid; grid-template-columns: 78px 1fr auto; gap: 8px; align-items: center; padding: 8px 10px; border: 1px solid var(--sage-200); border-radius: 3px; background: var(--sage-50); }
-.dx-lane.reverse { border-color: var(--terra-200); background: var(--terra-50); }
-.dx-lane > span { color: var(--ink-3); font: 9px/1.2 var(--font-mono); }
-.dx-lane > strong { color: var(--ink); font-size: 12px; }
-.dx-lane > small { color: var(--ink-3); font: 9.5px/1.2 var(--font-mono); }
 .dx-tier-head { display: grid; grid-template-columns: 125px 1fr 78px 120px; gap: 10px; color: var(--ink-3); font: 700 9px/1.2 var(--font-mono); letter-spacing: .1em; }
 .dx-tier-head span:nth-child(2) { grid-column: 2 / 4; text-align: center; }
 .dx-tier-list { display: grid; gap: 8px; margin-top: 9px; }
@@ -139,11 +104,6 @@
 .dx-return-flow span { color: var(--terra-500); font: 700 9px/1.2 var(--font-mono); }
 .dx-return-flow strong { font: 600 11px/1.3 var(--font-mono); }
 .dx-return-flow b { color: var(--rule-2); }
-.dx-stack { max-width: 610px; margin: 0 auto; }
-.dx-stack .dx-node { text-align: center; }
-.dx-stack .dx-arrow { height: 32px; margin: auto; }
-.dx-stack .dx-arrow b { transform: rotate(90deg); }
-.dx-stack .dx-arrow span { position: absolute; margin-left: 180px; }
 .dx-pipeline-input { margin-bottom: 11px; padding: 8px 12px; border: 1px dashed var(--rule-2); border-radius: 3px; color: var(--ink-3); font: 10.5px/1.3 var(--font-mono); text-align: center; }
 .dx-pipeline-flow .dx-node { flex: 1 1 0; }
 
@@ -180,27 +140,16 @@
   .dx-story-copy > p, .dx-facts dd, .dx-proof-row p { font-size: 15px; }
   .dx-shot figcaption, .dx-figure figcaption { font-size: 13px; }
   .dx-node > small, .dx-render-support small, .dx-tier-name small,
-  .dx-tier-data, .dx-tier-target, .dx-tier-gate, .dx-lane > small { font-size: 13px; line-height: 1.45; }
-  .dx-lane > span { font-size: 11px; }
   .dx-diagram { padding: 13px; }
   .dx-runtime-flow, .dx-pipeline-flow { flex-direction: column; }
   .dx-arrow { flex: 0 0 24px; }
   .dx-arrow b { transform: rotate(90deg); }
   .dx-support-grid, .dx-render-support { grid-template-columns: 1fr 1fr; }
-  .dx-boundary-grid { grid-template-columns: 1fr; }
-  .dx-arch-cell small, .dx-frame-body small, .dx-owned-row > small { font-size: 13px; line-height: 1.45; }
-  .dx-arch-edges { grid-template-columns: 1fr; }
-  .dx-frame-body { grid-template-columns: minmax(0, 1fr); }
-  .dx-frame-body small { grid-column: 1; }
-  .dx-owned-row { grid-template-columns: minmax(0, 1fr); }
-  .dx-owned-row > small { grid-column: 1; }
-  .dx-lane { grid-template-columns: 75px 1fr auto; }
   .dx-tier-head { display: none; }
   .dx-tier { grid-template-columns: 98px 1fr; gap: 6px; }
   .dx-tier-gate, .dx-tier-target { min-height: 28px; padding: 6px 9px; }
   .dx-tier-gate::before { content: 'DIRTY ONLY'; font-size: 8px; }
   .dx-tier-target::before { content: '→ '; }
-  .dx-stack .dx-arrow span { display: none; }
   .dx-proof-grid { grid-template-columns: 1fr; }
 }
 
