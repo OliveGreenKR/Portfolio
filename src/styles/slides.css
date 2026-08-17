@@ -645,52 +645,6 @@
 }
 .slide--cm .cmd-scope { margin: 0; font-family: var(--font-mono); font-size: 17px; color: var(--ink-3); flex: 0 0 auto; }
 
-/* ── 표지 ───────────────────────────────────────────────────────────────── */
-.slide--cm .cmd-cover { display: flex; flex-direction: column; gap: 24px; }
-.slide--cm .cmd-cover__top { display: grid; grid-template-columns: 1fr 720px; gap: 56px; align-items: start; }
-.slide--cm .cmd-cover__copy { display: flex; flex-direction: column; gap: 18px; min-width: 0; }
-.slide--cm .cmd-eyebrow { font-family: var(--font-mono); font-size: 19px; letter-spacing: 0.18em; color: var(--sage-700); }
-.slide--cm .cmd-cover__title { margin: 0; font-size: 92px; font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
-.slide--cm .cmd-cover__sub { margin: 0; font-size: 26px; line-height: 1.45; color: var(--ink-2); }
-.slide--cm .cmd-cover__core {
-  margin: 0; font-size: 28px; line-height: 1.5; font-weight: 500;
-  background: var(--sage-50); border-left: 5px solid var(--sage-400); padding: 20px 24px;
-}
-.slide--cm .cmd-links { display: flex; flex-wrap: wrap; gap: 12px; }
-.slide--cm .cmd-links a {
-  font-size: 20px; padding: 9px 18px; text-decoration: none; color: var(--ink-2);
-  border: 1px solid var(--rule-2); border-radius: var(--r-pill);
-}
-.slide--cm .cmd-cover__media { margin: 0; }
-.slide--cm .cmd-cover__media img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
-.slide--cm .cmd-cover__media figcaption { margin-top: 12px; font-size: 19px; line-height: 1.5; color: var(--ink-3); }
-.slide--cm .cmd-axisnote { margin: 0; font-size: 19px; color: var(--ink-3); }
-.slide--cm .cmd-axisnote b { color: var(--ink-2); font-weight: 600; }
-.slide--cm .cmd-metrics {
-  display: grid; grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule); padding: 20px 0;
-}
-.slide--cm .cmd-metric { padding: 0 34px; border-right: 1px solid var(--rule); }
-.slide--cm .cmd-metric:first-child { padding-left: 0; }
-.slide--cm .cmd-metric:last-child { border-right: 0; }
-.slide--cm .cmd-metric > strong {
-  display: block; font-family: var(--font-mono); font-size: 58px; font-weight: 600; letter-spacing: -0.03em;
-}
-.slide--cm .cmd-metric > span { display: block; margin-top: 8px; font-size: 21px; font-weight: 600; color: var(--ink-2); }
-.slide--cm .cmd-metric > b { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 21px; font-weight: 500; }
-.slide--cm .cmd-metric > small { display: block; margin-top: 6px; font-size: 17px; line-height: 1.45; color: var(--ink-3); }
-.slide--cm .cmd-measure {
-  margin: 0; font-size: 18px; line-height: 1.5; color: var(--ink-3);
-  border-left: 3px solid var(--rule-2); padding-left: 14px;
-}
-.slide--cm .cmd-measure b { color: var(--ink-2); font-weight: 600; letter-spacing: .06em; }
-.slide--cm .cmd-boundary { margin: 0; font-size: 21px; line-height: 1.5; color: var(--ink-2); }
-.slide--cm .cmd-pills { display: flex; flex-wrap: wrap; gap: 10px; }
-.slide--cm .cmd-pills span {
-  font-family: var(--font-mono); font-size: 18px; padding: 8px 16px;
-  border: 1px solid var(--rule-2); border-radius: var(--r-pill); color: var(--ink-2);
-}
-
 /* ── 계측 결과 ──────────────────────────────────────────────────────────── */
 .slide--cm .cmd-result { display: flex; flex-direction: column; }
 .slide--cm .cmd-result__curve { flex: 1 1 auto; min-height: 0; display: flex; }
