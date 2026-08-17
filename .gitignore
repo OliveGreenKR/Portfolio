@@ -3,3 +3,9 @@ pages/deck.snapshot.html
 
 # 코드 블록 다크/라이트 비교 시안 — 판단 끝나면 지워도 된다
 pages/_syntax-preview.html
+
+# 제출용 덱 — 문서용(인쇄물)이라 공개하지 않는다. 로컬에만 둔다.
+# SlideDeck.jsx · slides.css 는 _syntax-preview 가 함께 쓰고 사실을 담지 않아 유지.
+pages/deck.html
+pages/deck.snapshot.html
+pages/deck/
