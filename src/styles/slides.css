@@ -676,6 +676,11 @@
 .slide--cm .cmd-metric > span { display: block; margin-top: 8px; font-size: 21px; font-weight: 600; color: var(--ink-2); }
 .slide--cm .cmd-metric > b { display: block; margin-top: 8px; font-family: var(--font-mono); font-size: 21px; font-weight: 500; }
 .slide--cm .cmd-metric > small { display: block; margin-top: 6px; font-size: 17px; line-height: 1.45; color: var(--ink-3); }
+.slide--cm .cmd-measure {
+  margin: 0; font-size: 18px; line-height: 1.5; color: var(--ink-3);
+  border-left: 3px solid var(--rule-2); padding-left: 14px;
+}
+.slide--cm .cmd-measure b { color: var(--ink-2); font-weight: 600; letter-spacing: .06em; }
 .slide--cm .cmd-boundary { margin: 0; font-size: 21px; line-height: 1.5; color: var(--ink-2); }
 .slide--cm .cmd-pills { display: flex; flex-wrap: wrap; gap: 10px; }
 .slide--cm .cmd-pills span {
