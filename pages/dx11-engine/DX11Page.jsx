@@ -16,14 +16,14 @@ function DXHeader({ indexHref }) {
       <a className="nb-brand" href={indexHref}><span className="nb-brand-mark"></span>JCH / PORTFOLIO</a>
       <div className="nb-crumbs"><a href={indexHref}>index</a><span className="sep">/</span><span className="cur">projects / dx11-engine</span></div>
       <nav className="nb-nav">
-        <a href="#overview">Overview</a><a href="#physics">Physics</a><a href="#systems">Systems</a><a href="#evidence">Evidence</a>
+        <a href="#summary">Summary</a><a href="#overview">Overview</a><a href="#physics">Physics</a><a href="#systems">Rendering</a>
       </nav>
     </header>
   );
 }
 
 function DXRail() {
-  const ids = ['hero', 'overview', 'physics', 'systems', 'evidence'];
+  const ids = ['hero', 'summary', 'overview', 'physics', 'systems'];
   const [active, setActive] = useStateDX('hero');
   useEffectDX(() => {
     const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
@@ -35,7 +35,7 @@ function DXRail() {
     return () => observer.disconnect();
   }, []);
 
-  const labels = { hero: '전체', overview: '01 · 엔진 구조', physics: '02 · 물리 심화', systems: '03 · 렌더링', evidence: '04 · 검증 · 한계' };
+  const labels = { hero: '전체', summary: '00 · 요약', overview: '01 · 엔진 구조', physics: '02 · 물리 심화', systems: '03 · 렌더링' };
   return <aside className="nb-rail" aria-label="On-page navigation">{ids.map(id => <a key={id} href={`#${id}`} className={active === id ? 'active' : ''}>{labels[id]}</a>)}</aside>;
 }
 
@@ -90,7 +90,6 @@ function DXOverview({ data }) {
     <section id="overview" className="nb-section">
       <DXSectionHead no="01" title="엔진 전체 구조" kind="TOP DOWN" />
       <p className="dx-gist">{ri(data.overview.gist)}</p>
-      <dl className="dx-facts">{data.overview.facts.map(([key, value]) => <React.Fragment key={key}><dt>{key}</dt><dd>{value}</dd></React.Fragment>)}</dl>
       <DXStoryBlock item={data.overview.architecture} viz="DXArchitectureViz" />
       <DXStoryBlock item={data.overview.frame} viz="DXFrameFlowViz" />
     </section>
@@ -125,13 +124,29 @@ function DXSystems({ data }) {
   );
 }
 
-function DXEvidence({ data }) {
+// 결론을 히어로 바로 뒤에 둔다 — 무엇을 만들었고(범위), 무엇으로 확인했고(근거),
+// 어디까지가 적용 범위인지(한계)를 한 화면에서 끝낸다. 덱의 두 번째 장과 같은 구성이다.
+//
+// verified[2]('범위')는 넣지 않는다 — 왼쪽 칸의 '직접 구현'과 같은 말이다.
+function DXSummary({ data }) {
   const ri = window.renderInline;
-  const column = (title, tone, rows) => <div className={`dx-proof-col ${tone}`}><h3>{title}</h3>{rows.map(([key, value]) => <div className="dx-proof-row" key={key}><strong>{key}</strong><p>{ri(value)}</p></div>)}</div>;
+  const column = (title, tone, rows) => (
+    <div className={`dx-proof-col ${tone}`}>
+      <h3>{title}</h3>
+      {rows.map(([key, value]) => (
+        <div className="dx-proof-row" key={key}><strong>{key}</strong><p>{ri(value)}</p></div>
+      ))}
+    </div>
+  );
   return (
-    <section id="evidence" className="nb-section">
-      <DXSectionHead no="04" title="검증 결과와 적용 범위" kind="EVIDENCE" />
-      <div className="dx-proof-grid">{column('확인한 내용', 'verified', data.evidence.verified)}{column('적용 범위 · 개선 과제', 'limits', data.evidence.limits)}</div>
+    <section id="summary" className="nb-section">
+      <DXSectionHead no="00" title="구현 범위와 검증 근거, 적용 한계" kind="SUMMARY" />
+      <p className="dx-gist">{ri(data.evidence.gist)}</p>
+      <div className="dx-proof-grid">
+        {column('직접 만든 범위', 'scope', data.overview.facts)}
+        {column('확인 가능한 근거', 'verified', data.evidence.verified.slice(0, 2))}
+        {column('적용 범위 · 개선 과제', 'limits', data.evidence.limits)}
+      </div>
     </section>
   );
 }
@@ -145,10 +160,10 @@ function DX11Page({ indexHref = 'landing.html' }) {
         <DXRail />
         <main>
           <DXHero data={data} />
+          <DXSummary data={data} />
           <DXOverview data={data} />
           <DXPhysics data={data} />
           <DXSystems data={data} />
-          <DXEvidence data={data} />
           <footer className="nb-footer"><span>JCH · 2026 · projects / dx11-engine</span><span>about / resume / contact</span></footer>
         </main>
         <div></div>
