@@ -81,25 +81,46 @@ function nextOutPath() {
     await page.evaluateHandle('document.fonts.ready');
     await new Promise((r) => setTimeout(r, 1500)); // filter/shadow 합성은 폰트 레이아웃 뒤에 온다
 
-    const slides = await page.evaluate(() => [...document.querySelectorAll('.slide')].map((sl, i) => {
-      const txt = (el) => (el ? el.textContent.trim().replace(/\s+/g, ' ') : '');
-      const chrome = [...sl.querySelectorAll('.sl-top > *')].map(txt).filter(Boolean);
-      return {
-        page: i + 1,
-        proj: chrome[chrome.length - 1] || '',
-        section: chrome[0] || '',
-        heading: txt(sl.querySelector('.sl-h, .cmd-cover__title, h1, h2')),
-        isTitle: !!sl.querySelector('.sl-title__facts'),
-        isToc: !!sl.querySelector('.sl-toc'),
-        isCover: !!sl.querySelector('.sl-cover__main, .cmd-cover'),
-      };
-    }));
+    /* 목차 트리는 **매니페스트**에서, 잎 이름은 DOM 에서 읽는다.
+       ⚠️ 층(프로젝트/장)을 DOM 클래스로 판정하면 표지 마크업을 리팩터할 때 조용히 무너진다 —
+          실제로 표지를 프로젝트 소유로 옮긴 뒤(a4acbf6) `.sl-cover__main` 이 사라져
+          Motelet · DX11 표지가 표지로 안 잡혔고, 그 뒤 장이 전부 CM 밑으로 매달렸다.
+          layout 은 SlideDeck 이 렌더러를 고르는 필수 필드라 없어질 수 없다.
+       이름은 매니페스트로 못 뽑는다 — 표지 4장과 cmMethod 4장은 title 필드가 비어 있고
+       (제목이 표지·method 안에 있다) `.sl-h` 는 30장 전부에서 이미 제대로 뽑힌다.
+       ⚠️ 매니페스트 인덱스 = 쪽 번호. 한 슬라이드 = 한 쪽(@page + break-after)이라 성립하고,
+          어긋나면 아래 length 검사가 잡는다. */
+    const slides = await page.evaluate(() => {
+      const nodes = [...document.querySelectorAll('.slide')];
+      return window.DECK_ENGINE.slides.map((s, i) => {
+        const sl = nodes[i];
+        const txt = (el) => (el ? el.textContent.trim().replace(/\s+/g, ' ') : '');
+        return {
+          page: i + 1,
+          layout: s.layout,
+          proj: s.proj || '',
+          section: s.section || '',
+          heading: txt(sl && sl.querySelector('.sl-h, .cmd-cover__title, h1, h2')),
+        };
+      });
+    });
+    if (slides.length !== count) {
+      throw new Error(`매니페스트 ${slides.length}장 ≠ 렌더된 슬라이드 ${count}장 — 쪽 번호가 어긋난다`);
+    }
     fs.writeFileSync(slidesJson, JSON.stringify(slides, null, 1), 'utf-8');
 
     console.log('Rendering PDF...');
+    // ⚠️ width/height 를 빼면 인쇄 **레이아웃**이 기본 용지(Letter = 816px) 폭으로 돈다.
+    //    preferCSSPageSize 는 최종 page box 만 정하지 그 폭은 못 바꾼다(실측).
+    //    816px 에서 max-width 1100·1180·820 브레이크포인트가 전부 발동하고,
+    //    motelet/viz.jsx 의 useMTNarrow(820) 는 인쇄 중에만 narrow SVG 로 재렌더된다 —
+    //    화면 검사로는 안 잡히고 PDF 에만 남는다(0817·0818 출력에서 실측).
+    //    dim 은 .slide 계산폭이라 규격 상수는 여전히 slides.css 한 곳이다.
     await page.pdf({
       path: rawPdf,
       printBackground: true,
+      width: dim.w + 'px',
+      height: dim.h + 'px',
       preferCSSPageSize: true,                            // @page { size: 1920px 1200px; margin: 0 }
       margin: { top: 0, right: 0, bottom: 0, left: 0 },
     });
