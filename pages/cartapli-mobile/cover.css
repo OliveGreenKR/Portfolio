@@ -7,6 +7,14 @@
    그래서 수치가 4단(값 · 이름 · 전후 · 조건)이다. 공용 Metrics 로 접으면 그 층이 사라진다.
 
    치수 규칙은 공용과 같다 — 덱 기준 px × var(--cs). 덱은 --cs:1.
+   ⚠️ 2026-08: 이 표지만 글자가 작고 얇아 보인다는 지적을 받았다. 원인은 눈금이
+      공용 표지보다 한 단씩 낮게 잡혀 있던 것이다(본문 26 vs 34 · 큰 수치 58 vs 76 ·
+      배지 18 vs 21). 내용은 그대로 두고 크기와 굵기만 공용 눈금 쪽으로 올렸다 —
+      단, 4단 수치 구조는 이 표지의 의도라 유지한다.
+      (한 번에 공용 눈금까지 올렸더니 덱 1920×1200 에서 34px 넘쳤다 — 한 단 내려 맞췄다.)
+      ⚠️ 더 큰 원인은 **글자 바닥값이 없던 것**이다. 공용 부품(cover.css)은 작은 글자에
+         max(바닥, calc(px × --cs)) 를 걸어 두는데 이 파일에는 없어서, 랜딩 카드
+         (--cs 0.4)에서 배지가 8px · 역할 줄이 9.6px 까지 내려갔다(실측). 같은 방식으로 건다.
    (이관 전에는 slides.css 안에 .slide--cm 스코프로 있었다. 표지가 덱 밖으로 나가면서
     그 스코프가 안 걸리므로 표지 루트(.cmd-cover) 스코프로 옮겼다.) */
 
@@ -18,52 +26,56 @@
   align-items: start;
 }
 .cmd-cover__copy { display: flex; flex-direction: column; gap: calc(18px * var(--cs)); min-width: 0; }
-.cmd-cover__title { margin: 0; font-size: calc(92px * var(--cs)); font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
-.cmd-cover__sub { margin: 0; font-size: calc(26px * var(--cs)); line-height: 1.45; color: var(--ink-2); }
+.cmd-cover__title { margin: 0; font-size: calc(96px * var(--cs)); font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
+.cmd-cover__sub { margin: 0; font-size: max(12.5px, calc(29px * var(--cs))); line-height: 1.45; color: var(--ink-2); font-weight: 450; }
 .cmd-cover__core {
-  margin: 0; font-size: calc(28px * var(--cs)); line-height: 1.5; font-weight: 500;
+  margin: 0; font-size: max(12.5px, calc(30px * var(--cs))); line-height: 1.5; font-weight: 550;
   background: var(--sage-50); border-left: calc(5px * var(--cs)) solid var(--sage-400);
   padding: calc(20px * var(--cs)) calc(24px * var(--cs));
 }
 .cmd-links { display: flex; flex-wrap: wrap; gap: calc(12px * var(--cs)); }
 .cmd-links a {
-  font-size: calc(20px * var(--cs)); padding: calc(9px * var(--cs)) calc(18px * var(--cs));
+  font-size: max(11.5px, calc(19px * var(--cs))); font-weight: 600; padding: calc(11px * var(--cs)) calc(16px * var(--cs));
   text-decoration: none; color: var(--ink-2);
   border: 1px solid var(--rule-2); border-radius: var(--r-pill);
 }
 .cmd-cover__media { margin: 0; }
 .cmd-cover__media img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
-.cmd-cover__media figcaption { margin-top: calc(12px * var(--cs)); font-size: calc(19px * var(--cs)); line-height: 1.5; color: var(--ink-3); }
+.cmd-cover__media figcaption { margin-top: calc(12px * var(--cs)); font-size: max(10px, calc(19px * var(--cs))); line-height: 1.5; color: var(--ink-3); }
 
-.cmd-axisnote { margin: 0; font-size: calc(19px * var(--cs)); color: var(--ink-3); }
+.cmd-axisnote { margin: 0; font-size: max(10.5px, calc(19px * var(--cs))); color: var(--ink-3); }
 .cmd-axisnote b { color: var(--ink-2); font-weight: 600; }
 
+/* 수치 칸은 **다른 표지와 같은 박스**로 낸다(2026-08 사용자 지적) — 예전에는 위·아래
+   가로선과 칸 사이 세로선만 있어서, 표지 여섯 장을 나란히 놓으면 이 표지의 핵심 수치만
+   배경 위에 떠 보이고 눈에 덜 걸렸다. 공용 .cv-big 과 같은 테두리·배경을 쓴다.
+   4단 구조(값 · 이름 · 전후 · 조건)는 이 표지의 의도라 그대로 둔다. */
 .cmd-metrics {
   display: grid; grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--rule); border-bottom: 1px solid var(--rule);
-  padding: calc(20px * var(--cs)) 0;
+  gap: calc(24px * var(--cs));
 }
-.cmd-metric { padding: 0 calc(34px * var(--cs)); border-right: 1px solid var(--rule); }
-.cmd-metric:first-child { padding-left: 0; }
-.cmd-metric:last-child { border-right: 0; }
+.cmd-metric {
+  border: 1px solid var(--rule); background: var(--paper-2);
+  padding: calc(22px * var(--cs)) calc(24px * var(--cs));
+}
 .cmd-metric > strong {
   display: block; font-family: var(--font-mono);
-  font-size: calc(58px * var(--cs)); font-weight: 600; letter-spacing: -0.03em;
+  font-size: calc(66px * var(--cs)); font-weight: 700; letter-spacing: -0.03em;
 }
-.cmd-metric > span { display: block; margin-top: calc(8px * var(--cs)); font-size: calc(21px * var(--cs)); font-weight: 600; color: var(--ink-2); }
-.cmd-metric > b { display: block; margin-top: calc(8px * var(--cs)); font-family: var(--font-mono); font-size: calc(21px * var(--cs)); font-weight: 500; }
-.cmd-metric > small { display: block; margin-top: calc(6px * var(--cs)); font-size: calc(17px * var(--cs)); line-height: 1.45; color: var(--ink-3); }
+.cmd-metric > span { display: block; margin-top: calc(8px * var(--cs)); font-size: max(11px, calc(23px * var(--cs))); font-weight: 600; color: var(--ink-2); }
+.cmd-metric > b { display: block; margin-top: calc(8px * var(--cs)); font-family: var(--font-mono); font-size: max(11px, calc(23px * var(--cs))); font-weight: 600; }
+.cmd-metric > small { display: block; margin-top: calc(6px * var(--cs)); font-size: max(10px, calc(19px * var(--cs))); line-height: 1.45; color: var(--ink-3); }
 
 .cmd-measure {
-  margin: 0; font-size: calc(18px * var(--cs)); line-height: 1.5; color: var(--ink-3);
+  margin: 0; font-size: max(10.5px, calc(18px * var(--cs))); line-height: 1.5; color: var(--ink-3);
   border-left: calc(3px * var(--cs)) solid var(--rule-2); padding-left: calc(14px * var(--cs));
 }
 .cmd-measure b { color: var(--ink-2); font-weight: 600; letter-spacing: .06em; }
-.cmd-boundary { margin: 0; font-size: calc(21px * var(--cs)); line-height: 1.5; color: var(--ink-2); }
+.cmd-boundary { margin: 0; font-size: max(11px, calc(22px * var(--cs))); font-weight: 450; line-height: 1.5; color: var(--ink-2); }
 
 .cmd-pills { display: flex; flex-wrap: wrap; gap: calc(10px * var(--cs)); }
 .cmd-pills span {
-  font-family: var(--font-mono); font-size: calc(18px * var(--cs));
+  font-family: var(--font-mono); font-size: max(10px, calc(20px * var(--cs))); font-weight: 500;
   padding: calc(8px * var(--cs)) calc(16px * var(--cs));
   border: 1px solid var(--rule-2); border-radius: var(--r-pill); color: var(--ink-2);
 }
