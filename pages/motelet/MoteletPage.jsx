@@ -1,12 +1,15 @@
 // pages/motelet/MoteletPage.jsx
 //
-// 구성 원칙 — 최대한 적은 글로, 거짓 없이, 가장 빠르게.
-//   비교는 2열 표 / 순서는 스트립 / 규칙은 식 / 구조는 그림. 산문은 남는 것만.
-//   절마다 "30초에 잡혀야 할 한 줄" 이 시각적으로 먼저 걸리는 자리에 있어야 한다.
+// 순서 = brief.md Structure 계약.
+//   hero → 01 게임 루프 → 02 밸런싱 에디터(캡처 먼저) → 02-A 정의 → 02-B 상대 순위 → 03 런타임 → 04 한계.
+// 01 이 앞에 오는 이유: 뒤의 밸런싱 절이 전부 "판과 판 사이" 를 다룬다. 그 판이 뭔지 모르면 안 읽힌다.
+// 02 는 탑다운 — 도구의 실물을 먼저 보이고 그다음 그 안의 정의·판단으로 내려간다.
+// 역할 경계는 절을 만들지 않고 히어로 한 줄로 끝낸다.
+// 비중 8:2 — 02(밸런싱)이 본체, 03(런타임)은 같은 판단이 런타임에서 반복된 사례.
 //
-// 비중 8:2 — 02·03·04(밸런싱) = 8, 05(런타임) = 2.
-// hero 순서 = 제목 → hook → 게임 한 줄 → 만든 것 3칸 → 스크린샷.
-//   3칸이 접힘선 아래로 밀리면 첫 화면이 아무것도 안 준다(30초 스캔 실측).
+// 절마다 "먼저 걸려야 할 것" 이 그림이다. 산문은 그림이 못 하는 말만 한다.
+//   정의 → 트리·함수 그래프 / 경계 → 경계도 / 순서 → 루프 / 구조 → 디스패치 행렬 / 규모 → 막대.
+// 이 페이지에는 계측이 없다. 그래서 "측정처럼 보이는 그림" 을 만들지 않는다(viz.jsx 규칙 1).
 
 const { useEffect: useEffectMT, useState: useStateMT } = React;
 const RI = s => window.renderInline(s);
@@ -26,6 +29,10 @@ function MTSectionHead({ no, title, kind }) {
   );
 }
 
+function MTSubHead({ tag, children }) {
+  return <h3 className="mt-subhead"><span>{tag}</span>{children}</h3>;
+}
+
 function MTPoints({ points }) {
   return (
     <div className="mt-pts">
@@ -43,15 +50,22 @@ function MTPoints({ points }) {
 }
 
 // 규칙·정의 — 코드가 아닌 것에 CODE 크롬을 붙이지 않는다.
+// 식 본문만 mono, '←' 뒤 우리말 주석은 본문 글꼴로 뺀다(한글은 mono 스택에서 자간이 벌어진다).
 function MTDefn({ title, intro, lines, result }) {
   return (
     <div className="mt-defn">
       <div className="mt-defn-h">{RI(title)}</div>
       {intro && <p className="mt-defn-intro">{RI(intro)}</p>}
       <dl className="mt-defn-rows">
-        {lines.map(([k, v]) => (
-          <React.Fragment key={k}><dt>{RI(k)}</dt><dd>{RI(v)}</dd></React.Fragment>
-        ))}
+        {lines.map(([k, v]) => {
+          const [expr, aside] = v.split('←');
+          return (
+            <React.Fragment key={k}>
+              <dt>{RI(k)}</dt>
+              <dd><code>{expr.trim()}</code>{aside && <i>{aside.trim()}</i>}</dd>
+            </React.Fragment>
+          );
+        })}
       </dl>
       {result && <p className="mt-defn-note">{RI(result)}</p>}
     </div>
@@ -61,18 +75,6 @@ function MTDefn({ title, intro, lines, result }) {
 const MTChips = ({ items }) => (
   <div className="mt-chips">{items.map(c => <span className="mt-chip" key={c}>{c}</span>)}</div>
 );
-
-function MTFold({ label, children }) {
-  const [open, setOpen] = useStateMT(false);
-  return (
-    <div className={`mt-fold ${open ? 'open' : ''}`}>
-      <button className="mt-fold-btn" onClick={() => setOpen(!open)} aria-expanded={open}>
-        <span className="mt-fold-mark">{open ? '−' : '+'}</span>{label}
-      </button>
-      {open && <div className="mt-fold-body">{children}</div>}
-    </div>
-  );
-}
 
 /* ─── Chrome ─────────────────────────────────────────── */
 function MTHeader({ indexHref }) {
@@ -84,19 +86,19 @@ function MTHeader({ indexHref }) {
         <span className="cur">projects / motelet</span>
       </div>
       <nav className="nb-nav">
-        <a href="#model">밸런싱</a>
+        <a href="#loop">게임 루프</a>
+        <a href="#tool">에디터</a>
         <a href="#runtime">런타임</a>
-        <a href="#cost">한계</a>
       </nav>
     </header>
   );
 }
 
 const MT_RAIL = [
-  ['sec', 'page'], ['hero', '전체'], ['scope', '01 범위'],
-  ['sec', '밸런싱'], ['model', '02 정의'], ['sim', '03 상대 비교'],
-  ['sec', '런타임'], ['runtime', '04 기하'],
-  ['sec', 'wrap-up'], ['cost', '05 한계'],
+  ['sec', 'page'], ['hero', '시작'], ['loop', '01 게임 루프'],
+  ['sec', '밸런싱'], ['tool', '02 에디터'], ['model', '02-A 성장 체감'], ['sim', '02-B 상대 순위'],
+  ['sec', '런타임'], ['runtime', '03 기하 · 상한'],
+  ['sec', 'wrap-up'], ['cost', '04 한계'],
 ];
 
 function MTRail() {
@@ -130,93 +132,93 @@ function MTHero({ data }) {
   const m = data.meta;
   return (
     <section id="hero" className="mt-hero">
-      <div className="nb-eyebrow">{m.eyebrow}</div>
-      <p className="mt-hero-sub">{m.subtitle}</p>
-      <h1 className="nb-title">{m.title}</h1>
-      <p className="mt-hook">{RI(data.hook)}</p>
-      <p className="mt-what">{RI(data.what)}</p>
+      <div className="mt-hero-main">
+        <div className="mt-hero-copy">
+          <div className="nb-eyebrow">{m.eyebrow}</div>
+          <p className="mt-hero-sub">{m.subtitle}</p>
+          <h1 className="nb-title">{m.title}</h1>
+          <p className="mt-hook">{RI(data.hook)}</p>
+          <p className="mt-what">{RI(data.what)}</p>
+        </div>
+        <figure className="mt-hero-media">
+          <img src={data.hero.img} alt="전투 화면 — 플레이어 하나와 화면을 덮은 적, 광역 효과가 동시에 돌고 있다" />
+          <figcaption>{RI(data.hero.caption)}</figcaption>
+        </figure>
+      </div>
 
-      {/* 3칸이 먼저다 — 첫 화면에서 이게 목차 역할을 한다. */}
+      {/* 3칸이 곧 아래 절의 목차다. 첫 화면에서 이게 걸려야 한다. */}
       <window.MTBuilt items={data.built} />
 
-      <figure className="mt-shot">
-        <img src={data.hero.img} alt="전투 화면 — 플레이어 하나와 화면을 덮은 적, 광역 효과가 동시에 돌고 있다" />
-        <figcaption>{RI(data.hero.caption)}</figcaption>
-      </figure>
-    </section>
-  );
-}
-
-/* ─── §01 맡은 범위 ──────────────────────────────────── */
-function MTScope({ data }) {
-  const s = data.scope;
-  return (
-    <section id="scope" className="nb-section">
-      <MTSectionHead no="01" title="맡은 범위" kind="SCOPE" />
-      <MTGist>{s.gist}</MTGist>
-      <div className="mt-tables">
-        <window.DataTable title={s.ownership.title} headers={s.ownership.headers} rows={s.ownership.rows} />
-        <window.DataTable title={s.scale.title} headers={s.scale.headers} rows={s.scale.rows} />
+      <p className="mt-boundary">{RI(m.boundary)}</p>
+      <div className="nb-metarow">
+        {m.facts.map(f => <span key={f} className="nb-metapill"><b>{f}</b></span>)}
       </div>
-      <MTNote>{s.note}</MTNote>
     </section>
   );
 }
 
-/* ─── §02 성장 체감의 정의 ───────────────────────────── */
+/* ─── §01 게임 루프 ──────────────────────────────────── */
+function MTLoop({ data }) {
+  const c = data.cycle;
+  return (
+    <section id="loop" className="nb-section">
+      <MTSectionHead no="01" title="한 판과 그다음 판" kind="GAME LOOP" />
+      <MTGist>{c.gist}</MTGist>
+      <window.MTPageCycle loop={c} />
+      <MTBody>{c.body}</MTBody>
+    </section>
+  );
+}
+
+/* ─── §02 밸런싱 에디터 (탑다운 — 실물 먼저) ─────────── */
+function MTTool({ data }) {
+  const s = data.sim;
+  return (
+    <section id="tool" className="nb-section">
+      <MTSectionHead no="02" title="수학 모델로 만든 밸런싱 에디터" kind="TOOL" />
+      <MTGist>{s.toolGist}</MTGist>
+      {/* 칩 목록은 캡처 범례가 이미 여섯 이름을 다 부른다 — 같은 말을 두 형태로 하지 않는다. */}
+      <window.MTPageShot shot={s.shot} />
+      <MTBody>{s.host.body}</MTBody>
+    </section>
+  );
+}
+
+/* ─── §02-A 성장 체감의 정의 ─────────────────────────── */
 function MTModel({ data }) {
   const m = data.model;
   return (
     <section id="model" className="nb-section">
-      <MTSectionHead no="02" title="성장 체감의 정의" kind="MODEL" />
+      <MTSectionHead no="02-A" title="성장 체감의 정의" kind="MODEL" />
       <MTGist>{m.gist}</MTGist>
       <MTBody>{m.problem}</MTBody>
 
-      {/* 분해를 먼저 세운다. 트리가 최상위 3단, 아래 정의 블록이 잎 둘. */}
-      <window.MTGoldDecompViz />
+      <MTSubHead tag="A-1">무엇을 곱하고 어디서 자르는가</MTSubHead>
+      <window.MTPageDecompTree decomp={m.decomp} />
       <MTDefn title={m.formula.title} intro={m.formula.intro} lines={m.formula.lines} result={m.formula.result} />
 
-      {/* 이 절의 진짜 주장 — 산문이었을 때 30초에 안 잡혔다. */}
-      <window.DataTable title={m.minTable.title} headers={m.minTable.headers} rows={m.minTable.rows} />
+      <MTSubHead tag="A-2">두 개의 min 이 버리는 것</MTSubHead>
+      <window.MTPageMins mins={m.mins} />
       <window.AsciiBlock title={m.code.title} intro={m.code.intro} code={m.code.code} result={m.code.result} />
     </section>
   );
 }
 
-/* ─── §03 시뮬레이터를 쓴 방식 ───────────────────────── */
+/* ─── §02-B 상대 순위 ────────────────────────────────── */
 function MTSim({ data }) {
   const s = data.sim;
   return (
     <section id="sim" className="nb-section">
-      <MTSectionHead no="03" title="쓴 방식 — 절대값이 아니라 상대 순위" kind="SIMULATOR" />
+      <MTSectionHead no="02-B" title="쓴 방식 — 절대값이 아니라 상대 순위" kind="SIMULATOR" />
       <MTGist>{s.gist}</MTGist>
 
-      {/* 두 열을 나란히 놓는 순간 "섞이면 안 된다" 가 증명된다. */}
-      <window.DataTable title={s.split.title} headers={s.split.headers} rows={s.split.rows} />
-      <MTNote>{s.splitNote}</MTNote>
-
+      <MTSubHead tag="B-1">입력의 경계와 읽은 출력</MTSubHead>
+      <window.MTPageBoundary boundary={s.boundary} split={s.split} />
       <MTPoints points={s.points} />
       <window.AsciiBlock title={s.code.title} intro={s.code.intro} code={s.code.code} result={s.code.result} />
 
-      {/* 루프는 순서다. 순서는 화살표가 문장보다 빠르다. */}
-      <div className="mt-loop">
-        <div className="mt-loop-h">{RI(s.loop.title)}</div>
-        <window.FSMTrail steps={s.loop.steps} />
-        <p className="mt-body">{RI(s.loop.note)}</p>
-      </div>
-
-      <div className="mt-host">
-        <div className="mt-host-h">{RI(s.host.title)}</div>
-        <MTChips items={s.host.chips} />
-        <p className="mt-body">{RI(s.host.body)}</p>
-      </div>
-
-      <figure className="mt-shot">
-        <img src={s.shot.img} alt="스킬트리 에디터 — 노드 색이 상대 순위 히트맵, 우측이 소스/가정 config 패널, 좌하단이 구간 분석" />
-        <figcaption>{RI(s.shot.caption)}</figcaption>
-        <MTNote>{s.shot.note}</MTNote>
-      </figure>
-
+      <MTSubHead tag="B-2">{s.policy.title}</MTSubHead>
+      <MTBody>{s.policy.body}</MTBody>
     </section>
   );
 }
@@ -226,17 +228,29 @@ function MTRuntime({ data }) {
   const r = data.runtime;
   return (
     <section id="runtime" className="nb-section">
-      <MTSectionHead no="04" title="물리 엔진 없이 — 커널 7 · 질의 4종" kind="RUNTIME" />
+      <MTSectionHead no="03" title="반복을 감당하는 전투씬 구조" kind="RUNTIME" />
       <MTGist>{r.gist}</MTGist>
 
-      {/* 답을 먼저. 산문 뒤에 묻어 두면 30초에 못 찾는다. */}
-      <window.MTGeoArchViz caption={r.vizCaption} />
+      <MTSubHead tag="03-A">주입 계약 하나로 열리는 씬</MTSubHead>
+      <window.MTPagePipeline pipeline={r.pipeline} />
+      <MTPoints points={r.pipeline.rules} />
 
-      <window.DataTable title={r.why.title} headers={r.why.headers} rows={r.why.rows} />
-      <MTNote>{r.whyNote}</MTNote>
+      <MTSubHead tag="03-B">필요한 묶음만 올린다</MTSubHead>
+      <window.MTPageResidency residency={r.residency} />
+      <MTPoints points={r.residency.invariants} />
+      <MTNote>{r.residency.note}</MTNote>
 
-      <window.DataTable title={r.queries.title} headers={r.queries.headers} rows={r.queries.rows} />
-      <MTDefn title={r.cap.title} intro={r.cap.intro} lines={r.cap.lines} result={r.cap.result} />
+      {/* 구조 → 선택 근거 → 코드 순. r.why(표)·r.queries·r.cap·r.occupancy 는 페이지에서 뺐다 — 덱 호환으로 data.js 에만 남는다. */}
+      <MTSubHead tag="03-C">판정은 중앙 기하 월드에서 단발로</MTSubHead>
+      <window.MTPageGeoWorld geo={r.geo} />
+      <MTNote>{r.geo.note}</MTNote>
+      <window.MTPageWhyGeo why={r.why2} />
+      <window.MTPageMatrix matrix={r.matrix} />
+      <window.AsciiBlock title={r.code.title} intro={r.code.intro} code={r.code.code} result={r.code.result} />
+
+      <MTSubHead tag="03-D">HP 바 · 데미지 텍스트는 메시 하나로</MTSubHead>
+      <window.MTPageBatch batch={r.batch} />
+      <window.AsciiBlock title={r.batch.code.title} intro={r.batch.code.intro} code={r.batch.code.code} result={r.batch.code.result} />
     </section>
   );
 }
@@ -246,10 +260,9 @@ function MTCost({ data }) {
   const c = data.cost;
   return (
     <section id="cost" className="nb-section">
-      <MTSectionHead no="05" title="재지 않은 것과 근사인 자리" kind="LIMITS" />
+      <MTSectionHead no="04" title="재지 않은 것과 근사인 자리" kind="LIMITS" />
       <MTGist>{c.gist}</MTGist>
 
-      {/* 3분류가 안 보여서 11개가 평평한 자책 목록으로 읽혔다 — 카드로 세운다. */}
       <div className="mt-costcards">
         {c.groups.map(g => (
           <div className="mt-costcard" key={g.head}>
@@ -279,7 +292,8 @@ function MoteletPage({ indexHref = 'landing.html' }) {
         <MTRail />
         <main>
           <MTHero data={data} />
-          <MTScope data={data} />
+          <MTLoop data={data} />
+          <MTTool data={data} />
           <MTModel data={data} />
           <MTSim data={data} />
           <MTRuntime data={data} />
