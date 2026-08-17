@@ -8,6 +8,10 @@ window.CM_DATA = {
     title: 'Cartapli Mobile',
     subtitle: '종이접기 전투를 Android에서 검증하기 위해 시뮬레이션 실행 구조를 다시 설계한 기술 프로토타입',
     core: '같은 접기 입력을 반복 계측해 파묻힌 레이어를 제거하고, 렌더러를 두 메시로 합친 뒤, 분할 연산을 NativeArray·Job·Burst 경로로 옮겼다.',
+    // 기간 · 스택은 덱(목차 · 표지 배지)이 읽는 필드다. 기간은 저장소 커밋 범위 실측
+    // (첫 커밋 2026-07-22 · 마지막 2026-08-13), 스택은 아래 facts · boundary 에 이미 있는 것만 옮겼다.
+    period: '2026.07 ~ 2026.08',
+    stack: ['Unity 6.3', 'URP 17.3', 'Burst · Job', 'NativeArray'],
     links: [
       { label: 'Architecture', href: '#architecture' },
       { label: 'Optimization result', href: '#result' },
