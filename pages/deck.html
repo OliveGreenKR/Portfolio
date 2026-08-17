@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>제출용 덱 — 엔진 프로그래머 · JCH Portfolio</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="../src/styles/tokens.css">
+  <link rel="stylesheet" href="../src/styles/notebook.css">
+  <link rel="stylesheet" href="dx11-engine/page.css">
+  <link rel="stylesheet" href="cartapli-mobile/page.css">
+  <link rel="stylesheet" href="motelet/page.css">
+  <link rel="stylesheet" href="../src/styles/slides.css">
+  <link rel="stylesheet" href="../src/styles/cover.css">
+  <link rel="stylesheet" href="cartapli-mobile/cover.css">
+  <link rel="stylesheet" href="cartapli/cover.css">
+  <link rel="stylesheet" href="../src/styles/syntax.css">
+  <style>
+    html, body { margin: 0; padding: 0; background: var(--rule); }
+  </style>
+</head>
+<body data-screen-label="Deck · 엔진" data-code-lang="cpp">
+  <div id="root"></div>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.0/dist/mermaid.min.js"></script>
+  <script src="../src/views/notebook-mermaid-init.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-clike.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-cpp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-csharp.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js"></script>
+  <script src="../src/views/syntax.js"></script>
+
+  <script src="dx11-engine/data.js"></script>
+  <script src="cartapli-mobile/data.js"></script>
+  <script src="about/data.js"></script>
+  <script src="cartapli/data.js"></script>
+  <script src="landing/data.js"></script>
+  <!-- Motelet 은 본문 장을 갖는다. wobble · edu 는 표제지 이력 한 줄과
+       스토어 링크에만 쓰이므로 data.js 만 싣고 매니페스트는 안 싣는다. -->
+  <script src="motelet/data.js"></script>
+  <script src="wobble-wobble/data.js"></script>
+  <script src="edu-gamification/data.js"></script>
+  <script type="text/babel" src="../src/views/notebook-components.jsx"></script>
+  <!-- 표지 부품 → 프로젝트별 표지. 표지는 pages/{slug}/cover.jsx 가 소유한다. -->
+  <script type="text/babel" src="../src/views/cover-parts.jsx"></script>
+  <script type="text/babel" src="dx11-engine/cover.jsx"></script>
+  <script type="text/babel" src="motelet/cover.jsx"></script>
+  <script type="text/babel" src="cartapli-mobile/cover.jsx"></script>
+  <script type="text/babel" src="cartapli/cover.jsx"></script>
+  <script type="text/babel" src="dx11-engine/viz.jsx"></script>
+  <script type="text/babel" src="dx11-engine/svg-viz.jsx"></script>
+  <script type="text/babel" src="cartapli-mobile/viz.jsx"></script>
+  <script type="text/babel" src="motelet/viz.jsx"></script>
+  <script type="text/babel" src="deck/cm-slides.jsx"></script>
+  <script type="text/babel" src="../src/views/SlideDeck.jsx"></script>
+  <script type="text/babel" src="deck/intro.js"></script>
+  <script type="text/babel" src="deck/dx11.js"></script>
+  <script type="text/babel" src="deck/cartapli.js"></script>
+  <script type="text/babel" src="deck/cartapli-mobile.js"></script>
+  <script type="text/babel" src="deck/motelet.js"></script>
+  <script type="text/babel" src="deck/outro.js"></script>
+  <script type="text/babel" src="deck/engine.js"></script>
+  <script type="text/babel">
+    ReactDOM.createRoot(document.getElementById('root')).render(<window.SlideDeck deck={window.DECK_ENGINE} />);
+  </script>
+</body>
+</html>

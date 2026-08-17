@@ -4,13 +4,9 @@ pages/deck.snapshot.html
 # 코드 블록 다크/라이트 비교 시안 — 판단 끝나면 지워도 된다
 pages/_syntax-preview.html
 
-# 제출용 덱 — 문서용(인쇄물)이라 공개하지 않는다. 로컬에만 둔다.
-# SlideDeck.jsx · slides.css 는 _syntax-preview 가 함께 쓰고 사실을 담지 않아 유지.
-pages/deck.html
-pages/deck.snapshot.html
-pages/deck/
-
-# 제출용 덱의 PDF 출력물 — deck.html 과 같은 이유로 공개하지 않는다.
+# 제출용 덱의 렌더 산출물 — deck.html 로 언제든 다시 만든다. 소스만 추적한다.
+# (덱 자체는 2026-08 부터 추적한다. 인쇄물이라 사이트에서 링크하지 않을 뿐,
+#  숨겨서 얻는 것보다 어디에도 백업되지 않는 위험이 컸다 — 사용자 판단.)
 pages/deck.pdf
 
 # 출력물(PDF 등) 전용 폴더 — 소스에 산출물을 섞지 않는다. 언제든 tools/export_deck.js 로 다시 만든다.
