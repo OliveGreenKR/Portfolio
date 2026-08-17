@@ -685,11 +685,13 @@ function MTPageGeoWorld({ geo }) {
         <text x={412} y={124} className="mt-t-node">{g.worldTitle}</text>
         <text x={412} y={148} className="mt-t-sub">{g.worldSub}</text>
 
+        {/* 수집선을 월드 상자 오른쪽 변(x=660)에 붙여 두면 선이 테두리와 겹치고 화살표가
+            상자에 물려 잘린 것처럼 보인다(1920 슬라이드 실측). 변에서 24 떨어뜨려 모으고,
+            화살표는 왼쪽 바디 쪽(392→396)과 같은 4px 간격으로 상자 앞에서 멈춘다. */}
         {[0, 1, 2, 3].map((i) => (
-          <path key={'q' + i} d={`M700 ${52 + i * 46} H660 V${114 + i * 6}`} className="mt-line q" />
+          <path key={'q' + i} d={`M700 ${52 + i * 46} H684 V${114 + i * 6}`} className="mt-line q" />
         ))}
-        <path d="M660 128 H668" className="mt-line q" />
-        <path d="M676 128 H664" className="mt-line q" markerEnd="url(#mt-geo-arrow-q)" />
+        <path d="M684 128 H664" className="mt-line q" markerEnd="url(#mt-geo-arrow-q)" />
         <text x={700} y={230} className="mt-t-cut">{g.callerEdge}</text>
 
         <line x1="16" x2="944" y1="248" y2="248" stroke="var(--rule)" />
