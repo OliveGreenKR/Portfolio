@@ -13,6 +13,8 @@
 | 색·간격·radius·폰트 크기 등 토큰 값 | `src/styles/tokens.css` |
 | 카드·hover·press·애니메이션·레이아웃 | `src/styles/notebook.css` |
 | 페이지 공통 골격 | `src/views/NotebookPage.jsx` |
+| 표지 부품·크기 규칙 | `src/styles/cover.css` · `src/views/cover-parts.jsx` |
+| 프로젝트별 표지 | `pages/{slug}/cover.jsx` |
 | `data.js` 인라인 마크업 (`**굵게**` · `` `코드` `` · `*기울임*`, 중첩 금지) | `src/views/notebook-components.jsx` 의 `renderInline` |
 | 페이지를 어떻게 짤지의 판단 절차 | `.claude/skills/portfolio-page/SKILL.md` |
 
