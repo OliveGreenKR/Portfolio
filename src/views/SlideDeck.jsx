@@ -146,7 +146,12 @@
               <a className="sl-toc__row" href={e.href}>
                 <span className="sl-toc__no">{e.no}</span>
                 <span className="sl-toc__main">
-                  <span className="sl-toc__t">{e.title}</span>
+                  {/* 기간은 제목 옆이다. 태그 줄에 섞으면 성과·스택 배지와 같은 무게가 되어
+                      "언제 한 일인가" 를 훑어서 못 읽는다. */}
+                  <span className="sl-toc__t">
+                    {e.title}
+                    {e.period && <span className="sl-toc__when">{e.period}</span>}
+                  </span>
                   {e.sub && <span className="sl-toc__s">{RI(e.sub)}</span>}
                   {e.tags && e.tags.length > 0 && (
                     <span className="sl-toc__tags">

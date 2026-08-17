@@ -241,6 +241,9 @@
               color: var(--ink-3); letter-spacing: -0.02em; flex: 0 0 auto; }
 .sl-toc__main { display: flex; flex-direction: column; gap: 7px; flex: 1 1 auto; min-width: 0; }
 .sl-toc__t { font-size: 36px; font-weight: 600; line-height: 1.2; }
+/* 제목과 같은 줄, 무게만 낮춘다. 줄을 새로 만들면 세 줄짜리 목차의 배정 높이를 넘긴다. */
+.sl-toc__when { font-family: var(--font-display); font-size: 22px; font-weight: 600;
+                color: var(--ink-3); margin-left: 14px; white-space: nowrap; }
 .sl-toc__s { font-size: 24px; line-height: 1.35; color: var(--ink-2); }
 .sl-toc__tags { display: flex; flex-wrap: wrap; gap: 7px; }
 .sl-toc__tags .sl-pill { font-size: 18px; padding: 4px 11px; }

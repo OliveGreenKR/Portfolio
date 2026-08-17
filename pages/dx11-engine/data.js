@@ -6,11 +6,17 @@ window.DX11_DATA = {
     eyebrow: 'MAIN · 06 ─ 개인 프로젝트 · 1인',
     subtitle: 'PersonalDx11Engine',
     title: 'DX11 엔진 제작',
-    pills: [
-      { kind: 'accent', text: '2025.01 – 2025.08 · 1인' },
-      { kind: 'plain', text: 'C++17 · DirectX 11 · HLSL' },
-      { kind: 'accent', text: '엔진 전 영역 설계 · 구현' },
-    ],
+    // 기간 · 스택은 덱(목차 · 표지 배지)도 읽는다. pills 안에 문자열로 박아 두면
+    // 덱이 그 문자열을 다시 쪼개야 해서 필드로 올리고 pills 를 여기서 파생시킨다.
+    period: '2025.01 – 2025.08',
+    stack: ['C++17', 'DirectX 11', 'HLSL'],
+    get pills() {
+      return [
+        { kind: 'accent', text: this.period + ' · 1인' },
+        { kind: 'plain', text: this.stack.join(' · ') },
+        { kind: 'accent', text: '엔진 전 영역 설계 · 구현' },
+      ];
+    },
   },
 
   hook: 'D3D11 위에서 입력부터 물리·씬·렌더링·리소스·디버그까지, **한 프레임을 이루는 엔진 전체**를 직접 설계하고 구현했다.',

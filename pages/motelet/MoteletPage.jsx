@@ -184,12 +184,12 @@ function MTTool({ data }) {
   );
 }
 
-/* ─── §02-A 성장 체감의 정의 ─────────────────────────── */
+/* ─── §02-A 성장 체감의 수학적 모델링 ─────────────────────────── */
 function MTModel({ data }) {
   const m = data.model;
   return (
     <section id="model" className="nb-section">
-      <MTSectionHead no="02-A" title="성장 체감의 정의" kind="MODEL" />
+      <MTSectionHead no="02-A" title="성장 체감의 수학적 모델링" kind="MODEL" />
       <MTGist>{m.gist}</MTGist>
       <MTBody>{m.problem}</MTBody>
 
