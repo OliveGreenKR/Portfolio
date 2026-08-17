@@ -54,6 +54,7 @@
         section: C.meta.eyebrow,
         title: C.meta.title,
         meta: C.meta,
+        conditions: C.result.conditions,
         // 표지 pill 은 목차 태그로도 쓰인다(engine.js). 짧게 유지한다.
         pills: C.meta.metrics.map((metric) => ({ text: metric.value + ' · ' + metric.label })),
         links: [

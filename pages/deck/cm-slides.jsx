@@ -66,6 +66,16 @@
           ))}
         </div>
 
+        {/* 표지에 "Android" 는 네 번 나오는데 측정 환경은 한 번도 안 나왔다.
+            큰 %가 Android 실기기 성능으로 읽힌다 — claims.yaml CM-PERF-001 의 금지 추론이다.
+            data.js result.conditions 원문을 그대로 한 줄로 붙인다. */}
+        {s.conditions && (
+          <p className="cmd-measure">
+            <b>측정</b>{s.conditions.map(([, value]) => value).map((v, i) => (
+              <React.Fragment key={i}>{i ? ' · ' : ' '}{RI(v)}</React.Fragment>
+            ))}
+          </p>
+        )}
         <p className="cmd-boundary">{RI(m.boundary)}</p>
         <div className="cmd-pills">
           {m.facts.map((f) => <span key={f}>{f}</span>)}
