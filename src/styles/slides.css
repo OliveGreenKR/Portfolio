@@ -889,8 +889,63 @@
 .slide .dx-stack .dx-arrow span { position: static; margin-left: 0; }
 .slide .dx-stack .dx-arrow span::before { content: '↓ '; color: var(--rule-2); }
 .slide .dx-foundation-center { font-size: 20px; padding: 11px 20px; }
-.slide .dx-boundary-grid { min-height: 360px; }
+/* 오른쪽 칸이 소유물 4줄을 받는다 — 게임 쪽 상자와 같은 폭을 주면 줄이 세 번 접힌다. */
+.slide .dx-boundary-grid { min-height: 360px; grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr) minmax(0, 1.35fr); }
 .slide .dx-boundary .dx-lanes { grid-template-rows: repeat(4, 1fr); }
+
+/* 탑다운 3층에서 새로 쓰는 도표 — 아키텍처 · 프레임 흐름 · 물리 지도.
+   사이트 9~12px 를 그대로 두면 1920×1200 에서 판독선(16px) 아래로 떨어진다. */
+.slide .dx-arch-layers { gap: 8px; }
+.slide .dx-arch-layer { padding: 9px 16px; }
+.slide .dx-arch-layer-head { margin-bottom: 6px; gap: 14px; }
+.slide .dx-arch-layer-head b { font-size: 19px; }
+.slide .dx-arch-layer-head span { font-size: 19px; color: var(--ink-2); }
+.slide .dx-arch-cells { gap: 9px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+.slide .dx-arch-cell { padding: 11px 13px; }
+.slide .dx-arch-cell strong { font-size: 19px; line-height: 1.28; }
+.slide .dx-arch-cell small { font-size: 17px; line-height: 1.35; margin-top: 5px; }
+.slide .dx-arch-edge-head { font-size: 19px; margin: 12px 0 7px; padding-top: 11px; color: var(--ink-2); }
+.slide .dx-arch-edges { gap: 8px; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.slide .dx-arch-edges .dx-lane { grid-template-columns: minmax(0, 1fr); row-gap: 2px; padding: 9px 12px; }
+.slide .dx-arch-edges .dx-lane > small { grid-column: 1; }
+.slide .dx-arch-edges .dx-lane > span { font-size: 18px; }
+.slide .dx-arch-edges .dx-lane > strong { font-size: 19px; }
+.slide .dx-arch-edges .dx-lane > small { font-size: 18px; color: var(--ink-2); }
+
+.slide .dx-frame-track { gap: 10px; }
+.slide .dx-frame-step { grid-template-columns: 48px minmax(0, 1fr); gap: 16px; padding: 14px 18px; }
+.slide .dx-frame-no { font-size: 32px; }
+.slide .dx-frame-body { grid-template-columns: 132px minmax(0, 1fr); gap: 6px 18px; }
+.slide .dx-frame-body span { font-size: 19px; }
+.slide .dx-frame-body strong { font-size: 22px; }
+.slide .dx-frame-body small { font-size: 19px; line-height: 1.4; color: var(--ink-2); }
+.slide .dx-frame-loop { font-size: 18px; margin-top: 14px; padding-top: 14px; color: var(--ink-2); }
+
+.slide .dx-owned { gap: 9px; padding: 14px 15px; }
+.slide .dx-owned-head { font-size: 19px; }
+.slide .dx-owned-row { grid-template-columns: 76px minmax(0, 1fr); gap: 3px 12px; padding: 10px 12px; }
+.slide .dx-owned-row > span { font-size: 17px; }
+.slide .dx-owned-row > strong { font-size: 19px; }
+.slide .dx-owned-row > small { font-size: 17px; color: var(--ink-2); }
+
+/* DX11 덱 전용 SVG 도표(deck/dx11-viz.jsx). 그림이 뷰박스 비율대로 칸을 꽉 채우게 두고,
+   여백은 CSS 가 아니라 뷰박스 좌표가 갖는다 — 안 그러면 도표가 칸 가운데 작게 뜬다. */
+.slide .sl-diagram__art .dxd-fig .dx-diagram { padding: 10px 14px; }
+.slide .dxd-svg { display: block; width: 100%; height: 100%; }
+.dxd-svg text { font-family: var(--font-sans); }
+.dxd-svg text.mono { font-family: var(--font-mono); }
+
+/* 요약 장은 세 칸 한 줄이라 공용 align-content: center 가 제목과 카드 사이에 빈 띠를 남긴다.
+   stretch 로 늘리면 이번엔 카드 **안쪽**이 빈다(실측 350px) — 칸마다 항목이 둘셋뿐이라
+   높이를 줘도 채울 것이 없다. 카드는 제 크기로 두고 제목 바로 밑에 붙인다. */
+.slide--dx11sum .sl-cols { align-content: start; }
+
+/* 충돌 파이프라인은 가로 4칸뿐이라 전폭 도표 칸에서 세로가 남는다(실측 채움 0.65).
+   상자를 세로로 늘려 판독 크기를 유지한 채 빈 자리를 없앤다. */
+.slide .dx-pipeline .dx-pipeline-flow { flex: 1 1 auto; min-height: 400px; }
+.slide .dx-pipeline .dx-pipeline-flow .dx-node {
+  display: flex; flex-direction: column; justify-content: center;
+}
 
 /* ─── 인쇄 ───────────────────────────────────────── */
 @page { size: 1920px 1200px; margin: 0; }
