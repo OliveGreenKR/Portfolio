@@ -23,16 +23,9 @@
   window.DECK_PARTS.edu = {
     proj: '교육용 게이미피케이션 (외주)',
     slides: [
-      {
-        layout: 'stats',
-        section: 'Main · Freelance',
-        // 러닝헤더(proj)가 이미 "(외주)" 고 섹션이 Main · Freelance 다. 제목에서 뗀다.
-        title: E.meta.title.replace(/\s*\(외주\)\s*$/, ''),
-        gist: card.oneLine,
-        bigs: E.heroMetrics,
-        pairs: [['본인 작업', E.roles.mine], ['팀 · 범위', E.roles.others]],
-        note: [fact('기간'), fact('기여')].filter(Boolean).join(' · '),
-      },
+      // 표지는 **프로젝트가 소유한다** — pages/edu-gamification/cover.jsx.
+      // 한 장짜리 프로젝트라 그 한 장이 곧 표지다.
+      { layout: 'projectCover', section: 'Main · Freelance', slug: 'edu-gamification' },
     ],
   };
 })();

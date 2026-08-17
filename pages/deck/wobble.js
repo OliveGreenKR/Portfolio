@@ -19,23 +19,9 @@
   window.DECK_PARTS.wobble = {
     proj: 'Wobble Wobble',
     slides: [
-      {
-        layout: 'stats',
-        section: 'Main · Shipped',
-        title: W.meta.title + ' — 5주 압축 출시',
-        gist: W.meta.oneLine,
-        bigs: W.heroMetrics,
-        // 5인 팀이라 역할 경계를 같은 장에서 밝힌다. 숫자 넷만 두면 "이걸 혼자 했나" 가 남는다.
-        pairs: [['본인 작업', W.roles.mine], ['팀원 작업', W.roles.others]],
-        links: [
-          { label: 'Steam', v: '글로벌', href: W.meta.steam, tone: 'sage' },
-          { label: 'STOVE', v: '한국', href: W.meta.stove, tone: 'blue' },
-        ],
-        // 기간 fact 의 괄호("(5주: 출시 준비 4주 + 출시 1주)")는 뗀다 — 제목 · 요약 ·
-        // 큰 수치와 그 sub 가 이미 5주 구성을 네 번 말했다. 끝 날짜에는 무슨 날인지 붙인다.
-        note: [fact('기간').split(' (')[0], fact('팀 구성'), fact('출시일') + ' 출시']
-          .filter(Boolean).join(' · '),
-      },
+      // 표지는 **프로젝트가 소유한다** — pages/wobble-wobble/cover.jsx.
+      // 한 장짜리 프로젝트라 그 한 장이 곧 표지다.
+      { layout: 'projectCover', section: 'Main · Shipped', slug: 'wobble-wobble' },
     ],
   };
 })();

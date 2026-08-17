@@ -29,6 +29,11 @@
     );
   }
 
+  // 위(글·그림) + 아래(큰 숫자) 2단. 수치가 주장인 표지가 쓴다.
+  function CoverStack({ children }) {
+    return <div className="cv-stack">{children}</div>;
+  }
+
   function Eyebrow({ children }) {
     return <div className="cv-eyebrow">{children}</div>;
   }
@@ -96,6 +101,24 @@
     );
   }
 
+  // 큰 숫자 칸. items: [{ n, label, sub }] — data.js 의 heroMetrics 를 그대로 넘길 수 있다.
+  // 수치가 주장인 표지에서만 쓴다. 기준일이 값마다 다르면 sub 에 값별로 적는다 —
+  // 한 줄로 묶으면 어느 날짜가 어느 수치의 것인지 못 가른다.
+  function BigStats({ items }) {
+    if (!items || !items.length) return null;
+    return (
+      <div className="cv-bigs" style={{ '--bigs': items.length }}>
+        {items.map((b, i) => (
+          <div className="cv-big" key={i}>
+            <div className="cv-big__n">{b.n}</div>
+            <div className="cv-big__k">{b.label}</div>
+            {b.sub && <div className="cv-big__s">{RI(b.sub)}</div>}
+          </div>
+        ))}
+      </div>
+    );
+  }
+
   function Art({ img, caption, alt }) {
     if (!img) return null;
     return (
@@ -106,6 +129,8 @@
     );
   }
 
-  Object.assign(window, { CoverSplit, Eyebrow, CoverTitle, Lede, RoleLine, Pills, Specs, LinkRow, Art });
+  Object.assign(window, {
+    CoverSplit, CoverStack, Eyebrow, CoverTitle, Lede, RoleLine, Pills, Specs, LinkRow, Art, BigStats,
+  });
   window.COVERS = window.COVERS || {};
 })();

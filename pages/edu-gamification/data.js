@@ -21,6 +21,10 @@ window.EDU_GAMIFICATION_DATA = {
     stack: ['Unity 6.1', 'UniTask', 'React 19', 'TypeScript', 'Python (Lambda)', 'DynamoDB', 'Terraform', 'Electron', 'AI 협업 (Claude Code)'],
   },
 
+  // 히어로 그림은 pages/edu-gamification/cover-viz.jsx 의 EduArchViz 가 그린다.
+  // 아래 heroMermaid 는 **같은 관계의 원문 기록**으로 남긴다 — 관계가 바뀌면 둘을 함께 고친다.
+  heroViz: 'EduArchViz',
+
   heroMermaid: `graph LR
     subgraph CLIENT["게임 client (Unity)"]
         SEG["ISegment 그래프<br/>내러티브 자유 구성"]

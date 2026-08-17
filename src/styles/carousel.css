@@ -1,0 +1,154 @@
+/* JCH Portfolio — carousel.css
+   가로로 넘기는 목록. 랜딩의 메인 표지와 Labs 카드가 같은 것을 쓴다.
+
+   왜 세로 목록이 아닌가: 프로젝트가 늘 때마다 랜딩이 그만큼 길어졌다 —
+   행 카드 하나가 317px(실측)이라 여섯 개면 페이지가 다섯 화면이 된다.
+   가로로 넘기면 프로젝트를 더해도 세로 길이가 그대로다.
+
+   순환 · 관성 · 리사이즈 재측정은 Embla(vendor/embla-carousel.umd.js)가 한다.
+   여기 CSS 가 하는 일은 칸 폭과 무대 효과의 자리뿐이다. */
+
+.carousel { position: relative; --gap: clamp(16px, 2vw, 28px); --arrow-gap: clamp(46px, 4vw, 64px); isolation: isolate; }
+
+/* 트랙은 본문 칸 안에 있는다. 화면 전체로 뺐더니(2026-08) 카드 폭이 화면 폭을 따라
+   커져서 큰 모니터에서 한 장이 화면을 다 먹었고, 머리글은 본문 칸에 남아 중앙선이
+   어긋났으며, 화살표가 화면 끝으로 밀려 누르기 어려웠다 — 전부 같은 원인이다.
+   칸 폭은 **절대값**으로 묶는다(--card-w). 화면이 넓어지면 카드가 커지는 게 아니라
+   양옆 미리보기가 넓어진다. */
+.cr__stage { position: relative; }
+
+.cr__vp { overflow: hidden; padding-block: clamp(10px, 1.6vh, 20px) clamp(12px, 2vh, 24px); }
+.cr__track {
+  display: flex; align-items: stretch; touch-action: pan-y pinch-zoom;
+  /* ⚠️ 칸 간격에 flex `gap` 을 쓰면 안 된다 — Embla 의 순환 계산은 슬라이드 크기만 보는데
+     gap 은 그 크기에 안 들어가서 **마지막 칸과 첫 칸 사이에만 간격이 사라진다**(사용자 지적).
+     Embla 공식 예제와 같은 방식으로 간격을 칸의 padding 으로 준다. */
+  margin-left: calc(var(--gap) * -1);
+}
+.cr__cell { flex: 0 0 var(--card-w); min-width: 0; position: relative; padding-left: var(--gap); }
+/* ⚠️ .cr__cell 의 transform 은 Embla 소유다 — 순환에서 카드를 반대편으로 옮길 때 쓴다.
+   무대 효과(가운데만 앞으로)는 안쪽 .cr__inner 에 건다. 같은 노드에 둘 다 쓰면
+   매 프레임 서로 덮어써 카드가 어긋난다. */
+.cr__inner { height: 100%; transform-origin: 50% 55%; will-change: transform, opacity, filter; }
+
+/* 좌우 화살표 — 이웃 카드 위에 얹는다. 넘기는 방법이 화면에 보여야 한다. */
+.cr__arrow {
+  position: absolute; top: 50%; translate: 0 -50%; z-index: 20;
+  width: clamp(38px, 3.4vw, 46px); height: clamp(38px, 3.4vw, 46px); border-radius: 50%;
+  display: grid; place-items: center; cursor: pointer;
+  border: 1px solid var(--rule-2); background: rgba(251, 249, 245, 0.92);
+  backdrop-filter: blur(6px); color: var(--ink-2); font-size: 19px; line-height: 1;
+  padding: 0 2px 2px; box-shadow: 0 2px 10px -4px rgba(31, 29, 26, 0.35);
+  transition: background 160ms, color 160ms, border-color 160ms, scale 160ms var(--ease-out);
+}
+.cr__arrow:hover { background: var(--paper); color: var(--ink); border-color: var(--ink-3); scale: 1.06; }
+.cr__arrow:active { scale: 0.96; }
+.cr__arrow--prev { left: max(0px, calc(50% - var(--card-w) / 2 - var(--arrow-gap))); }
+.cr__arrow--next { right: max(0px, calc(50% - var(--card-w) / 2 - var(--arrow-gap))); }
+
+/* 가장자리 페이드는 없앴다 — 이웃 카드를 안 보이게 하면서 가릴 것이 사라졌고,
+   종이 위에 흰 띠가 겹쳐 보이는 부작용만 남았다(2026-08 사용자 지적). */
+
+/* 번호 레일 — 섹션 머리글 오른쪽 */
+.cr__rail { margin-left: auto; display: flex; gap: 5px; }
+.cr__rail button {
+  appearance: none; border: 1px solid var(--rule); background: var(--paper); cursor: pointer;
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.08em; color: var(--ink-3);
+  min-width: 30px; height: 26px; border-radius: 3px; transition: all 150ms var(--ease-out);
+}
+.cr__rail button:hover { border-color: var(--rule-2); color: var(--ink-2); }
+.cr__rail button[aria-current="true"] { background: var(--ink); border-color: var(--ink); color: var(--paper); }
+
+.cr__hint {
+  margin-top: 12px; font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.1em;
+  color: var(--ink-3); display: flex; gap: 18px; flex-wrap: wrap;
+}
+
+/* ─── 표지 카드 ────────────────────────────────────────────
+   카드 한 장 = 덱 표지 한 장이다. 다시 그리지 않고 --cs 만 낮춰 같은 것을 쓴다. */
+/* 표지 카드 — 폭 상한 700px. 큰 모니터에서도 이 이상 안 커진다.
+   --cs(표지 축척)는 Carousel.jsx 가 **실제 칸 폭 ÷ 1752** 로 매 리사이즈마다 넣는다.
+   손으로 박아 두면 폭이 바뀔 때마다 표지가 제 설계폭과 어긋나 줄이 접힌다(실측). */
+.cr--covers { --card-w: clamp(280px, 72vw, 700px); }
+.cr--covers .cr__inner {
+  background: var(--paper); border: 1px solid var(--rule); border-radius: 2px;
+  padding: clamp(14px, 1.5vw, 20px) clamp(16px, 1.8vw, 24px);
+  display: flex; flex-direction: column; height: 100%;
+  box-shadow: 0 1px 2px rgba(31, 29, 26, 0.05), 0 14px 40px -28px rgba(31, 29, 26, 0.5);
+  transition: box-shadow 260ms var(--ease-out), border-color 260ms;
+}
+.cr--covers .is-on .cr__inner { box-shadow: 0 1px 2px rgba(31, 29, 26, 0.05), 0 26px 60px -30px rgba(31, 29, 26, 0.6); }
+/* 좌우에 다음·이전 카드가 걸쳐 보인다. 가운데만 원본 크기고 나머지는 물러난다 —
+   무대 효과는 Carousel.jsx 가 스크롤 위치에서 직접 계산한다. */
+.cr--covers .cr__cell:not(.is-on) { cursor: pointer; }
+.cr--covers .cr__cell:not(.is-on) a { pointer-events: none; }
+
+/* 카드 위·아래 크롬. 덱의 상·하단 크롬과 같은 자리를 쓴다 —
+   표지 자체는 이걸 모른다. 자리가 그린다. */
+.cr__top, .cr__foot {
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.17em;
+  text-transform: uppercase; color: var(--ink-3); display: flex; align-items: baseline; gap: 13px;
+  flex: 0 0 auto;
+}
+.cr__top { padding-bottom: 12px; border-bottom: 1px solid var(--rule); }
+.cr__top b { color: var(--ink); font-weight: 600; font-size: 11.5px; }
+.cr__top .sp { margin-left: auto; }
+.cr__foot { border-top: 1px solid var(--rule); padding-top: 11px; margin-top: auto; }
+.cr__foot .pg { margin-left: auto; color: var(--ink-2); font-weight: 600; }
+.cr__body { flex: 1 1 auto; min-height: 0; display: flex; padding: clamp(12px, 2vh, 22px) 0; }
+.cr__body > * { flex: 1 1 auto; min-width: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  .cr__inner { transition: none; }
+}
+
+/* 인쇄 — 가로를 펼친다 */
+@media print {
+  .cr__arrow, .cr__rail, .cr__hint, .cr__vp::before, .cr__vp::after { display: none; }
+  .carousel--bleed { width: auto; margin-inline: 0; }
+  .cr__vp { overflow: visible; }
+  .cr__track { display: block !important; transform: none !important; }
+  .cr__cell, .cr__inner { width: auto !important; transform: none !important; opacity: 1 !important;
+    filter: none !important; break-inside: avoid; margin-bottom: 14px; }
+}
+
+/* ─── 카드 껍데기 ─────────────────────────────────────────
+   카드 전체가 링크다. 표지 안에도 링크가 있어 중첩이 안 되므로,
+   표지 쪽 <a> 는 카드 안에서 클릭을 삼키지 않게 pointer-events 로 막는다
+   (가운데 카드만 열리고, 옆 카드는 먼저 가운데로 온다). */
+.cr__card { display: flex; flex-direction: column; height: 100%; position: relative; }
+/* 발치 링크를 카드 전체로 늘린다 — 카드 아무 데나 눌러도 상세 페이지로 간다. */
+.cr__more { color: var(--ink-2); text-decoration: none; font-weight: 600; }
+.cr__more::after { content: ''; position: absolute; inset: 0; z-index: 1; }
+.cr__card:hover .cr__more { color: var(--ink); }
+/* 표지 자신의 링크(Steam · GitHub …)는 그 위로 올려 따로 눌리게 둔다. */
+.cr__card .cv-links { position: relative; z-index: 2; }
+.cr__missing { font-family: var(--font-mono); font-size: 12px; color: var(--terra-500); }
+
+/* Labs 카드 — 표지가 없는 짧은 것들 */
+.lab-card {
+  display: flex; flex-direction: column; gap: 11px; height: 100%; min-height: 212px;
+  background: var(--paper-2); border: 1px solid var(--rule); padding: 20px;
+  color: inherit; text-decoration: none; transition: background 160ms, border-color 160ms;
+}
+.lab-card:hover { background: var(--paper-3); border-color: var(--ink-3); }
+.lab-card__top {
+  display: flex; justify-content: space-between; gap: 8px; font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-3);
+}
+.lab-card__title { font-size: 19px; font-weight: 700; letter-spacing: -0.014em; line-height: 1.25; margin: 0; }
+.lab-card__dur { font-family: var(--font-mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.04em; }
+.lab-card__line { font-size: 13px; line-height: 1.55; color: var(--ink-2); margin: auto 0 0; text-wrap: pretty; }
+.lab-card__go {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-3); transition: color 150ms;
+}
+.lab-card:hover .lab-card__go { color: var(--ink); }
+
+/* Labs 카드도 폭 상한을 둔다. 칸 수로 나누면 화면이 넓어질수록 카드가 가로로 늘어져
+   한 줄 요약이 한 줄에 흩어진다(실측 500px 에서 지적). 폭을 묶으면 화면이 넓어질 때
+   카드가 커지는 게 아니라 **더 많이 보인다**. */
+.cr--labs { --card-w: clamp(230px, 26vw, 300px); }
+
+/* 좁은 화면에서는 미리보기를 줄여 가운데 카드에 폭을 몰아 준다 */
+@media (max-width: 980px) { .cr--covers { --card-w: clamp(280px, 88vw, 640px); } }

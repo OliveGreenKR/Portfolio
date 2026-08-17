@@ -1,0 +1,20 @@
+/* pages/edu-gamification/cover.css
+   외주라 공개할 수 있는 것이 적다 — 스크린샷도 스토어도 없다. 그래서 이 표지에서는
+   **구조도가 주인공**이고, 글 칸을 좁혀 그림에 폭을 준다. */
+
+.edu-cover .cv-split { align-items: center; }
+/* 글 칸을 고정폭으로 묶는다. 자동 배분에 맡기면 제목 길이에 따라 그림 폭이 흔들린다.
+   560px 로 좁혔더니 역할 줄·배지가 각각 한 줄씩 더 접혀 글 칸이 727px 이 됐고,
+   큰 숫자 칸(위로 831px 지점)과 23px 겹쳤다(실측). 680px 이 접힘 없이 들어가는 폭이다. */
+.edu-cover .cv-split__main { flex: 0 0 calc(680px * var(--cs)); }
+.edu-cover .cv-split__art { flex: 1 1 auto; max-width: none; min-width: 0; }
+
+/* 제목을 한 단 낮춘다(104 → 88). 이 표지는 그림이 주인공이라 제목이 그 다음이고,
+   104px 두 줄(241px)이면 배지가 두 줄이 되는 순간 글 칸이 큰 숫자 칸을 밀어낸다.
+   프로젝트마다 위계가 다른 것은 계약이 허용하는 범위다 — CM 표지도 92px 이다. */
+.edu-cover .cv-title { font-size: calc(88px * var(--cs)); }
+
+.edu-arch { margin: 0; }
+.edu-arch svg { width: 100%; height: auto; display: block; }
+/* SVG 안의 글자는 슬라이드 폰트 규칙(.slide *)이 못 잡는 곳이 있다 — 명시한다. */
+.edu-arch text { font-family: var(--font-sans); }
