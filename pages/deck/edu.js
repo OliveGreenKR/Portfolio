@@ -15,10 +15,6 @@
 (function buildEduDeck() {
   const E = window.EDU_GAMIFICATION_DATA;
   const fact = (k) => (E.facts.find((f) => f[0] === k) || [])[1];
-  // 랜딩 카드용 한 줄. 같은 사실을 페이지 히어로용(meta.oneLine)과 카드용으로 두 벌 갖고
-  // 있는데, 히어로용은 "미확정 ·" 같은 라벨 조각으로 시작해 슬라이드 첫 문장에 안 맞는다.
-  const card = window.LANDING_DATA.main.find((m) => m.slug === 'edu-gamification');
-
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.edu = {
     proj: '교육용 게이미피케이션 (외주)',

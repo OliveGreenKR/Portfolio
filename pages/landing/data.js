@@ -1,6 +1,10 @@
 // pages/landing/data.js
-// 랜딩 페이지 콘텐츠. uploads/landing.md + master.md + 각 메인 페이지 data.js 에서 발췌.
-// 카드 한 장에 들어가는 사실만 옮긴다 — 본문 시스템 디테일은 상세 페이지가 따로.
+// 랜딩 페이지 콘텐츠.
+//
+// ⚠️ 여기에 **사실을 두지 않는다.** 카드에 보이는 제목 · 한 줄 · 수치 · 그림은 전부
+//    표지(pages/{slug}/cover.jsx)가 낸다. 예전에는 같은 사실을 여기에도 한 벌 두었는데,
+//    카드가 표지를 쓰게 되면서 아무도 안 읽는 사본이 되었다 — 사본은 갈라진다(2026-08 정리).
+//    main[] 이 갖는 것은 **순서와 자리**뿐이다: idx · code · date · slug · href.
 
 window.LANDING_DATA = {
   // 정체성 (2026-08-11 확정). 세 층이 각각 다른 일을 한다 —
@@ -37,18 +41,6 @@ window.LANDING_DATA = {
       date: '2026.07 – 08',
       slug: 'cartapli-mobile',
       href: '../pages/cartapli-mobile.html',
-      title: 'Cartapli Mobile — 종이접기 최적화',
-      oneLine: 'PC 출시작의 종이접기 코어를 모바일로 이식하며 네 사이클로 나눠 고치고 단계마다 따로 측정. "DOTS 를 쓰면 빨라진다" 가 아니라 구조로 얼마 · DOTS 로 얼마를 갈라 말한다.',
-      meta: [
-        { kind: 'accent', text: '진행 중 · 모바일 이식 + 리메이크' },
-        { kind: 'role',   text: '구조 · 렌더링 · 성능 전부' },
-      ],
-      thumb: null,
-      metrics: [
-        { n: '−94.9%', label: '프레임당 CPU (0.643 → 0.033 ms)' },
-        { n: '298 → 1', label: '드로우콜 — 앞/뒤 2메시 병합' },
-        { n: '−97.6%', label: '확정 프레임 할당 — 범용 폴리곤 불리언을 걷어냄' },
-      ],
     },
     {
       idx: '02',
@@ -56,19 +48,6 @@ window.LANDING_DATA = {
       date: '2026.06',
       slug: 'motelet',
       href: '../pages/motelet.html',
-      title: 'Motelet',
-      oneLine: '청소 로봇이 먼지 정령을 쓸어담는 인크레멘탈(개발 중). 성장이 잘 느껴지는지는 플레이해서 판단하고, 그 판단이 못 짚는 "어느 구간이 왜 과한가" 를 런타임 공식을 옮겨 적은 계산 모델로 짚었다.',
-      meta: [
-        { kind: 'accent', text: '개발 중 · 3인 · Steam 예정' },
-        { kind: 'role',   text: 'PM + 배틀씬 프로그래머' },
-      ],
-      thumb: '../pages/motelet/assets/title.png',
-      // 성과 수치가 아니라 만든 것 — 이 프로젝트에는 개선 전후를 비교할 계측본이 없다.
-      metrics: [
-        { n: '모델',   label: '스킬이 바꾸는 스탯을 한 판의 기대 골드로 환원하는 수학 모델' },
-        { n: '시뮬',   label: '인크레멘탈 루프를 돌려 판 사이 성장 기울기 곡선 + 구간별 기여 분해' },
-        { n: '런타임', label: '물리 엔진 없이 겹침 판정 · 능력 발동 지점 · 화면 점유 기반 스폰 상한' },
-      ],
     },
     {
       idx: '03',
@@ -76,18 +55,6 @@ window.LANDING_DATA = {
       date: '2026.07',
       slug: 'edu-gamification',
       href: '../pages/edu-gamification.html',
-      title: '교육용 게이미피케이션 (외주)',
-      oneLine: '일(日) 단위로 바뀌는 요구사항을 스키마리스 NoSQL · 서버리스로 흡수. 비개발자용 원터치 배포 콘솔과, 우회가 물리적으로 불가능한 단일 인가 게이트까지 직접 구축.',
-      meta: [
-        { kind: 'accent', text: '외주 · 프리랜서 · 납품 완료' },
-        { kind: 'role',   text: '웹 주개발 (+ 게임 초기 설계)' },
-      ],
-      thumb: null,
-      metrics: [
-        { n: '3,000',   label: '대상 규모 · 서버리스 자동 확장 (동시 ~50)' },
-        { n: '1-click', label: '비개발자 배포 콘솔 (격리 부트스트랩 → Electron)' },
-        { n: '3-layer', label: '감사 · 추적 — 앱을 우회한 직접 쓰기까지 포착' },
-      ],
     },
     {
       idx: '04',
@@ -95,18 +62,6 @@ window.LANDING_DATA = {
       date: '2026.02',
       slug: 'cartapli',
       href: '../pages/cartapli.html',
-      title: 'Cartapli: Fold Quest',
-      oneLine: '종이를 접어 싸우는 로그라이크. 11개 싱글톤이 동시에 도는 배틀씬을 시스템 간 직접 참조 0 으로.',
-      meta: [
-        { kind: 'accent', text: '13주 · 4인 · Steam 출시' },
-        { kind: 'role',   text: 'PM 30% + 클라이언트 70%' },
-      ],
-      thumb: '../pages/cartapli/assets/hero.png',
-      metrics: [
-        { n: '98%',     label: 'Steam 매우 긍정 (155/157)' },
-        { n: '26,269',  label: 'lifetime unique users' },
-        { n: '0',       label: '시스템 추가 시 기존 코드 변경 (줄)' },
-      ],
     },
     {
       idx: '05',
@@ -114,18 +69,6 @@ window.LANDING_DATA = {
       date: '2026.04',
       slug: 'wobble-wobble',
       href: '../pages/wobble-wobble.html',
-      title: 'Wobble Wobble',
-      oneLine: '게임랩 빌드를 5주 안에 Steam 글로벌 출시까지 압축. 다중 워크스트림 · 자동화 인프라 자율 도입.',
-      meta: [
-        { kind: 'accent', text: '5주 · 5인 · Steam + STOVE' },
-        { kind: 'role',   text: 'PM + 개발 + 자동화 엔지니어' },
-      ],
-      thumb: '../pages/wobble-wobble/assets/hero.png',
-      metrics: [
-        { n: '84',   label: '사운드 시스템 테스트 (데이터 13 + 런타임 29 + 구조 42)' },
-        { n: '14',   label: '자동 번역 언어 (MCP 자율 도입)' },
-        { n: '~200', label: '컨택 캠페인 (스트리머 · 미디어 · 큐레이터)' },
-      ],
     },
     {
       idx: '06',
@@ -134,19 +77,6 @@ window.LANDING_DATA = {
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
       // metrics 는 성과 수치가 아니라 만든 것이다 — 이 프로젝트에는 계측본이 없다.
-      // 버린 것: '15 → 60 fps'(영상 기억) · '60↔30fps 결정론'(검증 코드 없음) · '147 파일'(실제 137).
-      title: 'DX11 Custom Engine',
-      oneLine: 'C++17 + DirectX 11 로 1인 엔진을 직접 구현. 물리 데이터 소유권을 게임 객체에서 떼어내 중앙 배열로 옮겼다.',
-      meta: [
-        { kind: 'accent', text: '2025.01 – 2025.08 · 1인 · D3D11' },
-        { kind: 'role',   text: '엔진 프로그래머 (전 영역)' },
-      ],
-      thumb: '../pages/dx11-engine/assets/hero.png',
-      metrics: [
-        { n: '게임 ↔ 물리', label: '통로 넷 — 입력 동기화 · Job 큐 · 결과 · 충돌 이벤트' },
-        { n: '슬롯 ID', label: '컴포넌트를 보지 않는 충돌 파이프라인' },
-        { n: '137', label: '소스 파일 (헤더 86 · 구현 46 · HLSL 5) · 커밋 586' },
-      ],
     },
   ],
 
@@ -160,7 +90,6 @@ window.LANDING_DATA = {
   labs: [
     {
       idx: 'L.01',
-      title: '리소스 관리 모듈 — Sound / VFX',
       slug: 'sound-system',
       href: 'labs/sound-system.html',
       tag: 'System / Reusable Module',
@@ -172,7 +101,6 @@ window.LANDING_DATA = {
     },
     {
       idx: 'L.02',
-      title: 'Multi-Leg Creature',
       slug: 'multi-leg-creature',
       href: 'labs/multi-leg-creature.html',
       tag: 'IK / Procedural',
@@ -183,7 +111,6 @@ window.LANDING_DATA = {
     },
     {
       idx: 'L.03',
-      title: 'BBQ Master',
       slug: 'bbq-master',
       href: 'labs/bbq-master.html',
       tag: 'Voxel Sim',
@@ -194,7 +121,6 @@ window.LANDING_DATA = {
     },
     {
       idx: 'L.04',
-      title: 'Staring Fire',
       slug: 'staring-fire',
       href: 'labs/staring-fire.html',
       tag: 'GPU / Shader',
@@ -205,7 +131,6 @@ window.LANDING_DATA = {
     },
     {
       idx: 'L.05',
-      title: 'UE5 Action',
       slug: 'ue5-action',
       href: 'labs/ue5-action.html',
       tag: 'UE5 · C++',
