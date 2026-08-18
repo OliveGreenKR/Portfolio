@@ -2,7 +2,7 @@
 
 게임/엔진 클라이언트 프로그래머 **정철**의 개인 포트폴리오 사이트.
 
-> 코드를 짜기 전에 구조를 봅니다. 만든 뒤에는 숫자를 봅니다.
+> 재미를 구현의 기준으로 삼고, 구조와 데이터로 지킵니다.
 
 - **라이브**: https://olivegreenkr.github.io/Portfolio/
 - **다루는 작업**: Cartapli: Fold Quest (Steam 출시) · Wobble Wobble (Steam · STOVE 동시 출시) · DX11 커스텀 물리 엔진 + Labs(PoC·실험) 6종
