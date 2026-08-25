@@ -1,85 +1,350 @@
-/* pages/cartapli-mobile/cover.css
-   CM 표지 전용 스타일. **한 프로젝트만 쓰는 모양은 그 프로젝트가 갖는다** —
-   공용 부품(cover.css)으로 올리지 않는다.
-
-   이 표지가 다른 셋과 다른 이유: 큰 퍼센트 세 개가 서로 **다른 측정축**이라,
-   수치마다 전후 값(detail)과 측정 조건(note)이 같은 칸에 붙어야 오독이 안 난다.
-   그래서 수치가 4단(값 · 이름 · 전후 · 조건)이다. 공용 Metrics 로 접으면 그 층이 사라진다.
-
-   치수 규칙은 공용과 같다 — 덱 기준 px × var(--cs). 덱은 --cs:1.
-   ⚠️ 2026-08: 이 표지만 글자가 작고 얇아 보인다는 지적을 받았다. 원인은 눈금이
-      공용 표지보다 한 단씩 낮게 잡혀 있던 것이다(본문 26 vs 34 · 큰 수치 58 vs 76 ·
-      배지 18 vs 21). 내용은 그대로 두고 크기와 굵기만 공용 눈금 쪽으로 올렸다 —
-      단, 4단 수치 구조는 이 표지의 의도라 유지한다.
-      (한 번에 공용 눈금까지 올렸더니 덱 1920×1200 에서 34px 넘쳤다 — 한 단 내려 맞췄다.)
-      ⚠️ 더 큰 원인은 **글자 바닥값이 없던 것**이다. 공용 부품(cover.css)은 작은 글자에
-         max(바닥, calc(px × --cs)) 를 걸어 두는데 이 파일에는 없어서, 랜딩 카드
-         (--cs 0.4)에서 배지가 8px · 역할 줄이 9.6px 까지 내려갔다(실측). 같은 방식으로 건다.
-   (이관 전에는 slides.css 안에 .slide--cm 스코프로 있었다. 표지가 덱 밖으로 나가면서
-    그 스코프가 안 걸리므로 표지 루트(.cmd-cover) 스코프로 옮겼다.) */
-
-.cmd-cover { display: flex; flex-direction: column; gap: calc(20px * var(--cs)); flex: 1 1 auto; min-height: 0; }
-.cmd-cover__top {
-  display: grid;
-  /* ⚠️ minmax(0,1fr) 이어야 한다. 그냥 1fr 이면 최소폭이 내용 크기로 잡혀 좁은 자리
-     (상세 페이지 히어로 889px)에서 안 줄고 넘친다 — 실측 1222px. */
-  grid-template-columns: minmax(0, 1fr) calc(720px * var(--cs));
-  gap: calc(56px * var(--cs));
-  align-items: start;
-}
-.cmd-cover__copy { display: flex; flex-direction: column; gap: calc(18px * var(--cs)); min-width: 0; }
-.cmd-cover__title { margin: 0; font-size: calc(96px * var(--cs)); font-weight: 700; letter-spacing: -0.035em; line-height: 1; }
-.cmd-cover__sub { margin: 0; font-size: max(12.5px, calc(29px * var(--cs))); line-height: 1.45; color: var(--ink-2); font-weight: 450; }
-.cmd-cover__core {
-  margin: 0; font-size: max(12.5px, calc(30px * var(--cs))); line-height: 1.5; font-weight: 550;
-  background: var(--sage-50); border-left: calc(5px * var(--cs)) solid var(--sage-400);
-  padding: calc(20px * var(--cs)) calc(24px * var(--cs));
-}
-.cmd-links { display: flex; flex-wrap: wrap; gap: calc(12px * var(--cs)); }
-.cmd-links a {
-  font-size: max(11.5px, calc(19px * var(--cs))); font-weight: 600; padding: calc(11px * var(--cs)) calc(16px * var(--cs));
-  text-decoration: none; color: var(--ink-2);
-  border: 1px solid var(--rule-2); border-radius: var(--r-pill);
-}
-.cmd-cover__media { margin: 0; }
-.cmd-cover__media img { width: 100%; height: auto; display: block; border: 1px solid var(--rule); }
-.cmd-cover__media figcaption { margin-top: calc(12px * var(--cs)); font-size: max(10px, calc(19px * var(--cs))); line-height: 1.5; color: var(--ink-3); }
-
-.cmd-axisnote { margin: 0; font-size: max(10.5px, calc(19px * var(--cs))); color: var(--ink-3); }
-.cmd-axisnote b { color: var(--ink-2); font-weight: 600; }
-
-/* 수치 칸은 **다른 표지와 같은 박스**로 낸다(2026-08 사용자 지적) — 예전에는 위·아래
-   가로선과 칸 사이 세로선만 있어서, 표지 여섯 장을 나란히 놓으면 이 표지의 핵심 수치만
-   배경 위에 떠 보이고 눈에 덜 걸렸다. 공용 .cv-big 과 같은 테두리·배경을 쓴다.
-   4단 구조(값 · 이름 · 전후 · 조건)는 이 표지의 의도라 그대로 둔다. */
-.cmd-metrics {
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: calc(24px * var(--cs));
-}
-.cmd-metric {
+/* Cartapli Mobile cover — project identity + PaperBench evidence + three endpoint axes. */
+.cm-cover-copy {
+  display: flex;
+  flex-direction: column;
+  gap: calc(22px * var(--cs));
   min-width: 0;
-  border: 1px solid var(--rule); background: var(--paper-2);
-  /* 박스로 바꾸면서 늘어난 여백이 덱에서 34px 넘쳤다 — 한 단 줄인다(실측). */
-  padding: calc(18px * var(--cs)) calc(22px * var(--cs));
 }
-.cmd-metric > strong {
-  display: block; font-family: var(--font-mono);
-  font-size: calc(66px * var(--cs)); font-weight: 700; letter-spacing: -0.03em;
-}
-.cmd-metric > span { display: block; margin-top: calc(8px * var(--cs)); font-size: max(11px, calc(23px * var(--cs))); font-weight: 600; color: var(--ink-2); }
-.cmd-metric > b { display: block; margin-top: calc(8px * var(--cs)); font-family: var(--font-mono); font-size: max(11px, calc(23px * var(--cs))); font-weight: 600; }
-.cmd-metric > small { display: block; margin-top: calc(6px * var(--cs)); font-size: max(10px, calc(19px * var(--cs))); line-height: 1.45; color: var(--ink-3); }
 
-.cmd-measure {
-  margin: 0; font-size: max(10.5px, calc(18px * var(--cs))); line-height: 1.5; color: var(--ink-3);
-  border-left: calc(3px * var(--cs)) solid var(--rule-2); padding-left: calc(14px * var(--cs));
+.cm-cover-copy .cv-title {
+  max-width: calc(900px * var(--cs));
 }
-.cmd-measure b { color: var(--ink-2); font-weight: 600; letter-spacing: .06em; }
-.cmd-boundary { margin: 0; font-size: max(11px, calc(22px * var(--cs))); font-weight: 450; line-height: 1.5; color: var(--ink-2); }
 
-.cmd-pills { display: flex; flex-wrap: wrap; gap: calc(10px * var(--cs)); }
-.cmd-pills span {
-  font-family: var(--font-mono); font-size: max(10px, calc(20px * var(--cs))); font-weight: 500;
-  padding: calc(8px * var(--cs)) calc(16px * var(--cs));
-  border: 1px solid var(--rule-2); border-radius: var(--r-pill); color: var(--ink-2);
+.cm-cover-copy .cv-lede strong {
+  font-weight: 650;
+  background-image: linear-gradient(180deg, transparent 58%, var(--sage-200) 58%, var(--sage-200) 92%, transparent 92%);
+}
+
+.cm-cover-media {
+  width: min(calc(720px * var(--cs)), 100%);
+  margin: 0;
+}
+
+.cm-cover-media__frame {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--rule-2);
+  background: var(--paper-2);
+  aspect-ratio: 4 / 3;
+}
+
+.cm-cover-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.cm-cover-media__badge {
+  position: absolute;
+  left: calc(18px * var(--cs));
+  bottom: calc(18px * var(--cs));
+  max-width: calc(620px * var(--cs));
+  padding: calc(8px * var(--cs)) calc(12px * var(--cs));
+  background: color-mix(in srgb, var(--paper) 91%, transparent);
+  border-left: calc(4px * var(--cs)) solid var(--terra-300);
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: max(9px, calc(18px * var(--cs)));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.cm-cover-media figcaption {
+  margin-top: calc(10px * var(--cs));
+  color: var(--ink-3);
+  font-size: max(10px, calc(20px * var(--cs)));
+  line-height: 1.5;
+}
+
+.cm-cover-facts {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.cm-cover-facts > div {
+  min-width: 0;
+  padding: calc(18px * var(--cs)) calc(20px * var(--cs));
+  border-right: 1px solid var(--rule);
+}
+
+.cm-cover-facts > div:last-child { border-right: 0; }
+.cm-cover-facts dt {
+  margin: 0 0 calc(7px * var(--cs));
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: max(9px, calc(17px * var(--cs)));
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.cm-cover-facts dd {
+  margin: 0;
+  color: var(--ink-2);
+  font-size: max(11px, calc(20px * var(--cs)));
+  line-height: 1.55;
+}
+
+.cm-cover-copy + .cv-split__art { align-self: stretch; }
+
+/* Deck slides already provide their own top eyebrow. */
+.slide .cm-cover-copy .cv-eyebrow { display: none; }
+
+.cm-cover-metrics {
+  min-width: 0;
+}
+
+.cm-cover-metrics__scope {
+  display: flex;
+  gap: calc(14px * var(--cs));
+  align-items: baseline;
+  margin: 0 0 calc(10px * var(--cs));
+  color: var(--ink-3);
+  font-size: max(10px, calc(16px * var(--cs)));
+  line-height: 1.45;
+}
+
+.cm-cover-metrics__scope b {
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-weight: 600;
+}
+
+.cm-cover-metrics__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  min-width: 0;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.cm-cover-metric {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: calc(20px * var(--cs));
+  border-right: 1px solid var(--rule);
+  background: var(--paper-2);
+  overflow-wrap: anywhere;
+}
+
+.cm-cover-metric:last-child { border-right: 0; }
+
+.cm-cover-metric > strong {
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: max(30px, calc(72px * var(--cs)));
+  font-weight: 600;
+  line-height: .95;
+  letter-spacing: -.055em;
+  white-space: nowrap;
+}
+
+.cm-cover-metric > span {
+  margin-top: calc(13px * var(--cs));
+  color: var(--ink-2);
+  font-size: max(12px, calc(19px * var(--cs)));
+  font-weight: 600;
+}
+
+.cm-cover-metric > b {
+  margin-top: calc(6px * var(--cs));
+  color: var(--ink);
+  font-family: var(--font-mono);
+  font-size: max(13px, calc(20px * var(--cs)));
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.cm-cover-metric > small {
+  margin-top: calc(7px * var(--cs));
+  color: var(--ink-3);
+  font-size: max(10px, calc(14px * var(--cs)));
+  line-height: 1.5;
+}
+.cm-cover-metric > small.is-mobile { display: block; }
+.cm-cover-metrics__conditions { display: grid; gap: calc(5px * var(--cs)); margin: calc(12px * var(--cs)) 0 0; padding: 0; color: var(--ink-3); font-size: max(10px, calc(12px * var(--cs))); line-height: 1.45; list-style: none; }
+.cm-cover-metrics__conditions li::before { content: '·'; margin-right: .55em; color: var(--terra-500); }
+
+.cm-cover-metrics.is-card .cm-cover-metrics__scope { display: none; }
+.cm-cover-metrics.is-card .cm-cover-metric { padding-block: calc(14px * var(--cs)); }
+.cm-cover-metrics.is-card .cm-cover-metric > strong { font-size: max(26px, calc(62px * var(--cs))); }
+.cm-cover-metrics.is-card .cm-cover-metric > span { font-size: max(10px, calc(16px * var(--cs))); }
+.cm-cover-metrics.is-card .cm-cover-metric > b { font-size: max(11px, calc(17px * var(--cs))); }
+
+.cm-cover-decision {
+  display: grid;
+  grid-template-columns: 150px repeat(3, minmax(0, 1fr));
+  align-items: stretch;
+  border-top: 1px solid var(--rule);
+  border-bottom: 1px solid var(--rule);
+}
+
+.cm-cover-decision > span,
+.cm-cover-decision > div {
+  min-width: 0;
+  padding: calc(15px * var(--cs)) calc(18px * var(--cs));
+}
+
+.cm-cover-decision > span {
+  display: flex;
+  align-items: center;
+  color: var(--ink-3);
+  font-family: var(--font-mono);
+  font-size: max(10px, calc(15px * var(--cs)));
+  letter-spacing: .08em;
+}
+
+.cm-cover-decision > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, .7fr);
+  gap: 10px;
+  align-items: center;
+  border-left: 1px solid var(--rule);
+  background: var(--sage-50);
+  font-size: max(11px, calc(17px * var(--cs)));
+}
+
+.cm-cover-decision b { color: var(--ink-2); font-weight: 500; }
+.cm-cover-decision i { color: var(--terra-500); font-style: normal; }
+.cm-cover-decision strong { color: var(--sage-700); font-weight: 700; }
+.cm-cover-decision small { grid-column: 1 / -1; color: var(--ink-3); font-size: .8em; line-height: 1.35; }
+
+@media (max-width: 720px) {
+  .cv-hero .cv-stack { display: grid; }
+  .cv-hero .cv-split { display: contents; }
+  .cv-hero .cv-split__main { order: 1; }
+  .cv-hero .cm-cover-metrics { order: 2; }
+  .cv-hero .cm-cover-decision { order: 3; }
+  .cv-hero .cv-split__art { order: 4; }
+  .cv-hero .cm-cover-facts { order: 5; }
+  .cm-cover-metrics__scope { display: grid; gap: 2px; }
+  .cm-cover-metrics__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cm-cover-metric { padding: 12px 9px; border-bottom: 0; }
+  .cm-cover-metric > strong { font-size: 25px; }
+  .cm-cover-metric > span { margin-top: 8px; font-size: 10px; line-height: 1.35; }
+  .cm-cover-metric > b { margin-top: 4px; font-size: 10.5px; }
+  .cm-cover-metric > small.is-full { display: none; }
+  .cm-cover-metric > small.is-mobile { display: block; margin-top: 5px; color: var(--ink-2); font-size: 9.5px; line-height: 1.35; }
+  .cm-cover-metrics__scope { color: var(--ink-2); font-size: 10.5px; }
+  .cm-cover-decision { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cm-cover-decision > span { grid-column: 1 / -1; padding: 10px 0 7px; }
+  .cm-cover-decision > div { grid-template-columns: 1fr; gap: 3px; padding: 12px; border-top: 1px solid var(--rule); font-size: 11px; }
+  .cm-cover-decision > div:first-of-type { border-left: 0; }
+  .cm-cover-decision i { transform: rotate(90deg); transform-origin: left center; }
+}
+
+@media (max-width: 340px) {
+  .cm-cover-metric { padding-inline: 7px; }
+  .cm-cover-metric > strong { font-size: 22px; }
+  .cm-cover-metric > b { font-size: 9.5px; }
+}
+
+@media (max-width: 900px) {
+  .cv-hero .cv-split {
+    flex-direction: column;
+    gap: 30px;
+  }
+  .cv-hero .cv-split__art {
+    width: 100%;
+    max-width: none;
+  }
+  .cv-hero .cm-cover-media {
+    width: 100%;
+  }
+  .cv-hero .cm-cover-media__frame {
+    aspect-ratio: 16 / 10;
+  }
+  .cv-hero .cv-bigs {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
+  .cv-hero .cv-big {
+    display: grid;
+    grid-template-columns: minmax(0, auto) minmax(120px, 1fr);
+    column-gap: 20px;
+    align-items: baseline;
+    border-bottom: 0;
+  }
+  .cv-hero .cv-big:last-child { border-bottom: 1px solid var(--rule); }
+  .cv-hero .cv-big__n { grid-row: 1 / 3; font-size: clamp(28px, 7vw, 48px); }
+  .cv-hero .cv-big__k { margin-top: 0; }
+  .cv-hero .cv-big__s { grid-column: 2; }
+  .cv-hero .cm-cover-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .cv-hero .cm-cover-facts > div:nth-child(2) { border-right: 0; }
+  .cv-hero .cm-cover-facts > div:nth-child(-n + 2) { border-bottom: 1px solid var(--rule); }
+}
+
+@media (max-width: 520px) {
+  .cv-hero { padding-top: 32px; }
+  .cv-hero .cv-title { font-size: clamp(40px, 14vw, 58px); }
+  .cv-hero .cv-lede { font-size: 16px; }
+  .cv-hero .cv-pill { font-size: 10px; padding: 5px 9px; }
+  .cv-hero .cv-role { font-size: 12px; line-height: 1.55; }
+  .cv-hero .cv-big {
+    display: block;
+    padding: 18px;
+  }
+  .cv-hero .cv-big__n { font-size: clamp(28px, 9.5vw, 38px); }
+  .cv-hero .cv-big__k { margin-top: 5px; font-size: 12px; }
+  .cv-hero .cv-big__s { margin-top: 6px; font-size: 10px; }
+  .cv-hero .cm-cover-facts { grid-template-columns: 1fr; }
+  .cv-hero .cm-cover-facts > div {
+    border-right: 0;
+    border-bottom: 1px solid var(--rule);
+    padding: 12px 0;
+  }
+  .cv-hero .cm-cover-facts > div:last-child { border-bottom: 0; }
+  .cv-hero .cm-cover-media__frame { aspect-ratio: 4 / 3; }
+  .cv-hero .cm-cover-media__badge { left: 8px; bottom: 8px; max-width: calc(100% - 16px); }
+  .cm-cover-metrics__grid { grid-template-columns: 1fr; }
+  .cm-cover-metric { display: grid; grid-template-columns: minmax(100px, auto) minmax(0, 1fr); gap: 4px 14px; padding: 16px; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .cm-cover-metric:last-child { border-bottom: 0; }
+  .cm-cover-metric > strong { grid-row: 1 / 5; align-self: center; font-size: 31px; }
+  .cm-cover-metric > span { margin-top: 0; font-size: 12px; }
+  .cm-cover-metric > b { margin-top: 0; font-size: 13px; }
+  .cm-cover-metric > small.is-mobile { margin-top: 2px; font-size: 11px; }
+  .cm-cover-decision { grid-template-columns: 1fr; }
+  .cm-cover-decision > span { grid-column: auto; }
+  .cm-cover-decision > div { grid-template-columns: 28px 14px minmax(0, 1fr); border-left: 0; }
+  .cm-cover-decision > div + div { border-top: 1px solid var(--rule); }
+  .cm-cover-decision small { grid-column: 3; }
+}
+
+/* Readability floor: one shared condition, percentage-first outcomes. */
+.cm-cover-metrics__scope { font-size: 12px; }
+.cm-cover-metrics__conditions { font-size: 12px; }
+.cm-cover-metrics__scope b { font-size: 13px; }
+.cm-cover-metric { min-width: 0; }
+.cm-cover-metric > strong { font-size: clamp(34px, 5vw, 62px); }
+.cm-cover-metric > span { font-size: 14px; }
+.cm-cover-metric > b { font-size: 15px; }
+.cm-cover-metric > small.is-mobile { font-size: 12px; }
+.cm-cover-media__badge,
+.cm-cover-media figcaption,
+.cm-cover-facts dt,
+.cm-cover-decision > span { font-size: 12px; }
+.cm-cover-facts dd,
+.cm-cover-decision > div { font-size: 13px; }
+.cm-cover-decision small { font-size: 12px; }
+.cv-hero .cv-pill,
+.cv-hero .cv-role,
+.cv-hero .cv-link span,
+.cm-cover-copy .cv-eyebrow { font-size: 12px; }
+
+@media (max-width: 720px) {
+  .cm-cover-metrics__grid { grid-template-columns: 1fr; }
+  .cm-cover-metric { display: grid; grid-template-columns: minmax(108px, auto) minmax(0, 1fr); gap: 4px 14px; padding: 16px; border-right: 0; border-bottom: 1px solid var(--rule); }
+  .cm-cover-metric:last-child { border-bottom: 0; }
+  .cm-cover-metric > strong { grid-row: 1 / 4; align-self: center; font-size: 34px; }
+  .cm-cover-metric > span { margin-top: 0; font-size: 13px; }
+  .cm-cover-metric > b { margin-top: 0; font-size: 14px; }
+  .cm-cover-metric > small.is-mobile { display: block; margin-top: 2px; }
+}
+
+@media (max-width: 360px) {
+  .cm-cover-metric { grid-template-columns: 100px minmax(0, 1fr); padding: 14px 12px; }
+  .cm-cover-metric > strong { font-size: 30px; }
 }
