@@ -184,7 +184,7 @@ function SFSeamViz() {
         <text x={(GX + CW + SX) / 2} y="158" textAnchor="middle" className="sf-svg-tag">값을 읽어만 간다</text>
 
         <text x={GX} y="256" className="sf-svg-sub sf-svg-note">
-          이 둘 말고는 서로를 부르는 길이 없다 — 태울 것을 새로 만들어도 오른쪽은 그대로다
+          현재 구현에서 게임과 시뮬레이션이 연결되는 경로는 이 두 가지뿐이다
         </text>
       </svg>
       <figcaption className="sf-figcap">

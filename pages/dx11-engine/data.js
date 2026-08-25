@@ -19,7 +19,7 @@ window.DX11_DATA = {
     },
   },
 
-  hook: 'D3D11 위에서 입력부터 물리·씬·렌더링·리소스·디버그까지, **한 프레임을 이루는 엔진 전체**를 직접 설계하고 구현했다.',
+  hook: 'D3D11 위에서 입력부터 Present까지, **한 프레임을 구성하는 엔진 전 영역**을 직접 설계하고 구현했다.',
 
   hero: {
     img: 'dx11-engine/assets/hero.png',
@@ -27,7 +27,7 @@ window.DX11_DATA = {
   },
 
   overview: {
-    gist: '각 시스템을 따로 만든 것이 아니라, **입력부터 Present와 프레임 정리까지** 하나의 실행 흐름으로 연결했다.',
+    gist: '입력부터 Present와 프레임 정리까지, 엔진의 각 시스템을 **하나의 실행 흐름**으로 연결했다.',
     facts: [
       ['규모', '소스 137개 — h 86 · cpp 46 · hlsl 5'],
       ['직접 구현', '물리 · 충돌 · 렌더 · 게임오브젝트/씬 · 리소스 · 입력 · 메모리/디버그'],
@@ -35,18 +35,18 @@ window.DX11_DATA = {
     ],
     architecture: {
       title: '무엇이 무엇을 소유하는가',
-      body: '폴더로 나눈 구조가 아니다. 나눈 기준은 **소유권**이다. 게임 레이어가 객체 수명을, 시스템 싱글톤이 실행을, 상태·메모리 구조가 데이터를 갖는다. 세 층은 인터페이스 13개와 싱글톤 9개로 이어진다.',
+      body: '구조를 나눈 기준은 폴더가 아니라 **소유권**이다. 게임 레이어는 객체 수명을, 시스템 싱글톤은 실행을, 상태·메모리 구조는 데이터를 소유한다. 세 계층은 인터페이스 13개와 싱글톤 9개로 연결된다.',
       evidence: ['13 interfaces', '9 singletons', '4-tier component tree', 'flat source layout'],
     },
     frame: {
       title: '한 프레임이 지나가는 순서',
-      body: '한 프레임은 입력·물리·로직·렌더·UI·정리 여섯 단계로 고정돼 있다. **물리만** 고정 예산을 누적해 서브스텝으로 나눠 돌고, 나머지 단계는 프레임당 한 번씩 지난다.',
+      body: '한 프레임은 입력, 물리, 로직, 렌더링, UI, 정리의 여섯 단계로 진행된다. 이 중 **물리 단계만** 고정 예산을 누적해 여러 서브스텝으로 실행하고, 나머지 단계는 프레임마다 한 번씩 실행한다.',
       evidence: ['ProcessWindowsMessage', 'TickPhysics', 'ProcessRender', 'EndFrame + arena reset'],
     },
   },
 
   physics: {
-    gist: '가장 크게 재설계한 곳은 물리다. 핵심은 알고리즘보다 먼저 **상태의 주인과 이동 경로**를 정한 것이다.',
+    gist: '물리 재설계의 출발점은 알고리즘이 아니라 **상태의 소유자와 이동 경로**를 정하는 일이었다.',
     boundary: {
       title: '1. 상태 소유권을 물리로 옮겼다',
       body: '게임 객체가 소유하던 시뮬레이션 상태를 `FPhysicsStateArrays`의 속성 배열 23개로 옮겼다. 게임 쪽에는 슬롯 ID와 동기화용 입력·결과·더티 상태를 남기고, 두 영역의 왕복은 입력·Job·결과·이벤트 네 통로로 제한했다. `UPhysicsSystem`은 그 배열과 Job 큐·이벤트 큐·충돌 서브시스템을 함께 소유한다.',
@@ -75,7 +75,7 @@ window.DX11_DATA = {
     // 그림만 있고 무엇을 주장하는지가 없었다.
     render: {
       title: '렌더링 — 제출과 실행을 분리했다',
-      body: '씬은 렌더 Job만 제출한다. 렌더러는 상태 버킷으로 나눠 처리하고, `FRenderContext`는 내부 바인딩 캐시와 비교한 뒤 D3D11 호출을 수행한다. RenderData는 8MB 프레임 아레나에서 만들고 다음 프레임에 일괄 재사용한다.',
+      body: '씬은 렌더링 작업만 제출한다. 렌더러는 작업을 상태 버킷별로 처리하고, `FRenderContext`는 내부 바인딩 캐시와 비교한 뒤 필요한 D3D11 호출을 수행한다. RenderData는 8MB 프레임 아레나에 할당하고, 프레임 종료 후 메모리 영역을 일괄 재사용한다.',
       evidence: ['Shader Reflection', 'Solid / Wireframe buckets', '8 MB frame arena', 'EndFrame binding validation'],
     },
   },
@@ -123,7 +123,7 @@ PhysicsStateSoA->InvMasses[i] = data.InvMass;`,
     tick: {
       title: '입력과 결과를 나눈 시뮬레이션 경계',
       source: 'PhysicsSystem.cpp · PrepareSimulation / FinalizeSimulation',
-      intro: 'PrepareSimulation은 입력과 Job을, FinalizeSimulation은 결과와 충돌 이벤트 반환을 담당한다.',
+      intro: 'PrepareSimulation은 입력 동기화와 Job 처리를, FinalizeSimulation은 결과와 충돌 이벤트 반환을 담당한다.',
       lang: 'cpp',
       code: `void UPhysicsSystem::PrepareSimulation()
 {

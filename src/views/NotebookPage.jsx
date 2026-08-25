@@ -163,7 +163,7 @@ function NotebookFacts({ data }) {
     <section id="facts" className="nb-section">
       <div className="nb-section-head">
         <span className="nb-section-no">§ 01</span>
-        <h2 className="nb-section-title">Context — 프로젝트 사실</h2>
+        <h2 className="nb-section-title">Context — 프로젝트 개요</h2>
         <span className="nb-section-kind">FACTS</span>
       </div>
 
@@ -171,7 +171,7 @@ function NotebookFacts({ data }) {
         <div className="nb-gallery">
           <div className="nb-gallery-head">
             <span className="lbl">GALLERY</span>
-            <span className="hint">←/→ 키 또는 화살표·썸네일 클릭으로 넘김. 영상은 Steam 페이지에서.</span>
+            <span className="hint">키보드 ←/→ 또는 화살표·썸네일로 넘길 수 있습니다. 영상은 Steam 페이지에서 확인할 수 있습니다.</span>
           </div>
           <ScreenshotCarousel shots={data.screenshots} />
         </div>
@@ -230,7 +230,7 @@ function NotebookSystems({ data, kindLabel, no = '02' }) {
     <section id="systems" className="nb-section">
       <div className="nb-section-head">
         <span className="nb-section-no">§ {no}</span>
-        <h2 className="nb-section-title">Action — 본인이 작업한 시스템</h2>
+        <h2 className="nb-section-title">Action — 직접 맡은 핵심 작업</h2>
         <span className="nb-section-kind">{kindLabel || `${data.systems.length} SYSTEMS`}</span>
       </div>
       {data.systems.map(sys => <SystemBlock key={sys.no} system={sys} />)}
@@ -244,7 +244,7 @@ function NotebookEvidence({ data, no = '03' }) {
     <section id="evidence" className="nb-section">
       <div className="nb-section-head">
         <span className="nb-section-no">§ {no}</span>
-        <h2 className="nb-section-title">Evidence — 정량 결과</h2>
+        <h2 className="nb-section-title">Evidence — 결과와 근거</h2>
         <span className="nb-section-kind">METRICS</span>
       </div>
 

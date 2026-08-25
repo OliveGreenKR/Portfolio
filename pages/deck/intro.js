@@ -9,7 +9,7 @@
 // 2026-08-12 정리 (사용자 판단):
 //   - 대표 수치 넉 칸(137 · −93.8% · 02 · 05)을 뺐다. 표제지의 세로를 두 덩이가 나눠 먹어
 //     이력 격자가 눌렸고, 어차피 각 프로젝트 장이 같은 수치를 제 자리에서 다시 낸다.
-//   - '지원 직무' 줄을 뺐다. 표지 · 크롬 · 파일명이 이미 직무를 말한다.
+//   - 지원 직무는 직무별 덱 조립 시점에 채운다. intro 는 빈 자리만 소유한다.
 //   - '출시' · '외주' 를 **이력** 한 항목으로 합쳤다. 종류로 가르면 항목이 늘 뿐,
 //     읽는 쪽은 "무엇을 언제 어느 규모로 했나" 만 본다.
 //   - Labs 줄을 뺐다. 이 덱에 Labs 본문이 없으므로 이력에만 이름을 올리면 확인할 길이 없다.
@@ -35,8 +35,9 @@
   const ko = (s) => String(s).replace(/\s*weeks?$/i, '주').replace(/(\d)\s+인/, '$1인');
   // platform 은 '(글로벌, 2026.02)' 처럼 날짜를 물고 있는데, 뒤에 기간을 또 적으므로 뗀다.
   const where = (m) => m.platform.replace(/\s*\(([^,)]+)[^)]*\)/, ' $1');
-  const shipped = (m) => m.title
-    + ' (' + where(m) + ' · ' + m.period + ' · ' + ko(m.weeks) + ' · ' + ko(m.team) + ')';
+  const projectFact = (d, k) => ((d.facts || []).find((f) => f[0] === k) || [k, ''])[1];
+  const shipped = (m, platform = where(m)) => m.title
+    + ' (' + platform + ' · ' + m.period + ' · ' + ko(m.weeks) + ' · ' + ko(m.team) + ')';
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.intro = {
@@ -51,6 +52,8 @@
         stance: L.identity.stance,
         facts: [
           ['이름', fact('이름')],
+          // engine.js 가 덱별 ROLE 로 채운다.
+          ['지원 직무', ''],
           ['학력', lines('학력')],
           // 최신이 맨 위다 (시작 시점 기준 내림차순):
           //   Motelet 2026.05~ · 외주 2026.05–07 · Wobble 2026.03–04 · Cartapli 2025.11–2026.02
@@ -61,7 +64,7 @@
             // 제목에 이미 '(외주)' 가 있고 period 도 괄호를 물고 있다 — 그대로 이으면 괄호가 겹친다.
             E.meta.title.replace(/\s*\(외주\)\s*$/, '')
               + ' (외주 · ' + E.meta.period.replace(/\s*\((.+)\)$/, ' · $1') + ')',
-            shipped(W.meta),
+            shipped(W.meta, projectFact(W, '출시 플랫폼')),
             shipped(C.meta),
           ]],
           // 엔진 · 언어는 한 줄로 둔다. 항목이 짧아 줄바꿈해도 읽기가 나아지지 않고,

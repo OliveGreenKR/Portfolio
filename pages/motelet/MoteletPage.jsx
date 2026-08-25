@@ -168,7 +168,7 @@ function MTModel({ data }) {
       <window.MTPageDecompTree decomp={m.decomp} />
       <MTDefn title={m.formula.title} intro={m.formula.intro} lines={m.formula.lines} result={m.formula.result} />
 
-      <MTSubHead tag="A-2">두 개의 min 이 버리는 것</MTSubHead>
+      <MTSubHead tag="A-2">두 개의 min이 버리는 것</MTSubHead>
       <window.MTPageMins mins={m.mins} />
       <window.AsciiBlock title={m.code.title} intro={m.code.intro} code={m.code.code} result={m.code.result} />
     </section>

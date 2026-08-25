@@ -102,7 +102,7 @@
       section: 'Contents',
       title: '목차',
       entries,
-      note: '각 줄을 누르면 그 프로젝트의 첫 장으로 간다. 오른쪽 숫자는 쪽 범위다.',
+      note: '프로젝트 이름을 선택하면 첫 슬라이드로 이동합니다. 오른쪽 숫자는 슬라이드 범위입니다.',
     });
   }
 
@@ -114,5 +114,5 @@
     s.facts = s.facts.map((f) => (f[0] === '지원 직무' ? ['지원 직무', ROLE] : f));
   });
 
-  window.DECK_ENGINE = { name: 'JCH · 엔진 프로그래머', role: ROLE, slides };
+  window.DECK_ENGINE = { name: 'JCH · 게임 클라이언트 · 엔진 프로그래머', role: ROLE, slides };
 })();

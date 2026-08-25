@@ -42,8 +42,9 @@ window.CARTAPLI_DATA = {
 
   // Role split — 본인 / 본인 작업 아님
   roles: {
-    mine: '배틀씬 전체 시스템(턴 · 스킬 · AI · 스폰 · 데미지) · 종이접기 시스템의 3분할 리팩토링 · 텍스처링 · Z-order · FoldInputController 분리 · PaperPositionSyncher · 배틀씬 연동.',
-    others: '종이접기 핵심 기하 로직 — SplitPolygonByLine, ReflectPointAcrossLine 등 GeometryUtility 는 PoC 입안자(다른 팀원) 작업.',
+    summary: '배틀씬 전체 시스템과 종이접기 리팩토링',
+    mine: '배틀씬 전체 시스템(턴·스킬·AI·스폰·데미지)과 종이접기 시스템의 3분할 리팩토링을 맡았다. 텍스처링, Z-order, FoldInputController 분리, PaperPositionSyncher, 배틀씬 연동도 직접 구현했다.',
+    others: 'SplitPolygonByLine, ReflectPointAcrossLine 등 종이접기의 핵심 기하 로직과 GeometryUtility는 PoC를 제안한 다른 팀원이 구현했다.',
   },
 
   // ─── Systems (§3 · ACTION layer)
@@ -54,9 +55,9 @@ window.CARTAPLI_DATA = {
       no: '3.1',
       kind: 'ARCHITECTURE',
       title: '배틀씬 3계층 아키텍처',
-      lede: '11개 싱글톤 · 10+ 시스템 · 15+ 이벤트가 동시 동작하지만 시스템 간 직접 참조 0.',
-      problem: '로그라이크 배틀씬은 매 런마다 시스템 다수가 동시에 살아 움직여야 한다. 시스템 간 직접 참조로 묶이면 새 시스템 하나 추가가 기존 코드 전부를 건드리는 변경으로 번진다.',
-      decision: 'Data / Entity / System 세 계층으로 분리. Data Layer 는 SO 중앙 레지스트리. Entity Layer 는 BattleSceneSingleton 오케스트레이터 + Character 컴포넌트 컨테이너 + UI. System Layer 는 BattleSceneSingleton 이벤트만 구독하고 Character 컴포넌트를 참조해 동작. Character 자체는 시스템이 아니라 컴포넌트 컨테이너 — TurnActor / Health / StatMediator / PaperSyncTarget / AIBrain 등의 조합.',
+      lede: '11개 싱글톤과 10개 이상의 시스템, 15개 이상의 이벤트가 동시에 동작하지만 시스템 간 직접 참조는 없다.',
+      problem: '로그라이크 배틀씬에서는 매 런 여러 시스템이 동시에 동작한다. 이를 직접 참조로 연결하면 시스템 하나를 추가할 때도 기존 코드 전반을 수정해야 한다.',
+      decision: 'Data / Entity / System 세 계층으로 분리. Data Layer는 SO 중앙 레지스트리. Entity Layer는 BattleSceneSingleton 오케스트레이터 + Character 컴포넌트 컨테이너 + UI. System Layer는 BattleSceneSingleton 이벤트만 구독하고 Character 컴포넌트를 참조해 동작. Character 자체는 시스템이 아니라 컴포넌트 컨테이너 — TurnActor / Health / StatMediator / PaperSyncTarget / AIBrain 등의 조합.',
       results: [
         '개발 중반 이후 스킬 시스템 · 업적 시스템 추가 시 기존 코드 변경 0줄로 통합',
         'Steamworks 업적 시스템을 OnBattleEnd 단일 이벤트 구독으로 통합 (전투 코드 수정 0)',
@@ -123,9 +124,9 @@ window.CARTAPLI_DATA = {
       no: '3.2',
       kind: 'SYSTEM',
       title: '스킬 시스템 — 확장성 + 쉬운 사용성',
-      lede: '관리와 구현을 분리하고, 구현 자체를 프리팹으로 데이터화.',
-      problem: '플레이어 직접 사용 + 유물로 인한 자동 사용. 같은 기능이지만 스킬별 동작에 스킬마다 조금씩 다르다. 한 클래스에 몰면 새 스킬마다 분기가 늘고, 분리하면 인스턴스별 차이를 데이터로 표현할 수단이 필요.',
-      decision: '관리와 구현의 분리 — 관리 데이터(쿨다운 · 사용 정책)와 구현 데이터(런타임 동작 · 프리팹)를 다른 계층에 둔다. 구현체는 프리팹으로 데이터화해 인스턴스별 차이를 표현. SkillExecutionContext 는 불변 구조체 + Fluent API — 새 인스턴스 반환으로 부작용 방지.',
+      lede: '관리 데이터와 실행 구현을 분리하고, 구현체는 프리팹으로 데이터화했다.',
+      problem: '스킬은 플레이어가 직접 사용하거나 유물 효과로 자동 발동하지만, 구체적인 동작은 스킬마다 다르다. 한 클래스에 모으면 새 스킬마다 분기가 늘고, 구현체를 분리하면 인스턴스별 차이를 데이터로 표현할 방법이 필요하다.',
+      decision: '관리와 구현의 분리 — 관리 데이터(쿨다운 · 사용 정책)와 구현 데이터(런타임 동작 · 프리팹)를 다른 계층에 둔다. 구현체는 프리팹으로 데이터화해 인스턴스별 차이를 표현. SkillExecutionContext는 불변 구조체 + Fluent API — 새 인스턴스 반환으로 부작용 방지.',
       results: [
         '분신 스킬(MirrorImageExecutor) 추가 = OnExecute 오버라이드 1개 + 프리팹 조립 / 기존 시스템 수정 0',
         '6종 스킬 실행기 상호 영향 0',
@@ -185,11 +186,11 @@ protected abstract bool OnExecute(
       kind: 'LIFECYCLE',
       title: '데이터 생명주기 — 같은 루프, 매번 다른 경험',
       lede: 'Permanent / Session / Scene 3계층. 하향 주입 + 상향 저장.',
-      problem: '로그라이크의 데이터는 세 종류 — 런마다 초기화(적·난이도·보상) / 런을 넘어 누적(업적·통계·글로벌 스킬) / 씬 전환 시 유지(런 진행·세이브). 한 곳에 섞이면 씬 전환 한 번에 데이터 유실 또는 영구 오염.',
-      decision: 'Permanent / Session / Scene 3계층 분리. Permanent = DontDestroyOnLoad. Session = 한 런 = 시작~게임오버. Scene = 씬 로드~언로드. 하향 주입(Permanent → Session → Scene) + 상향 저장(Scene → Session → Permanent) 의 양방향 흐름 구축.',
+      problem: '로그라이크의 데이터는 런마다 초기화되는 정보, 런을 넘어 누적되는 정보, 씬 전환 중 유지해야 하는 정보로 나뉜다. 이를 한곳에서 관리하면 씬 전환 과정에서 데이터가 유실되거나 영구 데이터가 오염될 수 있다.',
+      decision: 'Permanent / Session / Scene 3계층 분리. Permanent = DontDestroyOnLoad. Session = 한 런 = 시작~게임오버. Scene = 씬 로드~언로드. 하향 주입(Permanent → Session → Scene) + 상향 저장(Scene → Session → Permanent)의 양방향 흐름 구축.',
       results: [
         '씬 전환 데이터 유실 0건',
-        'Steamworks 업적 · 통계를 Permanent 에 배치해 전투 씬 코드 수정 없이 통합',
+        'Steamworks 업적 · 통계를 Permanent에 배치해 전투 씬 코드 수정 없이 통합',
         '같은 BattleScene 코드로 매 런 다른 전투 경험',
       ],
       mermaid: `graph TB
@@ -247,13 +248,13 @@ private IEnumerator TransitionToRoundStartCoroutine()
       no: '3.5',
       kind: 'DATA-DRIVEN',
       title: 'SO + DB 싱글톤 데이터 주도 설계',
-      lede: '코드 변경 0 으로 적 · 챕터 · 웨이브 · 난이도를 운영.',
-      problem: '데이터(적·웨이브·난이도)가 코드에 박히면 비프로그래머 팀원이 수치 조정만 해도 빌드가 필요. 직렬화·검증·일괄 편집 어느 것도 안 됨.',
-      decision: '5종 SO(CharData · MD_SkillDataSO · MD_EnemySpawnWaveDataSO · MD_BattleWaveSetSO · MD_DeathEchoSO) + DB 싱글톤(ExecutionOrder=-1000) 이 중앙 레지스트리 — `DB.Get(Enemy.Wizard)` 형식 정적 접근. Resources 일괄 로드 + Dictionary 캐싱. Odin Inspector 의 [TabGroup] · [TableList] · [InlineEditor] 로 테이블 뷰 일괄 편집. Odin 직렬화 확장으로 Dictionary · 인터페이스 참조까지 SO 에 담음.',
+      lede: '코드 변경 0으로 적 · 챕터 · 웨이브 · 난이도를 운영.',
+      problem: '적·웨이브·난이도 데이터가 코드에 고정되면 비프로그래머 팀원이 수치만 조정해도 새 빌드가 필요하다. 직렬화, 검증, 일괄 편집도 지원하기 어렵다.',
+      decision: '5종 SO(CharData · MD_SkillDataSO · MD_EnemySpawnWaveDataSO · MD_BattleWaveSetSO · MD_DeathEchoSO) + DB 싱글톤(ExecutionOrder=-1000)이 중앙 레지스트리 — `DB.Get(Enemy.Wizard)` 형식 정적 접근. Resources 일괄 로드 + Dictionary 캐싱. Odin Inspector의 [TabGroup] · [TableList] · [InlineEditor]로 테이블 뷰 일괄 편집. Odin 직렬화 확장으로 Dictionary · 인터페이스 참조까지 SO에 담음.',
       results: [
-        '적 15종+, 챕터 2개, 웨이브, 난이도 모두 코드 변경 0 으로 SO 편집만 운영',
+        '적 15종+, 챕터 2개, 웨이브, 난이도 모두 코드 변경 0으로 SO 편집만 운영',
         '비프로그래머 팀원이 Odin 테이블에서 직접 수치 조정',
-        'CSV Export 로 기획자와 데이터 교환',
+        'CSV Export로 기획자와 데이터 교환',
       ],
     },
 
@@ -263,11 +264,11 @@ private IEnumerator TransitionToRoundStartCoroutine()
       title: '7단계 배틀 FSM + 페이즈 분리',
       lede: 'Preparing → RoundStart → PlayerActionPhase → CharacterTurnPhase → RoundEnd → RewardPhase → BattleEnded.',
       problem: '한 배틀 안에 입력 처리 · 턴 스케줄링 · 보상 계산이 섞이면 각 단계의 책임 경계가 흐려진다. 페이즈 추가 / 변경 시 다른 페이즈 코드를 건드리는 변경이 발생.',
-      decision: '7단계 FSM + 각 페이즈 단일 책임. PlayerActionPhase 는 FoldInputController 만 활성, CharacterTurnPhase 는 BattleTimeSingleton 턴 스케줄러만 동작. 페이즈 전환은 코루틴 기반(`DelayedBattleStartCoroutine`). 외부 시스템이 페이즈 종료를 알려주는 Command-Response 패턴 (`EndPlayerAction`, `EndCharacterPhase`).',
+      decision: '7단계 FSM + 각 페이즈 단일 책임. PlayerActionPhase는 FoldInputController만 활성, CharacterTurnPhase는 BattleTimeSingleton 턴 스케줄러만 동작. 페이즈 전환은 코루틴 기반(`DelayedBattleStartCoroutine`). 외부 시스템이 페이즈 종료를 알려주는 Command-Response 패턴 (`EndPlayerAction`, `EndCharacterPhase`).',
       results: [
-        '분신 스킬(MirrorImage) 을 CharacterTurnPhase 에 액터 등록만으로 구현 / PlayerActionPhase 영향 0',
-        '몬스터 패턴(CoordinateAttack) 추가 시 CharacterPhase 내 AIDecision/AIAction 만 추가 / 접기 입력 로직과 완전 독립',
-        '보상 시스템을 RewardPhase 로 분리 / 전투 결과·보상 로직 변경 시 전투 코드 수정 불필요',
+        '분신 스킬(MirrorImage)을 CharacterTurnPhase에 액터 등록만으로 구현 / PlayerActionPhase 영향 0',
+        '몬스터 패턴(CoordinateAttack) 추가 시 CharacterPhase 내 AIDecision/AIAction만 추가 / 접기 입력 로직과 완전 독립',
+        '보상 시스템을 RewardPhase로 분리 / 전투 결과·보상 로직 변경 시 전투 코드 수정 불필요',
       ],
       // Visual FSM trail
       fsmTrail: ['Preparing', 'RoundStart', 'PlayerAction', 'CharacterTurn', 'RoundEnd', 'Reward', 'BattleEnded'],
@@ -277,18 +278,18 @@ private IEnumerator TransitionToRoundStartCoroutine()
       no: '3.7',
       kind: 'PHYSICS',
       title: '데미지 감지 / 적용 분리 (TopDownEngine 확장)',
-      lede: 'TopDownEngine 의 DamageOnTouch 트리거 콜백을 비활성화하고 직접 Physics2D 쿼리로 교체.',
+      lede: 'TopDownEngine의 DamageOnTouch 트리거 콜백을 비활성화하고 직접 Physics2D 쿼리로 교체.',
       problem: '폭발 범위 내 3~4 명 동시 피격 시 트리거 콜백 순서로 데미지 누락 · 중복이 발생. 고속 투사체는 한 프레임에 충돌체를 통과 (터널링).',
-      decision: '감지(Overlap/Sweep) 와 적용(Health.Damage + 넉백) 을 분리. `MD_DamageOnOverlap2D` 는 매 프레임 OverlapBox/Circle 로 능동 감지. `MD_DamageOnSweep2D` 는 Open(예측 스윕) + Closed(실제 경로 추적) 모드로 터널링 차단. `MD_ExternalDamageApplicator` 는 Health.Damage() 와 넉백 처리. `MD_Projectile` 이 `ITrajectoryProvider` 구현 — 이전 프레임 위치 추적, 스윕 계산용 궤적 제공. 넉백 방향 전략 패턴 4종 (Owner / 방향 / 속도 / 스크립트).',
+      decision: '감지(Overlap/Sweep)와 적용(Health.Damage + 넉백)을 분리. `MD_DamageOnOverlap2D`는 매 프레임 OverlapBox/Circle로 능동 감지. `MD_DamageOnSweep2D`는 Open(예측 스윕) + Closed(실제 경로 추적) 모드로 터널링 차단. `MD_ExternalDamageApplicator`는 Health.Damage()와 넉백 처리. `MD_Projectile`이 `ITrajectoryProvider` 구현 — 이전 프레임 위치 추적, 스윕 계산용 궤적 제공. 넉백 방향 전략 패턴 4종 (Owner / 방향 / 속도 / 스크립트).',
       results: [
         '폭발 범위 내 3~4 명 동시 피격 시 데미지 누락 · 중복 0',
-        '예측 표시(LaserSight) 와 실제 판정 결과 일치',
+        '예측 표시(LaserSight)와 실제 판정 결과 일치',
         '고속 투사체 터널링 차단',
       ],
       // Boundary: double-buffered HashSet
       ascii: {
         title: '보조 — 더블 버퍼링 HashSet',
-        intro: 'HashSet 2개를 미리 할당하고 매 프레임 참조만 swap. current 에 있고 prev 에 없으면 Enter, 양쪽이면 Stay, prev 에만 있으면 Exit. Physics2D.OverlapCircleNonAlloc 등 NonAlloc 변형 일관 사용.',
+        intro: 'HashSet 2개를 미리 할당하고 매 프레임 참조만 swap. current에 있고 prev에 없으면 Enter, 양쪽이면 Stay, prev에만 있으면 Exit. Physics2D.OverlapCircleNonAlloc 등 NonAlloc 변형 일관 사용.',
         code: `// per-frame, no allocations
 temp     = prev;
 prev     = current;

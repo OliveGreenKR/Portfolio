@@ -21,7 +21,7 @@
     slides: [
       // 표지는 **프로젝트가 소유한다** — pages/wobble-wobble/cover.jsx.
       // 한 장짜리 프로젝트라 그 한 장이 곧 표지다.
-      { layout: 'projectCover', section: 'Main · Shipped', slug: 'wobble-wobble' },
+      { layout: 'projectCover', section: '출시 프로젝트', slug: 'wobble-wobble' },
     ],
   };
 })();

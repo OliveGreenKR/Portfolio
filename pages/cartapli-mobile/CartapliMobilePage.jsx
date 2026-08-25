@@ -250,7 +250,7 @@
               <section className="cm-placement-story is-worker" aria-labelledby="cm-placement-worker-title">
                 <header>
                     <span>05-B · WORKER THREAD</span>
-                  <h3 id="cm-placement-worker-title">큰 파묻힘 판정은 예약하고, 끝난 틱에서만 수확</h3>
+                  <h3 id="cm-placement-worker-title">큰 파묻힘 판정은 예약하고, 완료를 확인한 이후 틱에서만 수확</h3>
                   <p>{D.asyncConfirm.intro}</p>
                 </header>
                 <div className="cm-worker-evidence">

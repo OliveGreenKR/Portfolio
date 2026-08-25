@@ -26,7 +26,7 @@ function DXSyncTierViz() {
   return (
     <DXFigure
       label="갱신 빈도에 따른 물리 입력 동기화 3계층"
-      caption="세 계층은 이름만 나눈 플래그가 아니다. **구조체와 순회 함수도 각각 분리**되어, 더티가 선 계층만 중앙 배열에 반영된다."
+      caption="세 계층은 플래그 이름만 나눈 구분이 아니다. **구조체와 순회 함수도 각각 분리**되어 있으며, 더티 플래그가 설정된 계층만 중앙 배열에 반영된다."
       className="dx-sync"
     >
       <div className="dx-tier-head"><span>GAME INPUT</span><span>DIRTY ONLY</span><span>PHYSICS SoA</span></div>

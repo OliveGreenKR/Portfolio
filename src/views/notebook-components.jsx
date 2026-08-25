@@ -30,7 +30,7 @@ function MermaidFullscreen({ svgHtml, title, onClose }) {
       <div className="nb-diagram-fs-modal" onClick={(e) => e.stopPropagation()}>
         <div className="nb-diagram-fs-head">
           <span className="nb-diagram-fs-lbl">{title}</span>
-          <span className="nb-diagram-fs-hint">esc · 백드롭 클릭으로 닫기 · 휠/트랙패드로 스크롤</span>
+          <span className="nb-diagram-fs-hint">Esc · 바깥 영역을 눌러 닫기 · 휠/트랙패드로 스크롤</span>
           <button type="button" className="nb-diagram-fs-close" onClick={onClose} aria-label="닫기">✕</button>
         </div>
         <div className="nb-diagram-fs-body" ref={bodyRef}></div>
@@ -40,7 +40,7 @@ function MermaidFullscreen({ svgHtml, title, onClose }) {
   );
 }
 
-function MermaidToggle({ source, label = '아키텍처 다이어그램', hint = 'click to expand' }) {
+function MermaidToggle({ source, label = '아키텍처 다이어그램', hint = '눌러서 확대' }) {
   const hostRef = useRef(null);
   const [open, setOpen] = useState(false);
   const [rendered, setRendered] = useState(false);
@@ -84,7 +84,7 @@ function MermaidToggle({ source, label = '아키텍처 다이어그램', hint = 
             className="mermaid-fs-btn"
             onClick={(e) => { e.preventDefault(); setFs(true); }}
             aria-label="확대 보기"
-            title="확대 보기 (esc 로 닫기)"
+            title="확대 보기 (Esc로 닫기)"
           >
             <span className="glyph" aria-hidden="true">⤢</span>
             <span className="t">확대</span>

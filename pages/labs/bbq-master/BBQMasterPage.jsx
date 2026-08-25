@@ -218,7 +218,7 @@ function BQField({ data }) {
   const f = data.field;
   return (
     <section id="field" className="nb-section">
-      <BQSectionHead no="02" title="만든 것 — 공간을 칸으로 나눠 열을 굴린다" kind="SIMULATION" />
+      <BQSectionHead no="02" title="열 시뮬레이션 — 공간을 32³ 복셀로 나누다" kind="SIMULATION" />
       <BQGist>{f.gist}</BQGist>
       <p className="bq-body">{ri(f.body)}</p>
       <p className="bq-body">{ri(f.body2)}</p>
@@ -240,7 +240,7 @@ function BQShow({ data }) {
   const s = data.show;
   return (
     <section id="show" className="nb-section">
-      <BQSectionHead no="03" title="보이게 만든 것 — 어느 칸을 읽느냐" kind="VISUALISATION" />
+      <BQSectionHead no="03" title="시각화 — 용도별로 읽는 복셀을 나누다" kind="VISUALISATION" />
       <BQGist>{s.gist}</BQGist>
       <p className="bq-body">{ri(s.body)}</p>
       <p className="bq-body">{ri(s.body2)}</p>
@@ -259,7 +259,7 @@ function BQModel({ data }) {
   const m = data.model;
   return (
     <section id="model" className="nb-section">
-      <BQSectionHead no="04" title="갈라 둔 것 — 데이터와 렌더러 사이" kind="DATA FLOW" />
+      <BQSectionHead no="04" title="데이터 흐름 — 복셀에서 렌더러까지 단방향으로" kind="DATA FLOW" />
       <BQGist>{m.gist}</BQGist>
       <p className="bq-body">{ri(m.body)}</p>
       {/* 파이프라인이 이 절의 본체다. 아래 다섯 줄은 이 그림의 칸을 하나씩 푼 것이다. */}

@@ -278,7 +278,7 @@
 
           {/* 물리 영역 — 포함이 곧 소유 */}
           <rect x="1080" y="86" width="460" height="562" rx="16" fill="var(--sage-50)" stroke="var(--sage-500)" strokeWidth="2.5" />
-          <Cap x="1104" y="122" tone="var(--sage-900)">UPhysicsSystem 이 소유</Cap>
+          <Cap x="1104" y="122" tone="var(--sage-900)">UPhysicsSystem이 소유</Cap>
           {owned.map(([t, s], i) => (
             <Box key={t} x="1104" y={140 + i * 124} w="412" h="104" title={t} sub={s} tone="plain" />
           ))}
@@ -313,7 +313,7 @@
     return (
       <Fig
         label="준비와 마무리 게이트 사이에 격리 구간을 둔 물리 틱 구조"
-        caption="× N 의 **N 은 고정이 아니다**. 고정인 것은 한 틱의 예산이고, 서브스텝이 그 예산을 나눠 갖는다."
+        caption="× N의 **N은 고정이 아니다**. 고정인 것은 한 틱의 예산이고, 서브스텝이 그 예산을 나눠 갖는다."
       >
         <SVG>
           <Marks id="dxt" />

@@ -26,7 +26,7 @@
     toc: {
       title: W.meta.title,
       period: W.meta.period,
-      tags: ['5주 압축 출시', '자동화 인프라 자율 도입', W.meta.stack.slice(0, 4).join(' · ')],
+      tags: ['5주 압축 출시', '자동화 인프라 직접 도입', W.meta.stack.slice(0, 4).join(' · ')],
     },
 
     render: ({ density }) => (
@@ -39,9 +39,7 @@
               <window.Lede>{W.meta.oneLine}</window.Lede>
               {/* 5인 팀이라 역할 경계를 표지에서 밝힌다. 숫자 넷만 두면
                   "이걸 혼자 했나" 가 남는다. */}
-              <window.RoleLine label={W.meta.role}>
-                {' — ' + W.roles.mine.split(' · ')[0]}
-              </window.RoleLine>
+              <window.RoleLine label={W.roles.summary} />
               <window.Pills items={pills} />
               <window.LinkRow links={[
                 { label: 'Steam', v: '글로벌', href: W.meta.steam, tone: 'sage' },

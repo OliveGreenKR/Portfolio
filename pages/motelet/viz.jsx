@@ -457,7 +457,7 @@ function MTBox({ x, y, w, h, tag, title, sub, tone }) {
 function MTPagePipeline({ pipeline }) {
   const narrow = useMTNarrow();
   const p = pipeline;
-  const label = '외부 Provider 가 주입 계약 하나를 넘기면 부팅 지휘자가 Core, Infrastructure, Gameplay 순으로 시스템을 초기화하고 Playing 으로 전이한다';
+  const label = '외부 Provider가 주입 계약 하나를 넘기면 부팅 지휘자가 Core, Infrastructure, Gameplay 순으로 시스템을 초기화하고 Playing으로 전이한다';
   const arrow = (id) => (
     <defs>
       <marker id={id} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
@@ -599,7 +599,7 @@ function MTPageResidency({ residency }) {
         {lane(14, r.lanes[0].tag, r.lanes[0].note, r.lanes[0].steps, 'accent')}
         {lane(88, r.lanes[1].tag, r.lanes[1].note, r.lanes[1].steps, 'accent')}
         <line x1="16" x2="944" y1="158" y2="158" stroke="var(--rule)" strokeDasharray="2 6" />
-        {lane(174, '반납 이후', '참조수가 0 이 된 뒤', r.release, 'drop')}
+        {lane(174, '반납 이후', '참조수가 0이 된 뒤', r.release, 'drop')}
       </svg>
     </MTFigure>
   );
@@ -771,7 +771,7 @@ function MTPageBatch({ batch }) {
       <text x={ox + 30} y={oy + 176} className="mt-t-sub">등록만 한다</text>
       <rect x={ox + 78} y={oy + 62} width="180" height="62" rx="3" fill="var(--sage-50)" stroke="var(--sage-500)" />
       <text x={ox + 168} y={oy + 90} textAnchor="middle" className="mt-t-node">정점 버퍼 1개</text>
-      <text x={ox + 168} y={oy + 110} textAnchor="middle" className="mt-t-sub">LateUpdate 에 다시 채움</text>
+      <text x={ox + 168} y={oy + 110} textAnchor="middle" className="mt-t-sub">LateUpdate에 다시 채움</text>
       <line x1={ox + 258} y1={oy + 92} x2={ox + 292} y2={oy + 92} className="mt-line" markerEnd="url(#mt-batch-arrow)" />
       <rect x={ox + 296} y={oy + 70} width="120" height="46" rx="3" fill="var(--sage-100)" stroke="var(--sage-700)" />
       <text x={ox + 356} y={oy + 98} textAnchor="middle" className="mt-t-node">제출 1</text>
@@ -820,7 +820,7 @@ function MTPageBatch({ batch }) {
           ))}
           <rect x={90} y={286} width="150" height="52" rx="3" fill="var(--sage-50)" stroke="var(--sage-500)" />
           <text x={165} y={310} textAnchor="middle" className="mt-t-node">정점 버퍼 1개</text>
-          <text x={165} y={328} textAnchor="middle" className="mt-t-sub">LateUpdate 에 다시 채움</text>
+          <text x={165} y={328} textAnchor="middle" className="mt-t-sub">LateUpdate에 다시 채움</text>
           <line x1={240} y1={312} x2={264} y2={312} className="mt-line" markerEnd="url(#mt-batch-arrow)" />
           <rect x={268} y={294} width="60" height="36" rx="3" fill="var(--sage-100)" stroke="var(--sage-700)" />
           <text x={298} y={317} textAnchor="middle" className="mt-t-node">제출 1</text>

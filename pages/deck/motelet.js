@@ -138,7 +138,7 @@
         layout: 'diagram',
         section: '01 밸런싱',
         no: 'a',
-        title: '성장 체감을 계산 가능한 정의로',
+        title: '계산 가능한 성장 체감 기준',
         // ⚠️ 리드는 한 줄로 묶는다. 그림 높이는 슬롯 **폭**이 정하므로(svg width:100%),
         //    리드가 두 줄이 되면 그만큼 슬롯이 짧아져 그림이 제 상자 밖으로 잘린다(실측 57px).
         lead: M.cycle.gist,
@@ -146,16 +146,16 @@
         vizComponent: 'MTPageDecompTree',
         vizProps: { decomp: bare(M.model.decomp) },
         points: [
-          ['한 판이 도는 순서',
+          ['한 판의 전투·성장 순환',
             M.cycle.steps.map((s, i) => s + '(' + M.cycle.subs[i] + ')').join(' → ')
             + '. ' + S(M.cycle.caption, 1)],
-          ['왜 식으로 바꿨나', M.model.problem + ' ' + M.model.gist],
-          ['식이 버리는 두 자리',
-            M.model.minTable.rows[0][0] + ' 은 ' + M.model.minTable.rows[0][1] + '을, '
-            + M.model.minTable.rows[1][0] + ' 은 ' + M.model.minTable.rows[1][1] + '을 버린다. '
-            // rows[1][2] 는 '**DPS 를 기준 지표로 안 쓴 이유**' — 강조 표시 안에서 잘라내면
+          ['성장 체감 수식화의 이유', M.model.problem + ' ' + M.model.gist],
+          ['두 최솟값 연산의 제외 항',
+            M.model.minTable.rows[0][0] + '은 ' + M.model.minTable.rows[0][1] + '을, '
+            + M.model.minTable.rows[1][0] + '은 ' + M.model.minTable.rows[1][1] + '을 버린다. '
+            // rows[1][2] 는 '**DPS를 기준 지표로 안 쓴 이유**' — 강조 표시 안에서 잘라내면
             // ** 짝이 깨진다. 강조를 벗겨 문장으로 세우고 다시 감싼다.
-            + '그래서 **' + plain(M.model.minTable.rows[1][2]).replace('안 쓴 이유', '안 썼다') + '.**'],
+            + '따라서 **' + plain(M.model.minTable.rows[1][2]).replace('안 쓴 이유', '사용하지 않았다') + '.**'],
         ],
         // 잎 두 줄 중 공격력 항만 싣는다. 치사율 쪽은 요점 셋째 칸이 말로 이미 말하고,
         // 둘 다 실으면 note 가 두 줄이 되어 그림이 제 상자에서 8px 잘렸다(실측).
@@ -182,11 +182,13 @@
         vizComponent: 'MTDeckShot',
         vizProps: { shot: M.sim.shot },
         points: [
-          ['소스와 가정을 갈랐다',
-            M.sim.split.rows.slice(0, 2).map((r) => r[0]).join(' · ') + ' 는 게임 자산에서 읽고, '
-            + M.sim.split.rows.slice(0, 2).map((r) => r[1]).join(' · ') + ' 는 내가 정했다. '
-            + S2(M.sim.splitNote, 2, 3)],
-          ['그래서 값이 아니라 순위를 읽는다',
+          ['게임 소스와 가정값의 분리',
+            M.sim.split.rows[0][0].replace(/\s*·\s*/g, '·') + '와 '
+            + M.sim.split.rows[1][0].replace(/\s*·\s*/g, '·').replace('능력 base 스탯', '능력의 기본 스탯')
+            + '은 게임 자산에서 읽었다. '
+            + M.sim.split.rows[0][1] + '와 '
+            + M.sim.split.rows[1][1].replace('동시존재', '동시 존재') + '는 가정값으로 분리했다.'],
+          ['절대값 대신 상대 순위',
             M.sim.code.intro + ' ' + M.sim.code.result],
         ],
         // shot.note(촬영 시점 · 화면 수치를 읽지 않는다)를 각주로 달았다가 뺐다 —
@@ -204,7 +206,7 @@
         layout: 'diagram',
         section: '02 런타임',
         no: 'a',
-        title: '물리 엔진 대신 넣은 기하 월드',
+        title: '프레임 단위 판정을 위한 기하 월드',
         // ⚠️ runtime.gist 둘째 문장은 감당 여부를 말한다 — 이 프로젝트는 빌드에서
         //    프레임을 잰 적이 없다. 정도 주장으로 읽히지 않게 첫 문장까지만 쓴다.
         lead: S(M.runtime.gist, 1),
@@ -212,13 +214,13 @@
         vizComponent: 'MTPageGeoWorld',
         vizProps: { geo: bare(M.runtime.geo) },
         points: [
-          ['왜 물리 엔진을 안 썼나',
+          ['물리 엔진을 쓰지 않은 이유',
             M.runtime.why.rows[0][0] + '가 다르다 — ' + M.runtime.why.rows[0][1] + ' 대 **'
             + plain(M.runtime.why.rows[0][2]) + '**. ' + M.runtime.why.rows[1][0] + '도 '
             + M.runtime.why.rows[1][1].replace(' (프레임률에 따라)', '') + ' 대 **'
             + plain(M.runtime.why.rows[1][2]) + '**. 요구는 정밀 충돌이 아니라 **'
             + plain(M.runtime.why.rows[2][2]).replace(' — 요구', '') + '**이었다.'],
-          ['들어간 것은 질의 넷과 커널 일곱',
+          ['기하 월드의 질의 4종과 커널 7개',
             S(M.runtime.matrix.caption, 1) + ' ' + M.runtime.code.result
             + ' 바디 모양으로 `Geo2D.CircleVsCapsule` 같은 커널이 갈린다.'],
           // 「바디도 호출자도 서로를 모른다」는 요점을 뒀다가 뺐다. 그림이 점선(자기 등록)과
@@ -237,16 +239,17 @@
         layout: 'step',
         section: '02 런타임',
         no: 'b',
-        title: '등록과 질의를 잇는 인터페이스 하나',
+        title: '수명 주기 등록과 질의 경계',
         // 절 요약(geo.title = "바디는 스스로 등록하고, 밖에서는 질의만 들어온다")을 얹었다가
         // 뺐다 — 제목과 같은 말인데 36px 을 먹어서 코드가 상자 밖으로 21px 밀렸다(실측).
         step: { code: M.runtime.contract },
         points: [
-          ['등록은 수명이 한다', S2(M.runtime.geo.caption, 2, 3)],
-          ['호출자가 아는 것은 질의뿐',
+          ['수명 주기의 등록 관리',
+            '활성화 시 등록되고 비활성화 시 해제되므로, 풀에서 꺼내거나 되돌려도 등록 상태가 수명 주기와 함께 맞춰진다.'],
+          ['호출자의 질의 경계',
             M.runtime.geo.callerEdge + '. 모양과 분류 필터를 넘기면 월드가 '
             + '호출자가 준 `output` 리스트에 결과를 채운다.'],
-          ['분류를 빠뜨리면 즉시 드러난다', M.runtime.geo.note],
+          ['분류 누락을 숨기지 않는 계약', M.runtime.geo.note],
         ],
         note: M.runtime.contract.result,
       },

@@ -19,7 +19,7 @@
       image: 'cartapli-mobile/assets/fold-manual.gif',
       imageAlt: 'PaperBench에서 종이를 수동으로 접고 디버그 오버레이로 측정 입력을 확인하는 장면',
       imageCaption: 'PaperBench의 측정 자극과 디버그 오버레이. 완성 Battle gameplay 화면이 아니다.',
-      lede: '종이 구조의 작업량과 렌더 구조를 먼저 줄이고, Native 데이터 경로를 정리한 뒤, 일의 크기와 한 틱 지연 가능성에 맞춰 실행 위치까지 다시 골랐다.',
+      lede: '종이 구조의 작업량과 렌더 구조를 먼저 줄이고 Native 데이터 경로를 정리한 뒤, 작업 규모와 한 틱 지연 허용 여부에 따라 실행 위치를 다시 선택했다.',
       metrics: [
         {
           value: '−96.0%',
@@ -108,7 +108,7 @@
         { tag: 'SCREEN OUTPUT', title: 'Front / back meshes', body: 'Native 버퍼를 두 메시로 직접 업로드' },
       ],
       decisions: [
-        ['order', '순서를 아는 지점을 BattleSimulation 한 곳으로 고정했다.'],
+        ['order', '호출 순서를 관리하는 책임을 BattleSimulation 한 곳에 모았다.'],
         ['contract', 'World는 서로를 모르고 IWorld의 위치 계약만 외부 링크가 연결한다.'],
       ],
       codes: [
@@ -260,7 +260,7 @@
           before: '337 layers · 1348 vertices', after: '가지치기 직후 57 · 251 → 최종 38 · 163',
           effect: '확정 시 양쪽에서 완전히 가려진 조각을 후속 입력에서 제거',
           code: `internal int CompactByMask(NativeArray<bool> drop)\n{\n    int kept = 0;\n\n    for (int i = 0; i < _layerCount; i++)\n    {\n        if (drop[i]) continue;\n\n        if (kept != i)\n        {\n            _pieces[kept] = _pieces[i];\n            _surfaces[kept] = _surfaces[i];\n            _surfaceBounds[kept] = _surfaceBounds[i];\n            _pieceBounds[kept] = _pieceBounds[i];\n            _signs[kept] = _signs[i];\n        }\n\n        kept++;\n    }\n\n    int removed = _layerCount - kept;\n    if (removed == 0) return 0;\n\n    _layerCount = kept;\n    Touch();\n\n    return removed;\n}`,
-          codeCaption: 'PaperSnapshot.CompactByMask() 원문 @ ca09945 — Buried 마스크를 건너뛰며 모든 병렬 Native 배열을 함께 당기고, 레이어 수와 변경 상태를 갱신한다.',
+          codeCaption: 'PaperSnapshot.CompactByMask() 원문 @ ca09945 — Buried 마스크에 표시된 항목을 건너뛰고, 모든 병렬 Native 배열을 같은 인덱스로 압축한 뒤 레이어 수와 변경 상태를 갱신한다.',
         },
         {
           no: '03', key: 'MERGE', title: '앞·뒤 2메시 렌더 배칭',
@@ -340,7 +340,7 @@
       uploadCodeCaption: 'PaperRenderer.Sync() @ ca09945 — 앞·뒤 Native 버퍼를 관리형 변환 없이 두 메시로 직접 업로드한다.',
       code: `if (RunSplitOnMain)\n{\n    job.Run(_baseLayerCount);\n    reduce.Run();\n}\nelse\n{\n    _handle = job.Schedule(_baseLayerCount, InnerLoopBatchCount);\n    _handle = reduce.Schedule(_handle);\n    JobHandle.ScheduleBatchedJobs();\n}`,
       codeCaption: 'PaperFoldSplitPipeline.Schedule() @ ca09945 — NativeArray와 Burst 본문은 유지하고 실행 위치만 선택한다.',
-      conclusion: 'Mono 회귀가 아니다. 현재도 NativeArray·IJobParallelFor·Burst를 유지한다. 약 40레이어의 Editor 조건에서 스케줄·즉시 동기화 상수가 병렬 이득보다 커 메인 `Run()`을 채택했다.',
+      conclusion: 'Mono 경로로 되돌린 것이 아니다. 현재도 NativeArray·IJobParallelFor·Burst를 유지한다. 약 40레이어를 처리한 Editor 조건에서는 스케줄링과 즉시 동기화의 고정 비용이 병렬화 이득보다 커 메인 `Run()`을 채택했다.',
       headline: {
         value: '−54%', detail: '0.0182 → 0.0083 ms', label: 'Split Average',
         condition: editor,
@@ -392,7 +392,7 @@
         ],
       },
       ownership: [
-        { title: 'PaperSnapshotRing', detail: '고정 이력 슬롯과 해제 수명 단독 소유', relation: 'owns' },
+        { title: 'PaperSnapshotRing', detail: '고정 이력 슬롯의 수명을 단독으로 관리', relation: 'owns' },
         { title: 'PaperSnapshot', detail: '확정 상태의 네이티브 단일 표현', relation: 'contains' },
         { title: 'Split pipeline', detail: '현재 슬롯의 Snapshot을 빌려 읽음', relation: 'borrows' },
       ],
@@ -520,7 +520,7 @@
           before: { title: 'WORKER', code: '_handle = job.Schedule(count, batch);\n_handle.Complete();', result: '같은 프레임 즉시 동기화' },
           after: { title: 'MAIN', code: 'job.Run(count);\nreduce.Run();', result: '동일 Burst 본문 실행' },
         },
-        note: 'Mono 회귀가 아니다. 실기나 더 큰 레이어 규모에서는 같은 A/B로 다시 판단한다.',
+        note: 'Mono 경로로 되돌린 것이 아니다. 실기나 더 큰 레이어 규모에서는 같은 A/B로 다시 판단한다.',
         scope: `${editor} · 임의 접기 16회 · 조건별 3런 Average · 약 40레이어`,
       },
     ],

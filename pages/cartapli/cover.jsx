@@ -40,7 +40,7 @@
               {/* 4인 팀이라 역할 경계를 표지에서 밝힌다. 숫자 넷만 두면
                   "이걸 혼자 했나" 가 남는다. */}
               <window.RoleLine label={C.meta.role}>
-                {' — ' + C.roles.mine.split(' · ')[0]}
+                {' — ' + C.roles.summary}
               </window.RoleLine>
               <window.Pills items={pills} />
               <window.LinkRow links={[

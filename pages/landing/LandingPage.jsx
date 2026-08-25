@@ -24,8 +24,8 @@ function LandingRail({ active }) {
   const s = window.landingStyles;
   const items = [
     { id: 'identity', label: 'Identity' },
-    { id: 'featured', label: 'Featured · 05' },
-    { id: 'labs',     label: 'Labs · 06' },
+    { id: 'featured', label: 'Featured · 06' },
+    { id: 'labs',     label: 'Labs · 05' },
     { id: 'footer',   label: 'Footer' },
   ];
   return (
@@ -106,9 +106,9 @@ function FeaturedSection({ items }) {
         )}
       />
       <div className="cr__hint">
-        <span>← → 방향키</span>
-        <span>좌우 화살표 · 옆 카드 클릭</span>
-        <span>끝에서 처음으로 이어짐</span>
+        <span>← → 키로 이동</span>
+        <span>옆 카드를 눌러 이동</span>
+        <span>마지막 다음은 첫 카드</span>
       </div>
     </section>
   );
@@ -132,7 +132,7 @@ function LabsSection({ items }) {
         head={({ sel, go, n }) => (
           <div style={s.sectionHead}>
             <h2 style={s.sectionTitle}>Labs</h2>
-            <div style={s.sectionMeta}>{'POC · ' + String(n).padStart(2, '0') + ' · 1일–8주 단위 · 최신순'}</div>
+            <div style={s.sectionMeta}>{'PoC · ' + String(n).padStart(2, '0') + ' · 1일–8주 단위 · 최신순'}</div>
             <window.CarouselRail n={n} sel={sel} go={go} />
           </div>
         )}

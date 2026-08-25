@@ -84,22 +84,6 @@
     };
   };
 
-  // 괄호 **밖**의 가운뎃점에서만 자른다. roles.mine 은 "…시스템(턴 · 스킬 · AI) · 사운드…"
-  // 처럼 괄호 안에도 가운뎃점을 쓴다 — 그냥 split 하면 "…시스템(턴" / "스킬" / … / "데미지)"
-  // 로 조각난다 (실측에서 그대로 렌더되고 있었다).
-  const splitTop = (text) => {
-    const out = [];
-    let depth = 0, buf = '';
-    for (const ch of text) {
-      if (ch === '(') depth++;
-      else if (ch === ')') depth--;
-      if (ch === '·' && depth === 0) { out.push(buf.trim()); buf = ''; continue; }
-      buf += ch;
-    }
-    if (buf.trim()) out.push(buf.trim());
-    return out;
-  };
-
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.cartapli = {
     proj: 'Cartapli: Fold Quest',
@@ -114,7 +98,7 @@
       {
         layout: 'diagram',
         section: '00 게임',
-        title: '전투 한 장면',
+        title: '종이접기 전투와 로그라이크 런 구조',
         lead: C.meta.oneLine,
         step: { img: C.screenshots[0] },
         // 그림 밑 캡션이 이미 screenshots[0] 을 말한다 — 요점에서 되풀이하지 않는다.
@@ -138,7 +122,7 @@
       {
         layout: 'stats',
         section: '01 출시',
-        title: '출시와 운영',
+        title: 'Steam 출시 결과와 이용 지표',
         bigs: C.heroMetrics,
         // 표의 라벨(영문)과 큰 수치의 라벨(국문)이 서로 달라 이름으로는 못 짝짓는다.
         // 값으로 짝짓는다 — 큰 수치에 이미 나온 행은 아래에 또 쓰지 않는다.
@@ -165,23 +149,17 @@
       // 위 줄 셋 = 계층, 아래 줄 둘 = 본인 / 팀원.
       {
         layout: 'columns',
-        section: '01 구조 · 역할',
+        section: '02 구조 · 역할',
         no: '3.1',
-        title: '배틀씬 아키텍처와 역할 경계',
+        title: '직접 구현한 배틀씬 3계층 아키텍처',
         gist: sys('3.1').lede,
         colCount: 3,
         cols: layersFromMermaid(sys('3.1').mermaid)
           .map((l, i) => ({ kind: l.kind, tone: ['wheat', 'sage', 'blue'][i], title: l.title, items: l.items }))
           .concat([
-            // 짧은 항목이 줄마다 한 칸씩 먹어 카드가 넘쳤다(실측 71px). 짧은 것들은
-            // 한 줄로 합친다 — 3.1 계층 카드가 쓰는 규칙과 같다. 이름은 그대로다.
-            { kind: 'MINE', mark: '✓', tone: 'sage', title: '본인',
-              items: (() => {
-                const all = splitTop(C.roles.mine).map((t) => t.replace(/\.$/, ''));
-                const long = all.filter((t) => t.length > 24);
-                const short = all.filter((t) => t.length <= 24);
-                return short.length > 1 ? long.concat([short.join(' · ')]) : all;
-              })() },
+            // 역할 요약은 표지와 같은 summary를 쓰고, 세부 작업은 독립 항목으로 낸다.
+            { kind: 'MINE', mark: '✓', tone: 'sage', title: C.roles.summary,
+              items: ['텍스처링', 'Z-order', 'FoldInputController 분리', 'PaperPositionSyncher', '배틀씬 연동'] },
             { kind: 'TEAM', mark: '✗', title: '팀원 — 종이접기 PoC 입안자', sub: C.roles.others },
           ]),
         note: sys('3.1').results[0],
@@ -191,11 +169,11 @@
       // 코드는 그 흐름이 딛는 계약(불변 컨텍스트 · 오버라이드 한 점)을 보인다.
       // stack 은 덱에서 한 번도 안 실린 필드다. 그림이 보이는 두 흐름의 실제 구성물
       // 이름이라 그림 장의 요점 자리에 맞는다 — 한 줄로 묶어 요점 셋을 만든다.
-      Object.assign(system('3.2', [0, 1], '스킬 시스템'), {
+      Object.assign(system('3.2', [0, 1], '관리와 실행을 분리한 스킬 시스템'), {
         points: [sys('3.2').results[0], sys('3.2').results[1],
                  ['구성', sys('3.2').stack.join('  ·  ')]],
       }),
-      codeOf('3.2', '실행 컨텍스트와 확장점', [2, 3]),
+      codeOf('3.2', '불변 실행 컨텍스트 기반의 스킬 확장', [2, 3]),
     ],
   };
 })();
