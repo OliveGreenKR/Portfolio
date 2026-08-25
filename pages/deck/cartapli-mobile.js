@@ -1,107 +1,114 @@
 // Cartapli Mobile 제출용 덱 매니페스트.
 // 사실 SSOT: pages/cartapli-mobile/data.js (Final Gate 통과본)
-// 이 파일은 절 선택·순서·제목만 소유한다. 새 수치·새 사실은 만들지 않는다.
-// 레이아웃은 deck/cm-slides.jsx, 그림은 페이지가 그린 CMPage* 를 그대로 마운트한다.
+// 선택·순서·슬라이드 제목만 소유한다. 새 사실·수치·코드·시각자료는 만들지 않는다.
 //
-// ─── 8장 ───────────────────────────────────────────────────────────────────
-//  1 표지        실측 화면 + 측정축 3개 카드 + 역할·환경
-//  2 계측 결과    단계별 개선 곡선 + 계측 정정 + 조건표 + 축별 중간값
-//  3 실행 구조    Variable → Fixed → Presentation 호출 흐름 + 판단 3건
-//  4 S1-1        원본 참조 재사용        그림 + before/after 코드
-//  5 S1-2        파묻힌 조각 제거        그림 + before/after 코드
-//  6 S2-a        앞·뒤 두 메시 병합      그림 + before/after 코드
-//  7 S2-b        NativeArray·Job·Burst   그림 + before/after 코드
-//  8 검증 범위    적용 범위와 다음 검증
+// 제목 서사:
+// 정체성 → 계측 신뢰 회복 → 전체 결과 → 구조 축소 → 구조 구현 → Native 경로 →
+// Native 구현 → 실행 위치 판단 → 작은 Split의 Main 선택 → 큰 Buried의 Worker 선택 → 비차단 수확 구현
 //
-// ─── 이전 판(10장)을 버린 이유 ──────────────────────────────────────────────
-// 공용 4레이아웃(cover/diagram/step/columns)에 맞추다 보니 한 주제가 [그림 장 + 코드 장]
-// 두 장으로 갈라졌다. 그 결과 (a) 코드 장의 왼쪽 열이 앞 장 문장의 복사본이 되고,
-// (b) 정작 개선 방식 장에는 코드가 없고, (c) 장당 밀도가 떨어져 한 주제가 길어졌다.
-// 단계당 한 장으로 접고 그림·코드·측정·트레이드오프를 같은 화면에 둔다.
-//
-// 그림도 바꿨다. 이전 판은 legacy CMStageChart(막대 행)·CMBeforeAfter(상자 나열)를 썼는데,
-// 같은 저장소의 사이트 페이지에 이미 이 프로젝트 전용으로 그린 것이 있다 —
-// 단계별 개선 **곡선**, 실제 호출 순서 **흐름도**, 방식마다 다른 **before/after 삽화**
-// (겹친 종이 더미 · 레이어별 GameObject 제출 · worker execution window · NativeArray 버퍼).
-// 덱이 사이트보다 못한 그림을 새로 그릴 이유가 없다. 읽기 재사용한다.
-//
-// ─── 뺀 것 ─────────────────────────────────────────────────────────────────
-// - 클래스 책임 관계도(CMPageArchitectureDiagram): 실행 순서 흐름도와 주장이 겹친다.
-//   호출 순서 쪽이 뒤의 네 단계와 직접 이어지므로 그쪽만 남긴다.
-// - Confirm transaction(A/B/C): 흐름도의 Presentation 구간이 같은 경계를 말한다.
-// - 새 수치·새 사실·PDF: 만들지 않는다.
+// 제외:
+// - BattleSimulation·WorldLink 상세: 사실이지만 이번 30초 문제해결 서사의 중심이 아니다.
+// - methods 호환 필드: 이전 페이지 기준 덱용 골격이라 확정 전략으로 사용하지 않는다.
+// - 별도 검증 범위 장: 표지와 계측 장에서 환경·한계를 한 번 정의한다.
+// - Snapshot·링·allocation 독립 헤드라인: 비동기화의 전제·보조 증거로만 사용한다.
 
 (function buildCartapliMobileDeck() {
   const C = window.CM_DATA;
-  const SITE = 'https://olivegreenkr.github.io/Portfolio/pages/cartapli-mobile.html';
-  const external = C.meta.links.filter((link) => link.external);
-  const byId = (id) => C.methods.find((method) => method.id === id);
-
-  // 단계 장은 전부 같은 틀이다 — data.js 의 method 하나를 통째로 넘긴다.
-  // 제목·번호·종류·그림·코드·측정·범위가 모두 그 안에 있어 매니페스트가 고를 것이 없다.
-  const methodSlide = (id) => {
-    const method = byId(id);
-    return { cls: 'cm', layout: 'cmMethod', section: method.stage + ' · ' + method.kind, method };
-  };
+  const structuralCodes = [C.structural.steps[1], C.structural.steps[2]].map((step) => ({
+    title: `${step.key} · ca09945`,
+    code: step.code,
+    result: step.codeCaption,
+  }));
+  const nativeCodes = [C.nativeFrame.codes[1], C.nativeFrame.codes[2]].map((code) => ({
+    title: code.title,
+    code: code.source,
+    result: code.caption,
+  }));
 
   window.DECK_PARTS = window.DECK_PARTS || {};
   window.DECK_PARTS.cm = {
     proj: C.meta.title,
     slides: [
-      // 표지는 **프로젝트가 소유한다** — pages/cartapli-mobile/cover.jsx.
-      // 덱 · 랜딩 카드 · 상세 페이지 히어로가 같은 표지를 쓴다. 여기서 정하는 것은
-      // 어느 자리에 놓을지(순서 · 섹션 라벨)뿐이고, 목차 재료는 표지의 `toc` 가 낸다.
-      { layout: 'projectCover', section: C.meta.eyebrow, slug: 'cartapli-mobile' },
-
       {
         cls: 'cm',
-        layout: 'cmFoldFlow',
-        section: '접기 로직',
-        title: '접는 선 하나가 두 스레드를 도는 경로',
-        kind: 'DATA · SIM → VIEW',
-        architecture: C.architecture,
+        layout: 'projectCover',
+        section: C.meta.eyebrow,
+        slug: 'cartapli-mobile',
+        claim: 'CM-IDENTITY-001 · CM-ROLE-001 · CM-PERF-E2E-001 · CM-RENDER-E2E-001',
       },
-
       {
-        cls: 'cm',
-        layout: 'cmFlow',
-        section: '실행 경로',
-        title: 'Schedule 과 Complete 사이에서 도는 시뮬레이션 순서',
-        kind: 'CALL ORDER',
-        architecture: C.architecture,
+        cls: 'cm', layout: 'cmMeasure', section: '문제 정의 · 계측',
+        title: '오염된 계측을 폐기한 동일 입력 재측정', kind: 'MEASUREMENT INTEGRITY',
+        claim: 'CM-MEASURE-001',
+        measurement: C.measurement,
       },
-
       {
-        cls: 'cm',
-        layout: 'cmWorlds',
-        section: '좌표계',
-        title: 'WorldLink — 종이 좌표와 이동 좌표를 잇는 다리',
-        kind: 'WORLDS · IWORLD',
-        architecture: C.architecture,
+        cls: 'cm', layout: 'cmOutcome', section: '전체 결과',
+        title: '구조 축소에서 실행 위치 선택까지의 96% 감소', kind: 'MEASURED RESULT',
+        claim: 'CM-PERF-E2E-001',
+        measurement: C.measurement,
+        phases: [
+          ['구조 축소', C.structural.context.active.map((item) => item.label).join(' · ')],
+          ['Native 단일 경로', C.nativeFrame.flow.map((item) => item.title).join(' → ')],
+          ['실행 위치 선택', `${C.placement.main.eyebrow} / ${C.placement.worker.eyebrow}`],
+        ],
       },
-
       {
-        cls: 'cm',
-        layout: 'cmResult',
-        section: '계측 결과',
-        title: '다섯 단계로 나눠 본 최적화 방식별 개선 결과',
-        kind: 'S0 → S2-b · MEASURED',
-        result: C.result,
+        cls: 'cm', layout: 'cmStructural', section: '문제 해결 1 · 구조',
+        title: '늘어나는 입력과 렌더 객체의 구조적 축소', kind: 'REDUCE FIRST',
+        claim: 'structural.context · structural.headline',
+        structural: C.structural,
       },
-
-      methodSlide('reuse'),
-      methodSlide('prune'),
-      methodSlide('merge'),
-      methodSlide('native'),
-
       {
-        cls: 'cm',
-        layout: 'cmValidation',
-        section: '검증 범위',
-        title: 'Editor 상대 비교의 적용 범위와 다음 검증',
-        kind: 'SCOPE',
-        validation: C.validation,
-        note: '측정 범위 — 동일 결정론적 16회 입력 · Windows PC · Unity Editor PlayMode 상대 비교',
+        cls: 'cm', layout: 'cmCodeEvidence', section: '문제 해결 1 · 구현',
+        title: '가려진 입력 제거와 두 메시 병합의 구현', kind: 'IMPLEMENTATION EVIDENCE',
+        claim: 'CM-PRUNE-001 · CM-MERGE-001',
+        gist: '후속 계산에 필요 없는 조각은 Native 배열에서 압축하고, 남은 조각의 쌓임 순서는 정점 z에 기록해 앞·뒤 두 메시로 보냈다.',
+        codes: structuralCodes,
+        note: C.structural.warning,
+      },
+      {
+        cls: 'cm', layout: 'cmNative', section: '문제 해결 2 · 데이터 경로',
+        title: 'Split부터 Render까지 이어진 Native 단일 경로', kind: 'DATA FLOW',
+        claim: 'nativeFrame.flow · nativeFrame.unification',
+        nativeFrame: C.nativeFrame,
+      },
+      {
+        cls: 'cm', layout: 'cmCodeEvidence', section: '문제 해결 2 · 구현',
+        title: '관리형 왕복과 Bounds 재순회를 없앤 구현', kind: 'IMPLEMENTATION EVIDENCE',
+        claim: 'CM-BOUNDS-001 · CM-NATIVE-MESH-001',
+        gist: 'Split 출력에서 Bounds를 함께 계산·축약하고, Native 정점·인덱스 버퍼를 관리형 변환 없이 메시 API로 직접 올렸다.',
+        codes: nativeCodes,
+        metrics: C.nativeFrame.diagnostics.map((item) => ({
+          value: `${item.before} → ${item.after}`,
+          label: item.label,
+          note: 'Diagnostics 보간 프레임 중앙값',
+        })),
+        note: C.nativeFrame.condition,
+      },
+      {
+        cls: 'cm', layout: 'cmPlacement', section: '문제 해결 3 · 판단',
+        title: '작업 크기와 결과 마감에 따른 Main·Worker 배치', kind: 'EXECUTION PLACEMENT',
+        claim: 'placement.title',
+        placement: C.placement,
+      },
+      {
+        cls: 'cm', layout: 'cmSplit', section: '문제 해결 3 · 작은 작업',
+        title: '약 40레이어 Split의 Burst Main Run 선택', kind: 'SAME CODE · DIFFERENT PLACEMENT',
+        claim: 'CM-SPLIT-RUN-001',
+        nativeFrame: C.nativeFrame,
+      },
+      {
+        cls: 'cm', layout: 'cmBuriedDecision', section: '문제 해결 3 · 큰 작업',
+        title: '한 틱 지연 가능한 Buried의 Worker 예약', kind: 'ASYNC DECISION',
+        claim: 'CM-PRUNE-003 · CM-PRUNE-SCALE-001',
+        asyncConfirm: C.asyncConfirm,
+      },
+      {
+        cls: 'cm', layout: 'cmBuriedCode', section: '문제 해결 3 · 비차단 구현',
+        title: '완료된 틱에서만 수확하는 비차단 구현', kind: 'IMPLEMENTATION EVIDENCE',
+        claim: 'CM-PRUNE-002',
+        asyncConfirm: C.asyncConfirm,
       },
     ],
   };
