@@ -265,7 +265,7 @@
 
             <footer className="nb-footer">
               <span>JCH · 2026 · Cartapli Mobile</span>
-              <span>Android 기술 프로토타입 · Editor 검증</span>
+              <span>Android 모바일 재개발 · Editor 검증</span>
             </footer>
           </main>
           <div aria-hidden="true"></div>

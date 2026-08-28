@@ -3,12 +3,12 @@
 
   window.CM_DATA = {
     meta: {
-      eyebrow: 'ANDROID TECH PROTOTYPE · 2026',
+      eyebrow: 'ANDROID MOBILE REBUILD · 2026',
       title: 'Cartapli Mobile',
-      oneLine: 'Steam 출시 원작의 종이접기 전투를 Android 대상으로 별도 저장소에서 재구성한 기술 프로토타입',
+      oneLine: 'Steam 출시 원작의 핵심 종이접기 로직과 플레이 경험을 유지하면서 콘텐츠를 확장하고, Android용 버전으로 다시 만드는 1인 개인 프로젝트',
       role: '시뮬레이션 실행 순서 · 종이접기 파이프라인 · 표면/이동/기하 월드 · 계측 인프라 직접 구현',
       scope: '활성 빌드 장면은 PaperBench 1개. Android 빌드·기기 계측은 아직 수행하지 않았다.',
-      period: '2026.07–08',
+      period: '2026.07 - 현재',
       platform: 'Unity 6 · URP · C# · Burst · Jobs · NativeArray',
       links: [
         { label: 'Steam 원작', href: 'https://store.steampowered.com/app/4314560/', external: true },
@@ -48,7 +48,7 @@
         '렌더 구조 · 종이 16회 접기 뒤 · 드로우콜만 정지 대조군 대비 델타',
       ],
       facts: [
-        ['목적', 'Android용 종이접기 전투 재구성'],
+        ['목적', '원작 경험을 유지하는 Android 모바일 재개발'],
         ['직접 기여', 'Mobile 저장소의 실행 순서·Paper/Surface/Movement/Geometry World·계측'],
         ['현재 장면', 'PaperBench 1개'],
         ['검증 경계', 'Android 빌드·기기 CPU/GPU/FPS 미측정'],

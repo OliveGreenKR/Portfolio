@@ -40,7 +40,8 @@ window.DX11_DATA = {
     },
     frame: {
       title: '한 프레임이 지나가는 순서',
-      body: '한 프레임은 입력, 물리, 로직, 렌더링, UI, 정리의 여섯 단계로 진행된다. 이 중 **물리 단계만** 고정 예산을 누적해 여러 서브스텝으로 실행하고, 나머지 단계는 프레임마다 한 번씩 실행한다.',
+      body: '메인 루프는 입력, 물리, 리소스·씬·디버그, 렌더링, UI, Present, 프레임 정리 순서로 진행된다. 이 중 **물리 단계만** 고정 예산을 누적해 여러 서브스텝으로 실행하고, 나머지 단계는 프레임마다 한 번씩 실행한다.',
+      steps: ['입력', '물리', '리소스·씬·디버그', '렌더', 'UI', 'Present', '정리'],
       evidence: ['ProcessWindowsMessage', 'TickPhysics', 'ProcessRender', 'EndFrame + arena reset'],
     },
   },

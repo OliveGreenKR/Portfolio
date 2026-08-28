@@ -32,9 +32,9 @@ window.LANDING_DATA = {
     lede: '게임 프로그래머 정철입니다. 엔진부터 게임플레이까지 직접 구현하고 측정하며 개선해 왔습니다.',
     // ⚠️ 98% 는 Cartapli 것이다. 출시 2종 전체에 붙이지 않는다.
     stats: [
-      { n: '137', label: 'DirectX 11 엔진',  sub: '1인 8개월 · C++17 · 커밋 586' },
-      { n: '−96.0%', label: '종이 프레임 경로 비용', sub: '0.643 → 0.026 ms · 드로우콜 델타 +298 → +1' },
-      { n: '02', label: 'Steam 글로벌 출시',  sub: 'Cartapli 매우 긍정 98% · Wobble Wobble' },
+      { n: '137', label: 'DX11 엔진 제작',  sub: '1인 8개월 · C++17 · 커밋 586' },
+      { n: '−96.0%', label: '종이 프레임 3마커 합', sub: '0.643 → 0.026 ms · Editor 16회 · Bounds/워커 제외' },
+      { n: '02', label: '팀 출시 참여',  sub: 'Cartapli 4인 · Wobble 5인 · Steam 글로벌' },
       { n: '05', label: 'PoC Labs',          sub: '1일 ~ 8주 · GPU 유체 · 볼류메트릭 · 재사용 시스템' },
     ],
   },
@@ -44,7 +44,7 @@ window.LANDING_DATA = {
     {
       idx: '01',
       code: 'MAIN · 01',
-      date: '2026.07 – 08',
+      date: '2026.07 - 현재',
       slug: 'cartapli-mobile',
       href: '../pages/cartapli-mobile.html',
     },

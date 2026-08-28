@@ -70,7 +70,7 @@
               <Lede>Android용 종이접기 전투를 위해 <strong>보이지 않는 작업을 줄이고 계산과 표현의 실행 구조를 다시 설계</strong>했다.</Lede>
               <Pills items={[
                 { text: 'Android target', tone: 'sage', kind: 'accent' },
-                { text: 'technical prototype', tone: 'wheat' },
+                { text: 'mobile rebuild', tone: 'wheat' },
                 { text: 'Unity 6 · Burst · Jobs', tone: 'blue' },
               ]} />
               <RoleLine label="직접 기여">{` — ${D.meta.role}`}</RoleLine>

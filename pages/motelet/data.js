@@ -51,10 +51,10 @@ window.MOTELET_DATA = {
     eyebrow: 'PROJECT / MOTELET',
     subtitle: '인크레멘탈 · Unity 6.0 · 팀 3인 · 개발 진행 중',
     title: 'Motelet',
-    facts: ['Unity 6.0 · C# 10', '팀 3인 · PM 겸 배틀씬', '2026-05 ~ 진행 중', '실측 기준 커밋 3571bfb3'],
+    facts: ['Unity 6.0 · C# 10', '팀 3인 · PM 겸 배틀씬', '2026.05 - 현재', '실측 기준 커밋 3571bfb3'],
     // 기간 · 스택 · 스토어는 덱(표제지 이력 · 목차 · 표지 링크)이 읽는 필드다.
     // facts 문자열을 덱이 쪼개 읽던 것을 필드로 올렸다 — 표기가 갈릴 자리를 없앤다.
-    period: '2026.05 ~ 진행 중',
+    period: '2026.05 - 현재',
     team: '팀 3인',
     stack: ['Unity 6.0', 'C# 10', 'UniTask', 'DOTween'],
     // 스토어 페이지 공개 (2026-08, 사용자 확인). 출시 전이라 '개발 중' 으로만 쓴다.
