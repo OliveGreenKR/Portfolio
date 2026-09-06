@@ -1,0 +1,572 @@
+/* pages/progression-pacing/page.css
+   진행 템포 시뮬레이터 페이지 전용 블록.
+
+   ── 소유 경계 ────────────────────────────────────────────────
+   토큰(색·글꼴·간격·radius)          = src/styles/tokens.css
+   레이아웃 크롬(nb-header/body/rail/section/footer/table/ascii/prd/roles/fsm)
+                                       = src/styles/notebook.css
+   표지 부품(.cv-*)                    = src/styles/cover.css
+   이 파일은 그 위에 «이 페이지에만 있는 것» 과 «판독선 보정» 만 얹는다.
+   공용에 이미 있는 것을 다시 만들지 않는다. 글꼴 스택도 재선언하지 않는다
+   (tokens.css 의 mono 스택 끝에 Pretendard 가 있어야 한글 글리프가 본문과 같아진다).
+
+   ── 이 페이지의 색 규약 — 페이지 전체에서 불변 ────────────────
+     --terra-*  버리는 것 · 문제 · 비용        → HP · 저항 · 병목 · 초과분 · 미확인
+     --sage-*   채택 · 유효 출력 · 본인 기여    → 골드 · 보상 · 성장 · 도구 · 확인된 것
+     --ink-3    중립 · 귀속 불가                → 처치 점수 · 요구 점수 · 진행 축 · 미관측
+   그 밖의 색을 만들지 않는다. 새 hex 값을 쓰지 않는다.
+   (예외: 스크린샷 크롭 배경 #343434 · #202220 — 이미지 레터박스이지 팔레트가 아니다.)
+
+   ── 단일 라이트 테마 ─────────────────────────────────────────
+   사이트 전체가 라이트 단일 테마다(tokens.css 에 다크 분기 없음).
+   이 파일도 prefers-color-scheme 분기를 만들지 않는다.
+
+   ── SVG 글자 ────────────────────────────────────────────────
+   크기는 클래스로만 준다(.mp-t-head 22 / .mp-t-value 20 / .mp-t-label 17 / .mp-t-axis 16).
+   값은 viewBox 사용자 단위이므로 px 로 적는다. 16 미만을 쓰지 않는다.
+   색은 SVG 쪽에서 fill="var(--…)" 표현 속성으로 준다 — 이 파일은 text 에 fill 을 선언하지
+   않는다(선언하면 CSS 가 표현 속성을 이겨 모든 그림 색이 죽는다).
+
+   ── 반응형 분기 ─────────────────────────────────────────────
+   1100  본문 1열(공용) · rail 가로줄
+    900  wide/narrow SVG display 스왑 (양쪽 SVG 는 항상 DOM 에 있다)
+    720  헤더 네비 내림 · 코드 줄바꿈 · DOM 도표 1열 전개
+    520  히어로·제목 축소
+    420  본문 좌우 여백 18px (320 뷰포트 열 폭 284 확보)
+   body 가로 스크롤은 어떤 뷰포트에서도 만들지 않는다. */
+
+/* ─── 레이아웃 안전장치 ──────────────────────────────────── */
+html { scroll-behavior: smooth; }
+/* grid 자식은 min-width:auto 라 넓은 콘텐츠가 컬럼을 밀어낸다. overflow 만으로는 안 줄어든다. */
+.mp-page main,
+.nb-body > main { min-width: 0; max-width: 100%; }
+@media (max-width: 1100px) { .mp-page .nb-body { grid-template-columns: minmax(0, 1fr); } }
+.mp-page figure { margin-inline: 0; min-width: 0; }
+.mp-page img { max-width: 100%; }
+/* fill 은 svg 루트에만 준다 — 자식의 fill="var(--…)" 표현 속성이 그대로 이긴다.
+   text 에 fill 을 선언하면 CSS 가 표현 속성을 이겨 그림 색이 전부 죽는다. */
+.mp-page svg { display: block; width: 100%; max-width: 100%; height: auto; fill: var(--ink); }
+.mp-page p,
+.mp-page li,
+.mp-page dd,
+.mp-page figcaption { text-wrap: pretty; overflow-wrap: anywhere; }
+.mp-page h2,
+.mp-page h3,
+.mp-page h4 { word-break: keep-all; overflow-wrap: anywhere; }
+
+/* 앵커 이동 시 sticky 헤더(64px) 밑에 제목이 숨지 않게. */
+.mp-page .nb-section,
+.mp-page .mp-fig,
+.mp-page .mp-evidence { scroll-margin-top: 88px; }
+.mp-page #hero { scroll-margin-top: 72px; }
+
+/* rail — 절 이름이 우리말이라 대문자 변환·11px 을 쓰지 않는다. */
+.mp-page .nb-rail { font-size: 12px; letter-spacing: .02em; text-transform: none; }
+.mp-page .nb-rail a { line-height: 1.45; }
+.mp-page .nb-rail-section { font-size: 12px; letter-spacing: .12em; opacity: .6; }
+
+/* ─── 절 골격 ────────────────────────────────────────────── */
+.mp-page .nb-section { padding-block: 80px; }
+.mp-page .nb-section-head {
+  display: grid; grid-template-columns: 78px minmax(0, 1fr) auto;
+  align-items: baseline; gap: 10px 20px; margin-bottom: 34px;
+}
+.mp-page .nb-section-no { min-width: 0; color: var(--sage-700); font-size: 12px; letter-spacing: .1em; }
+.mp-page .nb-section-title { max-width: 760px; font-size: clamp(30px, 3.2vw, 42px); line-height: 1.24; letter-spacing: -.03em; }
+.mp-page .nb-section-kind { margin-left: 0; font-size: 12px; letter-spacing: .12em; }
+
+/* 결과 한 줄 — 절의 결론. 그림보다 먼저 온다. */
+.mp-section .mp-lead {
+  margin: 0 0 30px; padding: 19px 23px;
+  border-left: 4px solid var(--sage-500); background: var(--sage-50);
+  color: var(--ink); font-size: 20.5px; font-weight: 600; line-height: 1.62;
+}
+.mp-section .mp-lead strong { font-weight: 700; }
+.mp-section .mp-lead code { background: var(--paper); border-color: var(--sage-200); }
+
+/* 문제/우려/결정/근거/트레이드오프 묶음 */
+.mp-prd { margin: 32px 0 0; border-top: 1px solid var(--rule); }
+.mp-prd .nb-prd { margin: 0; padding: 16px 0; border-bottom: 1px solid var(--rule); grid-template-columns: 96px minmax(0, 1fr); gap: 0 18px; }
+
+/* 보조 자료(표 · 스크린샷 · 보조 그림) */
+.mp-aux { margin: 32px 0 0; display: grid; gap: 26px; }
+.mp-aux > * { margin-top: 0; }
+.mp-aux .nb-tablewrap,
+.mp-aux .nb-fsm { margin-top: 0; }
+
+/* 코드 — 접지 않는다. <details> 를 쓰지 않는다. */
+.mp-code { margin: 34px 0 0; display: grid; gap: 20px; }
+.mp-code .nb-ascii { margin: 0; }
+
+/* 절 끝의 전이 한 줄 — 다음 절 .mp-lead 의 질문 */
+.mp-next {
+  margin: 40px 0 0; padding: 16px 0 0; border-top: 1px solid var(--rule);
+  color: var(--sage-700); font-size: 16.5px; line-height: 1.6; text-align: right;
+}
+
+/* ─── 히어로 직후 요약 밴드 ──────────────────────────────── */
+/* 값 3칸이 아니라 문장 3칸이다 — 이 페이지에는 계측 수치가 없다. */
+.mp-scope {
+  margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--rule); background: var(--paper);
+}
+.mp-scope-card {
+  min-width: 0; padding: 18px 20px 20px; border-right: 1px solid var(--rule);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.mp-scope-card:last-child { border-right: none; }
+.mp-scope-card > span {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .14em;
+  color: var(--sage-700); font-weight: 600;
+}
+.mp-scope-card > strong { font-size: 17px; font-weight: 700; line-height: 1.4; color: var(--ink); }
+.mp-scope-card > p { margin: 0; font-size: 14.5px; line-height: 1.65; color: var(--ink-2); }
+/* 3칸째 = «확인되지 않은 것». 클래스가 붙으면 그쪽이 이긴다. */
+.mp-scope-card:nth-child(3) > span,
+.mp-scope-card.open > span,
+.mp-scope-card.unconfirmed > span { color: var(--terra-500); }
+.mp-scope-role {
+  margin: 0; padding: 14px 20px; border: 1px solid var(--rule); border-top: 0;
+  background: var(--paper-2); color: var(--ink-2); font-size: 14.5px; line-height: 1.65;
+}
+.mp-scope-role strong { color: var(--ink); font-weight: 600; }
+
+/* ─── 그림 공통 ──────────────────────────────────────────── */
+.mp-fig { margin: 44px 0 0; padding-top: 20px; border-top: 1px solid var(--rule-2); }
+.mp-fig-title { margin: 0 0 22px; font-size: 25px; line-height: 1.36; letter-spacing: -.022em; color: var(--ink); }
+.mp-fig figcaption,
+.mp-evidence figcaption { margin-top: 16px; color: var(--ink-2); font-size: 15px; line-height: 1.7; }
+.mp-fig figcaption strong,
+.mp-evidence figcaption strong { color: var(--ink); font-weight: 600; }
+
+/* wide(viewBox 960) ↔ narrow(viewBox 340) 는 CSS display 로만 바꾼다.
+   두 SVG 를 항상 DOM 에 둬서 감사 셀렉터 수가 뷰포트마다 흔들리지 않게 한다. */
+/* ⚠️ 특이도 주의 — 위의 `.mp-page svg`(0-1-1)가 `.mp-svg-narrow`(0-1-0)를 이긴다.
+   `.mp-page` 를 앞에 붙여 0-2-0 으로 올리지 않으면 스왑이 통째로 무시된다(실측). */
+.mp-page .mp-svg-wide { display: block; }
+.mp-page .mp-svg-narrow { display: none; max-width: 400px; margin: 0 auto; }
+
+/* ─── SVG 글자 (viewBox 단위) ────────────────────────────── */
+/* 기본 크기 16 은 파일 끝 «판독선» 블록이 선언한다. 아래 클래스는 올리기만 한다
+   (클래스 두 개짜리 셀렉터라 위치와 무관하게 기본값을 이긴다). 내리는 규칙을 만들지 않는다. */
+.mp-page svg text { font-family: var(--font-sans); }
+.mp-page svg .mp-t-head  { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+.mp-page svg .mp-t-value { font-size: 20px; font-weight: 700; font-variant-numeric: tabular-nums; }
+.mp-page svg .mp-t-label { font-size: 17px; font-weight: 500; }
+.mp-page svg .mp-t-axis  { font-family: var(--font-mono); font-size: 16px; font-weight: 500; }
+
+/* ─── PRD kind 확장 (공용은 problem·decision·result 만 갖는다) ──
+   색 규약: problem·concern = terra / decision·evidence·result = sage / tradeoff = ink 중립.
+   여섯 kind 가 한 페이지에 같이 서므로 공용의 problem 기울임은 여기서 정자로 되돌린다. */
+.mp-page .nb-prd .nb-prd-body { border-left: 2px solid var(--rule); padding-left: 14px; }
+.mp-page .nb-prd.problem .nb-prd-body,
+.mp-page .nb-prd.concern .nb-prd-body { border-left-color: var(--terra-300); }
+.mp-page .nb-prd.decision .nb-prd-body,
+.mp-page .nb-prd.evidence .nb-prd-body,
+.mp-page .nb-prd.result .nb-prd-body { border-left-color: var(--sage-500); }
+.mp-page .nb-prd.tradeoff .nb-prd-body { border-left-color: var(--ink-3); }
+
+.mp-page .nb-prd.problem .nb-prd-body { font-style: normal; color: var(--ink-2); }
+.mp-page .nb-prd.concern .nb-prd-body { color: var(--ink-2); }
+.mp-page .nb-prd.concern .nb-prd-body em,
+.mp-page .nb-prd.concern .nb-prd-body strong {
+  font-style: normal; padding: 0 .15em;
+  background-image: linear-gradient(180deg, transparent 60%, var(--terra-100) 60%, var(--terra-100) 95%, transparent 95%);
+}
+.mp-page .nb-prd.evidence .nb-prd-body { color: var(--ink); }
+.mp-page .nb-prd.evidence .nb-prd-body strong {
+  font-weight: 600; padding: 0 .18em;
+  background-image: linear-gradient(180deg, transparent 55%, var(--sage-200) 55%, var(--sage-200) 95%, transparent 95%);
+}
+.mp-page .nb-prd.tradeoff .nb-prd-body { color: var(--ink-2); }
+.mp-page .nb-prd.tradeoff .nb-prd-body strong { color: var(--ink); font-weight: 600; }
+
+.mp-page .nb-prd.problem .nb-prd-label,
+.mp-page .nb-prd.concern .nb-prd-label { color: var(--terra-500); }
+.mp-page .nb-prd.decision .nb-prd-label,
+.mp-page .nb-prd.evidence .nb-prd-label,
+.mp-page .nb-prd.result .nb-prd-label { color: var(--sage-700); }
+.mp-page .nb-prd.tradeoff .nb-prd-label { color: var(--ink-3); }
+
+/* ─── F07 역할 격자 (DOM · F03 좌표계 계승) ──────────────── */
+/* 열 = 티어(N−2 / N−1 / N), 행 = 공격. 배경에 F03 의 대각 밴드를 10% 로 깐다 —
+   «자산에 그렇게 적혀 있다» 를 캡션이 아니라 그림 자체가 말한다. */
+.mp-f07 {
+  position: relative; overflow: hidden;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
+  border: 1px solid var(--rule); background: var(--paper);
+}
+/* 배경 빗금을 뺐다 — 세 열에 균일하게 깔려 «어느 열이 무엇인가» 를 아무것도 말하지 않았다.
+   도형을 지워도 정보가 같으면 그건 장식이다. §02 와의 계승은 열의 정체(N−2·N−1·N)가 갖는다. */
+.mp-f07 > * {
+  position: relative; z-index: 1; min-width: 0; padding: 16px 18px 18px;
+  display: flex; flex-direction: column; gap: 10px; background: transparent;
+}
+.mp-f07 > * + * { border-left: 1px solid var(--rule); }
+.mp-f07 h4 { margin: 0; font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--ink); }
+.mp-f07 h4 span,
+.mp-f07 .mp-f07-tier {
+  display: block; margin-bottom: 4px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em; color: var(--ink-3); font-weight: 600;
+}
+.mp-f07 .mp-f07-goal { margin: 0; font-size: 13.5px; line-height: 1.6; color: var(--ink-3); }
+.mp-f07 .mp-f07-cell,
+.mp-f07 ul li {
+  border-left: 3px solid var(--ink-3); padding: 8px 0 8px 12px;
+  border-top: 1px solid var(--rule);
+}
+.mp-f07 ul { margin: 0; padding: 0; list-style: none; display: grid; gap: 8px; }
+.mp-f07 b { display: block; font-size: 13.5px; font-weight: 700; color: var(--ink); margin-bottom: 3px; }
+.mp-f07 p { margin: 0; font-size: 13.5px; line-height: 1.62; color: var(--ink-2); }
+/* tones — break = terra / growth = sage / support·quiet = ink 중립 */
+.mp-f07 .break { border-left-color: var(--terra-400); }
+.mp-f07 .growth { border-left-color: var(--sage-500); }
+.mp-f07 .support,
+.mp-f07 .quiet { border-left-color: var(--ink-3); }
+.mp-f07 .quiet p { color: var(--ink-3); }
+
+/* ─── F10 검사 대응 매트릭스 (DOM · Before/After) ────────── */
+/* 가운데 96px 은 화살표 전용 트랙이다. 연결 기호에 자기 자리를 준다. */
+.mp-f10 { border: 1px solid var(--rule); background: var(--paper); }
+.mp-f10 ul,
+.mp-f10 ol { margin: 0; padding: 0; list-style: none; }
+.mp-f10-ref {
+  margin: 0; padding: 11px 18px; border-bottom: 1px solid var(--rule); background: var(--paper-2);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--ink-2);
+}
+.mp-f10-state { padding: 14px 18px 18px; }
+.mp-f10-state + .mp-f10-state { border-top: 1px solid var(--rule-2); background: var(--sage-50); }
+.mp-f10-head {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .12em;
+  color: var(--ink-3); font-weight: 600; margin-bottom: 4px;
+}
+.mp-f10-state + .mp-f10-state .mp-f10-head { color: var(--sage-700); }
+.mp-f10-row,
+.mp-f10 li {
+  display: grid; grid-template-columns: minmax(0, 1fr) 96px minmax(0, 1fr);
+  align-items: center; gap: 0; padding: 12px 0; border-top: 1px dashed var(--rule);
+}
+.mp-f10-row > *,
+.mp-f10 li > * { margin: 0; min-width: 0; font-size: 14px; line-height: 1.6; color: var(--ink); }
+.mp-f10-row > :nth-child(2),
+.mp-f10 li > :nth-child(2) {
+  justify-self: center; text-align: center;
+  font-family: var(--font-mono); font-size: 16px; font-style: normal; color: var(--sage-700);
+}
+.mp-f10-row > :nth-child(3),
+.mp-f10 li > :nth-child(3) { text-align: right; }
+.mp-f10 .empty {
+  color: var(--ink-3); font-style: normal;
+  border-bottom: 1px dashed var(--rule-2); min-height: 18px;
+}
+.mp-f10-row.is-empty > :nth-child(2),
+.mp-f10 li.is-empty > :nth-child(2) { color: var(--ink-3); opacity: .5; }
+
+/* ─── F12 상태 도달선 (DOM) ─────────────────────────────── */
+/* F01 은 가로 시간축, 이쪽은 세로 목록 + 왼쪽 밴드 — 트랙 형태를 반복하지 않는다.
+   밴드 3단계: 1행 실선 sage(확인됨) / 2행 파선 sage(경로 있음) / 3·4행 빈 칸. */
+.mp-reach { border: 1px solid var(--rule); background: var(--paper); }
+.mp-reach ol,
+.mp-reach ul { margin: 0; padding: 0; list-style: none; }
+.mp-reach li,
+.mp-reach-row {
+  display: grid; grid-template-columns: 26px minmax(0, 1fr); gap: 0 16px;
+  padding: 16px 18px 16px 0; border-bottom: 1px solid var(--rule);
+}
+.mp-reach li:last-child,
+.mp-reach-row:last-child { border-bottom: none; }
+.mp-reach li::before,
+.mp-reach-row::before {
+  content: ''; grid-column: 1; align-self: stretch; justify-self: center;
+  width: 0; border-left: 3px solid transparent;
+}
+.mp-reach li:nth-child(1)::before,
+.mp-reach-row:nth-child(1)::before { border-left-style: solid; border-left-color: var(--sage-500); }
+.mp-reach li:nth-child(2)::before,
+.mp-reach-row:nth-child(2)::before { border-left-style: dashed; border-left-color: var(--sage-500); }
+.mp-reach li:nth-child(n+3)::before,
+.mp-reach-row:nth-child(n+3)::before { border-left-style: none; }
+/* 클래스가 붙으면 그쪽이 이긴다 — 행 순서가 바뀌어도 뜻이 유지된다. */
+.mp-reach li.confirmed::before,
+.mp-reach-row.confirmed::before { border-left: 3px solid var(--sage-500); }
+.mp-reach li.partial::before,
+.mp-reach-row.partial::before { border-left: 3px dashed var(--sage-500); }
+.mp-reach li.open::before,
+.mp-reach-row.open::before { border-left: 3px solid transparent; }
+.mp-reach b,
+.mp-reach strong { display: block; font-size: 16px; font-weight: 700; color: var(--ink); }
+.mp-reach p,
+.mp-reach span { margin: 4px 0 0; display: block; font-size: 14px; line-height: 1.65; color: var(--ink-2); }
+.mp-reach li:nth-child(n+3) b,
+.mp-reach li:nth-child(n+3) strong,
+.mp-reach li.open b,
+.mp-reach li.open strong { color: var(--ink-3); }
+
+/* ─── 기여 2열 ───────────────────────────────────────────── */
+/* 공용 .nb-roles / .nb-role / .nb-role.warn 을 그대로 쓴다. 여기서는 배치만. */
+.mp-contrib { margin: 26px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.mp-contrib .nb-roles { margin-top: 0; }
+.mp-page .nb-role p { font-size: 14.5px; }
+
+/* ─── 식 블록 (선택식 · 처치 타격 수) ────────────────────── */
+.mp-equation { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 24px; margin-top: 34px; padding: 22px 0; border-block: 1px solid var(--rule); }
+.mp-equation span { grid-row: 1 / 3; color: var(--ink-3); font: 12px/1.5 var(--font-mono); letter-spacing: .06em; }
+.mp-equation strong { font-size: 21px; }
+.mp-equation p { margin: 0; color: var(--ink-2); font-size: 15px; line-height: 1.7; }
+
+/* ─── 목표 밴드 ──────────────────────────────────────────── */
+.mp-target-band { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 6px 24px; margin-top: 24px; padding: 20px 22px; border-left: 3px solid var(--terra-300); background: var(--terra-50); }
+.mp-target-band span { font-size: 15px; line-height: 1.6; }
+.mp-target-band strong { grid-row: 1 / 3; grid-column: 2; align-self: center; color: var(--terra-500); font-size: 30px; }
+.mp-target-band small { color: var(--ink-2); font-size: 13px; line-height: 1.6; }
+
+/* ─── 스크린샷 증거 (EvidenceCrop) ──────────────────────── */
+.mp-evidence { margin: 46px 0 0; padding-top: 22px; border-top: 1px solid var(--rule-2); }
+.mp-evidence > h3 { margin: 0 0 18px; font-size: 25px; line-height: 1.36; letter-spacing: -.022em; }
+.mp-evidence-note { margin: 34px 0 0; padding: 16px 20px; background: var(--paper-2); color: var(--ink-2); font-size: 15px; line-height: 1.7; }
+.mp-evidence-button { display: block; width: 100%; padding: 0; border: 1px solid var(--rule-2); background: #343434; cursor: zoom-in; font: inherit; text-align: right; overflow: hidden; }
+.mp-evidence-button > img { display: block; width: 100%; }
+.mp-crop { display: block; position: relative; overflow: hidden; width: 100%; background: #343434; }
+.mp-crop img { position: absolute; display: block; height: auto; }
+.mp-crop-set { display: grid; grid-template-columns: minmax(0, 1fr); gap: 2px; padding: 2px; background: #202220; }
+.mp-crop-panel { display: flex; min-width: 0; flex-direction: column; background: #343434; text-align: left; }
+.mp-crop-panel > strong { padding: 12px 14px; color: #f5f5f0; font-size: 14px; line-height: 1.45; }
+.mp-zoom { display: block; padding: 12px 16px; background: var(--paper-2); color: var(--sage-700); font-size: 14px; }
+
+.mp-image-dialog { width: calc(100vw - 44px); max-width: 1500px; max-height: calc(100dvh - 44px); padding: 20px; border: 1px solid var(--rule-2); background: var(--paper); color: var(--ink); }
+.mp-image-dialog::backdrop { background: rgba(15, 18, 15, .76); }
+.mp-image-dialog > div { display: flex; justify-content: space-between; gap: 20px; font-size: 18px; }
+.mp-image-dialog button { padding: 8px 14px; border: 1px solid var(--rule); background: var(--paper-2); font: inherit; }
+.mp-image-dialog p { font-size: 14px; }
+.mp-image-dialog section { max-height: 68dvh; overflow: auto; border: 1px solid var(--rule); }
+.mp-image-dialog section img { display: block; max-width: none; }
+
+/* ─── 표지 밀도 보정 (부품 자체는 cover.css 소유) ────────── */
+.mp-page .cv-hero { padding-block: 60px 54px; }
+.mp-page .cv-hero .cv-host { --cs: .54; }
+.mp-page .cv-split { gap: 34px; }
+.mp-page .cv-split__main { gap: 13px; }
+.mp-page .cv-split__art { max-width: 430px; }
+.mp-page .cv-eyebrow { font-size: 13px; }
+.mp-page .cv-title { font-size: 56px; }
+.mp-page .cv-lede { max-width: 620px; font-size: 20px; line-height: 1.6; }
+.mp-page .cv-role,
+.mp-page .cv-pill,
+.mp-page .cv-link span { font-size: 13.5px; }
+.mp-page .cv-specs { margin-block: 4px; padding-left: 24px; font-size: 15px; }
+.mp-page .cv-specs li { margin-block: 5px; line-height: 1.55; }
+.mp-page .cv-art img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; }
+.mp-page .cv-art figcaption,
+.mp-cover-boundary,
+.mp-cover-ai { font-size: 13px; line-height: 1.6; }
+.mp-cover-boundary,
+.mp-cover-ai { margin: 0; color: var(--ink-2); }
+
+/* ─── 포커스 ─────────────────────────────────────────────── */
+.mp-page a:focus-visible,
+.mp-page button:focus-visible,
+.mp-page dialog:focus-visible { outline: 3px solid var(--sage-700); outline-offset: 4px; }
+
+/* ─── 마크업 정렬 보정 (viz.jsx 가 실제로 내는 구조) ────────
+   위 블록들이 소유한 도표 본체를 감싸는 figure 껍데기와,
+   본체 밖에 붙는 각주·범례·스트립. 크기는 전부 판독선 위. */
+
+/* 도표 껍데기 — .mp-fig 와 같은 여백 리듬을 쓴다 */
+.mp-f07-wrap .mp-f07,
+.mp-f10-wrap .mp-f10 { margin-top: 18px; }
+.mp-reach-wrap { margin: 44px 0 0; padding-top: 20px; border-top: 1px solid var(--rule-2); }
+.mp-reach-wrap .mp-reach { margin-top: 18px; }
+
+/* 그림 밖 각주 — 캡션과 구분되는 «읽기 보조» 한 줄 */
+.mp-aux-note {
+  margin: 14px 0 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.7;
+}
+.mp-f07-wrap > .mp-aux-note:first-of-type {
+  margin: 0 0 4px; color: var(--ink-3);
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em;
+}
+
+/* F10 — 열 머리 행과 시점 라벨 */
+.mp-f10 li.mp-f10-colhead {
+  border-top: none; padding-top: 4px; padding-bottom: 8px;
+}
+.mp-f10 li.mp-f10-colhead > * {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+  color: var(--ink-3); font-weight: 600;
+}
+.mp-f10-when {
+  display: block; font-style: normal;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em;
+  color: var(--ink-3); margin-bottom: 2px;
+}
+
+/* F12 범례 */
+.mp-reach-legend {
+  margin: 14px 0 0; display: flex; flex-wrap: wrap; gap: 8px 22px;
+  color: var(--ink-2); font-size: 13.5px; line-height: 1.6;
+}
+.mp-reach-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.mp-reach-legend i { width: 0; height: 15px; border-left: 3px solid var(--sage-500); }
+.mp-reach-legend .partial i { border-left-style: dashed; }
+.mp-reach-legend .open i { border-left-color: var(--rule-2); }
+
+/* 스태미나 스트립 — 역할 격자 «밖» 에 둔다 */
+.mp-stamina {
+  padding: 20px 22px; border-left: 3px solid var(--ink-3); background: var(--paper-2);
+}
+.mp-stamina h4 { margin: 0 0 12px; font-size: 16px; font-weight: 700; color: var(--ink); }
+.mp-stamina p { margin: 12px 0 0; color: var(--ink-2); font-size: 14.5px; line-height: 1.7; }
+.mp-stamina .nb-fsm { margin: 0; }
+
+/* 식 안의 기호 */
+.mp-equation code {
+  font-family: var(--font-mono); font-size: 14px; color: var(--terra-500); font-weight: 600;
+}
+
+/* F03 — 격자 밖 Lv3 실물 스트립.
+   격자 안에 두면 «비어 있는 칸» 위에 글자·그림이 얹혀 그 칸이 채워진 것처럼 읽힌다. */
+.mp-f03-lv3 {
+  margin: 16px 0 0; padding: 14px 18px;
+  display: grid; grid-template-columns: auto auto minmax(0, 1fr); align-items: center; gap: 0 18px;
+  border-left: 3px solid var(--sage-500); background: var(--sage-50);
+}
+.mp-f03-lv3-tag {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+  color: var(--sage-700); font-weight: 700;
+}
+.mp-f03-lv3-art { display: flex; gap: 14px; }
+.mp-f03-lv3-art figure { margin: 0; width: 62px; text-align: center; }
+.mp-f03-lv3-art img { display: block; width: 62px; height: 62px; object-fit: contain; }
+.mp-f03-lv3-art figcaption { margin-top: 2px; font-size: 12px; color: var(--ink-2); }
+.mp-f03-lv3 > p { margin: 0; font-size: 14.5px; line-height: 1.7; color: var(--ink-2); }
+@media (max-width: 520px) {
+  .mp-f03-lv3 { grid-template-columns: minmax(0, 1fr); gap: 10px; justify-items: start; }
+}
+
+/* 값 라벨을 계열선·격자선이 관통해 숫자가 끊겨 보인다(실측: F02 끝점 4개).
+   위치를 옮기면 다른 요소와 충돌하므로 글자 뒤에 종이색 후광을 깐다.
+   paint-order:stroke 라 획이 글자 «뒤» 로 간다 — 글자 모양은 그대로다. */
+.mp-f02 svg text,
+.mp-f09 svg text {
+  paint-order: stroke;
+  stroke: var(--paper);
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}
+
+/* ─── 판독선 — 공개 정보의 최소 유효 글자 12px ───────────── */
+/* 어떤 뷰포트에서도 이 아래로 내려가는 규칙을 만들지 않는다.
+   공용 notebook.css 가 10~11.5px 로 두는 라벨들을 여기서 올린다. */
+.mp-page svg text { font-size: 16px; }                    /* viewBox 단위 기본값 */
+.mp-page .nb-prd-label { font-size: 12px; letter-spacing: .04em; }   /* 공용 10px */
+.mp-page .nb-table th { font-size: 12.5px; letter-spacing: .08em; }  /* 공용 10.5px */
+.mp-page .nb-table { font-size: 14px; }
+.mp-page .nb-table td:last-child { font-size: 13px; text-align: left; font-family: var(--font-sans); }
+.mp-page .nb-tablewrap-title { font-size: 12px; letter-spacing: .1em; }
+.mp-page .nb-ascii-head { font-size: 12px; letter-spacing: .06em; flex-wrap: wrap; }
+.mp-page .nb-ascii-head .lbl { min-width: 0; overflow-wrap: anywhere; }
+.mp-page .nb-ascii-intro { font-size: 15px; line-height: 1.7; }
+.mp-page .nb-ascii pre { font-size: 14px; line-height: 1.72; }
+.mp-page .nb-ascii-result { font-size: 13.5px; background: var(--paper-2); color: var(--ink-2); }
+.mp-page .nb-role-head { font-size: 12px; letter-spacing: .1em; }
+.mp-page .nb-fsm-step { font-size: 12.5px; }
+.mp-page .nb-stat-l { font-size: 12px; }
+.mp-page .nb-stat-s { font-size: 12px; }
+.mp-page .nb-system-kind { font-size: 12px; }
+.mp-page code { font-size: 12.5px; overflow-wrap: anywhere; }
+
+/* 표만 로컬 가로 스크롤을 허용한다 — 표는 좌표 보존이 필수인 유일한 예외. */
+.mp-page .nb-tablewrap { overflow-x: auto; }
+.mp-page .nb-tablewrap .nb-table { min-width: 520px; }
+
+/* ─── 반응형 ─────────────────────────────────────────────── */
+@media (max-width: 1100px) {
+  .mp-page .nb-rail { gap: 4px 18px; }
+  .mp-page .cv-split { flex-direction: column; }
+  .mp-page .cv-split__art { max-width: 100%; width: 100%; }
+  .mp-page .cv-art img { aspect-ratio: 16 / 8.5; }
+  /* 공용이 .nb-prd 를 1열로 내린다 — 라벨 여백만 맞춘다. */
+  .mp-prd .nb-prd { grid-template-columns: minmax(0, 1fr); }
+  .mp-page .nb-prd-label { padding-bottom: 5px; }
+  .mp-contrib { grid-template-columns: minmax(0, 1fr); }
+}
+
+/* wide ↔ narrow SVG 스왑. 901px 에서 wide 배율 0.87 → 16 글자가 13.9px,
+   900px 직후 narrow 는 400px 캡으로 배율 1.18 이다. 어느 쪽도 12px 아래로 안 간다. */
+@media (max-width: 900px) {
+  .mp-page .mp-svg-wide { display: none; }
+  .mp-page .mp-svg-narrow { display: block; }
+}
+
+@media (max-width: 720px) {
+  /* 공유 헤더의 상단 네비가 이 폭에서 헤더 밖으로 밀려 페이지 가로 스크롤을 만든다.
+     같은 목적지를 rail 과 crumb 이 이미 갖고 있다. */
+  .mp-page .nb-header .nb-nav { display: none; }
+  .mp-page .nb-crumbs { display: none; }
+
+  .mp-page .nb-section { padding-block: 58px; }
+  .mp-page .nb-section-head { grid-template-columns: minmax(0, 1fr); gap: 6px; margin-bottom: 26px; }
+  .mp-page .nb-section-kind { grid-column: 1; }
+  .mp-section .mp-lead { padding: 17px 19px; font-size: 18.5px; }
+  .mp-fig { margin-top: 36px; }
+  .mp-fig-title,
+  .mp-evidence > h3 { font-size: 22px; }
+  .mp-next { text-align: left; }
+
+  /* 코드는 읽는 순서가 줄에 고정돼 가로 스크롤이 읽기를 끊는다. 좁은 폭에서는 접는다. */
+  .mp-page .nb-ascii pre { white-space: pre-wrap; overflow-wrap: anywhere; font-size: 13px; }
+
+  /* 3칸 밴드 → 1열 */
+  .mp-scope { grid-template-columns: minmax(0, 1fr); }
+  .mp-scope-card { border-right: none; border-bottom: 1px solid var(--rule); }
+  .mp-scope-card:last-child { border-bottom: none; }
+
+  /* F07 — 3열이 1열로. 대각 밴드는 세로 밴드가 된다(관계는 열 머리 텍스트가 지킨다). */
+  .mp-f07 { grid-template-columns: minmax(0, 1fr); }
+  .mp-f07 > * + * { border-left: none; border-top: 1px solid var(--rule); }
+  .mp-f07::before { background: repeating-linear-gradient(-75deg, var(--ink-3) 0 14px, transparent 14px 42px); }
+
+  /* F10 — 가운데 화살표 트랙을 행 안에서 세로로 돌린다. 두 상태는 모두 남는다. */
+  .mp-f10-row,
+  .mp-f10 li { grid-template-columns: minmax(0, 1fr); gap: 6px; }
+  .mp-f10-row > :nth-child(2),
+  .mp-f10 li > :nth-child(2) { justify-self: start; text-align: left; }
+  .mp-f10-row > :nth-child(3),
+  .mp-f10 li > :nth-child(3) { text-align: left; }
+
+  .mp-contrib { grid-template-columns: minmax(0, 1fr); }
+  .mp-crop-set { grid-template-columns: minmax(0, 1fr); }
+  .mp-aux { gap: 22px; }
+}
+
+@media (max-width: 520px) {
+  .mp-page .cv-hero { padding-block: 40px; }
+  .mp-page .cv-title { font-size: 46px; }
+  .mp-page .cv-lede { font-size: 18px; }
+  .mp-page .cv-art img { aspect-ratio: 4 / 3; }
+  .mp-page .nb-section-title { font-size: 28px; }
+  .mp-section .mp-lead { font-size: 18px; }
+  .mp-equation { grid-template-columns: minmax(0, 1fr); }
+  .mp-equation span { grid-row: auto; }
+  .mp-target-band { grid-template-columns: minmax(0, 1fr); }
+  .mp-target-band strong { grid-row: auto; grid-column: 1; }
+  .mp-reach li,
+  .mp-reach-row { grid-template-columns: 20px minmax(0, 1fr); gap: 0 12px; padding-right: 14px; }
+  .mp-image-dialog { width: calc(100vw - 20px); padding: 14px; }
+}
+
+@media (max-width: 420px) {
+  /* 320px 뷰포트에서 본문 열 폭 284 를 확보한다 —
+     narrow SVG(viewBox 340) 배율 0.835 → 16 글자가 13.4px 로 판독선 위. */
+  .mp-page .nb-body { padding-inline: 18px; }
+  .mp-page .nb-header { padding-inline: 18px; }
+  .mp-page .nb-section-title { font-size: 26px; }
+  .mp-page .cv-title { font-size: 40px; }
+  .mp-page .cv-pills { gap: 6px; }
+  .mp-f07 > *,
+  .mp-f10-state { padding-inline: 14px; }
+  .mp-scope-card { padding-inline: 16px; }
+  .mp-scope-role { padding-inline: 16px; }
+}
+
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }

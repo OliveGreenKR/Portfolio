@@ -1,0 +1,155 @@
+{
+  "_note": "count 는 실렌더로 확정했다(2026-09-06). SVG 안에서 줄바꿈되는 문장은 requiredText 로 쓰지 않는다.",
+  "viewports": [
+    {
+      "name": "desktop-wide",
+      "width": 1920,
+      "height": 1200,
+      "minSvgTextPx": 12
+    },
+    {
+      "name": "desktop",
+      "width": 1280,
+      "height": 900,
+      "minSvgTextPx": 12
+    },
+    {
+      "name": "boundary",
+      "width": 720,
+      "height": 900,
+      "minSvgTextPx": 12
+    },
+    {
+      "name": "mobile",
+      "width": 390,
+      "height": 844,
+      "minSvgTextPx": 12
+    },
+    {
+      "name": "mobile-narrow",
+      "width": 320,
+      "height": 800,
+      "minSvgTextPx": 12
+    }
+  ],
+  "requiredSelectors": [
+    {
+      "selector": ".mp-section",
+      "count": 8
+    },
+    {
+      "selector": "#hero .cv-title",
+      "count": 1
+    },
+    {
+      "selector": ".mp-scope-card",
+      "count": 3
+    },
+    {
+      "selector": ".mp-lead",
+      "count": 8
+    },
+    {
+      "selector": ".mp-next",
+      "count": 7
+    },
+    {
+      "selector": ".nb-prd",
+      "count": 22
+    },
+    {
+      "selector": ".mp-f01",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f02",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f03",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f04",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f05",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f06",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f07",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f08",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f09",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f10",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f11",
+      "count": 1
+    },
+    {
+      "selector": ".mp-reach",
+      "count": 1
+    },
+    {
+      "selector": ".nb-tablewrap",
+      "count": 4
+    },
+    {
+      "selector": "pre",
+      "count": 9
+    },
+    {
+      "selector": ".mp-evidence",
+      "count": 6
+    },
+    {
+      "selector": "details",
+      "count": 0
+    }
+  ],
+  "requiredText": [
+    "Motelet",
+    "PM 겸 배틀씬 프로그래머",
+    "Unity 6.0 · C# 10",
+    "UniTask · DOTween",
+    "40만",
+    "1억",
+    "20만",
+    "1,000만",
+    "37,400",
+    "×250",
+    "×50",
+    "로그 눈금 — 한 칸이 100배",
+    "N−2",
+    "HP의 2~5%",
+    "관측 없음",
+    "사본을 만들지 않습니다",
+    "구현의 상당 부분과 검토에 AI를 활용했습니다",
+    "선행 연결 변경"
+  ],
+  "forbiddenTextPatterns": [
+    "MT-[A-Z]+-[0-9]",
+    "\\[검증 필요\\]",
+    "claims\\.yaml",
+    "undefined",
+    "NaN"
+  ],
+  "protectedSelectors": "figure,h2,h3,pre,.mp-crop,.mp-f02,.mp-f03,.mp-f06,.mp-f07,.mp-f08,.mp-f10,.mp-f11,.nb-prd,.mp-reach",
+  "allowScrollableCode": false,
+  "minSvgTextPx": 12
+}
