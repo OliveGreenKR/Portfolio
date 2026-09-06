@@ -65,8 +65,9 @@ function EvidenceCrop({ item, className = '' }) {
 /* 판단 슬롯. 절마다 2~4줄. 이 슬롯이 비면 그 절은 겉핥기가 된다. */
 function Judgment({ s }) {
   return <div className="mp-prd">
-    {s.prd.map(r => (
-      <window.PRDRow key={r.kind} label={r.label} kind={r.kind}>{RI(r.text)}</window.PRDRow>
+    {/* 한 절에 같은 kind 가 두 번 올 수 있다(01절의 결정 2줄). key 는 순서로 잡는다. */}
+    {s.prd.map((r, i) => (
+      <window.PRDRow key={i} label={r.label} kind={r.kind}>{RI(r.text)}</window.PRDRow>
     ))}
   </div>;
 }
@@ -80,6 +81,15 @@ function Code({ items }) {
   </div>;
 }
 
+/* 이 절이 주기의 어느 구간을 다루는지. 비어 있는 것도 정보다 —
+   목표 3단을 앞에 늘어놓고 여섯 절이 이어지면 «전부 다뤘다» 로 읽힌다. */
+function GoalBadges({ ids }) {
+  if (!ids || !ids.length) return null;
+  return <span className="mp-badges" aria-label={P.goal.badgeLegend}>
+    {ids.map(id => <i key={id} className={'mp-badge is-' + id}>{P.goal.badgeLabels[id]}</i>)}
+  </span>;
+}
+
 function StorySection({ index, children }) {
   const s = P.sections[index];
   const total = String(P.sections.length).padStart(2, '0');
@@ -89,6 +99,7 @@ function StorySection({ index, children }) {
       <h2 className="nb-section-title">{s.title}</h2>
       <span className="nb-section-kind">{s.kind}</span>
     </div>
+    <GoalBadges ids={s.goals}/>
     <p className="mp-lead">{RI(s.lead)}</p>
     {children}
     {s.next && <p className="mp-next">→ {s.next}</p>}
@@ -143,21 +154,32 @@ function PacingPage() {
       <main>
         <window.CoverHero slug="progression-pacing"/>
 
-        {/* 페이지 전체를 «결과 → 구조 → 상세» 순서로 만드는 자리.
+        {/* 절에 들어가기 전에 전체 지도를 한 번 준다.
             절이 아니므로 절 순서를 침범하지 않는다. */}
-        <div className="mp-scope">
-          {P.scope.cards.map(c => (
-            <article className="mp-scope-card" key={c.k}>
-              <span>{c.k}</span><strong>{c.t}</strong><p>{c.d}</p>
-            </article>
-          ))}
-        </div>
+        <window.PacingF00/>
         <p className="mp-scope-role">{RI(P.scope.role)}</p>
 
-        {/* 01 게임과 한 런 */}
+        {/* 01 게임과 목표 — 무엇을 이루려 했는가 */}
         <StorySection index={0}>
           <window.PacingF01/>
+          <window.PacingGoal/>
+          <div className="mp-goal-extra">
+            <div className="mp-goal-novelty">
+              <h4>{P.goal.noveltyTitle}</h4>
+              <p>{RI(P.goal.novelty)}</p>
+            </div>
+            <div className="mp-goal-axes">
+              <h4>{P.goal.axesTitle}</h4>
+              <ol>
+                {P.goal.axes.map(a => (
+                  <li key={a.k}><span>{a.k}</span><strong>{a.t}</strong><p>{a.d}</p></li>
+                ))}
+              </ol>
+              <p className="mp-aux-note">{P.goal.axesNote}</p>
+            </div>
+          </div>
           <Judgment s={P.sections[0]}/>
+          <p className="mp-goal-mine">{RI(P.goal.mine)}</p>
         </StorySection>
 
         {/* 02 성장의 해석 — 이 페이지의 핵심 그림 두 개 */}

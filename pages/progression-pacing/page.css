@@ -106,10 +106,8 @@ html { scroll-behavior: smooth; }
 
 /* ─── 히어로 직후 요약 밴드 ──────────────────────────────── */
 /* 값 3칸이 아니라 문장 3칸이다 — 이 페이지에는 계측 수치가 없다. */
-.mp-scope {
-  margin: 30px 0 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr));
-  border: 1px solid var(--rule); background: var(--paper);
-}
+/* 3칸 요약 카드는 폐기했다 — 도입부가 전체 시스템 지도(F00)를 직접 준다.
+   추상적인 «정의/모델/구조» 세 단어보다 실제 구조 한 장이 낫다. */
 .mp-scope-card {
   min-width: 0; padding: 18px 20px 20px; border-right: 1px solid var(--rule);
   display: flex; flex-direction: column; gap: 8px;
@@ -126,7 +124,7 @@ html { scroll-behavior: smooth; }
 .mp-scope-card.open > span,
 .mp-scope-card.unconfirmed > span { color: var(--terra-500); }
 .mp-scope-role {
-  margin: 0; padding: 14px 20px; border: 1px solid var(--rule); border-top: 0;
+  margin: 18px 0 0; padding: 14px 20px; border: 1px solid var(--rule);
   background: var(--paper-2); color: var(--ink-2); font-size: 14.5px; line-height: 1.65;
 }
 .mp-scope-role strong { color: var(--ink); font-weight: 600; }
@@ -452,6 +450,46 @@ html { scroll-behavior: smooth; }
   stroke: var(--paper);
   stroke-width: 3px;
   stroke-linejoin: round;
+}
+
+/* ─── 목표 배지 ──────────────────────────────────────────────
+   이 절이 주기의 어느 구간을 다루는가. 없는 절에는 안 단다 —
+   비어 있는 것도 «이 절은 주기를 다루지 않는다» 는 정보다. */
+.mp-badges { display: flex; flex-wrap: wrap; gap: 6px; margin: 0 0 18px; }
+.mp-badge {
+  font-style: normal; font-size: 12px; font-weight: 600; letter-spacing: .02em;
+  padding: 3px 10px; border-radius: 2px; border: 1px solid var(--rule-2); color: var(--ink-2);
+}
+.mp-badge.is-resist { border-color: var(--terra-300); background: var(--terra-50); color: var(--terra-700); }
+.mp-badge.is-fast   { border-color: var(--sage-400); background: var(--sage-50); color: var(--sage-700); }
+.mp-badge.is-slow   { border-color: var(--sage-300); background: var(--sage-50); color: var(--sage-700); }
+.mp-badge.is-novelty { border-color: var(--rule-2); background: var(--paper-2); color: var(--ink-2); }
+
+/* ─── 목표 절의 보조 블록 ───────────────────────────────────── */
+.mp-goal-extra {
+  margin: 30px 0 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px;
+}
+.mp-goal-novelty,
+.mp-goal-axes { padding: 20px 22px; border: 1px solid var(--rule); background: var(--paper); }
+.mp-goal-extra h4 {
+  margin: 0 0 12px; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45;
+}
+.mp-goal-novelty p { margin: 0; font-size: 14.5px; line-height: 1.72; color: var(--ink-2); }
+.mp-goal-axes ol { margin: 0; padding: 0; list-style: none; display: grid; gap: 14px; }
+.mp-goal-axes li { border-left: 3px solid var(--sage-500); padding: 2px 0 2px 12px; }
+.mp-goal-axes li > span {
+  display: block; font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em;
+  color: var(--sage-700); font-weight: 600;
+}
+.mp-goal-axes li > strong { display: block; font-size: 15px; color: var(--ink); margin: 2px 0 3px; }
+.mp-goal-axes li > p { margin: 0; font-size: 14px; line-height: 1.68; color: var(--ink-2); }
+.mp-goal-axes .mp-aux-note { margin-top: 14px; }
+.mp-goal-mine {
+  margin: 26px 0 0; padding: 14px 18px; border-left: 3px solid var(--sage-500);
+  background: var(--sage-50); color: var(--ink); font-size: 15px; line-height: 1.7;
+}
+@media (max-width: 900px) {
+  .mp-goal-extra { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* ─── 판독선 — 공개 정보의 최소 유효 글자 12px ───────────── */

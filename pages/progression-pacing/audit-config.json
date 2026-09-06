@@ -42,8 +42,12 @@
       "count": 1
     },
     {
-      "selector": ".mp-scope-card",
-      "count": 3
+      "selector": ".mp-f00",
+      "count": 1
+    },
+    {
+      "selector": ".mp-f0g",
+      "count": 1
     },
     {
       "selector": ".mp-lead",
@@ -55,7 +59,7 @@
     },
     {
       "selector": ".nb-prd",
-      "count": 22
+      "count": 25
     },
     {
       "selector": ".mp-f01",
@@ -120,6 +124,10 @@
     {
       "selector": "details",
       "count": 0
+    },
+    {
+      "selector": ".mp-badge",
+      "count": 5
     }
   ],
   "requiredText": [
@@ -140,7 +148,15 @@
     "관측 없음",
     "사본을 만들지 않습니다",
     "구현의 상당 부분과 검토에 AI를 활용했습니다",
-    "선행 연결 변경"
+    "선행 연결 변경",
+    "목표는 하나의 주기입니다",
+    "진행도 페이스",
+    "기여도 교대",
+    "존재감을 넘기는 수단",
+    "빌드 반영",
+    "확정 사실로 표현하지 않는다",
+    "자산을 읽는다",
+    "자산을 바꾼다"
   ],
   "forbiddenTextPatterns": [
     "MT-[A-Z]+-[0-9]",
@@ -149,7 +165,7 @@
     "undefined",
     "NaN"
   ],
-  "protectedSelectors": "figure,h2,h3,pre,.mp-crop,.mp-f02,.mp-f03,.mp-f06,.mp-f07,.mp-f08,.mp-f10,.mp-f11,.nb-prd,.mp-reach",
+  "protectedSelectors": "figure,.mp-f00,.mp-f0g,h2,h3,pre,.mp-crop,.mp-f02,.mp-f03,.mp-f06,.mp-f07,.mp-f08,.mp-f10,.mp-f11,.nb-prd,.mp-reach",
   "allowScrollableCode": false,
   "minSvgTextPx": 12
 }

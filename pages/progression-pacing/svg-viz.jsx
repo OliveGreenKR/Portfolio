@@ -1,6 +1,6 @@
 // pages/progression-pacing/svg-viz.jsx
 //
-// SVG 도표 9종 — F01 · F02 · F03 · F04 · F05 · F06 · F08 · F09 · F11.
+// SVG 도표 11종 — F00(전체 지도) · Goal(목표 주기) · F01 · F02 · F03 · F04 · F05 · F06 · F08 · F09 · F11.
 // (F07 · F10 · F12 는 DOM 도표라 viz.jsx 가 갖는다. 여기서 그리지 않는다.)
 //
 // ⚠️ 문장을 여기 박지 않는다. 모든 문자열과 수치는 data.js(window.PACING_DATA)에서 온다.
@@ -1270,7 +1270,223 @@
     return <Fig cls="mp-f11" title={F.title} caption={F.caption}>{wide}{narrow}</Fig>;
   }
 
+
+  /* == F00 전체 시스템 지도 ======================================
+     위층 = 밸런스 대상인 게임(실선 = 게임 안의 인과)
+     아래층 = 그것을 다루려고 만든 것(파선 = 데이터 흐름)
+     두 층을 잇는 것은 «자산을 읽는다»·«자산을 바꾼다» 둘뿐이다.
+     층간 선을 더 그리면 «도구가 게임을 직접 굴린다» 로 오독된다. */
+
+  function PacingF00() {
+    const S = P.system;
+
+    // 상자 하나. 제목 1줄 + 설명 최대 2줄.
+    const Box = (k, x, y, w, h, t, d, tone) => {
+      const stroke = tone === 'tool' ? 'var(--sage-400)' : 'var(--rule-2)';
+      const fill = tone === 'tool' ? 'var(--sage-50)' : 'var(--paper)';
+      const dLines = wrapW(d, 16, w - 28);
+      return (
+        <g key={k}>
+          <rect x={x} y={y} width={w} height={h} rx={3} fill={fill} stroke={stroke} strokeWidth={1.5} />
+          <text x={x + 14} y={y + 30} className="mp-t-label" fill="var(--ink)">{t}</text>
+          <Lines x={x + 14} y={y + 54} dy={20} lines={dLines.slice(0, 2)} cls="mp-t-axis" />
+        </g>
+      );
+    };
+
+    // wide - 게임 4열(190폭): 40+190=230 · 270 · 500 · 730+190=920 < 960 OK
+    const GX = [40, 270, 500, 730], GW = 190, GY = 70, GH = 100;
+    // 도구 5열(168폭): 12 · 204 · 396 · 588 · 780+168=948 < 960 OK
+    const TX = [12, 204, 396, 588, 780], TW = 168, TY = 316, TH = 100;
+
+    const wide = (
+      <Svg w={960} h={456} label={S.title}>
+        <Marks p="mp-f00w" />
+
+        <text x={40} y={22} className="mp-t-axis" fill="var(--ink-3)">{S.gameLabel}</text>
+
+        {/* 다음 런 - 게임 층이 닫힌 고리라는 것 */}
+        <path d="M 825 70 V 48 H 135 V 64" fill="none" stroke="var(--ink-3)" strokeWidth={1.5}
+              markerEnd="url(#mp-f00w-ink)" />
+        <text x={480} y={42} className="mp-t-axis" fill="var(--ink-3)" textAnchor="middle">다음 런</text>
+
+        {S.game.map((n, i) => Box('g' + n.id, GX[i], GY, GW, GH, n.t, n.d, 'game'))}
+        {[0, 1, 2].map(i => (
+          <line key={'ga' + i} x1={GX[i] + GW} y1={120} x2={GX[i + 1] - 8} y2={120}
+                stroke="var(--ink)" strokeWidth={2} markerEnd="url(#mp-f00w-ink)" />
+        ))}
+
+        {/* 층간 1 - 자산을 읽는다 */}
+        <line x1={110} y1={GY + GH + 2} x2={110} y2={TY - 8} stroke="var(--sage-700)" strokeWidth={2}
+              strokeDasharray="7 5" markerEnd="url(#mp-f00w-sage)" />
+        <text x={124} y={222} className="mp-t-label" fill="var(--sage-700)">{S.linkDown}</text>
+        <text x={124} y={246} className="mp-t-axis" fill="var(--ink-3)">{S.linkDownNote}</text>
+
+        {/* 층간 2 - 자산을 바꾼다. 사람에서 출발해 자산으로 돌아간다 */}
+        <path d="M 864 314 V 196 H 200 V 174" fill="none" stroke="var(--sage-700)" strokeWidth={2}
+              markerEnd="url(#mp-f00w-sage)" />
+        <text x={640} y={222} className="mp-t-label" fill="var(--sage-700)" textAnchor="middle">{S.linkUp}</text>
+        <text x={640} y={246} className="mp-t-axis" fill="var(--ink-3)" textAnchor="middle">{S.linkUpNote}</text>
+
+        <text x={40} y={304} className="mp-t-axis" fill="var(--ink-3)">{S.toolLabel}</text>
+        {S.tool.map((n, i) => Box('t' + n.id, TX[i], TY, TW, TH, n.t, n.d, 'tool'))}
+        {[0, 1, 2, 3].map(i => (
+          <line key={'ta' + i} x1={TX[i] + TW} y1={366} x2={TX[i + 1] - 8} y2={366}
+                stroke="var(--sage-700)" strokeWidth={2} strokeDasharray="7 5"
+                markerEnd="url(#mp-f00w-sage)" />
+        ))}
+
+        {/* 범례 - 두 층의 화살표가 다른 뜻이라는 것 */}
+        <g>
+          <line x1={40} y1={440} x2={76} y2={440} stroke="var(--ink)" strokeWidth={2} />
+          <text x={86} y={446} className="mp-t-axis" fill="var(--ink-2)">게임 안의 인과</text>
+          <line x1={250} y1={440} x2={286} y2={440} stroke="var(--sage-700)" strokeWidth={2} strokeDasharray="7 5" />
+          <text x={296} y={446} className="mp-t-axis" fill="var(--ink-2)">도구의 데이터 흐름</text>
+        </g>
+      </Svg>
+    );
+
+    // narrow - 층을 세로로 쌓되 «두 층 + 연결 둘» 은 그대로. 20+300=320 < 340 OK
+    const NX = 20, NW = 300, NH = 62;
+    const gy = (i) => 56 + i * 70;    // 56 126 196 266 (끝 328)
+    const ty = (i) => 424 + i * 70;   // 424 .. 704 (끝 766)
+
+    const narrow = (
+      <Svg narrow w={340} h={820} label={S.title}>
+        <Marks p="mp-f00n" />
+
+        <text x={NX} y={20} className="mp-t-axis" fill="var(--ink-3)">{S.gameLabel}</text>
+        <path d="M 320 87 H 332 V 36 H 170 V 48" fill="none" stroke="var(--ink-3)" strokeWidth={1.5}
+              markerEnd="url(#mp-f00n-ink)" />
+        <text x={252} y={30} className="mp-t-axis" fill="var(--ink-3)" textAnchor="middle">다음 런</text>
+
+        {S.game.map((n, i) => Box('ng' + n.id, NX, gy(i), NW, NH, n.t, n.d, 'game'))}
+        {[0, 1, 2].map(i => (
+          <line key={'nga' + i} x1={170} y1={gy(i) + NH} x2={170} y2={gy(i + 1) - 8}
+                stroke="var(--ink)" strokeWidth={2} markerEnd="url(#mp-f00n-ink)" />
+        ))}
+
+        {/* 층간 1 */}
+        <line x1={110} y1={332} x2={110} y2={392} stroke="var(--sage-700)" strokeWidth={2}
+              strokeDasharray="7 5" markerEnd="url(#mp-f00n-sage)" />
+        <text x={124} y={356} className="mp-t-label" fill="var(--sage-700)">{S.linkDown}</text>
+        <text x={124} y={378} className="mp-t-axis" fill="var(--ink-3)">{S.linkDownNote}</text>
+
+        <text x={NX} y={412} className="mp-t-axis" fill="var(--ink-3)">{S.toolLabel}</text>
+        {S.tool.map((n, i) => Box('nt' + n.id, NX, ty(i), NW, NH, n.t, n.d, 'tool'))}
+        {[0, 1, 2, 3].map(i => (
+          <line key={'nta' + i} x1={110} y1={ty(i) + NH} x2={110} y2={ty(i + 1) - 8}
+                stroke="var(--sage-700)" strokeWidth={2} strokeDasharray="7 5"
+                markerEnd="url(#mp-f00n-sage)" />
+        ))}
+
+        {/* 층간 2 - 사람 -> 자산. 왼쪽 여백을 따라 올라가 고리를 닫는다 */}
+        <path d="M 20 735 H 8 V 70 H 14" fill="none" stroke="var(--sage-700)" strokeWidth={2}
+              markerEnd="url(#mp-f00n-sage)" />
+        <text x={22} y={790} className="mp-t-label" fill="var(--sage-700)">{S.linkUp}</text>
+
+        <g>
+          <line x1={20} y1={808} x2={50} y2={808} stroke="var(--ink)" strokeWidth={2} />
+          <text x={58} y={814} className="mp-t-axis" fill="var(--ink-2)">인과</text>
+          <line x1={132} y1={808} x2={162} y2={808} stroke="var(--sage-700)" strokeWidth={2} strokeDasharray="7 5" />
+          <text x={170} y={814} className="mp-t-axis" fill="var(--ink-2)">데이터 흐름</text>
+        </g>
+      </Svg>
+    );
+
+    return <Fig cls="mp-f00" title={S.title} caption={S.caption}>{wide}{narrow}</Fig>;
+  }
+
+  /* == Goal 목표 주기 ============================================
+     3단이 닫힌 고리로 돌아온다는 것이 도형으로 보여야 한다.
+     원문 박자는 고리 «밖» 에 둔다 - 안에 넣으면 겹친다. */
+
+  function PacingGoal() {
+    const G = P.goal;
+    const tone = {
+      resist: { s: 'var(--terra-300)', f: 'var(--terra-50)', t: 'var(--terra-700)' },
+      fast: { s: 'var(--sage-500)', f: 'var(--sage-50)', t: 'var(--sage-700)' },
+      slow: { s: 'var(--sage-300)', f: 'var(--paper-2)', t: 'var(--sage-700)' },
+    };
+
+    const Phase = (ph, x, y, w, h) => {
+      const c = tone[ph.id];
+      return (
+        <g key={ph.id}>
+          <rect x={x} y={y} width={w} height={h} rx={3} fill={c.f} stroke={c.s} strokeWidth={2} />
+          <text x={x + 16} y={y + 34} className="mp-t-head" fill={c.t}>{ph.name}</text>
+          <Lines x={x + 16} y={y + 62} dy={20} lines={wrapW(ph.d, 16, w - 32)} cls="mp-t-axis" />
+        </g>
+      );
+    };
+
+    // 박자 한 줄 - 출처 태그 + 원문
+    const Beat = (ph, k, x, y, w) => (
+      <g key={ph.id + 'b' + k}>
+        <text x={x} y={y} className="mp-t-axis" fill="var(--ink-3)">{G.beatSources[k]}</text>
+        <Lines x={x + 48} y={y} dy={19} lines={wrapW(ph.beats[k], 16, w - 48)} cls="mp-t-axis" />
+      </g>
+    );
+
+    // wide - 20 + 3*280 + 2*40 = 940 < 960 OK
+    const BX = [20, 340, 660], BW = 280, BY = 92, BH = 108;
+
+    const wide = (
+      <Svg w={960} h={366} label={G.title}>
+        <Marks p="mp-goalw" />
+        {/* 고리를 닫는 귀환선 - «반복» 을 글자가 아니라 도형이 말한다 */}
+        <path d="M 940 146 H 952 V 54 H 160 V 86" fill="none" stroke="var(--terra-400)" strokeWidth={2}
+              markerEnd="url(#mp-goalw-terra)" />
+        <text x={556} y={46} className="mp-t-label" fill="var(--terra-500)" textAnchor="middle">{G.repeat}</text>
+
+        {G.cycle.map((ph, i) => Phase(ph, BX[i], BY, BW, BH))}
+        {[0, 1].map(i => (
+          <line key={'ba' + i} x1={BX[i] + BW} y1={146} x2={BX[i + 1] - 8} y2={146}
+                stroke="var(--ink-3)" strokeWidth={2} markerEnd="url(#mp-goalw-ink)" />
+        ))}
+
+        {/* 원문 박자 - 고리 밖, 각 구간 아래 */}
+        {G.cycle.map((ph, i) => (
+          <g key={'bt' + ph.id}>
+            <line x1={BX[i]} y1={224} x2={BX[i] + BW} y2={224} stroke="var(--rule)" strokeWidth={1} />
+            {Beat(ph, 0, BX[i], 250, BW)}
+            {Beat(ph, 1, BX[i], 312, BW)}
+          </g>
+        ))}
+      </Svg>
+    );
+
+    // narrow - 20 + 300 = 320 < 340 OK
+    const NX = 20, NW = 300, NBH = 112;   // 제목 34 + 설명 3줄(62·82·102) + 여백
+    const py = (i) => 56 + i * 240;       // 56 296 536 · 한 구간 = 상자 112 + 박자 98 = 210 < 240 OK
+
+    const narrow = (
+      <Svg narrow w={340} h={800} label={G.title}>
+        <Marks p="mp-goaln" />
+        <text x={176} y={30} className="mp-t-label" fill="var(--terra-500)" textAnchor="middle">{G.repeat}</text>
+        {/* 왼쪽 여백을 따라 올라가 고리를 닫는다 */}
+        <path d="M 20 760 H 8 V 80 H 16" fill="none" stroke="var(--terra-400)" strokeWidth={2}
+              markerEnd="url(#mp-goaln-terra)" />
+
+        {G.cycle.map((ph, i) => (
+          <g key={'np' + ph.id}>
+            {Phase(ph, NX, py(i), NW, NBH)}
+            {Beat(ph, 0, NX, py(i) + NBH + 26, NW)}
+            {Beat(ph, 1, NX, py(i) + NBH + 68, NW)}
+            {i < 2 && (
+              <line x1={176} y1={py(i) + 214} x2={176} y2={py(i + 1) - 8}
+                    stroke="var(--ink-3)" strokeWidth={2} markerEnd="url(#mp-goaln-ink)" />
+            )}
+          </g>
+        ))}
+      </Svg>
+    );
+
+    return <Fig cls="mp-f0g" title={G.figTitle} caption={G.sourceNote}>{wide}{narrow}</Fig>;
+  }
+
   Object.assign(window, {
+    PacingF00, PacingGoal,
     PacingF01, PacingF02, PacingF03, PacingF04,
     PacingF05, PacingF06, PacingF08, PacingF09, PacingF11
   });
