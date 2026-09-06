@@ -11,6 +11,16 @@
   <link rel="stylesheet" href="../src/styles/syntax.css">
   <link rel="stylesheet" href="progression-pacing/page.css">
 </head>
+<!--
+  ⚠️ 이 파일이 랜딩(pages/landing/data.js)이 가리키는 **라이브 Motelet 페이지**이고,
+     자산은 전부 progression-pacing/ 에서 읽는다. pages/motelet/ 폴더가 아니다.
+
+     pages/motelet/  — 어느 HTML 도 읽지 않는다. 구형 기대 골드 모델·전투 런타임 서사이며
+                       pages/deck/motelet.js 만 그 폴더의 data.js 를 참조한다.
+     progression-pacing.html — 같은 자산을 쓰는 별칭. 둘 다 고쳐야 한다.
+
+     즉 «Motelet 페이지를 고친다» = progression-pacing/ 을 고친다. 덱은 안 깨진다.
+-->
 <body data-code-lang="csharp">
   <div id="root"></div>
   <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
