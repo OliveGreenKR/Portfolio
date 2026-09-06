@@ -1,6 +1,6 @@
 // pages/progression-pacing/viz.jsx
 //
-// DOM 도표 3종 + 보조 부품. SVG 도표는 svg-viz.jsx 가 갖는다.
+// DOM 도표. SVG 도표는 svg-viz.jsx 가 갖는다.
 //
 // ⚠️ 문장을 여기 박지 않는다. 전부 data.js.
 // ⚠️ 마크업 구조는 page.css 가 계약이다 — 클래스명을 임의로 바꾸지 않는다.
@@ -20,87 +20,77 @@
     </figure>;
   }
 
-  /* ── F07 역할 격자 ────────────────────────────────────────────
-     열 = 대상 티어, 열 안의 목록 = 그 티어를 맡는 공격.
-     열 위치는 §02 겹침 행렬과 같고, 배경의 옅은 대각 밴드(page.css ::before)가
-     그 계승을 눈으로 증명한다.
+  /* ── S01 담당 3칸 ─────────────────────────────────────────────
+     사람 / 자동 / 사람 순서 자체가 정보다 — 자동은 가운데 한 칸뿐이다. */
+  function FlowSplit() {
+    const d = P.flow;
+    return <div className="mp-split" data-audit-protected>
+      <h4>{d.splitTitle}</h4>
+      <ol>
+        {d.split.map(s => (
+          <li className={s.tone} key={s.t}>
+            <span className="mp-split-k">{s.k}</span>
+            <div><strong>{s.t}</strong><p>{s.d}</p></div>
+          </li>
+        ))}
+      </ol>
+    </div>;
+  }
 
-     ⚠️ 길이 막대로 그리지 않는다 — 자료에 «어느 티어까지 몇 %» 같은 값이 없다.
-        범주를 범주로 인코딩한다. */
-  function RoleGrid() {
+  /* ── S03 역할 2칸 ─────────────────────────────────────────────
+     좌 = 낮은 빈도로 크게, 우 = 높은 빈도로 넓게. 두 칸 사이의 축이
+     «개성을 준 기준» 이다 — 카드 두 개를 나란히 놓기만 하면 축이 사라진다.
+
+     ⚠️ 길이 막대로 그리지 않는다 — 자료에 «어느 티어까지 몇 %» 같은 값이 없다. */
+  function RoleSplit() {
     const d = P.roles;
     return <Figure cls="mp-f07-wrap" title={d.title} caption={d.caption}>
-      <p className="mp-aux-note">{d.inheritNote}</p>
+      <div className="mp-roleaxis">
+        <span>{d.axisLeft}</span><i aria-hidden="true"/><span>{d.axisRight}</span>
+      </div>
       <div className="mp-f07">
-        {d.tiers.map((t, col) => (
-          <div key={t.id}>
-            <h4><span className="mp-f07-tier">{t.code}</span>{t.name}</h4>
-            <p className="mp-f07-goal">{t.goal}</p>
-            <ul>
-              {d.matrix.map(r => (
-                <li className={r.tones[col]} key={r.attack}>
-                  <b>{r.attack}</b>
-                  <p>{r.cells[col]}</p>
-                </li>
-              ))}
-            </ul>
+        {d.cards.map(c => (
+          <div className={'mp-role is-' + c.id} key={c.id}>
+            <h4>{c.name}<em>{c.attack}</em></h4>
+            <p className="mp-role-freq">{c.freq}</p>
+            <dl>
+              <dt>맡는 일</dt><dd>{c.job}</dd>
+              <dt>주 대상</dt><dd>{c.target}</dd>
+            </dl>
+            <p className="mp-role-note">{c.note}</p>
           </div>
         ))}
       </div>
-      <p className="mp-aux-note">{RI(d.matrixNote)}</p>
       <div className="mp-target-band">
         <span>{d.bandLabel}</span>
         <strong>{d.bandValue}</strong>
         <small>{d.bandNote}</small>
       </div>
-    </Figure>;
-  }
-
-  /* ── F10 검사 대응 매트릭스 ───────────────────────────────────
-     같은 프레임에서 대응선이 1개 → 3개로 채워지는 것이 «변화» 의 인코딩이다.
-     가운데 96px 트랙은 화살표 전용 공간 — 긴 라벨 사이에 기호를 끼우지 않는다.
-     빈 두 줄은 «검사하지 않은 것» 이다. 지우면 변화가 안 보인다. */
-  function BoundaryMatrix() {
-    const d = P.f10;
-    const heads = <li className="mp-f10-colhead">
-      <span>{d.leftHead}</span><i aria-hidden="true"/><span>{d.rightHead}</span>
-    </li>;
-    return <Figure cls="mp-f10-wrap" title={d.title} caption={d.caption}>
-      <div className="mp-f10">
-        <p className="mp-f10-ref">{d.reference}</p>
-
-        <div className="mp-f10-state">
-          <div className="mp-f10-head">{d.beforeLabel}</div>
-          <ul>
-            {heads}
-            <li>
-              <span>{d.beforePair[0]}</span>
-              <i aria-hidden="true">↔</i>
-              <span className="empty">{d.beforePair[1]}</span>
-            </li>
-            <li className="is-empty"><span className="empty"/><i aria-hidden="true">↔</i><span className="empty"/></li>
-            <li className="is-empty"><span className="empty"/><i aria-hidden="true">↔</i><span className="empty"/></li>
-          </ul>
-        </div>
-
-        <div className="mp-f10-state">
-          <div className="mp-f10-head">{d.afterLabel}</div>
-          <ul>
-            {heads}
-            {d.pairs.map(p => (
-              <li key={p.when}>
-                <span><em className="mp-f10-when">{p.when}</em>{p.left}</span>
-                <i aria-hidden="true">↔</i>
-                <span>{p.right}</span>
-              </li>
-            ))}
-          </ul>
-        </div>
+      <div className="mp-role-empty">
+        <h4>{d.emptyTitle}</h4>
+        <p>{RI(d.empty)}</p>
       </div>
     </Figure>;
   }
 
-  /* ── F12 상태 도달선 ──────────────────────────────────────────
+  /* ── S04 주요 특징 4칸 ────────────────────────────────────────
+     문제-결정을 절마다 늘어놓지 않고, 평균값 모델과 갈리는 지점만 아이콘으로 모은다. */
+  function Features() {
+    const d = P.features;
+    return <div className="mp-features" data-audit-protected>
+      <h4>{d.title}</h4>
+      <ul>
+        {d.items.map(it => (
+          <li key={it.t}>
+            <i aria-hidden="true">{it.icon}</i>
+            <div><strong>{it.t}</strong><p>{it.d}</p></div>
+          </li>
+        ))}
+      </ul>
+    </div>;
+  }
+
+  /* ── S05 상태 도달선 ──────────────────────────────────────────
      네 상태는 서로 다르고, 확인은 앞쪽까지만 왔다.
      왼쪽 밴드가 **끝나는 위치**가 곧 «어디까지 확인됐는가» 의 답이다.
      밴드는 page.css 의 li::before 가 그린다 — 별도 요소를 두지 않는다. */
@@ -152,9 +142,9 @@
     </div>;
   }
 
-  /* ── 보조: 선택식 ────────────────────────────────────────────
-     §04 의 정적 비교식. 기호마다 쉬운 라벨을 붙인다 —
-     추상어(«공급 대상»·«처리 기회»)를 쓰지 않는 것이 페이지 전체의 규칙이다. */
+  /* ── 보조: 식 두 개 ──────────────────────────────────────────
+     기호마다 쉬운 라벨을 붙인다 — 추상어(«공급 대상»·«처리 기회»)를 쓰지 않는 것이
+     페이지 전체의 규칙이다. */
   function SelectionEquation() {
     const d = P.equation;
     return <div className="mp-equation">
@@ -171,34 +161,22 @@
     </div>;
   }
 
-  /* ── 보조: 처치 타격 수 식 ──────────────────────────────────── */
   function HtkEquation() {
-    const d = P.intersection;
+    const d = P.htk;
     return <div className="mp-equation">
-      <span>판단 기준</span>
-      <strong>{d.htk}</strong>
-      <p>{d.htkNote}</p>
-    </div>;
-  }
-
-  /* ── 보조: 스태미나 4단계 ────────────────────────────────────
-     역할 격자 «밖» 에 둔다 — 배치 자체가 «이건 공격 역할이 아니다» 를 말한다. */
-  function StaminaStrip() {
-    const d = P.stamina;
-    return <div className="mp-stamina">
-      <h4>{d.title}</h4>
-      <window.FSMTrail steps={d.steps}/>
+      <span>{d.label}</span>
+      <strong>{d.formula}</strong>
       <p>{d.note}</p>
     </div>;
   }
 
   Object.assign(window, {
-    PacingRoleGrid: RoleGrid,
-    PacingBoundaryMatrix: BoundaryMatrix,
+    PacingFlowSplit: FlowSplit,
+    PacingRoleSplit: RoleSplit,
+    PacingFeatures: Features,
     PacingReachLine: ReachLine,
     PacingContribution: Contribution,
     PacingEquation: SelectionEquation,
     PacingHtk: HtkEquation,
-    PacingStamina: StaminaStrip,
   });
 })();

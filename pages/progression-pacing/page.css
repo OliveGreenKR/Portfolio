@@ -308,7 +308,11 @@ html { scroll-behavior: smooth; }
 
 /* ─── 식 블록 (선택식 · 처치 타격 수) ────────────────────── */
 .mp-equation { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 10px 24px; margin-top: 34px; padding: 22px 0; border-block: 1px solid var(--rule); }
-.mp-equation span { grid-row: 1 / 3; color: var(--ink-3); font: 12px/1.5 var(--font-mono); letter-spacing: .06em; }
+.mp-equation span { grid-row: 1 / -1; grid-column: 1; color: var(--ink-3); font: 12px/1.5 var(--font-mono); letter-spacing: .06em; }
+/* ⚠️ 본문은 전부 2열에 못 박는다. span 이 «남은 행 전부» 를 차지하지 않으면
+   세 번째 자식(두 번째 p)이 120px 짜리 1열로 떨어져 세로로 쌓인다(실측). */
+.mp-equation strong,
+.mp-equation p { grid-column: 2; }
 .mp-equation strong { font-size: 21px; }
 .mp-equation p { margin: 0; color: var(--ink-2); font-size: 15px; line-height: 1.7; }
 
@@ -490,6 +494,128 @@ html { scroll-behavior: smooth; }
 }
 @media (max-width: 900px) {
   .mp-goal-extra { grid-template-columns: minmax(0, 1fr); }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   2026-09-06 5절 재구성에서 새로 생긴 블록
+   (앞의 F07 3열 격자 · F10 · 스태미나 · goal-extra 규칙은 소비자가 사라졌지만
+    같은 클래스명을 다시 쓰는 곳이 있어 아래에서 필요한 것만 덮어쓴다.)
+   ══════════════════════════════════════════════════════════════ */
+
+/* ─── S01 담당 3칸 ─────────────────────────────────────────── */
+/* 사람 / 자동 / 사람. 가운데 한 칸만 자동이라는 것이 배치로 보인다. */
+.mp-split { margin: 30px 0 0; }
+.mp-split > h4 {
+  margin: 0 0 14px; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45;
+}
+.mp-split ol {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px;
+}
+.mp-split li {
+  min-width: 0; padding: 16px 18px 18px; border: 1px solid var(--rule); background: var(--paper);
+  display: grid; gap: 8px;
+}
+.mp-split li.mine { border-left: 3px solid var(--sage-500); background: var(--sage-50); }
+.mp-split li.auto { border-left: 3px solid var(--ink-3); }
+.mp-split .mp-split-k {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .1em; font-weight: 700;
+  color: var(--ink-3);
+}
+.mp-split li.mine .mp-split-k { color: var(--sage-700); }
+.mp-split strong { display: block; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+.mp-split p { margin: 5px 0 0; font-size: 14px; line-height: 1.68; color: var(--ink-2); }
+
+/* ─── S02 결과 2열 ─────────────────────────────────────────── */
+/* 스크린샷은 한 줄에 두 장. 세 장이면 캡처 안 글자가 판독선 아래로 내려간다(실측). */
+.mp-results {
+  margin: 26px 0 0;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 30px 24px;
+}
+.mp-results .mp-evidence {
+  margin: 0; padding-top: 0; border-top: none; min-width: 0;
+}
+.mp-results .mp-evidence > h3 {
+  margin: 0 0 12px; font-size: 18px; line-height: 1.4; letter-spacing: -.012em;
+}
+.mp-results .mp-evidence figcaption { margin-top: 12px; font-size: 14px; line-height: 1.65; }
+.mp-results .mp-zoom { padding: 10px 14px; font-size: 13px; }
+
+/* ─── S03 역할 2칸 ─────────────────────────────────────────── */
+/* 두 칸 위의 축이 «무엇으로 갈랐는가» 를 말한다. 축이 없으면 카드 두 장일 뿐이다. */
+.mp-roleaxis {
+  margin: 0 0 12px;
+  display: grid; grid-template-columns: max-content minmax(60px, 1fr) max-content;
+  align-items: center; gap: 12px;
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--ink-3);
+}
+.mp-roleaxis i {
+  height: 0; border-top: 1px solid var(--rule-2);
+}
+.mp-f07-wrap .mp-f07 { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 0; }
+.mp-f07 .mp-role { gap: 10px; }
+.mp-f07 .mp-role h4 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; font-size: 19px; }
+.mp-f07 .mp-role h4 em {
+  font-style: normal; font-family: var(--font-mono); font-size: 12.5px; letter-spacing: .04em;
+  color: var(--sage-700); font-weight: 600;
+}
+.mp-f07 .mp-role.is-exec { border-top: 3px solid var(--terra-400); }
+.mp-f07 .mp-role.is-sweep { border-top: 3px solid var(--sage-500); }
+.mp-f07 .mp-role-freq {
+  margin: 0; padding: 8px 12px; background: var(--paper-2);
+  font-size: 14px; line-height: 1.6; color: var(--ink);
+}
+.mp-f07 .mp-role dl {
+  margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 6px 14px;
+}
+.mp-f07 .mp-role dt {
+  font-family: var(--font-mono); font-size: 12px; letter-spacing: .06em; color: var(--ink-3);
+  padding-top: 2px;
+}
+.mp-f07 .mp-role dd { margin: 0; font-size: 14.5px; line-height: 1.6; color: var(--ink); }
+.mp-f07 .mp-role-note { margin: 0; font-size: 13.5px; line-height: 1.68; color: var(--ink-2); }
+.mp-role-empty {
+  margin: 24px 0 0; padding: 18px 20px; border-left: 3px solid var(--ink-3); background: var(--paper-2);
+}
+.mp-role-empty h4 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.mp-role-empty p { margin: 0; font-size: 14.5px; line-height: 1.72; color: var(--ink-2); }
+.mp-role-empty strong { color: var(--ink); font-weight: 600; }
+
+/* ─── S04 주요 특징 4칸 ────────────────────────────────────── */
+.mp-features { margin: 30px 0 0; padding: 22px 24px; border: 1px solid var(--rule); background: var(--paper); }
+.mp-features > h4 { margin: 0 0 16px; font-size: 15px; font-weight: 700; color: var(--ink); }
+.mp-features ul {
+  margin: 0; padding: 0; list-style: none;
+  display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px 26px;
+}
+.mp-features li { display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 0 12px; align-items: start; }
+.mp-features i {
+  font-style: normal; width: 30px; height: 30px; display: grid; place-items: center;
+  border: 1px solid var(--sage-400); background: var(--sage-50); color: var(--sage-700); font-size: 15px;
+}
+.mp-features strong { display: block; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+.mp-features p { margin: 4px 0 0; font-size: 14px; line-height: 1.68; color: var(--ink-2); }
+
+/* 목표 절의 «새로움» 한 칸 — 2열 격자를 폐기하고 한 덩이로 둔다 */
+.mp-goal-novelty { margin: 26px 0 0; padding: 20px 22px; border: 1px solid var(--rule); background: var(--paper); }
+.mp-goal-novelty h4 { margin: 0 0 10px; font-size: 15px; font-weight: 700; color: var(--ink); line-height: 1.45; }
+
+/* ─── 반응형 ───────────────────────────────────────────────── */
+@media (max-width: 900px) {
+  .mp-split ol { grid-template-columns: minmax(0, 1fr); }
+  .mp-results { grid-template-columns: minmax(0, 1fr); gap: 34px; }
+  .mp-features ul { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 720px) {
+  .mp-f07-wrap .mp-f07 { grid-template-columns: minmax(0, 1fr); }
+  .mp-roleaxis { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .mp-roleaxis i { display: none; }
+  .mp-f07 .mp-role.is-sweep { border-top: none; }
+}
+@media (max-width: 520px) {
+  .mp-f07 .mp-role dl { grid-template-columns: minmax(0, 1fr); gap: 2px; }
+  .mp-f07 .mp-role dt { padding-top: 6px; }
 }
 
 /* ─── 판독선 — 공개 정보의 최소 유효 글자 12px ───────────── */

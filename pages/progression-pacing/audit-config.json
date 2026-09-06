@@ -1,134 +1,36 @@
 {
-  "_note": "count 는 실렌더로 확정했다(2026-09-06). SVG 안에서 줄바꿈되는 문장은 requiredText 로 쓰지 않는다.",
+  "_note": "count 는 실렌더로 확정했다(2026-09-06 5절 재구성). SVG 안에서 줄바꿈되는 문장은 requiredText 로 쓰지 않는다.",
   "viewports": [
-    {
-      "name": "desktop-wide",
-      "width": 1920,
-      "height": 1200,
-      "minSvgTextPx": 12
-    },
-    {
-      "name": "desktop",
-      "width": 1280,
-      "height": 900,
-      "minSvgTextPx": 12
-    },
-    {
-      "name": "boundary",
-      "width": 720,
-      "height": 900,
-      "minSvgTextPx": 12
-    },
-    {
-      "name": "mobile",
-      "width": 390,
-      "height": 844,
-      "minSvgTextPx": 12
-    },
-    {
-      "name": "mobile-narrow",
-      "width": 320,
-      "height": 800,
-      "minSvgTextPx": 12
-    }
+    { "name": "desktop-wide", "width": 1920, "height": 1200, "minSvgTextPx": 12 },
+    { "name": "desktop", "width": 1280, "height": 900, "minSvgTextPx": 12 },
+    { "name": "boundary", "width": 720, "height": 900, "minSvgTextPx": 12 },
+    { "name": "mobile", "width": 390, "height": 844, "minSvgTextPx": 12 },
+    { "name": "mobile-narrow", "width": 320, "height": 800, "minSvgTextPx": 12 }
   ],
   "requiredSelectors": [
-    {
-      "selector": ".mp-section",
-      "count": 8
-    },
-    {
-      "selector": "#hero .cv-title",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f00",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f0g",
-      "count": 1
-    },
-    {
-      "selector": ".mp-lead",
-      "count": 8
-    },
-    {
-      "selector": ".mp-next",
-      "count": 7
-    },
-    {
-      "selector": ".nb-prd",
-      "count": 25
-    },
-    {
-      "selector": ".mp-f01",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f02",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f03",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f04",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f05",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f06",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f07",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f08",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f09",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f10",
-      "count": 1
-    },
-    {
-      "selector": ".mp-f11",
-      "count": 1
-    },
-    {
-      "selector": ".mp-reach",
-      "count": 1
-    },
-    {
-      "selector": ".nb-tablewrap",
-      "count": 4
-    },
-    {
-      "selector": "pre",
-      "count": 9
-    },
-    {
-      "selector": ".mp-evidence",
-      "count": 6
-    },
-    {
-      "selector": "details",
-      "count": 0
-    },
-    {
-      "selector": ".mp-badge",
-      "count": 5
-    }
+    { "selector": ".mp-section", "count": 5 },
+    { "selector": "#hero .cv-title", "count": 1 },
+    { "selector": ".mp-lead", "count": 5 },
+    { "selector": ".mp-next", "count": 4 },
+    { "selector": ".nb-prd", "count": 16 },
+    { "selector": ".mp-f00", "count": 1 },
+    { "selector": ".mp-f0g", "count": 1 },
+    { "selector": ".mp-f09", "count": 1 },
+    { "selector": ".mp-f02", "count": 1 },
+    { "selector": ".mp-f04", "count": 1 },
+    { "selector": ".mp-f05", "count": 1 },
+    { "selector": ".mp-f06", "count": 1 },
+    { "selector": ".mp-f11", "count": 1 },
+    { "selector": ".mp-f07", "count": 1 },
+    { "selector": ".mp-split li", "count": 3 },
+    { "selector": ".mp-features li", "count": 4 },
+    { "selector": ".mp-results .mp-evidence", "count": 6 },
+    { "selector": ".mp-reach", "count": 1 },
+    { "selector": ".nb-tablewrap", "count": 2 },
+    { "selector": "pre", "count": 9 },
+    { "selector": ".mp-evidence", "count": 6 },
+    { "selector": "details", "count": 0 },
+    { "selector": ".mp-badge", "count": 4 }
   ],
   "requiredText": [
     "Motelet",
@@ -143,20 +45,23 @@
     "×250",
     "×50",
     "로그 눈금 — 한 칸이 100배",
-    "N−2",
-    "HP의 2~5%",
-    "관측 없음",
-    "사본을 만들지 않습니다",
-    "구현의 상당 부분과 검토에 AI를 활용했습니다",
+    "사본을 만들지 않는다",
+    "구현의 상당 부분과 검토에 AI를 활용했다",
+    "노드 추가 · 삭제",
     "선행 연결 변경",
-    "목표는 하나의 주기입니다",
-    "진행도 페이스",
-    "기여도 교대",
-    "존재감을 넘기는 수단",
+    "사람 — 에디터",
+    "AI — CLI 요청",
+    "완만 성장",
+    "폭발 성장",
+    "저항",
+    "진행도",
+    "관측 없음",
+    "HP의 2~5%",
     "빌드 반영",
-    "확정 사실로 표현하지 않는다",
-    "자산을 읽는다",
-    "자산을 바꾼다"
+    "존재감을 넘기는 수단",
+    "자동 반복",
+    "결과 JSON",
+    "다음 후보 조건"
   ],
   "forbiddenTextPatterns": [
     "MT-[A-Z]+-[0-9]",
@@ -165,7 +70,7 @@
     "undefined",
     "NaN"
   ],
-  "protectedSelectors": "figure,.mp-f00,.mp-f0g,h2,h3,pre,.mp-crop,.mp-f02,.mp-f03,.mp-f06,.mp-f07,.mp-f08,.mp-f10,.mp-f11,.nb-prd,.mp-reach",
+  "protectedSelectors": "figure,.mp-f00,.mp-f0g,.mp-f09,.mp-f02,.mp-f04,.mp-f05,.mp-f06,.mp-f11,.mp-f07,.mp-split,.mp-features,h2,h3,pre,.mp-crop,.nb-prd,.mp-reach",
   "allowScrollableCode": false,
   "minSvgTextPx": 12
 }
