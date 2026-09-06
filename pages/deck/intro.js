@@ -24,7 +24,9 @@
   const C = window.CARTAPLI_DATA;
   const W = window.WOBBLE_DATA;
   const E = window.INTERNAL_WEB_SERVICE_DATA;
-  const M = window.MOTELET_DATA;
+  // 라이브 Motelet 페이지의 데이터. 옛 window.MOTELET_DATA(pages/motelet/)는
+  // 어느 HTML 도 더는 싣지 않는다 — pages/motelet.html 머리 주석 참조.
+  const M = window.PACING_DATA;
 
   const fact = (k) => (A.facts.find((f) => f[0] === k) || [k, ''])[1];
   // about/data.js 의 값은 가운뎃점으로 이어진 한 줄이다. 줄바꿈으로 가른다.
@@ -58,9 +60,12 @@
           // 최신이 맨 위다 (시작 시점 기준 내림차순):
           //   Motelet 2026.05~ · 외주 2026.05–07 · Wobble 2026.03–04 · Cartapli 2025.11–2026.02
           ['이력', [
-            // 진행 중이라 shipped() 를 못 쓴다 — 출시 플랫폼·주차·마감이 아직 없다.
-            // 스토어 페이지는 공개돼 있으므로 그 사실만 적고 링크는 아래 links 가 진다.
-            M.meta.title + ' (Steam 스토어 공개 · ' + M.meta.period + ' · ' + M.meta.team + ')',
+            // shipped() 를 못 쓴다 — 그 헬퍼는 주차·인원까지 요구하는데
+            // ⚠️ 새 Motelet 페이지는 **팀 인원수를 안 갖는다** — 역할 경계를 히어로 한 줄로
+            //    끝내면서 뺀 사실이다. 나머지 셋과 같은 «플랫폼 · 기간» 꼴은 유지하되
+            //    인원 칸은 비운다. 출시 시점은 아래 links 의 문안에서 그대로 가져온다.
+            M.cover.title + ' (' + M.cover.links[0].label + ' · '
+              + M.cover.links[0].v.split(' · ').pop() + ' · ' + M.cover.period + ')',
             // 제목에 이미 '(외주)' 가 있고 period 도 괄호를 물고 있다 — 그대로 이으면 괄호가 겹친다.
             E.meta.title.replace(/\s*\(외주\)\s*$/, '')
               + ' (외주 · ' + E.meta.period.replace(/\s*\((.+)\)$/, ' · $1') + ')',
@@ -80,7 +85,7 @@
           // 스토어는 셋이다. 이력 줄과 같은 순서(최신 먼저)로 낸다.
           // Motelet 은 2026-09-04 출시됐다(버전 1.2).
           .concat([
-            { label: 'Steam', v: M.meta.title + ' · 2026-09-04 출시', href: M.meta.steam, tone: 'sage' },
+            Object.assign({}, M.cover.links[0], { tone: 'sage' }),
             { label: 'Steam', v: W.meta.title, href: W.meta.steam, tone: 'sage' },
             { label: 'Steam', v: C.meta.title, href: C.meta.steam, tone: 'sage' },
           ]),

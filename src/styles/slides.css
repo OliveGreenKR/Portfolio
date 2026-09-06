@@ -1265,3 +1265,47 @@
 .slide--cm .cm-sequence__lane li span,
 .slide--cm .cm-sequence__lane li i,
 .slide--cm .cm-sequence__shared { font-size: 17px; }
+
+
+/* ─── Motelet 제출용 덱 (.slide--mt) ───────────────────────────────────────────
+   페이지 그림(pages/progression-pacing/svg-viz.jsx)을 그대로 싣는다. 그 그림의
+   SVG 글자 크기는 `.mp-page svg .mp-t-*` 가 갖고 있어서 `.mp-page` 조상이 없으면
+   통째로 사라진다 — 매니페스트의 MTFig 가 그 클래스를 감싸는 이유다.
+   여기서는 페이지 지면용 여백만 떼고, 슬라이드에 새는 13px 문장만 올린다. */
+.slide--mt .mt-fig { flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; }
+.slide--mt .mt-fig > svg { flex: 1 1 auto; min-width: 0; min-height: 0; width: 100%; height: 100%; }
+
+/* 표지의 역할 경계 · AI 활용 문장은 page.css 가 13px 로 고정한다(.mp-cover-boundary).
+   사이트 본문에서는 각주 크기가 맞지만 1920 슬라이드에서는 안 읽힌다.
+   덱의 다른 보조 글(.sl-note 20px)보다 한 급 아래로만 올린다. */
+.slide--mt .mp-cover-boundary,
+.slide--mt .mp-cover-ai { font-size: 19px; line-height: 1.55; }
+
+/* 도구 화면 여러 장을 번호 + 기능명과 함께 한 판에 (deck/motelet.js MTShots).
+   ⚠️ `overflow: clip` 이어야 한다 — hidden 은 스크롤 컨테이너를 만들어 audit 의
+      잘림 검사(scrollHeight − clientHeight)에 걸린다. clip 은 스크롤 영역을 안 만든다. */
+.slide--mt .mt-shots {
+  display: grid; grid-template-columns: repeat(var(--shot-cols, 3), minmax(0, 1fr));
+  gap: 22px 26px; flex: 1 1 auto; min-height: 0; min-width: 0; align-content: center;
+}
+/* 크롭 비율이 화면마다 달라 그림 높이가 제각각이다. 칸 높이를 다 쓰게 두고
+   캡션을 바닥으로 밀어 번호 줄이 한 선에 서게 한다. */
+.slide--mt .mt-shots__item {
+  margin: 0; display: flex; flex-direction: column; justify-content: space-between;
+  gap: 10px; min-width: 0; height: 100%;
+}
+.slide--mt .mt-shots__win {
+  position: relative; overflow: clip; display: block; width: 100%;
+  border: 1px solid var(--rule); background: var(--paper-3);
+}
+.slide--mt .mt-shots__win img { position: absolute; max-width: none; height: auto; display: block; }
+.slide--mt .mt-shots figcaption {
+  display: flex; align-items: baseline; gap: 10px;
+  font-size: 20px; line-height: 1.35; color: var(--ink);
+}
+.slide--mt .mt-shots figcaption b {
+  flex: 0 0 auto; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--sage-700); color: var(--paper);
+  font-size: 16px; font-weight: 700; line-height: 26px; text-align: center;
+}
+
