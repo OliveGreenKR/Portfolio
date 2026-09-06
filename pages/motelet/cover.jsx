@@ -54,7 +54,7 @@
             <window.LinkRow links={[
               { label: '상세 페이지', v: '전체 서술 · 코드 · 다이어그램',
                 href: SITE + 'pages/motelet.html', tone: 'sage' },
-              { label: 'Steam', v: M.meta.title + ' (개발 중)', href: M.meta.steam, tone: 'blue' },
+              { label: 'Steam', v: M.meta.title + ' · 2026-09-04 출시', href: M.meta.steam, tone: 'blue' },
             ]} />
           </React.Fragment>
         }

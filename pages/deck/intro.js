@@ -78,9 +78,9 @@
           .filter((l) => l.label !== 'Steam')
           .map((l) => Object.assign({}, l, { tone: l.label === 'GitHub' ? 'blue' : undefined }))
           // 스토어는 셋이다. 이력 줄과 같은 순서(최신 먼저)로 낸다.
-          // Motelet 은 출시 전이지만 스토어 페이지가 공개돼 있어 확인 가능한 링크다.
+          // Motelet 은 2026-09-04 출시됐다(버전 1.2).
           .concat([
-            { label: 'Steam', v: M.meta.title + ' (개발 중)', href: M.meta.steam, tone: 'sage' },
+            { label: 'Steam', v: M.meta.title + ' · 2026-09-04 출시', href: M.meta.steam, tone: 'sage' },
             { label: 'Steam', v: W.meta.title, href: W.meta.steam, tone: 'sage' },
             { label: 'Steam', v: C.meta.title, href: C.meta.steam, tone: 'sage' },
           ]),

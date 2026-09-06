@@ -1,5 +1,5 @@
 // pages/motelet/data.js
-// Motelet (개발 코드명 CursorBlade) — 개발 중. 본인 = PM 겸 배틀씬 프로그래머.
+// Motelet (개발 코드명 CursorBlade) — 2026-09-04 Steam 출시. 본인 = PM 겸 배틀씬 프로그래머.
 //
 // 상류 SSOT = knowledge_base/projects/cursorblade/research/portfolio/{claims.yaml,brief.md,gate.json}
 // 실측 기준선 = D:/UnityProjects/CursorBlade · feat/stage03 @ 3571bfb3 (마지막 커밋 2026-08-15)
@@ -49,7 +49,7 @@ const MT_SCALE = [
 window.MOTELET_DATA = {
   meta: {
     eyebrow: 'PROJECT / MOTELET',
-    subtitle: '인크레멘탈 · Unity 6.0 · 팀 3인 · 개발 진행 중',
+    subtitle: '인크레멘탈 · Unity 6.0 · 팀 3인 · 2026-09-04 Steam 출시',
     title: 'Motelet',
     facts: ['Unity 6.0 · C# 10', '팀 3인 · PM 겸 배틀씬', '2026.05 - 현재', '실측 기준 커밋 3571bfb3'],
     // 기간 · 스택 · 스토어는 덱(표제지 이력 · 목차 · 표지 링크)이 읽는 필드다.
@@ -57,7 +57,7 @@ window.MOTELET_DATA = {
     period: '2026.05 - 현재',
     team: '팀 3인',
     stack: ['Unity 6.0', 'C# 10', 'UniTask', 'DOTween'],
-    // 스토어 페이지 공개 (2026-08, 사용자 확인). 출시 전이라 '개발 중' 으로만 쓴다.
+    // 2026-09-04 Steam 출시(버전 1.2, 2026-09-06 사용자 확인). 그 이전 판의 '개발 중' 표기는 폐기했다.
     steam: 'https://store.steampowered.com/app/4850970/Motelet/',
     boundary:
       '맡은 것은 **전투씬 전반과 그 기반 리소스 시스템**, 그리고 **밸런싱 모델과 전용 에디터**다. ' +
