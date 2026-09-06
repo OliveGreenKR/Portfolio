@@ -38,5 +38,11 @@ for s in slides:
         # ('01 밸런싱' vs 'a' vs '02 물리') 붙이면 항목마다 대시가 둘씩 생긴다.
         writer.add_outline_item(s['heading'] or s['section'], page, parent=parent)
 
+# 문서 제목을 지운다 — 없으면 뷰어가 파일명을 제목으로 쓴다.
+# Chrome 은 deck.html 의 <title> 을 그대로 /Title 에 박는데 거기엔 지원 직책이 들어 있고,
+# 뷰어 제목줄·최근문서 목록에 그대로 뜬다. deck.html 을 안 고치는 이유: 그 <title> 은
+# **브라우저 탭**의 것이고, 직책은 덱 조립본(deck/{직무}.js)이 갖는 값이라 HTML 소유가 아니다.
+writer._info.get_object().pop('/Title', None)
+
 writer.write(out_path)
 print(f'pages {len(reader.pages)} -> {out_path}')
