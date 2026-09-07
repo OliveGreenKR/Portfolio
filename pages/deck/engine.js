@@ -12,13 +12,13 @@
 //   dx11    — 프로젝트 자체는 엔진 직군에 가장 맞지만 가장 오래됐다. 내용의 질이 앞의 둘에 못 미친다
 //
 // 덱에 **안 넣는 것** (2026-08-12 사용자 판단):
-//   Cartapli: Fold Quest 절(6장) · Wobble Wobble · 사내 학습 웹 서비스 (외주) · Labs 5종
+//   Cartapli: Fold Quest 절(6장) · Wobble Wobble · Labs 5종
 //   -> Cartapli 는 출시했다는 사실 이상의 값어치가 이 덱에 없다. 절을 통째로 빼고
 //      **CM §00 한 장**(원작 · 출시 지표 · 역할 경계)으로 접었다 — deck/cartapli-mobile.js.
 //      매니페스트(deck/cartapli.js)는 남겨 둔다. 클라이언트 직무 덱에서 되살린다.
 //   -> 한 장짜리 요약 넉 장을 뒀었지만, 장당 정보 밀도가 낮아 분량만 늘렸다.
 //      대신 표제지 이력에 **한 줄씩** 적고 출시작은 스토어 링크로 연결한다 (deck/intro.js).
-//      매니페스트 파일(deck/wobble.js · edu.js · labs.js)은 지우지 않고 남겨 둔다 —
+//      매니페스트 파일(deck/wobble.js · labs.js)은 지우지 않고 남겨 둔다 —
 //      클라이언트 · 서버 직무 덱에서는 되살릴 값어치가 있다. 지금은 로드하지 않는다.
 
 (function buildEngineDeck() {

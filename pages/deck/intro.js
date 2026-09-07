@@ -23,7 +23,6 @@
   const L = window.LANDING_DATA;
   const C = window.CARTAPLI_DATA;
   const W = window.WOBBLE_DATA;
-  const E = window.INTERNAL_WEB_SERVICE_DATA;
   // 라이브 Motelet 페이지의 데이터. 옛 window.MOTELET_DATA(pages/motelet/)는
   // 어느 HTML 도 더는 싣지 않는다 — pages/motelet.html 머리 주석 참조.
   const M = window.PACING_DATA;
@@ -66,9 +65,9 @@
             //    인원 칸은 비운다. 출시 시점은 아래 links 의 문안에서 그대로 가져온다.
             M.cover.title + ' (' + M.cover.links[0].label + ' · '
               + M.cover.links[0].v.split(' · ').pop() + ' · ' + M.cover.period + ')',
-            // 제목에 이미 '(외주)' 가 있고 period 도 괄호를 물고 있다 — 그대로 이으면 괄호가 겹친다.
-            E.meta.title.replace(/\s*\(외주\)\s*$/, '')
-              + ' (외주 · ' + E.meta.period.replace(/\s*\((.+)\)$/, ' · $1') + ')',
+            // ⚠️ 외주 건은 참조할 data.js 가 없다 — 비밀유지 의무로 페이지를 내렸다.
+            //    이력 한 줄만 리터럴로 남긴다. 고객사·제품명·구조는 어떤 형태로도 넣지 않는다.
+            '사내 학습 웹 서비스 (외주 · 2026.05 – 2026.07 · 납품 완료)',
             shipped(W.meta, projectFact(W, '출시 플랫폼')),
             shipped(C.meta),
           ]],
