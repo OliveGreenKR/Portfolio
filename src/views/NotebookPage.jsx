@@ -6,6 +6,7 @@
 //   coverSlug   — 있으면 히어로를 그 프로젝트 표지로 낸다 (덱 · 랜딩 카드와 같은 것)
 //   indexHref   — link to landing/index from header brand + crumb
 //   systemsKind — optional override for "N SYSTEMS" kind label
+//   evidenceNavLabel — optional rail label for the evidence section
 //   footerLeft  — left-side footer text (default uses crumb)
 
 const { useEffect: useEffectNB, useState: useStateNB } = React;
@@ -36,7 +37,7 @@ function shortenNB(t) {
   return i > 0 ? t.slice(0, i) : t;
 }
 
-function NotebookRail({ systems, evidenceFirst }) {
+function NotebookRail({ systems, evidenceFirst, evidenceNavLabel = 'Metrics + media' }) {
   const [active, setActive] = useStateNB('hero');
   useEffectNB(() => {
     const ids = ['hero', 'facts', 'systems', 'evidence', ...systems.map(s => `sys-${s.no.replace('.', '-')}`)];
@@ -69,7 +70,7 @@ function NotebookRail({ systems, evidenceFirst }) {
       <span className="nb-rail-section">systems</span>
       {systems.map(s => link(`sys-${s.no.replace('.', '-')}`, `${s.no} · ${shortenNB(s.title)}`))}
       {!evidenceFirst && <span className="nb-rail-section">evidence</span>}
-      {!evidenceFirst && link('evidence', 'Metrics + media')}
+      {!evidenceFirst && link('evidence', evidenceNavLabel)}
     </aside>
   );
 }
@@ -274,7 +275,7 @@ function NotebookPage({ data, crumb, coverSlug, indexHref = 'landing.html', syst
     <div className="nb-page">
       <NotebookHeader crumb={crumb} indexHref={indexHref} />
       <div className="nb-body">
-        <NotebookRail systems={data.systems} evidenceFirst={evidenceFirst} />
+        <NotebookRail systems={data.systems} evidenceFirst={evidenceFirst} evidenceNavLabel={data.evidenceNavLabel} />
         <main>
           <NotebookHero data={data} coverSlug={coverSlug} />
           <NotebookFacts data={data} />

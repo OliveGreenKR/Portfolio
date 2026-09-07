@@ -4,11 +4,8 @@
 // ⚠️ 사실을 만들지 않는다. pages/internal-web-service/data.js 를 참조만 한다.
 // ⚠️ 공개 경계는 data.js 머리 주석이 갖는다. 표지에 그림 · 화면 · 발주처를 올리지 않는다.
 //
-// 이 표지가 다른 다섯과 다른 점: **그림 자리를 비운다.**
-//   이전 판은 이 자리에 납품물의 구조도를 올렸는데, 그 도식이 계약상
-//   «비밀정보» 의 설계·도면에 정면으로 걸린다. 그림을 다른 것으로
-//   바꾸는 대신 **아예 두지 않는다** — 이 프로젝트에서 공개 가능한 그림은 없다.
-//   CoverSplit 은 art 를 안 주면 글 칸이 전폭을 쓴다(src/views/cover-parts.jsx).
+// 공개 가능한 시각 자산이 없어 그림 자리 없이 글과 공개 허용 수치만 사용한다.
+// CoverSplit 은 art 를 안 주면 글 칸이 전폭을 쓴다(src/views/cover-parts.jsx).
 
 (function buildInternalWebServiceCover() {
   const D = window.INTERNAL_WEB_SERVICE_DATA;
@@ -24,8 +21,6 @@
     { kind: 'accent', text: D.meta.period.replace(/\s*\(.*\)$/, '') },
     { text: D.meta.team },
     { text: 'DynamoDB · Terraform · Electron' },
-    // 경계를 배지로 먼저 말한다 — 본문까지 읽어야 알게 두지 않는다.
-    { tone: 'terra', text: '구현 구조 비공개 (계약 비밀유지)' },
   ];
 
   window.COVERS = window.COVERS || {};
@@ -45,18 +40,18 @@
               <window.CoverTitle>사내 학습 웹 서비스</window.CoverTitle>
               <window.Lede>{S(D.meta.oneLine, 2)}</window.Lede>
               <window.RoleLine label={D.meta.role}>
-                {' — 웹 서비스 전체 520 커밋 중 본인 338 (65%) · 최다 기여'}
+                {' — 저장소 커밋 작성자별 집계 기준 338/520건(65%)'}
               </window.RoleLine>
               <window.Pills items={pills} />
               <window.LinkRow links={[
-                { label: '상세 페이지', v: '제약 → 기술 선택 → 이유', tone: 'sage',
+                { label: '상세 페이지', v: '제약 → 기술 선택 → 판단 근거', tone: 'sage',
                   href: SITE + 'pages/internal-web-service.html' },
               ]} />
             </React.Fragment>
           }
         />
 
-        {/* 성과 요약. 시장 지표가 아니라 납품 규모와 기여량이다. */}
+        {/* 성과 요약. 시장 지표가 아니라 납품과 작업 기록이다. */}
         <window.BigStats items={D.heroMetrics} />
       </div>
     ),

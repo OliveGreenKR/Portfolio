@@ -11,6 +11,47 @@
   <style>
     html, body { margin: 0; padding: 0; background: var(--paper); }
     [data-screen-label] { /* labelled for design comment context */ }
+    @media (max-width: 640px) {
+      body[data-screen-label="Project · Internal Web Service"] .nb-header { gap: 16px; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-nav { display: none; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-crumbs { min-width: 0; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-crumbs .cur {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      body[data-screen-label="Project · Internal Web Service"] .cv-bigs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table,
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table tbody {
+        display: block;
+        width: 100%;
+      }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table thead { display: none; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table tr {
+        display: block;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--rule);
+      }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table td {
+        display: grid;
+        grid-template-columns: 72px minmax(0, 1fr);
+        gap: 12px;
+        padding: 4px 0;
+        border: 0;
+      }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table td::before {
+        color: var(--ink-3);
+        font-family: var(--font-mono);
+        font-size: 10px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+      }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table td:nth-child(1)::before { content: '항목'; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table td:nth-child(2)::before { content: '값'; }
+      body[data-screen-label="Project · Internal Web Service"] .nb-metrics .nb-table td:nth-child(3)::before { content: '기준'; }
+    }
   </style>
 </head>
 <body data-screen-label="Project · Internal Web Service">

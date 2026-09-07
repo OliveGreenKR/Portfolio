@@ -78,7 +78,7 @@ window.ABOUT_DATA = {
       examples: [
         { tag: 'Cartapli',      line: '13주 · 4인 · Steam 매우 긍정 98% (155/157) · 26,269 lifetime users.', href: '../pages/cartapli.html' },
         { tag: 'Wobble Wobble', line: '5주 · 5인 · Steam + STOVE 동시 출시 · 14개 언어 자동 번역 인프라를 직접 도입.', href: '../pages/wobble-wobble.html' },
-        { tag: '사내 학습 웹 서비스', line: '외주 납품 완료 — 개발자가 아닌 담당자가 직접 운영하도록 데스크톱 운영 콘솔까지 만들었습니다.', href: '../pages/internal-web-service.html' },
+        { tag: '사내 학습 웹 서비스', line: '프리랜서 외주로 웹 서비스를 납품하고, 비개발 담당자를 위한 데스크톱 운영 콘솔 개발을 주도했습니다.', href: '../pages/internal-web-service.html' },
       ],
     },
   ],
