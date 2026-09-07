@@ -30,7 +30,7 @@ window.LANDING_DATA = {
     ],
   },
 
-  // ─── 메인 그리드 — 카드 5 (순서: Cartapli Mobile · Motelet · Cartapli · Wobble · DX11) ───
+  // ─── 메인 그리드 — 카드 6 (순서: Cartapli Mobile · Motelet · 외주 · Cartapli · Wobble · DX11) ───
   main: [
     {
       idx: '01',
@@ -49,20 +49,27 @@ window.LANDING_DATA = {
     {
       idx: '03',
       code: 'MAIN · 03',
+      date: '2026.07',
+      slug: 'internal-web-service',
+      href: '../pages/internal-web-service.html',
+    },
+    {
+      idx: '04',
+      code: 'MAIN · 04',
       date: '2026.02',
       slug: 'cartapli',
       href: '../pages/cartapli.html',
     },
     {
-      idx: '04',
-      code: 'MAIN · 04',
+      idx: '05',
+      code: 'MAIN · 05',
       date: '2026.04',
       slug: 'wobble-wobble',
       href: '../pages/wobble-wobble.html',
     },
     {
-      idx: '05',
-      code: 'MAIN · 05',
+      idx: '06',
+      code: 'MAIN · 06',
       date: '2025.08',
       slug: 'dx11-engine',
       href: '../pages/dx11-engine.html',
